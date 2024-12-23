@@ -191,7 +191,7 @@
                                                   <span>Webhooks</span>
                                                 </a>
                                               </div>
-                                            <div class="col">
+                                            <div class="col" *ngIf="!isCloudMode">
                                                 <a
                                                     class="dropdown-icon-item"
                                                     data-toggle="modal"
@@ -227,76 +227,84 @@
                                     <i class="fas fa-cog hover-trigger"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <div
-                                        class="dropdown-header"
-                                        *permissionLink="['base.system.view',
-                                                          'base.system.edit',
-                                                          'base.system.reload']"
-                                    >
-                                        System
+                 <div
+                        class="dropdown-header"
+                        *permissionLink="['base.system.view', 'base.system.edit', 'base.system.reload']"
+                    >
+                        System
+                    </div>
+
+                    <!-- Regional Settings: Always shown -->
+                    <a
+                        class="dropdown-item"
+                        *permissionLink="'base.system.edit'"
+                        [routerLink]="['/settings/regional-settings']"
+                    >
+                        <i class="fas fa-calendar-alt"></i> Regional Settings
+                    </a>
+
+                    <!-- Other System Items: Shown only when !isCloudMode -->
+                    <div *ngIf="!isCloudMode">
+                        <a
+                            class="dropdown-item"
+                            *permissionLink="'base.system.view'"
+                            [routerLink]="['/settings/system']"
+                        >
+                            <i class="fas fa-info-circle"></i> System Information
+                        </a>
+                        <a
+                            class="dropdown-item"
+                            *permissionLink="'base.system.edit'"
+                            [routerLink]="['/settings/auth']"
+                        >
+                            <i class="fas fa-lock"></i> Authentication
+                        </a>
+                        <a
+                            class="dropdown-item"
+                            *permissionLink="'base.system.reload'"
+                            [routerLink]="['/settings/system/properties']"
+                        >
+                            <i class="fas fa-database"></i> Database Properties
+                        </a>
+                    </div>
+
+                        <div *ngIf="!isCloudMode">
+                             <div
+                               class="dropdown-header"
+                               *permissionLink="['base.user-management.user.view',
+                               'base.user-management.group.view']"
+                                >
+                                  User Management
                                     </div>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.system.view'"
-                                        [routerLink]="['/settings/system']"
-                                    >
-                                        <i class="fas fa-info-circle"></i> System Information
-                                    </a>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.system.edit'"
-                                        [routerLink]="['/settings/auth']"
-                                    >
-                                        <i class="fas fa-lock"></i> Authentication
-                                    </a>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.system.edit'"
-                                        [routerLink]="['/settings/regional-settings']"
-                                    >
-                                        <i class="fas fa-calendar-alt"></i> Regional Settings
-                                    </a>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.system.reload'"
-                                        [routerLink]="['/settings/system/properties']"
-                                    >
-                                        <i class="fas fa-database"></i> Database Properties
-                                    </a>
-                                    <div
-                                        class="dropdown-header"
-                                        *permissionLink="['base.user-management.user.view',
-                                                          'base.user-management.group.view']"
-                                    >
-                                        User Management
+                                        <a
+                                            class="dropdown-item"
+                                            *permissionLink="'base.user-management.user.*'"
+                                            [routerLink]="['/management/users']"
+                                        >
+                                            <i class="fas fa-user-friends"></i> Users
+                                        </a>
+                                        <a
+                                            class="dropdown-item"
+                                            *permissionLink="'base.user-management.group.view'"
+                                            [routerLink]="['/management/groups']"
+                                        >
+                                            <i class="fas fa-users"></i> Groups
+                                        </a>
+                                        <a
+                                            class="dropdown-item"
+                                            [routerLink]="['/management/rights']"
+                                        >
+                                            <i class="fas fa-low-vision"></i> Rights
+                                        </a>
+                                        <a
+                                            class="dropdown-item"
+                                            *permissionLink="'base.framework.type.view'"
+                                            [routerLink]="['/', 'management', 'groups', 'acl']"
+                                        >
+                                            <i class="fas fa-list"></i> ACL
+                                        </a>
                                     </div>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.user-management.user.*'"
-                                        [routerLink]="['/management/users']"
-                                    >
-                                        <i class="fas fa-user-friends"></i> Users
-                                    </a>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.user-management.group.view'"
-                                        [routerLink]="['/management/groups']"
-                                    >
-                                        <i class="fas fa-users"></i> Groups
-                                    </a>
-                                    <a
-                                        class="dropdown-item"
-                                        [routerLink]="['/management/rights']"
-                                    >
-                                        <i class="fas fa-low-vision"></i> Rights
-                                    </a>
-                                    <a
-                                        class="dropdown-item"
-                                        *permissionLink="'base.framework.type.view'"
-                                        [routerLink]="['/', 'management', 'groups','acl']"
-                                    >
-                                        <i class="fas fa-list"></i> ACL
-                                    </a>
+                                    
                                     <div *permissionLink="'base.framework.log.view'" class="dropdown-header">
                                         Logs
                                     </div>
@@ -343,11 +351,11 @@
                                 class="dropdown-menu dropdown-menu-right"
                                 aria-labelledby="topbar-userdrop"
                             >
-                                <div class="dropdown-header">
+                                <div class="dropdown-header" *ngIf="!isCloudMode">
                                     My Account
                                 </div>
-                                <a routerLink="/management/users/view/" class="dropdown-item pt-1">
-                                    <i class="fas fa-user-edit"></i> Settings
+                                <a routerLink="/management/users/view/" class="dropdown-item pt-1" *ngIf="!isCloudMode">
+                                    <i class="fas fa-user-edit" *ngIf="!isCloudMode"></i> Settings
                                 </a>
                                 <div class="dropdown-header">
                                     Support

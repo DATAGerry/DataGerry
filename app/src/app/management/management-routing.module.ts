@@ -19,6 +19,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PermissionGuard } from '../modules/auth/guards/permission.guard';
+import { cloudModeGuard, cloudModeChildGuard } from '../modules/auth/guards/cloud-mode.guard';
+
 import { UserSettingsResolver } from './user-settings/resolvers/user-settings-resolver.service';
 
 import { ManagementComponent } from './management.component';
@@ -38,6 +40,7 @@ const routes: Routes = [
     {
         path: 'users',
         canActivateChild: [PermissionGuard],
+        canActivate: [cloudModeGuard],
         data: {
             breadcrumb: 'Users',
             right: 'base.user-management.user.view'
@@ -49,7 +52,7 @@ const routes: Routes = [
     },
     {
         path: 'groups',
-        canActivateChild: [PermissionGuard],
+        canActivateChild: [PermissionGuard, cloudModeChildGuard],
         data: {
             breadcrumb: 'Groups',
             right: 'base.user-management.group.view'
@@ -58,6 +61,8 @@ const routes: Routes = [
     },
     {
         path: 'rights',
+        canActivate: [cloudModeGuard],
+
         data: {
             breadcrumb: 'Rights',
         },
@@ -66,7 +71,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
-export class ManagementRoutingModule {}
+export class ManagementRoutingModule { }
