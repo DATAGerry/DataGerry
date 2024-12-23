@@ -35,34 +35,48 @@ export const httpObserveOptions = {
 };
 
 export const PARAMETER = 'params';
-export const COOCKIENAME = 'onlyActiveObjCookie';
-
+export const COOKIE_NAME = 'onlyActiveObjCookie';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpecialService<T = CmdbDao> implements ApiServicePrefix {
-  public servicePrefix: string = '/';
+  public servicePrefix: string = 'special';
 
-  constructor(private api: ApiCallService) {}
+  constructor(private api: ApiCallService) { }
 
+
+  /**
+   * Constructs the full route ensuring no double or triple slashes.
+   * @param endpoint The API endpoint path.
+   * @returns The full route string.
+   */
+  private constructRoute(endpoint: string): string {
+    // Remove leading slash if present
+    endpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    return `${this.servicePrefix}/${endpoint}`;
+  }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
   /*                                                     API SECTION                                                    */
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-
   /**
    * Requests steps for intro and info about data in DB
    * 
-   * @returns Steps for intro and if there are any categories, types and objects in the database
+   * @returns Steps for intro and if there are any categories, types, and objects in the database
    */
   public getIntroStarter(): Observable<T[]> {
-    httpObserveOptions[PARAMETER] = { onlyActiveObjCookie: this.api.readCookies(COOCKIENAME) };
-    return this.api.callGet<T[]>(this.servicePrefix + '/special/intro', httpObserveOptions).pipe(
-      map((apiResponse) => {
-        return apiResponse.body;
-      })
+    // Create a local copy of httpObserveOptions to avoid mutating the global object
+    const options = {
+      ...httpObserveOptions,
+      [PARAMETER]: { onlyActiveObjCookie: this.api.readCookies(COOKIE_NAME) }
+    };
+
+    const route = this.constructRoute('intro');
+
+    return this.api.callGet<T[]>(route, options).pipe(
+      map(apiResponse => apiResponse.body)
     );
   }
 
@@ -70,15 +84,20 @@ export class SpecialService<T = CmdbDao> implements ApiServicePrefix {
   /**
    * Sends selected profiles of assistant to backend which should be created
    * 
-   * @param data string of profiles seperated by '#'
+   * @param data string of profiles separated by '#'
    * @returns created public_ids of types
    */
-  public createProfiles(data): Observable<T[]> {
-    httpObserveOptions[PARAMETER] = { data };
-    return this.api.callPost<T>(this.servicePrefix + '/special/profiles',JSON.stringify(data), httpObserveOptions).pipe(
-      map((apiResponse) => {
-        return apiResponse.body;
-      })
+  public createProfiles(data: string): Observable<T[]> {
+    // Create a local copy of httpObserveOptions to avoid mutating the global object
+    const options = {
+      ...httpObserveOptions,
+      [PARAMETER]: { data }
+    };
+
+    const route = this.constructRoute('profiles');
+
+    return this.api.callPost<T>(route, JSON.stringify(data), options).pipe(
+      map(apiResponse => apiResponse.body)
     );
   }
 }
