@@ -19,6 +19,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PermissionGuard } from '../modules/auth/guards/permission.guard';
+import { cloudModeGuard, cloudModeChildGuard } from '../modules/auth/guards/cloud-mode.guard';
 
 import { SettingsComponent } from './settings.component';
 import { DateSettingsComponent } from './date-settings/date-settings.component';
@@ -36,7 +37,7 @@ const routes: Routes = [
     },
     {
         path: 'system',
-        canActivateChild: [PermissionGuard],
+        canActivateChild: [PermissionGuard, cloudModeChildGuard],
         data: {
             breadcrumb: 'System'
         },
@@ -51,7 +52,7 @@ const routes: Routes = [
     },
     {
         path: 'auth',
-        canActivateChild: [PermissionGuard],
+        canActivateChild: [PermissionGuard, cloudModeChildGuard],
         data: {
             breadcrumb: 'Authentication'
         },
@@ -71,4 +72,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class SettingsRoutingModule {}
+export class SettingsRoutingModule { }

@@ -27,7 +27,7 @@ import { User } from '../../../management/models/user';
 import { Group } from '../../../management/models/group';
 import { ObjectService } from 'src/app/framework/services/object.service';
 import { Subscription, switchMap } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 import { ToastService } from '../../toast/toast.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
