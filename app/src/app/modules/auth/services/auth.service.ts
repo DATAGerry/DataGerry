@@ -46,7 +46,7 @@ const httpOptions = {
 
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class AuthService<T = any> implements ApiServicePrefix {
     // Rest backend
@@ -67,7 +67,7 @@ export class AuthService<T = any> implements ApiServicePrefix {
     private branchInfoModal: any = undefined;
     private profileInfoModal: any = undefined;
 
-/* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
+    /* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
 
     public get currentUserValue(): User {
         return this.currentUserSubject.value;
@@ -77,20 +77,19 @@ export class AuthService<T = any> implements ApiServicePrefix {
         return this.currentUserTokenSubject.value;
     }
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-/*                                                     LIFE CYCLE                                                     */
-/* ------------------------------------------------------------------------------------------------------------------ */
+    /* ------------------------------------------------------------------------------------------------------------------ */
+    /*                                                     LIFE CYCLE                                                     */
+    /* ------------------------------------------------------------------------------------------------------------------ */
 
     constructor(
-        public backend: HttpBackend, 
-        private connectionService: ConnectionService, 
+        public backend: HttpBackend,
+        private connectionService: ConnectionService,
         private api: ApiCallService,
-        private permissionService: PermissionService, 
-        private router: Router, 
+        private permissionService: PermissionService,
+        private router: Router,
         private introService: NgbModal,
-        private specialService: SpecialService, 
-        private indexDB: NgxIndexedDBService
-    ) {
+        private specialService: SpecialService,
+        private indexDB: NgxIndexedDBService) {
 
         this.http = new HttpClient(backend);
         this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('current-user')));
@@ -102,7 +101,7 @@ export class AuthService<T = any> implements ApiServicePrefix {
 
 
     public getProviders(): Observable<Array<T>> {
-        return this.api.callGet<Array<T>>(`${ this.servicePrefix }/providers`, this.getHttpOptions()).pipe(
+        return this.api.callGet<Array<T>>(`${this.servicePrefix}/providers`, this.getHttpOptions()).pipe(
             map((apiResponse) => {
                 return apiResponse.body as Array<T>;
             })
@@ -111,7 +110,7 @@ export class AuthService<T = any> implements ApiServicePrefix {
 
 
     public getSettings(): Observable<T> {
-        return this.api.callGet<T[]>(`${ this.servicePrefix }/settings`, this.getHttpOptions()).pipe(
+        return this.api.callGet<T[]>(`${this.servicePrefix}/settings`, this.getHttpOptions()).pipe(
             map((apiResponse) => {
                 return apiResponse.body;
             })
@@ -120,14 +119,14 @@ export class AuthService<T = any> implements ApiServicePrefix {
 
 
     public postSettings(data: T): Observable<T> {
-        return this.api.callPost<T>(`${ this.servicePrefix }/settings`, data, this.getHttpOptions()).pipe(
+        return this.api.callPost<T>(`${this.servicePrefix}/settings`, data, this.getHttpOptions()).pipe(
             map((apiResponse) => {
                 return apiResponse.body;
             })
         );
     }
 
-/* -------------------------------------------------- LOGIN/LOGOUT -------------------------------------------------- */
+    /* -------------------------------------------------- LOGIN/LOGOUT -------------------------------------------------- */
 
     public login(username: string, password: string) {
         const data = {
@@ -136,24 +135,24 @@ export class AuthService<T = any> implements ApiServicePrefix {
         };
 
         return this.http.post<LoginResponse>(
-            `${ this.connectionService.currentConnection }/${ this.restPrefix }/${ this.servicePrefix }/login`,
-                data,
-                httpOptions)
-                .pipe(map((response: LoginResponse) => {
-                    const token: Token = {
-                        token: response.token,
-                        issued: response.token_issued_at,
-                        expire: response.token_expire
-                    };
+            `${this.connectionService.currentConnection}/${this.restPrefix}/${this.servicePrefix}/login`,
+            data,
+            httpOptions)
+            .pipe(map((response: LoginResponse) => {
+                const token: Token = {
+                    token: response.token,
+                    issued: response.token_issued_at,
+                    expire: response.token_expire
+                };
 
-                    localStorage.setItem('current-user', JSON.stringify(response.user));
-                    localStorage.setItem('access-token', JSON.stringify(token));
-                    this.currentUserSubject.next(response.user);
-                    this.currentUserTokenSubject.next(token);
-                    this.showIntro();
+                localStorage.setItem('current-user', JSON.stringify(response.user));
+                localStorage.setItem('access-token', JSON.stringify(token));
+                this.currentUserSubject.next(response.user);
+                this.currentUserTokenSubject.next(token);
+                this.showIntro();
 
-                    return response;
-                }));
+                return response;
+            }));
     }
 
 
@@ -176,10 +175,10 @@ export class AuthService<T = any> implements ApiServicePrefix {
         this.router.navigate(['/auth']);
     }
 
-/* -------------------------------------------------- INTRO SECTION ------------------------------------------------- */
+    /* -------------------------------------------------- INTRO SECTION ------------------------------------------------- */
 
     public showIntro(triggered: boolean = false) {
-        this.specialService.getIntroStarter().subscribe(value => {            
+        this.specialService.getIntroStarter().subscribe(value => {
             if (!value['execute']) {
                 this.startIntroModal = this.introService.open(IntroComponent, this.getModalOptions());
 
@@ -187,13 +186,13 @@ export class AuthService<T = any> implements ApiServicePrefix {
                     if (result) {
                         this.showBranchInfoModal();
                     }
-                }, 
-                (error) => {
-                    console.log(error);
-                });
+                },
+                    (error) => {
+                        console.log(error);
+                    });
             } else {
                 //display assistant not usable
-                if(triggered){
+                if (triggered) {
                     this.startIntroModal = this.introService.open(IntroComponent, this.getModalOptions());
                     this.startIntroModal.componentInstance.isUsable = false;
                 }
@@ -205,70 +204,66 @@ export class AuthService<T = any> implements ApiServicePrefix {
     /**
      * Modal for branch selection
      */
-    private showBranchInfoModal(selectedBranches = {}){
+    private showBranchInfoModal(selectedBranches = {}) {
         this.branchInfoModal = this.introService.open(BranchInfoModalComponent, this.getModalOptions());
         this.branchInfoModal.componentInstance.selectedBranches = selectedBranches;
         this.branchInfoModal.componentInstance.setBranchState(selectedBranches);
 
         this.branchInfoModal.result.then((result: any) => {
-                if(result){
-                    this.showProfileInfoModal(result);
-                }
-            },
+            if (result) {
+                this.showProfileInfoModal(result);
+            }
+        },
             (error) => {
                 console.log(error);
             });
     }
 
-  
+
     /**
      * Modal for profile selection
      * 
      * @param selectedBranches (dict): selected branches from branch modal
      */
-    private showProfileInfoModal(selectedBranches){
+    private showProfileInfoModal(selectedBranches) {
         this.profileInfoModal = this.introService.open(ProfileInfoModalComponent, this.getModalOptions());
         this.profileInfoModal.componentInstance.selectedBranches = selectedBranches;
         this.profileInfoModal.componentInstance.setProfiles(selectedBranches);
 
-      this.profileInfoModal.result.then((result: any) => {
-            if(result == 'back'){
+        this.profileInfoModal.result.then((result: any) => {
+            if (result == 'back') {
                 this.showBranchInfoModal(selectedBranches);
             } else {
                 let selectedProfiles: string = "";
 
                 //filter selected profiles
-                for(let profile of Object.keys(result)){
-                    if(result[profile]){
+                for (let profile of Object.keys(result)) {
+                    if (result[profile]) {
                         selectedProfiles += profile + "#";
                     }
                 }
 
-                selectedProfiles = selectedProfiles.slice(0,-1);
+                selectedProfiles = selectedProfiles.slice(0, -1);
 
                 this.specialService.createProfiles(selectedProfiles).subscribe({
                     next: () => {
                         this.router.navigate(['/framework/type/']);
-                        (async () => { 
-                            await this.delay(100);
-                            window.location.reload();
-                        })();
                     },
                     error: (error) => {
-                        console.log("createProfiles error occured:",error);
+                        console.log("createProfiles error occured:", error);
                     }
                 });
             }
         },
-        (error) => {
-            console.log(error);
-        });
+            (error) => {
+                console.log(error);
+            });
     }
 
-/* ------------------------------------------------- HELPER SECTION ------------------------------------------------- */
+    /* ------------------------------------------------- HELPER SECTION ------------------------------------------------- */
 
     private delay(ms: number) {
-        return new Promise( resolve => setTimeout(resolve, ms) );
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
 
@@ -281,7 +276,7 @@ export class AuthService<T = any> implements ApiServicePrefix {
 
 
     private getModalOptions(): NgbModalOptions {
-        return { 
+        return {
             centered: true,
             backdrop: 'static',
             keyboard: true,

@@ -35,6 +35,7 @@ import { CmdbType } from '../models/cmdb-type';
 import { Column, Sort, SortDirection, TableState, TableStatePayload } from '../../layout/table/table.types';
 import { CollectionParameters } from '../../services/models/api-parameter';
 import { UserSetting } from '../../management/user-settings/models/user-setting';
+import { SidebarService } from 'src/app/layout/services/sidebar.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -98,7 +99,7 @@ export class TypeComponent implements OnInit, OnDestroy {
     public tableStateSubject: BehaviorSubject<TableState> = new BehaviorSubject<TableState>(undefined);
     public tableStates: Array<TableState> = [];
 
-/* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
+    /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
         private typeService: TypeService,
@@ -109,13 +110,14 @@ export class TypeComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private router: Router,
         private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>,
-        private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>
+        private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>,
+        private sideBarService: SidebarService
     ) {
 
         this.route.data.pipe(takeUntil(this.subscriber)).subscribe((data: Data) => {
             if (data.userSetting) {
                 const userSettingPayloads = (data.userSetting as UserSetting<TableStatePayload>).payloads
-                .find(payloads => payloads.id === this.id);
+                    .find(payloads => payloads.id === this.id);
                 this.tableStates = userSettingPayloads.tableStates;
                 this.tableStateSubject.next(userSettingPayloads.currentState);
             } else {
@@ -130,9 +132,9 @@ export class TypeComponent implements OnInit, OnDestroy {
     }
 
 
-  /**
-   * Starts the component and init the table
-   */
+    /**
+     * Starts the component and init the table
+     */
     public ngOnInit(): void {
         this.columns = [
             {
@@ -236,7 +238,7 @@ export class TypeComponent implements OnInit, OnDestroy {
         this.subscriber.complete();
     }
 
-/* ---------------------------------------------------- FUNCTIONS --------------------------------------------------- */
+    /* ---------------------------------------------------- FUNCTIONS --------------------------------------------------- */
 
     public get tableState(): TableState {
         return this.tableStateSubject.getValue() as TableState;
@@ -312,6 +314,7 @@ export class TypeComponent implements OnInit, OnDestroy {
                 this.types = apiResponse.results as Array<CmdbType>;
                 this.totalTypes = apiResponse.total;
                 this.loading = false;
+                this.sideBarService.loadCategoryTree();
             }
         );
     }
