@@ -54,20 +54,20 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
     public fieldsGroups: UntypedFormGroup;
 
     @Output() parentSubmit = new EventEmitter<any>();
-    @ViewChild(RenderComponent, {static: false}) render: RenderComponent;
+    @ViewChild(RenderComponent, { static: false }) render: RenderComponent;
 
     private parentID: number;
 
-/* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
+    /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
-    constructor(private router: Router, 
-                private typeService: TypeService, 
-                private objectService: ObjectService, 
-                private userService: UserService, 
-                private route: ActivatedRoute,
-                private sidebarService: SidebarService,
-                private locationService: LocationService, 
-                private toastService: ToastService) {
+    constructor(private router: Router,
+        private typeService: TypeService,
+        private objectService: ObjectService,
+        private userService: UserService,
+        private route: ActivatedRoute,
+        private sidebarService: SidebarService,
+        private locationService: LocationService,
+        private toastService: ToastService) {
 
         this.objectInstance = new CmdbObject();
         this.typeIDSubject = new BehaviorSubject<number>(null);
@@ -97,14 +97,14 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.typeService.getTypeList(AccessControlPermission.CREATE).pipe(takeUntil(this.subscriber))
-        .subscribe({
-            next: (typeList: CmdbType[]) => {
-                this.typeList = typeList;
-            }, 
-            error: (error) => {
-                this.toastService.error(error);
-            }
-        });
+            .subscribe({
+                next: (typeList: CmdbType[]) => {
+                    this.typeList = typeList;
+                },
+                error: (error) => {
+                    this.toastService.error(error);
+                }
+            });
 
         this.typeIDForm = new UntypedFormGroup({
             typeID: new UntypedFormControl(null, Validators.required)
@@ -118,7 +118,7 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
         this.subscriber.complete();
     }
 
-/* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
+    /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
     public get formTypeID() {
         return this.typeIDForm.get('typeID').value;
@@ -142,23 +142,23 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
             this.objectInstance.type_id = this.currentTypeID;
             this.objectInstance.version = '1.0.0';
             this.objectInstance.author_id = this.userService.getCurrentUser().public_id;
-            
+
             this.objectInstance.fields = [];
             this.render.renderForm.removeControl('active');
 
             Object.keys(this.render.renderForm.controls).forEach(field => {
                 let val = this.renderForm.value[field];
 
-                if(field == 'dg_location'){
+                if (field == 'dg_location') {
                     this.parentID = val;
                 }
 
-                if (val === undefined || val == null) { 
+                if (val === undefined || val == null) {
                     val = '';
                 }
 
                 //set the multi data section
-                if(field.startsWith('dg-mds-')) {
+                if (field.startsWith('dg-mds-')) {
                     this.objectInstance.multi_data_sections.push(val);
                 } else {
                     //just set the field
@@ -172,42 +172,42 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
 
             let newID = null;
             this.objectService.postObject(this.objectInstance).pipe(takeUntil(this.subscriber))
-            .subscribe({
-                next: newObjectID => {
-                    newID = newObjectID;
-                    this.createLocation(newID);
-                },
-                error: (e) => {
-                    console.error(e);
-                },
-                complete: () => {
-                    this.router.navigate(['/framework/object/view/' + newID]);
-                    this.sidebarService.updateTypeCounter(this.typeInstance.public_id);
-                    this.toastService.success(`Object ${ newID } was created succesfully!`);
-                }
-            });
+                .subscribe({
+                    next: newObjectID => {
+                        newID = newObjectID;
+                        this.createLocation(newID);
+                    },
+                    error: (e) => {
+                        this.toastService.error(e?.error?.message)
+                    },
+                    complete: () => {
+                        this.router.navigate(['/framework/object/view/' + newID]);
+                        this.sidebarService.updateTypeCounter(this.typeInstance.public_id);
+                        this.toastService.success(`Object ${newID} was created succesfully!`);
+                    }
+                });
         }
     }
 
 
-    private createLocation(newObjectID: number){
+    private createLocation(newObjectID: number) {
         let params = {
-        "object_id": newObjectID,
-        "parent": this.parentID,
-        "name": this.locationService.locationTreeName,
-        "type_id": this.objectInstance.type_id 
+            "object_id": newObjectID,
+            "parent": this.parentID,
+            "name": this.locationService.locationTreeName,
+            "type_id": this.objectInstance.type_id
         }
 
-        if(this.parentID){
+        if (this.parentID) {
             this.locationService.postLocation(params)
-            .subscribe({
-                next: () => {
-                    this.locationService.locationTreeName = "";
-                },
-                error: error => {
-                    this.toastService.error(error);
-                }
-            });
+                .subscribe({
+                    next: () => {
+                        this.locationService.locationTreeName = "";
+                    },
+                    error: error => {
+                        this.toastService.error(error);
+                    }
+                });
         }
     }
 
