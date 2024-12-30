@@ -18,6 +18,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from 'src/app/layout/toast/toast.service';
 import { ReportCategoryService } from 'src/app/reporting/services/report-category.service';
 
 @Component({
@@ -31,7 +32,9 @@ export class AddCategoryModalComponent implements OnInit {
 
     public addCategoryForm: UntypedFormGroup;
 
-    constructor(public modal: NgbActiveModal, private categoryService: ReportCategoryService) { }
+    constructor(public modal: NgbActiveModal, private categoryService: ReportCategoryService,
+        private toast: ToastService
+    ) { }
 
     ngOnInit(): void {
         this.addCategoryForm = new UntypedFormGroup({
@@ -65,14 +68,15 @@ export class AddCategoryModalComponent implements OnInit {
      * Closes the modal on success or logs an error and dismisses the modal on failure.
      * @param categoryData - The data for the new category.
      */
-    private addCategory(categoryData: { name: string; predefined: boolean }) {
-        this.categoryService.createCategory(categoryData).subscribe(
-            () => this.modal.close('success'),
-            (error) => {
-                console.error('Error creating category:', error);
+    private addCategory(categoryData: { name: string; predefined: boolean }): void {
+        this.categoryService.createCategory(categoryData).subscribe({
+            next: () => {
+                this.modal.close('success');
+            },
+            error: (error) => {
                 this.modal.dismiss('error');
             }
-        );
+        });
     }
 
     /**
@@ -80,14 +84,16 @@ export class AddCategoryModalComponent implements OnInit {
      * Closes the modal on success or logs an error and dismisses the modal on failure.
      * @param categoryData - The updated data for the category.
      */
-    private updateCategory(categoryData: { public_id: number; name: string; predefined: boolean }) {
-        this.categoryService.updateCategory(categoryData).subscribe(
-            () => this.modal.close('updated'),
-            (error) => {
+    private updateCategory(categoryData: { public_id: number; name: string; predefined: boolean }): void {
+        this.categoryService.updateCategory(categoryData).subscribe({
+            next: () => {
+                this.modal.close('updated');
+            },
+            error: (error) => {
                 console.error('Error updating category:', error);
                 this.modal.dismiss('error');
             }
-        );
+        });
     }
 
     /**
@@ -95,12 +101,12 @@ export class AddCategoryModalComponent implements OnInit {
      * Closes the modal on success or logs an error and dismisses the modal on failure.
      */
     private deleteCategory() {
-        this.categoryService.deleteCategory(this.categoryData.public_id).subscribe(
-            () => this.modal.close('deleted'),
-            (error) => {
-                console.error('Error deleting category:', error);
+        this.categoryService.deleteCategory(this.categoryData.public_id).subscribe({
+            next: () => this.modal.close('deleted'),
+            error: (error) => {
+                this.toast.error(error?.error?.message);
                 this.modal.dismiss('error');
             }
-        );
+        });
     }
 }

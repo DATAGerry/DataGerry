@@ -80,7 +80,6 @@ export class WebhookOverviewComponent implements OnInit {
             next: (data) => {
                 this.webhooks = data.results;
                 this.totalWebhooks = data.total;
-                console.log('webhooks', this.webhooks)
             },
             error: (error) => {
                 this.webhooks = [];
@@ -108,7 +107,6 @@ export class WebhookOverviewComponent implements OnInit {
      * @param publicId - The public ID of the webhook to delete.
      */
     public deleteWebhook(publicId: number): void {
-        console.log('Delete webhook:', publicId);
 
         this.webhookService.deleteWebhook(publicId).subscribe({
             next: (res) => {

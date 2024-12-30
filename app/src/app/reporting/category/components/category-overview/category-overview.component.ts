@@ -26,6 +26,7 @@ import { AddCategoryModalComponent } from '../category-add-modal/category-add-mo
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { Location } from '@angular/common';
+import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Component({
     selector: 'app-category-overview',
@@ -49,7 +50,8 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
 
     constructor(
         private categoryService: ReportCategoryService,
-        private modalService: NgbModal, private location: Location) { }
+        private modalService: NgbModal, private location: Location,
+        private toast: ToastService) { }
 
 
     ngOnInit(): void {
@@ -99,15 +101,17 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
      */
     public deleteCategory(id: number): void {
         if (confirm('Are you sure you want to delete this category?')) {
-            this.categoryService.deleteCategory(id).pipe(takeUntil(this.unsubscribe$)).subscribe(
-                () => {
-                    alert('Category deleted successfully');
-                    this.loadCategories();
-                },
-                error => {
-                    console.error('Error deleting category:', error);
-                }
-            );
+            this.categoryService.deleteCategory(id)
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe({
+                    next: () => {
+                        alert('Category deleted successfully');
+                        this.loadCategories();
+                    },
+                    error: (error) => {
+                        this.toast.error(error?.error?.message);
+                    },
+                });
         }
     }
 
@@ -248,7 +252,6 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
      * @param category - The category to delete.
      */
     public openDeleteCategoryModal(category: any): void {
-        console.log('delete', category)
         const modalRef = this.modalService.open(AddCategoryModalComponent, { size: 'lg' });
         modalRef.componentInstance.mode = 'delete';
         modalRef.componentInstance.categoryData = { ...category };
