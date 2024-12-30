@@ -16,7 +16,8 @@
           class="btn btn-success btn-sm submit-report d-flex align-items-center" 
           (click)="openAddCategoryModal()"
           >
-          <i class="fas fa-plus me-2 icon-margin"></i> Add Category
+          <i class="fas fa-plus me-2 icon-margin"     
+             title="Add Category"></i> Add Category
       </button>
   </div>
 </div>
@@ -28,6 +29,12 @@
             (searchChange)="onSearchChange($event)"></cmdb-table>
 
 <ng-template #actionsTemplate let-item="item">
-  <i *ngIf="!item.predefined" class="far fa-edit icon-margin btn-edit" (click)="openEditCategoryModal(item)"></i>
-  <i *ngIf="!item.predefined" class="far fa-trash-alt btn-delete" (click)="openDeleteCategoryModal(item)"></i>
+  <i *ngIf="!item.predefined" 
+      class="far fa-edit icon-margin btn-edit"     
+      title="Edit Category"
+      (click)="openEditCategoryModal(item)"></i>
+  <i *ngIf="!item.predefined" 
+      class="far fa-trash-alt btn-delete" 
+      title="Delete Category"
+      (click)="openDeleteCategoryModal(item)"></i>
 </ng-template>

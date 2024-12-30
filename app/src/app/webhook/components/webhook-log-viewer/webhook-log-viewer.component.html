@@ -26,6 +26,9 @@
 <ng-template #actionsTemplate let-item="item">
 
   <span *permissionLink="['base.framework.webhook.delete']">
-    <i class="far fa-trash-alt btn-delete" (click)="onDeleteLog(item)"></i>
+    <i class="far fa-trash-alt btn-delete" 
+    (click)="onDeleteLog(item)"
+    title="Delete Log"
+    ></i>
   </span>
 </ng-template>
