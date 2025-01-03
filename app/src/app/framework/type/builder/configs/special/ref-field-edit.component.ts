@@ -209,6 +209,8 @@ export class RefFieldEditComponent extends ConfigEditBaseComponent implements On
                 this.objectList = [];
             }
         }
+        this.onInputChange();
+
     }
 
 
