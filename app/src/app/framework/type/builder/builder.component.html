@@ -185,16 +185,16 @@
                                 <fa-icon [icon]="getSectionCollapseIcon(section)"></fa-icon>
                             </button>
 
-                            <button class="btn btn-link mr-1" type="button" (click)="toggleColorPicker(section)">
+                            <!-- <button class="btn btn-link mr-1" type="button" (click)="toggleColorPicker(section)">
                                 <fa-icon [icon]="['fas', 'paint-brush']"></fa-icon>
-                            </button>
+                            </button> -->
                     
-                            <div class="color-picker-wrapper" *ngIf="showColorPickerForSection === section.name">
+                            <!-- <div class="color-picker-wrapper" *ngIf="showColorPickerForSection === section.name">
                                 <color-chrome
                                     [color]="section.bg_color || '#ffffff'" 
                                     (onChangeComplete)="updateSectionColor(section, $event.color.hex)">
                                 </color-chrome>
-                            </div>
+                            </div> -->
                             
                             <button class="btn btn-link mr-1" type="button" dndHandle 
                             (dragstart)="preventDragForAllSections($event)"
