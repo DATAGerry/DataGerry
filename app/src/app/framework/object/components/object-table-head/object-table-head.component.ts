@@ -142,6 +142,21 @@ export class ObjectTableHeadComponent implements OnInit, OnDestroy, OnChanges {
     return 'Add a new object'; // Default tooltip
   }
 
+  /**
+  * Gets the tooltip text for the Bulk change button.
+  */
+  public getBulkChangeTooltip(): string | null {
+    return this.selectedObjects.length === 0 ? 'No objects selected for bulk change' : null;
+  }
+
+
+  /**
+  * Gets the tooltip text for the delete selected button.
+  */
+  public getDeleteSelectedTooltip(): string | null {
+    return this.selectedObjects.length === 0 ? 'No objects selected for deletion' : null;
+  }
+
 
   /**
    * Calculates the percentage of used objects.
