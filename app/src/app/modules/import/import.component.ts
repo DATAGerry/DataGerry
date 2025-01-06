@@ -16,6 +16,9 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Component } from '@angular/core';
+import { catchError, debounceTime, Observable, of, Subject, Subscription, takeUntil } from 'rxjs';
+import { ObjectService } from 'src/app/framework/services/object.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'cmdb-import',
@@ -24,4 +27,98 @@ import { Component } from '@angular/core';
 })
 export class ImportComponent {
 
+    totalObjects: number = 100;
+    usedObjects: number;
+    usedObjects$: Observable<number>;
+
+    private fetchTrigger$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
+    private subscription: Subscription;
+
+    isCloudModeEnabled = environment.cloudMode;
+
+
+    public constructor(private objectService: ObjectService) { }
+
+
+    ngOnInit(): void {
+
+        this.subscription = this.objectService.getConfigItemsLimit().subscribe({
+            next: (limit) => {
+                this.totalObjects = limit;
+            }
+        });
+
+        this.fetchTrigger$.pipe(
+            debounceTime(300),
+            takeUntil(this.destroy$)
+        ).subscribe(() => {
+            this.fetchUsedObjects();
+        });
+
+        this.fetchUsedObjects();
+    }
+
+
+    ngOnDestroy(): void {
+
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
+
+
+    /**
+     * Fetch the count of used objects from the backend.
+     */
+    private fetchUsedObjects(): void {
+        this.usedObjects$ = this.objectService.countObjects().pipe(
+            catchError(error => {
+                console.error('Error fetching used objects count:', error?.error?.message);
+                return of(0);
+            })
+        );
+
+        this.usedObjects$.subscribe(count => {
+            this.usedObjects = count;
+        });
+    }
+
+
+    /**
+     * Determines the CSS class for a button based on the usage percentage of objects.
+     * @returns A string representing the button's CSS class.
+     */
+    getButtonClass(): string {
+        if (!this.isCloudModeEnabled) {
+            return 'btn btn-primary'; // Default Bootstrap button class
+        }
+
+        const percentage = this.calculatePercentage();
+
+        if (percentage === 100) {
+            return 'btn btn-secondary disabled-look';
+        }
+    }
+
+
+    /**
+     * Calculates the percentage of used objects.
+     */
+    private calculatePercentage(): number {
+        return this.totalObjects > 0 ? (this.usedObjects / this.totalObjects) * 100 : 0;
+    }
+
+    /**
+     * Gets the tooltip text for the button based on usage percentage.
+     */
+    getButtonTooltip(): string {
+        const percentage = this.calculatePercentage();
+
+        if (percentage === 100) {
+            return 'Maximum number of objects has been reached';
+        }
+
+        return 'Import Objects';
+    }
 }
