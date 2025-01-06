@@ -13,12 +13,16 @@
         <button type="button"
                 *permissionLink="['base.framework.object.edit'];acl:type.acl;requirements:'UPDATE'"
                 [disabled]="selectedObjects.length<=0"
+                [ngbTooltip]="getBulkChangeTooltip()"
                 class="btn btn-secondary btn-sm mr-1" (click)="onBulkChange()">
           <i class="fas fa-tasks"></i> Bulk Change <span
           class="badge badge-primary badge-pill">{{selectedObjects.length}}</span>
         </button>
-        <button type="button" *permissionLink="['base.framework.object.delete'];acl:type.acl;requirements:'DELETE'" (click)="manyObjectDeletes.emit()"
-                [disabled]="selectedObjects.length<=0" class="btn btn-danger btn-sm mr-1">
+        <button type="button" *permissionLink="['base.framework.object.delete'];acl:type.acl;requirements:'DELETE'" 
+                (click)="manyObjectDeletes.emit()"
+                [ngbTooltip]="getDeleteSelectedTooltip()"
+                [disabled]="selectedObjects.length<=0" 
+                class="btn btn-danger btn-sm mr-1">
           <i class="far fa-trash-alt"></i> Delete Selected
           <span class="badge badge-secondary badge-pill">{{selectedObjects.length}}</span>
         </button>
