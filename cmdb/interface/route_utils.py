@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
+import os
 import base64
 import functools
 import json
 import logging
 from datetime import datetime, timezone
 from functools import wraps
+import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
 
@@ -45,7 +47,13 @@ from cmdb.models.user_management_constants import (
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
 from cmdb.errors.manager import ManagerGetError
-from cmdb.errors.security import TokenValidationError
+from cmdb.errors.security import (
+    TokenValidationError,
+    InvalidCloudUserError,
+    NoAccessTokenError,
+    RequestTimeoutError,
+    RequestError,
+)
 from cmdb.errors.manager.user_manager import UserManagerInsertError, UserManagerGetError
 from cmdb.errors.database import SetDatabaseError
 from cmdb.errors.database.database_errors import DatabaseNotExists
@@ -54,6 +62,7 @@ from cmdb.errors.database.database_errors import DatabaseNotExists
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_MIME_TYPE = 'application/json'
+SERVICE_PORTAL_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -244,7 +253,8 @@ def __validate_api_access(user_data: dict = None, required_api_level: ApiLevel =
         return False
 
     try:
-        user_instance = check_user_in_mysql_db(user_data['email'], user_data['password'])
+        #TODO: IMPROVEMENT-FIX (Handle local and cloud mode)
+        user_instance = check_user_in_service_portal(user_data['email'], user_data['password'])
 
         if user_instance:
             return user_instance['api_level'] >= required_api_level
@@ -253,71 +263,6 @@ def __validate_api_access(user_data: dict = None, required_api_level: ApiLevel =
     except Exception as err:
         LOGGER.debug("[validate_api_access] Error: %s, Type: %s", err, type(err))
         return False
-
-
-# def insert_auth_method(func):
-#     """TODO: document"""
-
-#     @functools.wraps(func)
-#     def get_auth_method(*args, **kwargs):
-#         """TODO: document"""
-#         try:
-#             auth_header = request.headers.get('Authorization')
-
-#             if auth_header:
-#                 if auth_header.startswith('Basic '):
-#                     kwargs.update({'auth_method': AuthMethod.BASIC})
-#                 elif auth_header.startswith('Bearer '):
-#                     kwargs.update({'auth_method': AuthMethod.JWT})
-#                 else:
-#                     return abort(400, "Invalid auth method!")
-#             else:
-#                 return abort(400, "Invalid auth method!")
-
-#         except Exception as err:
-#             LOGGER.debug("[insert_auth_method] User Exception: %s, Type: %s", err, type(err))
-#             return abort(400, "Invalid auth method!")
-
-#         return func(*args, **kwargs)
-
-#     return get_auth_method
-
-
-# def insert_api_user(func):
-#     """TODO: document"""
-
-#     @functools.wraps(func)
-#     def get_api_user(*args, **kwargs):
-#         """TODO: document"""
-#         try:
-#             value = _wsgi_decoding_dance(request.headers['Authorization'])
-
-#             try:
-#                 auth_type, auth_info = value.split(None, 1)
-#                 auth_type = auth_type.lower()
-#             except ValueError:
-#                 auth_type = b"bearer"
-#                 auth_info = value
-
-#             if auth_type in (b"basic","basic"):
-#                 email, password = base64.b64decode(auth_info).split(b":", 1)
-
-#                 with current_app.app_context():
-#                     email = email.decode("utf-8")
-#                     password = password.decode("utf-8")
-
-#                     kwargs.update({'api_user_data': {'email': email,
-#                                                      'password': password,
-#                                                      'method': "basic"}})
-#             else:
-#                 kwargs.update({'api_user_data': None})
-#         except Exception as err:
-#             LOGGER.debug("[insert_api_user] User Exception: %s, Type: %s", err, type(err))
-#             kwargs.update({'api_user_data': None})
-
-#         return func(*args, **kwargs)
-
-#     return get_api_user
 
 
 #@deprecated
@@ -385,7 +330,7 @@ def parse_authorization_header(header):
                 password = password.decode("utf-8")
 
                 if current_app.cloud_mode:
-                    user_data = check_user_in_mysql_db(username, password)
+                    user_data = check_user_in_service_portal(username, password)
 
                     if not user_data:
                         return None
@@ -445,25 +390,46 @@ def parse_authorization_header(header):
 
 # ------------------------------------------------------ HELPER ------------------------------------------------------ #
 
-def check_user_in_mysql_db(mail: str, password: str):
+def check_user_in_service_portal(mail: str, password: str):
     """Simulates Users in MySQL DB"""
+    if current_app.local_mode:
+        try:
+            with open('etc/test_users.json', 'r', encoding='utf-8') as users_file:
+                users_data = json.load(users_file)
+
+                if mail in users_data:
+                    user = users_data[mail]
+
+                    if user["password"] == password:
+                        return user
+                else:
+                    return None
+
+            return None
+        except Exception as err:
+            LOGGER.debug("[get users from file] Exception: %s, Type: %s", err, type(err))
+            return None
 
     try:
-        with open('etc/test_users.json', 'r', encoding='utf-8') as users_file:
-            users_data = json.load(users_file)
+        user_data = validate_subscrption_user(mail, password)
 
-            if mail in users_data:
-                user = users_data[mail]
+        check_user_name = user_data['user_name']
+        check_user_password = user_data['password']
+        check_user_email = user_data['email']
+        check_user_subscriptions = user_data['subscriptions']
 
-                if user["password"] == password:
-                    return user
-            else:
-                return None
+        return user_data
 
-        return None
+    except NoAccessTokenError as err:
+        raise NoAccessTokenError() from err
+    except InvalidCloudUserError as err:
+        raise InvalidCloudUserError(err.message) from err
+    except RequestTimeoutError as err:
+        raise RequestTimeoutError() from err
+    except RequestError as err:
+        raise RequestError(err.message) from err
     except Exception as err:
-        LOGGER.debug("[get users from file] Exception: %s, Type: %s", err, type(err))
-        return None
+        raise Exception() from err
 
 
 def check_db_exists(db_name: dict):
@@ -510,10 +476,10 @@ def init_db_routine(db_name: str):
     current_app.database_manager.create_general_report_category(CmdbReportCategory.COLLECTION)
 
 
-def create_new_admin_user(user_data: dict):
+def set_admin_user(user_data: dict, subscription: str):
     """Creates a new admin user"""
     with current_app.app_context():
-        current_app.database_manager.connector.set_database(user_data['database'])
+        current_app.database_manager.connector.set_database(subscription['database'])
         users_manager = UsersManager(current_app.database_manager)
         scm = SecurityManager(current_app.database_manager)
 
@@ -522,32 +488,39 @@ def create_new_admin_user(user_data: dict):
 
         if not admin_user_from_db:
             admin_user = UserModel(
-                public_id = 1,
+                public_id = users_manager.get_next_public_id(),
                 user_name = user_data['user_name'],
                 email = user_data['email'],
-                database = user_data['database'],
+                database = subscription['database'],
                 active = True,
-                api_level = int(user_data['api_level']),
-                config_items_limit = int(user_data['config_items_limit']),
+                api_level = int(subscription['api_level']),
+                config_items_limit = int(subscription['config_items_limit']),
                 group_id = 1,
                 registration_time = datetime.now(timezone.utc),
                 password = scm.generate_hmac(user_data['password']),
             )
 
             users_manager.insert_user(admin_user)
+        else: # Update the database, api-level and config_items_limit of user
+            admin_user_from_db.api_level = subscription['api_level']
+            admin_user_from_db.database = subscription['database']
+            admin_user_from_db.config_items_limit = subscription['config_items_limit']
+
+            users_manager.update_user(admin_user_from_db.get_public_id(), admin_user_from_db)
+
     except UserManagerGetError as err:
         raise UserManagerGetError(str(err)) from err
     except UserManagerInsertError as err:
         raise UserManagerInsertError(str(err)) from err
     except Exception as err:
-        LOGGER.debug("[create_new_admin_user] Exception: %s, Type: %s", err, type(err))
+        LOGGER.debug("[set_admin_user] Exception: %s, Type: %s", err, type(err))
         raise UserManagerInsertError(str(err)) from err
 
 
-def retrive_user(user_data: dict):
+def retrive_user(user_data: dict, database: str):
     """Get user from db"""
     with current_app.app_context():
-        current_app.database_manager.connector.set_database(user_data['database'])
+        current_app.database_manager.connector.set_database(database)
         users_manager = UsersManager(current_app.database_manager)
 
     try:
@@ -568,3 +541,34 @@ def delete_database(db_name: str):
     except Exception as err:
         LOGGER.debug("[delete_database] Exception: %s, Type:%s", err, type(err))
         raise DatabaseNotExists(db_name) from err
+
+
+def validate_subscrption_user(user_name: str, password: str) -> dict:
+    """
+    Validates the user credentials
+    """
+    x_access_token = os.getenv("X-ACCESS-TOKEN")
+
+    if not x_access_token:
+        raise NoAccessTokenError()
+
+    headers = {
+        "x-access-token": x_access_token
+    }
+
+    payload = {
+        "user_name": user_name,
+        "password": password
+    }
+
+    try:
+        response = requests.post(SERVICE_PORTAL_AUTH_URL, headers=headers, json=payload, timeout=3)
+
+        if response.status_code == 200:
+            return response.json()
+
+        raise InvalidCloudUserError(response.json()['message'])
+    except requests.exceptions.Timeout as err:
+        raise RequestTimeoutError() from err
+    except requests.exceptions.RequestException as err:
+        raise RequestError(str(err)) from err

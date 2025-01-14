@@ -89,3 +89,39 @@ class AuthSettingsInitError(SecurityError):
     def __init__(self, err: str):
         self.message = f"Could not initialise AuthSettingsDAO. Error: {err}"
         super().__init__(self.message)
+
+
+class NoAccessTokenError(SecurityError):
+    """
+    Raised when AccessToken is not available
+    """
+    def __init__(self):
+        self.message = "No AccessToken available!"
+        super().__init__(self.message)
+
+
+class InvalidCloudUserError(SecurityError):
+    """
+    Raised when Cloud Login failed
+    """
+    def __init__(self, err: str):
+        self.message = f"Login Failed. Reason: {err}"
+        super().__init__(self.message)
+
+
+class RequestTimeoutError(SecurityError):
+    """
+    Raised when request timed out
+    """
+    def __init__(self):
+        self.message = "Request timed out"
+        super().__init__(self.message)
+
+
+class RequestError(SecurityError):
+    """
+    Raised request had an error
+    """
+    def __init__(self, err: str):
+        self.message = f"Request Error: {err}"
+        super().__init__(self.message)

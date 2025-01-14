@@ -16,13 +16,19 @@
 """
 This module provides all errors for Security
 """
-from .security_errors import TokenValidationError,\
-                             AccessDeniedError,\
-                             RightNotFoundError,\
-                             InvalidLevelRightError,\
-                             MinLevelRightError,\
-                             MaxLevelRightError,\
-                             AuthSettingsInitError
+from .security_errors import (
+    TokenValidationError,
+    AccessDeniedError,
+    RightNotFoundError,
+    InvalidLevelRightError,
+    MinLevelRightError,
+    MaxLevelRightError,
+    AuthSettingsInitError,
+    NoAccessTokenError,
+    InvalidCloudUserError,
+    RequestTimeoutError,
+    RequestError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -33,4 +39,8 @@ __all__ = [
     'MinLevelRightError',
     'MaxLevelRightError',
     'AuthSettingsInitError',
+    'NoAccessTokenError',
+    'InvalidCloudUserError',
+    'RequestTimeoutError',
+    'RequestError',
 ]
