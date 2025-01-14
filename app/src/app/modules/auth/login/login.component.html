@@ -1,68 +1,99 @@
 <div class="row no-gutter">
-    <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image">
-    </div>
+    <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
     <div class="col-md-8 col-lg-6">
-        <div class="login d-flex align-items-center py-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-9 col-lg-8 mx-auto">
-                        <h3 class="login-heading mb-4">
-                            <img
-                                id="login-logo"
-                                [src]="imageUrl"
-                                class="img-fluid mx-auto d-block animated"
-                                alt="DATAGERRY"
-                            />
-                        </h3>
-                        <form
-                            id="login-form"
-                            [formGroup]="loginForm"
-                            (ngSubmit)="onSubmit()"
-                            class="position-relative"
-                        >
-                            <div class="form-label-group">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Username"
-                                    formControlName="username"
-                                    [ngClass]="{ 'is-invalid': submitted && controls.username.errors }"
-                                    required
-                                    autofocus
-                                >
-                            </div>
-                            <div class="form-label-group">
-                                <input
-                                    type="password"
-                                    formControlName="password"
-                                    placeholder="Password"
-                                    class="form-control"
-                                    [ngClass]="{ 'is-invalid': submitted && controls.password.errors }"
-                                    required
-                                >
-                            </div>
-                            <button
-                                [disabled]="!loginForm.valid"
-                                type="submit"
-                                id="login-button"
-                                class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
-                            >
-                                Login
-                            </button>
-                            <div class="text-center mt-3">
-                              <a
-                                href="https://service.datagerry.com/forgot-password"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="text-decoration-none"
-                                >
-                                Forgot Password?
-                                </a>
-                            </div>
-                        </form>
-                    </div>
+      <div class="login d-flex align-items-center py-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-9 col-lg-8 mx-auto">
+              <h3 class="login-heading mb-4">
+                <img
+                  id="login-logo"
+                  [src]="imageUrl"
+                  class="img-fluid mx-auto d-block animated"
+                  alt="DATAGERRY"
+                />
+              </h3>
+  
+              <form
+                id="login-form"
+                [formGroup]="loginForm"
+                (ngSubmit)="onSubmit()"
+                class="position-relative"
+              >
+                <div class="form-label-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Username"
+                    formControlName="username"
+                    [ngClass]="{ 'is-invalid': submitted && controls['username'].errors }"
+                    required
+                    autofocus
+                  >
                 </div>
+                <div class="form-label-group">
+                  <input
+                    type="password"
+                    formControlName="password"
+                    placeholder="Password"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && controls['password'].errors }"
+                    required
+                  >
+                </div>
+  
+
+                <div *ngIf="showSubscriptions" class="mt-3">
+                  <label for="subscriptionSelect">Select a subscription:</label>
+                  <select
+                    id="subscriptionSelect"
+                    class="form-control"
+                    formControlName="subscription"
+                  >
+                    <option
+                      *ngFor="let sub of subscriptions"
+                      [ngValue]="sub"
+                    >
+                      {{ sub.name }}
+                    </option>
+                  </select>
+                </div>
+  
+                <button
+                  *ngIf="!showSubscriptions"
+                  [disabled]="!loginForm.valid"
+                  type="submit"
+                  id="login-button"
+                  class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
+                >
+                  Login
+                </button>
+  
+                <button
+                  *ngIf="showSubscriptions"
+                  class=" mt-3"
+                  type="button"  
+                  (click)="onSelectSubscription()"
+                >
+                  Proceed
+                </button>
+  
+                <div class="text-center mt-3">
+                  <a
+                    href="https://service.datagerry.com/forgot-password"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-decoration-none"
+                  >
+                    Forgot Password?
+                  </a>
+                </div>
+              </form>
+              
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+  
