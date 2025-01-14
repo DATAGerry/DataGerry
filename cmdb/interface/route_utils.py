@@ -253,11 +253,13 @@ def __validate_api_access(user_data: dict = None, required_api_level: ApiLevel =
         return False
 
     try:
-        #TODO: IMPROVEMENT-FIX (Handle local and cloud mode)
         user_instance = check_user_in_service_portal(user_data['email'], user_data['password'])
 
         if user_instance:
-            return user_instance['api_level'] >= required_api_level
+            if required_api_level == ApiLevel.SUPER_ADMIN:
+                return user_instance['api_level'] >= required_api_level
+
+            return user_instance['subscriptions'][0]['api_level'] >= required_api_level
 
         return False
     except Exception as err:
@@ -412,11 +414,6 @@ def check_user_in_service_portal(mail: str, password: str):
 
     try:
         user_data = validate_subscrption_user(mail, password)
-
-        check_user_name = user_data['user_name']
-        check_user_password = user_data['password']
-        check_user_email = user_data['email']
-        check_user_subscriptions = user_data['subscriptions']
 
         return user_data
 
