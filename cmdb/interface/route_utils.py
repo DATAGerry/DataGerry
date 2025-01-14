@@ -494,7 +494,7 @@ def set_admin_user(user_data: dict, subscription: str):
                 database = subscription['database'],
                 active = True,
                 api_level = int(subscription['api_level']),
-                config_items_limit = int(subscription['config_items_limit']),
+                config_items_limit = int(subscription['config_item_limit']),
                 group_id = 1,
                 registration_time = datetime.now(timezone.utc),
                 password = scm.generate_hmac(user_data['password']),
@@ -504,7 +504,7 @@ def set_admin_user(user_data: dict, subscription: str):
         else: # Update the database, api-level and config_items_limit of user
             admin_user_from_db.api_level = subscription['api_level']
             admin_user_from_db.database = subscription['database']
-            admin_user_from_db.config_items_limit = subscription['config_items_limit']
+            admin_user_from_db.config_items_limit = subscription['config_item_limit']
 
             users_manager.update_user(admin_user_from_db.get_public_id(), admin_user_from_db)
 
