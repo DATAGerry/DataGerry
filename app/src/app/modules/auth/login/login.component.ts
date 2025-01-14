@@ -1,6 +1,6 @@
 /*
 * DATAGERRY - OpenSource Enterprise CMDB
-* Copyright (C) 2024 becon GmbH
+* Copyright (C) 2025 becon GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,7 @@ import { UserSettingsDBService } from '../../../management/user-settings/service
 
 import { LoginResponse } from '../models/responses';
 import { Group } from 'src/app/management/models/group';
-/* ------------------------------------------------------------------------------------------------------------------ */
+import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Component({
     selector: 'cmdb-login',
@@ -37,7 +37,6 @@ import { Group } from 'src/app/management/models/group';
 export class LoginComponent implements OnInit, OnDestroy {
     public static defaultLogoUrl: string = '/assets/img/datagerry_logo.svg';
     public static xmasLogoUrl: string = '/assets/img/datagerry_logo_xmas.svg';
-
     public static defaultFallItems: string = '/assets/img/nut.svg';
     public static xmasFallItems: string = '/assets/img/snowflake.svg';
 
@@ -47,27 +46,33 @@ export class LoginComponent implements OnInit, OnDestroy {
     public loginForm: UntypedFormGroup;
     public submitted = false;
 
+    public subscriptions: Array<any> = [];
+    public showSubscriptions = false;
+
     private loginSubscription: Subscription = new Subscription();
 
-/* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
+    public userName: string;
+    public userPW: string;
 
+    /* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
     get controls() {
         return this.loginForm.controls;
     }
 
-/* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
+    /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
         private router: Router,
         private userSettingsDB: UserSettingsDBService,
         private authenticationService: AuthService,
         private permissionService: PermissionService,
-        private render: Renderer2
+        private render: Renderer2,
+        private toastService: ToastService
     ) {
         const currentDate = new Date();
         const year = currentDate.getFullYear();
-        const dateBefore = new Date(`${ year }-12-18`);
-        const dateAfter = new Date(`${ year }-12-31`);
+        const dateBefore = new Date(`${year}-12-18`);
+        const dateAfter = new Date(`${year}-12-31`);
 
         if ((dateBefore < currentDate) && (currentDate < dateAfter)) {
             this.imageUrl = LoginComponent.xmasLogoUrl;
@@ -75,39 +80,56 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
     }
 
-
     public ngOnInit(): void {
         this.render.addClass(document.body, 'embedded');
 
         this.loginForm = new UntypedFormGroup({
             username: new UntypedFormControl('', [Validators.required]),
-            password: new UntypedFormControl('', [Validators.required])
+            password: new UntypedFormControl('', [Validators.required]),
+            subscription: new UntypedFormControl(null)
         });
     }
-
 
     public ngOnDestroy(): void {
         this.render.removeClass(document.body, 'embedded');
         this.loginSubscription.unsubscribe();
     }
 
-/* ------------------------------------------------ HELPER FUNCTIONS ------------------------------------------------ */
+    /* ------------------------------------------------ HELPER FUNCTIONS ------------------------------------------------ */
 
+    /**
+     * First step: user enters credentials (username + password). 
+     * If the backend returns an array, show subscription dropdown.
+     * Otherwise, it's a normal login.
+     */
     public onSubmit() {
         this.submitted = true;
 
-        let userName: string = this.loginForm.controls.username.value;
-        let userPW: string = this.loginForm.controls.password.value;
+        this.userName = this.loginForm.controls['username'].value;
+        this.userPW = this.loginForm.controls['password'].value;
 
-        this.loginSubscription = this.authenticationService.login(userName, userPW).pipe(first())
+        this.loginSubscription = this.authenticationService
+            .login(this.userName, this.userPW)
+            .pipe(first())
             .subscribe({
-                next: (response: LoginResponse) => {
-                    this.userSettingsDB.syncSettings();
+                next: (response: LoginResponse | Array<any>) => {
 
-                    this.permissionService.storeUserRights(response.user.group_id).pipe(first())
-                    .subscribe((group: Group) => {
-                        this.router.navigate(['/']);
-                    });
+                    if (Array.isArray(response)) {
+                        this.subscriptions = response;
+                        this.showSubscriptions = true;
+
+                        this.loginForm.get('subscription')?.reset(null);
+                    } else {
+                        // Normal login response
+                        const loginResponse = response as LoginResponse;
+
+                        this.userSettingsDB.syncSettings();
+                        this.permissionService.storeUserRights(loginResponse.user.group_id)
+                            .pipe(first())
+                            .subscribe((group: Group) => {
+                                this.router.navigate(['/']);
+                            });
+                    }
                 },
                 error: () => {
                     this.render.addClass(document.getElementById('login-logo'), 'shake');
@@ -116,7 +138,44 @@ export class LoginComponent implements OnInit, OnDestroy {
                         this.render.removeClass(document.getElementById('login-logo'), 'shake');
                     }, 500);
                 }
-            }
-        );
+            });
+    }
+
+
+    /**
+     * Second step: user chooses one subscription from the dropdown and clicks "Proceed".
+     * We send only the subscription object to the backend, then get the final token + user, store them, etc.
+     */
+    public onSelectSubscription(): void {
+
+        const chosenSub = this.loginForm.get('subscription')?.value;
+        if (!chosenSub) {
+            return;
+        }
+
+        const payload = {
+            user_name: this.userName,
+            password: this.userPW,
+            subscription: chosenSub
+        };
+
+        this.loginSubscription = this.authenticationService
+            .selectSubscription(payload)
+            .pipe(first())
+            .subscribe({
+                next: (loginResponse: LoginResponse) => {
+                    this.userSettingsDB.syncSettings();
+                    this.permissionService
+                        .storeUserRights(loginResponse.user.group_id)
+                        .pipe(first())
+                        .subscribe(() => {
+                            this.router.navigate(['/']);
+                        });
+                },
+                error: (err) => {
+
+                    this.toastService.error(err?.error?.message)
+                },
+            });
     }
 }

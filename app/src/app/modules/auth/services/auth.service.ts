@@ -1,6 +1,6 @@
 /*
 * DATAGERRY - OpenSource Enterprise CMDB
-* Copyright (C) 2024 becon GmbH
+* Copyright (C) 2025 becon GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,7 @@ import { LoginResponse } from '../models/responses';
 import { Token } from '../models/token';
 import { BranchInfoModalComponent } from 'src/app/layout/intro/branch-info-modal/branch-info-modal.component';
 import { ProfileInfoModalComponent } from 'src/app/layout/intro/profile-info-modal/profile-info-modal.component';
+import { SubscriptionItem } from '../models/SubscriptionItem';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 const httpOptions = {
@@ -127,32 +128,70 @@ export class AuthService<T = any> implements ApiServicePrefix {
     }
 
     /* -------------------------------------------------- LOGIN/LOGOUT -------------------------------------------------- */
-
-    public login(username: string, password: string) {
+    /**
+     * Logs in the user with the provided credentials.
+     * Stores user and token details on successful login.
+     */
+    public login(username: string, password: string): Observable<LoginResponse | Array<SubscriptionItem>> {
         const data = {
             user_name: username,
             password
         };
 
-        return this.http.post<LoginResponse>(
-            `${this.connectionService.currentConnection}/${this.restPrefix}/${this.servicePrefix}/login`,
-            data,
-            httpOptions)
-            .pipe(map((response: LoginResponse) => {
-                const token: Token = {
-                    token: response.token,
-                    issued: response.token_issued_at,
-                    expire: response.token_expire
-                };
+        return this.http
+            .post<LoginResponse | Array<SubscriptionItem>>(
+                `${this.connectionService.currentConnection}/${this.restPrefix}/${this.servicePrefix}/login`,
+                data,
+                httpOptions
+            )
+            .pipe(map((response) => {
+                if (Array.isArray(response)) {
+                    return response;
+                } else {
+                    const loginResponse = response as LoginResponse;
+                    const token: Token = {
+                        token: loginResponse.token,
+                        issued: loginResponse.token_issued_at,
+                        expire: loginResponse.token_expire
+                    };
 
-                localStorage.setItem('current-user', JSON.stringify(response.user));
-                localStorage.setItem('access-token', JSON.stringify(token));
-                this.currentUserSubject.next(response.user);
-                this.currentUserTokenSubject.next(token);
-                this.showIntro();
+                    localStorage.setItem('current-user', JSON.stringify(loginResponse.user));
+                    localStorage.setItem('access-token', JSON.stringify(token));
+                    this.currentUserSubject.next(loginResponse.user);
+                    this.currentUserTokenSubject.next(token);
+                    this.showIntro();
 
-                return response;
+                    return loginResponse;
+                }
             }));
+    }
+
+    /**
+     * Selects a subscription and updates user and token details.
+     */
+    public selectSubscription(payload: any): Observable<LoginResponse> {
+        return this.http
+            .post<LoginResponse>(
+                `${this.connectionService.currentConnection}/${this.restPrefix}/${this.servicePrefix}/login`,
+                payload,
+                httpOptions
+            )
+            .pipe(
+                map((loginResponse: LoginResponse) => {
+                    const token: Token = {
+                        token: loginResponse.token,
+                        issued: loginResponse.token_issued_at,
+                        expire: loginResponse.token_expire
+                    };
+
+                    localStorage.setItem('current-user', JSON.stringify(loginResponse.user));
+                    localStorage.setItem('access-token', JSON.stringify(token));
+                    this.currentUserSubject.next(loginResponse.user);
+                    this.currentUserTokenSubject.next(token);
+
+                    return loginResponse;
+                })
+            );
     }
 
 
