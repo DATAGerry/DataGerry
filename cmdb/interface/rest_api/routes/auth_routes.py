@@ -37,16 +37,22 @@ from cmdb.interface.route_utils import (
     insert_request_user,
     check_db_exists,
     init_db_routine,
-    create_new_admin_user,
+    set_admin_user,
     retrive_user,
-    check_user_in_mysql_db,
+    check_user_in_service_portal,
     verify_api_access,
 )
 from cmdb.interface.rest_api.responses import DefaultResponse, LoginResponse
 
 from cmdb.errors.manager.user_manager import UserManagerInsertError, UserManagerGetError
 from cmdb.errors.provider import AuthenticationProviderNotActivated, AuthenticationProviderNotFoundError
-from cmdb.errors.security.security_errors import AuthSettingsInitError
+from cmdb.errors.security.security_errors import (
+    AuthSettingsInitError,
+    InvalidCloudUserError,
+    NoAccessTokenError,
+    RequestTimeoutError,
+    RequestError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 LOGGER = logging.getLogger(__name__)
 
@@ -55,11 +61,8 @@ auth_blueprint = APIBlueprint('auth', __name__)
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
 @auth_blueprint.route('/login', methods=['POST'])
-# @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def post_login():
     """TODO: document"""
-    users_manager = UsersManager(current_app.database_manager)
-    security_manager = SecurityManager(current_app.database_manager)
     login_data = request.json
 
     if not login_data:
@@ -67,27 +70,52 @@ def post_login():
 
     request_user_name = login_data['user_name']
     request_password = login_data['password']
+    request_subscription = None
+
+    if 'subscription' in login_data:
+        request_subscription = login_data['subscription']
+
+    users_manager = UsersManager(current_app.database_manager)
+    security_manager = SecurityManager(current_app.database_manager)
 
     try:
         if current_app.cloud_mode:
-            user_data = check_user_in_mysql_db(request_user_name, request_password)
+            user_data = check_user_in_service_portal(request_user_name, request_password)
 
             if not user_data:
                 return abort(401, 'Could not login')
 
-            ### no db with this name, create it
-            if not check_db_exists(user_data['database']):
-                LOGGER.debug("[post_login] start init routine")
-                init_db_routine(user_data['database'])
-                create_new_admin_user(user_data)
+            user_database = None
 
-            ### Get the user
-            user = retrive_user(user_data)
+            # If only one subscription directly login the user
+            if len(user_data['subscriptions']) == 1:
+                user_database = user_data['subscriptions'][0]['database']
+
+                if not check_db_exists(user_database):
+                    init_db_routine(user_database)
+                    set_admin_user(user_data, user_data['subscriptions'][0])
+            # In this case the user selected a subscription in the frontend
+            elif request_subscription:
+                user_database = request_subscription['database']
+
+                if not check_db_exists(user_database):
+                    init_db_routine(user_database)
+                    set_admin_user(user_data, request_subscription)
+            # User have multiple subscriptions, send them to frontend to select
+            elif len(user_data['subscriptions']) > 1:
+                return DefaultResponse(user_data['subscriptions'])
+            # There are either no subscriptions or something went wrong => failed path
+            else:
+                LOGGER.error("[post_login] Error: Invalid data. No subscriptions!")
+                return abort(401, "Invalid data. Could not login!")
+
+
+            user = retrive_user(user_data, user_database)
             # User does not exist
             if not user:
-                return abort(401, 'Could not login')
+                return abort(401, 'Could not login!')
 
-            current_app.database_manager.connector.set_database(user_data['database'])
+            current_app.database_manager.connector.set_database(user_database)
             token, token_issued_at, token_expire = generate_token_with_params(user,
                                                                               current_app.database_manager,
                                                                               True)
@@ -95,14 +123,27 @@ def post_login():
             login_response = LoginResponse(user, token, token_issued_at, token_expire)
 
             return login_response.make_response()
+
+    except NoAccessTokenError as err:
+        LOGGER.error("[post_login] NoAccessTokenError: %s", err)
+        return abort(500, "No access token found!")
+    except InvalidCloudUserError as err:
+        LOGGER.error("[post_login] InvalidCloudUserError: %s", err)
+        return abort(403, "Invalid credentials!")
+    except RequestTimeoutError as err:
+        LOGGER.error("[post_login] RequestTimeoutError: %s", err)
+        return abort(500, "Login request timed out!")
+    except RequestError as err:
+        LOGGER.error("[post_login] RequestError: %s", err)
+        return abort(500, "Login failed due a malformed request!")
     except UserManagerGetError as err:
-        LOGGER.debug("[post_login] UserManagerGetError: %s", err)
+        LOGGER.error("[post_login] UserManagerGetError: %s", err)
         return abort(500, "Could not login because user can't be retrieved from database!")
     except UserManagerInsertError as err:
-        LOGGER.debug("[post_login] UserManagerInsertError: %s", err)
+        LOGGER.error("[post_login] UserManagerInsertError: %s", err)
         return abort(500, "Could not login because user can't be inserted in database!")
     except Exception as err: #pylint: disable=broad-exception-caught
-        LOGGER.debug("[post_login] Exception: %s, Type: %s", err, type(err))
+        LOGGER.error("[post_login] Exception: %s, Type: %s", err, type(err))
         return abort(500, "Could not login")
 
     #PATH when its not cloud mode
