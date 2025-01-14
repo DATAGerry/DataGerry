@@ -103,7 +103,7 @@ def post_login():
                     set_admin_user(user_data, request_subscription)
             # User have multiple subscriptions, send them to frontend to select
             elif len(user_data['subscriptions']) > 1:
-                return DefaultResponse(user_data['subscriptions'])
+                return DefaultResponse(user_data['subscriptions']).make_response()
             # There are either no subscriptions or something went wrong => failed path
             else:
                 LOGGER.error("[post_login] Error: Invalid data. No subscriptions!")
