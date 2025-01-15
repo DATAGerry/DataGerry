@@ -63,6 +63,7 @@ LOGGER = logging.getLogger(__name__)
 
 DEFAULT_MIME_TYPE = 'application/json'
 SERVICE_PORTAL_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth"
+SERVICE_PORTAL_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-item/update"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -569,3 +570,37 @@ def validate_subscrption_user(user_name: str, password: str) -> dict:
         raise RequestTimeoutError() from err
     except requests.exceptions.RequestException as err:
         raise RequestError(str(err)) from err
+
+
+def sync_config_items(email: str, database: str, config_item_count: int) -> bool:
+    """TODO: document"""
+
+    # Just do this in cloud mode
+    if current_app.local_mode:
+        return True
+
+
+    x_access_token = os.getenv("X-ACCESS-TOKEN")
+
+    if not x_access_token:
+        raise NoAccessTokenError()
+
+    headers = {
+        "x-access-token": x_access_token
+    }
+
+    payload = {
+        "email": email,
+        "database_name": database,
+        "config_item_count": config_item_count
+    }
+
+    try:
+        response = requests.post(SERVICE_PORTAL_SYNC_URL, headers=headers, json=payload, timeout=3)
+
+        if response.status_code == 200:
+            return True
+
+        return False
+    except (requests.exceptions.Timeout, requests.exceptions.RequestException):
+        return False

@@ -48,7 +48,7 @@ from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.framework.rendering.render_list import RenderList
 from cmdb.framework.importer.messages.response_failed_message import ResponseFailedMessage
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
-from cmdb.interface.route_utils import insert_request_user, verify_api_access
+from cmdb.interface.route_utils import insert_request_user, sync_config_items, verify_api_access
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import (
     GetListResponse,
@@ -148,6 +148,17 @@ def insert_object(request_user: UserModel):
             #TODO: ERROR-FIX
             LOGGER.warning("[DEBUG] Error: %s , Type: %s", err, type(err))
             return abort(500)
+
+        try:
+            if current_app.cloud_mode:
+                objects_count = get_objects_count(request_user)
+
+                success = sync_config_items(request_user.email, request_user.database, objects_count)
+
+                if not success:
+                    raise Exception()
+        except Exception as err:
+            LOGGER.error(f"[insert_object] Could not sync config items count to service portal. Error: {err}")
 
         # Generate new insert log
         try:
@@ -1018,6 +1029,19 @@ def delete_object(public_id: int, request_user: UserModel):
     except ManagerInsertError as err:
         LOGGER.debug("[delete_object] ManagerInsertError: %s", err.message)
 
+
+    try:
+        if current_app.cloud_mode:
+            objects_count = get_objects_count(request_user)
+
+            success = sync_config_items(request_user.email, request_user.database, objects_count)
+
+            if not success:
+                raise Exception()
+    except Exception as err:
+        LOGGER.error(f"[delete_object] Could not sync config items count to service portal. Error: {err}")
+
+
     api_response = DefaultResponse(ack)
 
     return api_response.make_response()
@@ -1061,7 +1085,17 @@ def delete_object_with_child_locations(public_id: int, request_user: UserModel):
             locations_manager.delete({'public_id':current_location.public_id})
 
             deleted = objects_manager.delete_object(public_id, request_user, permission=AccessControlPermission.DELETE)
-            # DELETE EVENT
+
+            try:
+                if current_app.cloud_mode:
+                    objects_count = get_objects_count(request_user)
+
+                    success = sync_config_items(request_user.email, request_user.database, objects_count)
+
+                    if not success:
+                        raise Exception()
+            except Exception as error:
+                LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
         else:
             # something went wrong, either object or location don't exist
             return abort(404)
@@ -1138,6 +1172,17 @@ def delete_object_with_child_objects(public_id: int, request_user: UserModel):
             #EVENT: DELETE-EVENT
             webhooks_manager.send_webhook_event(WebhookEventType.DELETE,
                                                 object_before=CmdbObject.to_json(current_object_instance))
+
+            try:
+                if current_app.cloud_mode:
+                    objects_count = get_objects_count(request_user)
+
+                    success = sync_config_items(request_user.email, request_user.database, objects_count)
+
+                    if not success:
+                        raise Exception()
+            except Exception as error:
+                LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
         else:
             # something went wrong, either object or location don't exist
             return abort(404)
@@ -1232,6 +1277,17 @@ def delete_many_objects(public_ids, request_user: UserModel):
                 return abort(403)
 
             try:
+                if current_app.cloud_mode:
+                    objects_count = get_objects_count(request_user)
+
+                    success = sync_config_items(request_user.email, request_user.database, objects_count)
+
+                    if not success:
+                        raise Exception()
+            except Exception as error:
+                LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
+
+            try:
                 # generate log
                 log_data = {
                     'object_id': current_object_instance.get_public_id(),
@@ -1294,6 +1350,13 @@ def delete_object_links(public_id: int, request_user: UserModel) -> None:
 
 def check_config_item_limit_reached(request_user: UserModel) -> bool:
     """TODO: document"""
+    objects_count = get_objects_count(request_user)
+
+    return objects_count >= request_user.config_items_limit
+
+
+def get_objects_count(request_user: UserModel) -> int:
+    """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     builder_params = BuilderParameters({})
@@ -1301,6 +1364,4 @@ def check_config_item_limit_reached(request_user: UserModel) -> bool:
                                                                             request_user,
                                                                             AccessControlPermission.READ)
 
-    objects_count = iteration_result.total
-
-    return objects_count >= request_user.config_items_limit
+    return iteration_result.total
