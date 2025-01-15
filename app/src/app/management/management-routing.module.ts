@@ -52,7 +52,7 @@ const routes: Routes = [
     },
     {
         path: 'groups',
-        canActivateChild: [PermissionGuard, cloudModeChildGuard],
+        canActivateChild: [PermissionGuard],
         data: {
             breadcrumb: 'Groups',
             right: 'base.user-management.group.view'
