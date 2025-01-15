@@ -27,6 +27,7 @@ import { PermissionGuard } from './guards/permission.guard';
 
 import { LoginComponent } from './login/login.component';
 import { SessionTimeoutModalComponent } from './modals/session-timeout-modal/session-timeout-modal.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -43,6 +44,7 @@ import { SessionTimeoutModalComponent } from './modals/session-timeout-modal/ses
         FormsModule,
         RouterModule,
         ReactiveFormsModule,
+        NgSelectModule
     ],
     providers: [
         PermissionGuard,

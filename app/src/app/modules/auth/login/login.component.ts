@@ -178,4 +178,12 @@ export class LoginComponent implements OnInit, OnDestroy {
                 },
             });
     }
+
+    /**
+     * Go back to login fields
+     */
+    public goBack(): void {
+        this.showSubscriptions = false;
+        this.loginForm.get('subscription')?.reset(null);
+    }
 }
