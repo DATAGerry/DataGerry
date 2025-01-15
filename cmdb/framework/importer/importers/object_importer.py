@@ -31,6 +31,8 @@ from cmdb.framework.importer.messages.import_failed_message import ImportFailedM
 from cmdb.framework.importer.messages.import_success_message import ImportSuccessMessage
 from cmdb.framework.importer.parser.base_object_parser import BaseObjectParser
 from cmdb.framework.importer.responses.object_parser_response import ObjectParserResponse
+from cmdb.interface.route_utils import sync_config_items
+from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.manager.object_manager import ObjectManagerDeleteError,\
                                                ObjectManagerInsertError,\
@@ -134,6 +136,17 @@ class ObjectImporter(BaseImporter):
                             raise ObjectManagerInsertError("Config item limit reached!")
 
                     self.objects_manager.insert_object(current_import_object)
+
+                    try:
+                        if current_app.cloud_mode:
+                            objects_count = self.get_objects_count(self.request_user, self.objects_manager)
+
+                            success = sync_config_items(self.request_user.email, self.request_user.database, objects_count)
+
+                            if not success:
+                                raise Exception()
+                    except Exception as error:
+                        LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
                 except ObjectManagerInsertError as err:
                     failed_imports.append(ImportFailedMessage(error_message=err.message, obj=current_import_object))
                     current_import_index += 1
@@ -154,6 +167,19 @@ class ObjectImporter(BaseImporter):
                                 raise ObjectManagerInsertError("Config item limit reached")
 
                         self.objects_manager.insert_object(current_import_object)
+
+                        try:
+                            if current_app.cloud_mode:
+                                objects_count = self.get_objects_count(self.request_user, self.objects_manager)
+
+                                success = sync_config_items(self.request_user.email,
+                                                            self.request_user.database,
+                                                            objects_count)
+
+                                if not success:
+                                    raise Exception()
+                        except Exception as error:
+                            LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
                     except ObjectManagerInsertError as err:
                         failed_imports.append(ImportFailedMessage(error_message=err.message, obj=current_import_object))
                         current_import_index += 1
@@ -182,10 +208,17 @@ class ObjectImporter(BaseImporter):
 
     def check_config_item_limit_reached(self, request_user: UserModel, objects_manager: ObjectsManager) -> bool:
         """TODO: document"""
-
-        builder_params = BuilderParameters({})
-        iteration_result: IterationResult[CmdbObject] = objects_manager.iterate(builder_params)
-
-        objects_count = iteration_result.total
+        objects_count = self.get_objects_count(request_user, objects_manager)
 
         return objects_count >= request_user.config_items_limit
+
+
+    def get_objects_count(self, request_user: UserModel, objects_manager: ObjectsManager) -> int:
+        """TODO: document"""
+
+        builder_params = BuilderParameters({})
+        iteration_result: IterationResult[CmdbObject] = objects_manager.iterate(builder_params,
+                                                                                request_user,
+                                                                                AccessControlPermission.READ)
+
+        return iteration_result.total
