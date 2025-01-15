@@ -1,4 +1,4 @@
-<div class="row no-gutter">
+  <div class="row no-gutter">
     <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
     <div class="col-md-8 col-lg-6">
       <div class="login d-flex align-items-center py-5">
@@ -13,72 +13,79 @@
                   alt="DATAGERRY"
                 />
               </h3>
-  
               <form
                 id="login-form"
                 [formGroup]="loginForm"
-                (ngSubmit)="onSubmit()"
                 class="position-relative"
               >
-                <div class="form-label-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Username"
-                    formControlName="username"
-                    [ngClass]="{ 'is-invalid': submitted && controls['username'].errors }"
-                    required
-                    autofocus
-                  >
-                </div>
-                <div class="form-label-group">
-                  <input
-                    type="password"
-                    formControlName="password"
-                    placeholder="Password"
-                    class="form-control"
-                    [ngClass]="{ 'is-invalid': submitted && controls['password'].errors }"
-                    required
-                  >
-                </div>
-  
-
-                <div *ngIf="showSubscriptions" class="mt-3">
-                  <label for="subscriptionSelect">Select a subscription:</label>
-                  <select
-                    id="subscriptionSelect"
-                    class="form-control"
-                    formControlName="subscription"
-                  >
-                    <option
-                      *ngFor="let sub of subscriptions"
-                      [ngValue]="sub"
+                <ng-container *ngIf="!showSubscriptions">
+                  <div class="form-label-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Username"
+                      formControlName="username"
+                      [ngClass]="{ 'is-invalid': submitted && controls.username.errors }"
+                      required
+                      autofocus
                     >
-                      {{ sub.name }}
-                    </option>
-                  </select>
-                </div>
+                  </div>
+                  <div class="form-label-group">
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      formControlName="password"
+                      class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && controls.password.errors }"
+                      required
+                    >
+                  </div>
+                  
+                  <button
+                    type="button"
+                    id="login-button"
+                    class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
+                    [disabled]="!loginForm.valid"
+                    (click)="onSubmit()"
+                  >
+                    Login
+                  </button>
+                </ng-container>
   
-                <button
-                  *ngIf="!showSubscriptions"
-                  [disabled]="!loginForm.valid"
-                  type="submit"
-                  id="login-button"
-                  class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
-                >
-                  Login
-                </button>
-  
-                <button
-                  *ngIf="showSubscriptions"
-                  class=" mt-3"
-                  type="button"  
-                  (click)="onSelectSubscription()"
-                >
-                  Proceed
-                </button>
-  
-                <div class="text-center mt-3">
+                <div *ngIf="showSubscriptions" class="mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-link p-0 mb-3" 
+                      (click)="goBack()"
+                      aria-label="Back"
+                    >
+                      <i class="fas fa-arrow-left fa-lg"></i>
+                    </button>
+                  
+                    <div class="form-label-group mt-1">
+                      <label for="subscriptionSelect" class="mb-1">Select a subscription</label>
+                      <ng-select
+                        [items]="subscriptions"
+                        bindLabel="name"
+                        formControlName="subscription"
+                        placeholder="Select a subscription..."
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="false"
+                      >
+                      </ng-select>
+                    </div>
+                  
+                    <button
+                      type="button"
+                      class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mt-3"
+                      [disabled]="!loginForm.get('subscription')?.value"
+                      (click)="onSelectSubscription()"
+                    >
+                      Proceed
+                    </button>
+                  </div> 
+                <div class="text-center mt-3" *ngIf="!showSubscriptions">
                   <a
                     href="https://service.datagerry.com/forgot-password"
                     target="_blank"
@@ -89,7 +96,6 @@
                   </a>
                 </div>
               </form>
-              
             </div>
           </div>
         </div>
