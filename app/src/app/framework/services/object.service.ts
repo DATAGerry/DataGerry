@@ -540,23 +540,18 @@ export class ObjectService<T = CmdbObject | RenderResult> implements ApiServiceP
      * Fetches the value once and caches it for future use.
      */
     public getConfigItemsLimit(): Observable<number> {
-        if (!this.configItemsLimit$) {
-            this.configItemsLimit$ = this.userService.getUser(this.userService.getCurrentUser().public_id).pipe(
-                map(user => {
-                    if (user && user.config_items_limit !== undefined) {
-                        return user.config_items_limit;
-                    } else {
-                        throw new Error('config_items_limit not found');
-                    }
-                }),
-                // Cache the latest emitted value and share with all subscribers
-                shareReplay(1),
-                catchError(error => {
-                    this.toast.error(error?.error?.message)
-                    return throwError(() => error);
-                })
-            );
-        }
-        return this.configItemsLimit$;
+        return this.userService.getUser(this.userService.getCurrentUser().public_id).pipe(
+            map(user => {
+                if (user && user.config_items_limit !== undefined) {
+                    return user.config_items_limit;
+                } else {
+                    throw new Error('config_items_limit not found');
+                }
+            }),
+            catchError(error => {
+                return throwError(() => error);
+            })
+        );
     }
+
 }

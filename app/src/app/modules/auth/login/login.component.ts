@@ -131,7 +131,8 @@ export class LoginComponent implements OnInit, OnDestroy {
                             });
                     }
                 },
-                error: () => {
+                error: (err) => {
+                    this.toastService.error(err?.error?.message)
                     this.render.addClass(document.getElementById('login-logo'), 'shake');
                     this.loginForm.reset();
                     setTimeout(() => {
