@@ -24,6 +24,7 @@ from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 from cmdb.manager.types_manager import TypesManager
 from cmdb.manager.locations_manager import LocationsManager
 from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager.reports_manager import ReportsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.type_model.type import TypeModel
@@ -310,12 +311,20 @@ def delete_type(public_id: int, request_user: UserModel):
     """
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
 
     try:
         objects_count = objects_manager.count_objects({'type_id':public_id})
 
+        # Only possible to delete types when there are no objects
         if objects_count > 0:
-            return abort(405, "Delete not possible if objects of this type exist")
+            return abort(403, "Delete not possible if objects of this type exist!")
+
+        # Only possible to delete types when there are no reports using it
+        reports_count = reports_manager.count_reports({'type_id':public_id})
+
+        if reports_count > 0:
+            return abort(403, "Delete not possible if reports exist which are using this type!")
 
         deleted_type = types_manager.delete_type(public_id)
 

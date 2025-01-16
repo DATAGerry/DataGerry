@@ -132,3 +132,17 @@ class ReportsManager(BaseManager):
             raise ManagerIterationError(err) from err
 
         return iteration_result
+
+
+    def count_reports(self, criteria: dict = None):
+        """TODO: document"""
+        try:
+            if criteria:
+                report_count = self.count_documents(self.collection, filter=criteria)
+            else:
+                report_count = self.count_documents(self.collection)
+        except ManagerGetError as err:
+            # TODO: ERROR-FIX (Report Specific Error)
+            raise ManagerGetError(err) from err
+
+        return report_count
