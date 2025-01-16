@@ -161,6 +161,30 @@ def get_reports(params: CollectionParameters, request_user: UserModel):
     return api_response.make_response()
 
 
+@reports_blueprint.route('/<int:public_id>/count_reports_of_type', methods=['GET'])
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
+@insert_request_user
+def count_reports_of_type(public_id: int, request_user: UserModel):
+    """
+    Return the number of reports in der database with the given public_id of Type
+    Args:
+        public_id (int): public_id of the type
+    """
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+
+    try:
+        reports_count = reports_manager.count_reports({'type_id':public_id})
+        api_response = DefaultResponse(reports_count)
+    except ManagerGetError:
+        #TODO: ERROR-FIX
+        return abort(404)
+    except Exception:
+        #TODO: ERROR-FIX
+        return abort(500)
+
+    return api_response.make_response()
+
+
 @reports_blueprint.route('/<int:public_id>/run', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
