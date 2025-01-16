@@ -42,7 +42,7 @@ export class ObjectTableHeadComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() public type: CmdbType;
 
-  totalObjects: number = 100;
+  totalObjects: number = 0;
   usedObjects: number;
   usedObjects$: Observable<number>;
 

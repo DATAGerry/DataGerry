@@ -17,7 +17,7 @@
 */
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { ReplaySubject, Subscription, takeUntil } from 'rxjs';
 
 import { ObjectService } from '../../framework/services/object.service';
 import { ToastService } from '../../layout/toast/toast.service';
@@ -71,7 +71,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public itemsObject: number[] = [];
     public colorsObject: any[] = [];
 
-    public totalObjects: number = 1000;
+    public totalObjects: number = 0;
+    private subscription: Subscription;
+
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
@@ -179,6 +181,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.latestTableColumns = [activeColumn, publicColumn, typeColumn, editorColumn, lastModColumn, actionColumn];
 
         this.countObjects();
+        this.countTotalObjects();
         this.loadNewestObjects();
         this.loadLatestObjects();
 
@@ -190,6 +193,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public ngOnDestroy(): void {
         this.unSubscribe.next();
         this.unSubscribe.complete();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 
     /* --------------------------------------------------- OBJECTS API -------------------------------------------------- */
@@ -208,6 +214,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
             });
     }
 
+    /**
+     * Retrieves and sets the total number of objects from the service.
+     */
+    private countTotalObjects(): void {
+        this.subscription = this.objectService.getConfigItemsLimit().subscribe({
+            next: (limit) => {
+                this.totalObjects = limit;
+            },
+            error: (error) => {
+                this.toastService.error(error?.error?.message);
+            }
+        });
+    }
+
 
     /**
      * Gets newest objects
@@ -222,7 +242,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.newestObjectsCount = apiResponse.total;
                 },
                 error: (error) => {
-                    this.toastService.error(`Error while loading newest objects: ${error}`);
+                    this.toastService.error(error?.error?.message);
                 },
                 complete: () => {
                     this.newestLoading = false;

@@ -27,7 +27,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ImportComponent {
 
-    totalObjects: number = 100;
+    totalObjects: number = 0;
     usedObjects: number;
     usedObjects$: Observable<number>;
 
