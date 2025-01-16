@@ -541,7 +541,7 @@ def delete_database(db_name: str):
         raise DatabaseNotExists(db_name) from err
 
 
-def validate_subscrption_user(user_name: str, password: str) -> dict:
+def validate_subscrption_user(email: str, password: str) -> dict:
     """
     Validates the user credentials
     """
@@ -555,7 +555,7 @@ def validate_subscrption_user(user_name: str, password: str) -> dict:
     }
 
     payload = {
-        "user_name": user_name,
+        "email": email,
         "password": password
     }
 
