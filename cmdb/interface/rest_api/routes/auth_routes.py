@@ -22,10 +22,12 @@ from flask import request, current_app, abort
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
-from cmdb.manager.users_manager import UsersManager
+from cmdb.manager import (
+    SecurityManager,
+    SettingsReaderManager,
+    SettingsWriterManager,
+    UsersManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.auth.auth_settings import AuthSettingsDAO

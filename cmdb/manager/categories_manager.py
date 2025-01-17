@@ -13,13 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""This module contains the implementation of the SectionTemplatesManager"""
+"""This module contains the implementation of the CategoriesManager"""
 import logging
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.types_manager import TypesManager
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import BaseManager
+from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
 
 from cmdb.models.category_model.category import CategoryModel
 from cmdb.models.category_model.category_tree import CategoryTree
@@ -27,11 +27,13 @@ from cmdb.models.user_model.user import UserModel
 from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.manager import ManagerInsertError,\
-                                ManagerGetError,\
-                                ManagerIterationError,\
-                                ManagerUpdateError,\
-                                ManagerDeleteError
+from cmdb.errors.manager import (
+    ManagerInsertError,
+    ManagerGetError,
+    ManagerIterationError,
+    ManagerUpdateError,
+    ManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

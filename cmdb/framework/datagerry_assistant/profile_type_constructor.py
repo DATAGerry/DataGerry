@@ -18,7 +18,7 @@ import logging
 from datetime import datetime, timezone
 
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.section_templates_manager import SectionTemplatesManager
+from cmdb.manager import SectionTemplatesManager
 
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.framework.results import IterationResult

@@ -23,9 +23,11 @@ from werkzeug.utils import secure_filename
 from cmdb.database.utils import default
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.types_manager import TypesManager
-from cmdb.manager.logs_manager import LogsManager
+from cmdb.manager import (
+    ObjectsManager,
+    TypesManager,
+    LogsManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.log_model.log_action_enum import LogAction

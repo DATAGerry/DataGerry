@@ -19,7 +19,7 @@ This module contains the implementation of the ReportCategoriesManager
 import logging
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import BaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory

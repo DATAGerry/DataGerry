@@ -21,7 +21,7 @@ from flask import request, abort
 from werkzeug.datastructures import FileStorage
 from werkzeug.wrappers import Request
 
-from cmdb.manager.media_files_manager import MediaFilesManager
+from cmdb.manager import MediaFilesManager
 
 from cmdb.manager.query_builder.builder import Builder
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters

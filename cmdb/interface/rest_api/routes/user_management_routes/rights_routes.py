@@ -16,7 +16,7 @@
 """TODO: document"""
 from flask import request, abort
 
-from cmdb.manager.rights_manager import RightsManager
+from cmdb.manager import RightsManager
 
 from cmdb.framework.results import IterationResult
 from cmdb.models.right_model.base_right import BaseRight

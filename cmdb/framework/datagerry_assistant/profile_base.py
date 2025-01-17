@@ -19,7 +19,7 @@ This module is the base class for the profiles of DATAGERRY assistant
 import logging
 from flask import current_app
 
-from cmdb.manager.types_manager import TypesManager
+from cmdb.manager import TypesManager
 
 from cmdb.models.type_model.type import TypeModel
 from .profile_type_constructor import ProfileTypeConstructor

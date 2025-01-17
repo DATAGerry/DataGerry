@@ -20,7 +20,7 @@ This module contains the classes of all TypesManager errors
 
 class TypesManagerError(Exception):
     """
-    Base UsersManager error
+    Base TypesManager error
     """
     def __init__(self, message: str):
         self.message = message

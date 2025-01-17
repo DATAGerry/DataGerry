@@ -24,7 +24,7 @@ from bson import json_util
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.database.utils import object_hook
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import BaseManager
 
 from cmdb.models.type_model.type import TypeModel
 from cmdb.models.type_model.type_field_section import TypeFieldSection
@@ -32,11 +32,13 @@ from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.framework.results import IterationResult, ListResult
 
 from cmdb.errors.manager import ManagerGetError, ManagerInsertError
-from cmdb.errors.manager.types_manager import TypesManagerGetError,\
-                                              TypesManagerUpdateError,\
-                                              TypesManagerDeleteError,\
-                                              TypesManagerInsertError,\
-                                              TypesManagerInitError
+from cmdb.errors.manager.types_manager import (
+    TypesManagerGetError,
+    TypesManagerUpdateError,
+    TypesManagerDeleteError,
+    TypesManagerInsertError,
+    TypesManagerInitError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

@@ -20,7 +20,7 @@ from flask import request, abort
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.logs_manager import LogsManager
+from cmdb.manager import LogsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.log_model.log_action_enum import  LogAction

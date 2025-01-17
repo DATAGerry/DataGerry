@@ -18,14 +18,16 @@ import logging
 from datetime import datetime, timezone
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.groups_manager import GroupsManager
-from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.users_manager import UsersManager
+from cmdb.manager import (
+    GroupsManager,
+    SecurityManager,
+    UsersManager,
+    SettingsWriterManager,
+)
 
 from cmdb.startup_routines.setup_status_enum import SetupStatus
 from cmdb.models.user_model.user import UserModel
 from cmdb.utils.system_config_reader import SystemConfigReader
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
 from cmdb.updater.updater_module import UpdaterModule
 from cmdb.updater.updater_settings import UpdateSettings
 from cmdb.security.key.generator import KeyGenerator

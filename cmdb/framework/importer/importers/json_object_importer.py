@@ -17,7 +17,7 @@
 import logging
 from datetime import datetime, timezone
 
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser

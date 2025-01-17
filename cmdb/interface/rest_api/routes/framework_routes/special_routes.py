@@ -19,9 +19,11 @@ from flask import abort
 
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.types_manager import TypesManager
-from cmdb.manager.categories_manager import CategoriesManager
+from cmdb.manager import (
+    ObjectsManager,
+    TypesManager,
+    CategoriesManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.interface.route_utils import login_required, insert_request_user, verify_api_access

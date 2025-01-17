@@ -20,9 +20,11 @@ from datetime import datetime
 import pytest
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.groups_manager import GroupsManager
-from cmdb.manager.users_manager import UsersManager
+from cmdb.manager import (
+    SecurityManager,
+    GroupsManager,
+    UsersManager,
+)
 
 from cmdb.security.key.generator import KeyGenerator
 from cmdb.models.user_management_constants import __FIXED_GROUPS__

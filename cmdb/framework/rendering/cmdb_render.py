@@ -18,10 +18,11 @@ import logging
 from dateutil.parser import parse
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.types_manager import TypesManager
-
+from cmdb.manager import (
+    ObjectsManager,
+    UsersManager,
+    TypesManager,
+)
 
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.rendering.render_result import RenderResult

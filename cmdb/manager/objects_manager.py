@@ -25,7 +25,7 @@ from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.database.utils import object_hook
 from cmdb.manager.query_builder.builder import Builder
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import BaseManager
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.models.type_model.type import TypeModel

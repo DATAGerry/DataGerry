@@ -17,8 +17,10 @@
 import logging
 from flask import current_app
 
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.security_manager import SecurityManager
+from cmdb.manager import (
+    UsersManager,
+    SecurityManager,
+)
 
 from cmdb.security.auth.base_authentication_provider import BaseAuthenticationProvider
 from cmdb.security.auth.providers.local_auth_config import LocalAuthenticationProviderConfig

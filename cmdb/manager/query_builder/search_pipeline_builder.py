@@ -18,8 +18,10 @@ import logging
 
 from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
 from cmdb.manager.query_builder.search_references_pipeline_builder import SearchReferencesPipelineBuilder
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.categories_manager import CategoriesManager
+from cmdb.manager import (
+    ObjectsManager,
+    CategoriesManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.framework.search.search_param import SearchParam

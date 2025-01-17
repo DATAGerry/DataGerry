@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.docapi_templates_manager import DocapiTemplatesManager
+from cmdb.manager import (
+    ObjectsManager,
+    DocapiTemplatesManager,
+)
 
 from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.framework.docapi.object_document_generator import ObjectDocumentGenerator
@@ -24,9 +26,7 @@ from cmdb.framework.docapi.pdf_document_type import PdfDocumentType
 
 class DocApiRenderer:
     """TODO: document"""
-    def __init__(self,
-                 objects_manager: ObjectsManager,
-                 docapi_manager: DocapiTemplatesManager):
+    def __init__(self, objects_manager: ObjectsManager, docapi_manager: DocapiTemplatesManager):
         self.docapi_manager = docapi_manager
         self.objects_manager = objects_manager
 

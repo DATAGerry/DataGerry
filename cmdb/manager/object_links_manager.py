@@ -20,8 +20,8 @@ from datetime import datetime, timezone
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager.objects_manager import ObjectsManager # TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
+from cmdb.manager import BaseManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.object_link_model.link import ObjectLinkModel

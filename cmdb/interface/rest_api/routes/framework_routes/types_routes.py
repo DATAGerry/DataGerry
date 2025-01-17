@@ -21,10 +21,12 @@ from flask import abort, request
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.types_manager import TypesManager
-from cmdb.manager.locations_manager import LocationsManager
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.reports_manager import ReportsManager
+from cmdb.manager import (
+    TypesManager,
+    LocationsManager,
+    ObjectsManager,
+    ReportsManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.type_model.type import TypeModel

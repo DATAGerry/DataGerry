@@ -16,7 +16,7 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager import SettingsReaderManager
 
 from cmdb.utils.helpers import process_bar, load_class
 # -------------------------------------------------------------------------------------------------------------------- #

@@ -22,8 +22,10 @@ from flask import abort, request, Response
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.docapi_templates_manager import DocapiTemplatesManager
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import (
+    DocapiTemplatesManager,
+    ObjectsManager,
+)
 
 from cmdb.framework.docapi.docapi_renderer import DocApiRenderer
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate

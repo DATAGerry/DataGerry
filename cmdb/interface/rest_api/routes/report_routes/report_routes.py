@@ -27,8 +27,10 @@ from cmdb.database.mongo_query_builder import MongoDBQueryBuilder
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.reports_manager import ReportsManager
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import (
+    ReportsManager,
+    ObjectsManager,
+)
 
 from cmdb.models.type_model.type import TypeModel
 from cmdb.models.user_model.user import UserModel
