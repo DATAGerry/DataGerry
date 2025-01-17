@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 import logging
 from flask import current_app
 
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import ObjectsManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 
 from cmdb.models.user_model.user import UserModel

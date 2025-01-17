@@ -19,7 +19,7 @@ This module contains the "ProfileAssistant" class
 import logging
 from datetime import datetime, timezone
 
-from cmdb.manager.categories_manager import CategoriesManager
+from cmdb.manager import CategoriesManager
 
 from cmdb.errors.dg_assistant.dg_assistant_errors import ProfileCreationError
 

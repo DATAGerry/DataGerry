@@ -16,8 +16,10 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.security_manager import SecurityManager
+from cmdb.manager import (
+    UsersManager,
+    SecurityManager,
+)
 
 from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
 from cmdb.models.user_model.user import UserModel

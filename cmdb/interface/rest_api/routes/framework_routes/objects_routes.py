@@ -26,12 +26,14 @@ from cmdb.database.mongo_query_builder import MongoDBQueryBuilder
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.object_links_manager import ObjectLinksManager
-from cmdb.manager.locations_manager import LocationsManager
-from cmdb.manager.logs_manager import LogsManager
-from cmdb.manager.reports_manager import ReportsManager
-from cmdb.manager.webhooks_manager import WebhooksManager
+from cmdb.manager import (
+    LocationsManager,
+    LogsManager,
+    ObjectsManager,
+    ObjectLinksManager,
+    ReportsManager,
+    WebhooksManager,
+)
 
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.models.user_model.user import UserModel

@@ -20,7 +20,7 @@ import logging
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import BaseManager
 
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.framework.results import IterationResult
@@ -31,7 +31,7 @@ from cmdb.errors.manager import ManagerInsertError, ManagerGetError, ManagerIter
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                            ReportCategoriesManager - CLASS                                           #
+#                                                ReportsManager - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ReportsManager(BaseManager):
     """

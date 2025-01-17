@@ -20,8 +20,10 @@ from datetime import datetime, timezone
 from ldap3 import Server, Connection
 from ldap3.core.exceptions import LDAPExceptionError
 
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.security_manager import SecurityManager
+from cmdb.manager import (
+    UsersManager,
+    SecurityManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.auth.base_authentication_provider import BaseAuthenticationProvider

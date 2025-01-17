@@ -18,7 +18,7 @@ import logging
 from flask import current_app
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager import SettingsReaderManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

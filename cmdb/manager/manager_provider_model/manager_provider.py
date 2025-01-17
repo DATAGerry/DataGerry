@@ -18,25 +18,27 @@ import logging
 from flask import current_app
 
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.categories_manager import CategoriesManager
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.logs_manager import LogsManager
-from cmdb.manager.docapi_templates_manager import DocapiTemplatesManager
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.users_settings_manager import UsersSettingsManager
-from cmdb.manager.groups_manager import GroupsManager
-from cmdb.manager.media_files_manager import MediaFilesManager
-from cmdb.manager.types_manager import TypesManager
-from cmdb.manager.locations_manager import LocationsManager
-from cmdb.manager.section_templates_manager import SectionTemplatesManager
-from cmdb.manager.object_links_manager import ObjectLinksManager
-from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
-from cmdb.manager.report_categories_manager import ReportCategoriesManager
-from cmdb.manager.reports_manager import ReportsManager
-from cmdb.manager.webhooks_manager import WebhooksManager
-from cmdb.manager.webhooks_event_manager import WebhooksEventManager
+from cmdb.manager import (
+    CategoriesManager,
+    ObjectsManager,
+    LogsManager,
+    DocapiTemplatesManager,
+    UsersManager,
+    UsersSettingsManager,
+    GroupsManager,
+    MediaFilesManager,
+    TypesManager,
+    LocationsManager,
+    SectionTemplatesManager,
+    ObjectLinksManager,
+    SecurityManager,
+    SettingsReaderManager,
+    SettingsWriterManager,
+    ReportCategoriesManager,
+    ReportsManager,
+    WebhooksManager,
+    WebhooksEventManager,
+)
 
 from cmdb.models.user_model.user import UserModel
 # -------------------------------------------------------------------------------------------------------------------- #

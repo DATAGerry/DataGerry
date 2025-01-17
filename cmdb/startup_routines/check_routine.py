@@ -21,10 +21,12 @@ from datetime import datetime, timezone
 from pymongo.errors import OperationFailure
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.groups_manager import GroupsManager
-from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager import (
+    UsersManager,
+    GroupsManager,
+    SecurityManager,
+    SettingsReaderManager,
+)
 
 from cmdb.startup_routines.check_status_enum import CheckStatus
 from cmdb.updater.updater_module import UpdaterModule

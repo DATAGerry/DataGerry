@@ -21,7 +21,7 @@ from typing import Union
 from datetime import datetime, timezone
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import BaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate

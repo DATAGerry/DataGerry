@@ -19,7 +19,7 @@ from flask import abort, request
 
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.users_settings_manager import UsersSettingsManager
+from cmdb.manager import UsersSettingsManager
 
 from cmdb.models.settings_model.user_setting import UserSettingModel
 from cmdb.models.user_model.user import UserModel

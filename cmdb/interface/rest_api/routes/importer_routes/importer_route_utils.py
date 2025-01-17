@@ -23,7 +23,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.wrappers import Request
 
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.types_manager import TypesManager
+from cmdb.manager import TypesManager
 
 from cmdb.framework.importer.helper.importer_helper import load_parser_class
 from cmdb.models.user_model.user import UserModel

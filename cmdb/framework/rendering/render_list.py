@@ -17,7 +17,7 @@
 import logging
 from typing import Union
 
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import ObjectsManager
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.models.user_model.user import UserModel

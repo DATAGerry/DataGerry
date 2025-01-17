@@ -18,7 +18,7 @@ import logging
 from datetime import datetime
 import pytest
 
-from cmdb.manager.rights_manager import RightsManager
+from cmdb.manager import RightsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.group_model.group import UserGroupModel

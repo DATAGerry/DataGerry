@@ -19,7 +19,7 @@ import logging
 from cerberus import Validator
 from flask import Blueprint, abort, request, current_app
 
-from cmdb.manager.users_manager import UsersManager
+from cmdb.manager import UsersManager
 
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
 from cmdb.interface.route_utils import auth_is_valid, user_has_right, parse_authorization_header

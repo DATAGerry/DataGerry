@@ -25,10 +25,12 @@ import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
 
-from cmdb.manager.users_manager import UsersManager
-from cmdb.manager.groups_manager import GroupsManager
-from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager import (
+    UsersManager,
+    GroupsManager,
+    SecurityManager,
+    SettingsReaderManager,
+)
 
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.auth_method_enum import AuthMethod

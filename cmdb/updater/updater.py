@@ -17,14 +17,16 @@
 import logging
 from abc import abstractmethod
 
-from cmdb.manager.base_manager import BaseManager
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.types_manager import TypesManager
 from cmdb.utils.system_config_reader import SystemConfigReader
-from cmdb.manager.categories_manager import CategoriesManager
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager import (
+    BaseManager,
+    TypesManager,
+    CategoriesManager,
+    ObjectsManager,
+    SettingsWriterManager,
+    SettingsReaderManager,
+)
 
 from cmdb.updater.updater_settings import UpdateSettings
 # -------------------------------------------------------------------------------------------------------------------- #

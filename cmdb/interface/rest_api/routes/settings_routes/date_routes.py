@@ -19,8 +19,10 @@ from flask import request, abort
 
 from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
+from cmdb.manager import (
+    SettingsReaderManager,
+    SettingsWriterManager,
+)
 
 from cmdb.settings.date_settings import DateSettingsDAO
 from cmdb.models.user_model.user import UserModel

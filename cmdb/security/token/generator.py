@@ -19,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 from authlib.jose import jwt
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager import SettingsReaderManager
 
 from cmdb import __title__
 from cmdb.security.auth.auth_module import AuthModule

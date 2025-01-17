@@ -26,8 +26,8 @@ from bson.json_util import dumps
 from flask import current_app
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
+from cmdb.manager.settings_writer_manager import SettingsWriterManager #TODO: CYCLIC-IMPORT-FIX
+from cmdb.manager.settings_reader_manager import SettingsReaderManager #TODO: CYCLIC-IMPORT-FIX
 
 from cmdb.errors.database import NoDocumentFound
 # -------------------------------------------------------------------------------------------------------------------- #

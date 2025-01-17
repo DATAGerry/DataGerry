@@ -16,7 +16,7 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import ObjectsManager
 
 from cmdb.framework.docapi.template_engine import TemplateEngine
 from cmdb.framework.docapi.object_template_data import ObjectTemplateData

@@ -17,7 +17,7 @@
 import logging
 
 from cmdb.manager.query_builder.search_pipeline_builder import SearchPipelineBuilder
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.object_model.cmdb_object import CmdbObject

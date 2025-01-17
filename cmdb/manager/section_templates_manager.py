@@ -21,9 +21,9 @@ from deepdiff import DeepDiff
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.types_manager import TypesManager
-from cmdb.manager.objects_manager import ObjectsManager
-from cmdb.manager.base_manager import BaseManager
+from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependecy)
+from cmdb.manager.objects_manager import ObjectsManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
+from cmdb.manager import BaseManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.type_model.type import TypeModel

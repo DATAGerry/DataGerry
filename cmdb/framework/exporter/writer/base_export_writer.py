@@ -21,7 +21,7 @@ from flask import Response
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.object_model.cmdb_object import CmdbObject
