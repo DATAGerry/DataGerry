@@ -319,7 +319,7 @@
                   </a>
 
                   <!-- Show Users + Rights ONLY when !isCloudMode -->
-                  <div *ngIf="!isCloudMode">
+               
                     <a
                       class="dropdown-item"
                       *permissionLink="'base.user-management.user.*'"
@@ -333,7 +333,7 @@
                     >
                       <i class="fas fa-low-vision"></i> Rights
                     </a>
-                  </div>
+                 
 
                   <div
                     *permissionLink="'base.framework.log.view'"

@@ -40,7 +40,6 @@ const routes: Routes = [
     {
         path: 'users',
         canActivateChild: [PermissionGuard],
-        canActivate: [cloudModeGuard],
         data: {
             breadcrumb: 'Users',
             right: 'base.user-management.user.view'
@@ -61,8 +60,6 @@ const routes: Routes = [
     },
     {
         path: 'rights',
-        canActivate: [cloudModeGuard],
-
         data: {
             breadcrumb: 'Rights',
         },
