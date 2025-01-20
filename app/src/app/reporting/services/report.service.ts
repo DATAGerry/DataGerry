@@ -186,4 +186,19 @@ export class ReportService<T = any> implements ApiServicePrefix {
             })
         );
     }
+
+
+    /**
+ * Retrieves the number of reports associated with the given type_id
+ * 
+ * @param typeID (number): The type_id for which the reports should be counted
+ * @returns (Observable<number>): Number of reports associated with the given type_id
+ */
+    public countReportsOfType(typeID: number): Observable<number> {
+        return this.api.callGet<number>(`${this.servicePrefix}/${typeID}/count_reports_of_type`, this.options).pipe(
+            map((apiResponse: HttpResponse<number>) => {
+                return apiResponse.body;
+            })
+        );
+    }
 }
