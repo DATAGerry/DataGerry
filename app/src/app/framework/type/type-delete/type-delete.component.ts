@@ -27,6 +27,9 @@ import { ToastService } from '../../../layout/toast/toast.service';
 
 import { CmdbType } from '../../models/cmdb-type';
 import { Location } from '@angular/common';
+
+import { ReportService } from 'src/app/reporting/services/report.service';
+
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 //TODO: Extract this component in its own component folder
@@ -119,6 +122,7 @@ export class TypeDeleteComponent implements OnInit {
     public typeID: number;
     public typeInstance: CmdbType;
     public numberOfObjects: number;
+    public reportCount: number = 0;
 
     /* ------------------------------------------------------------------------------------------------------------------ */
     /*                                                     LIFE CYCLE                                                     */
@@ -126,12 +130,14 @@ export class TypeDeleteComponent implements OnInit {
 
     constructor(
         private typeService: TypeService,
+        private reportService: ReportService,
         private router: Router,
         private route: ActivatedRoute,
         public prevRoute: PreviousRouteService,
         private modalService: NgbModal,
         private toast: ToastService,
-        private location: Location
+        private location: Location,
+
     ) {
         this.route.params.subscribe((id) => {
             this.typeID = id.publicID;
@@ -147,11 +153,30 @@ export class TypeDeleteComponent implements OnInit {
         this.typeService.countTypeObjects(this.typeID).subscribe((count: number) => {
             this.numberOfObjects = count;
         });
+
+        this.reportService.countReportsOfType(this.typeID).subscribe({
+            next: (reportCount: number) => {
+                if (reportCount > 0) {
+                    this.reportCount = reportCount;
+                }
+            },
+            error: (error) => {
+                this.toast.error('Error fetching report count:', error?.error?.message);
+            }
+        });
+
+
     }
 
     /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
     public open(): void {
+
+        if (this.numberOfObjects > 0 || this.reportCount > 0) {
+            this.toast.error('Cannot delete this type as it is being used in reports.');
+            return;
+        }
+
         const deleteModal = this.modalService.open(TypeDeleteConfirmModalComponent);
         deleteModal.componentInstance.typeID = this.typeID;
         deleteModal.componentInstance.typeName = this.typeInstance.name;
@@ -168,6 +193,13 @@ export class TypeDeleteComponent implements OnInit {
             (reason) => {
                 console.log(reason);
             });
+    }
+    /**
+     * Checks if a type can be deleted (allowed when there are no objects and no reports).
+     * @returns `true` if deletable, otherwise `false`.
+     */
+    public canDeleteType(): boolean {
+        return this.numberOfObjects === 0 && this.reportCount === 0;
     }
 
 

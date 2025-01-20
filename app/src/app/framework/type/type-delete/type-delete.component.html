@@ -16,9 +16,13 @@
 <hr />
 
 <button (click)="goBack()" class="back-button btn btn-outline-dark ml-3">Back to Type List</button>
-<button class="btn btn-danger" [class.disabled]="numberOfObjects > 0" (click)="open()">Delete</button>
+<button class="btn btn-danger" [class.disabled]="!canDeleteType()" (click)="open()">Delete</button>
 
 <div>
   <label id="error_message" *ngIf="numberOfObjects > 0">Deletion is only possible if there are no objects of this type!</label>
+  <br>
+  <label id="error_message" *ngIf="!canDeleteType()">
+    Deletion is only possible if this type is not used in reports!
+</label>
 </div>
 
