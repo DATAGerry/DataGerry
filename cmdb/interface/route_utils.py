@@ -476,7 +476,7 @@ def init_db_routine(db_name: str):
     current_app.database_manager.create_general_report_category(CmdbReportCategory.COLLECTION)
 
 
-def set_admin_user(user_data: dict, subscription: str):
+def set_admin_user(user_data: dict, subscription: dict):
     """Creates a new admin user"""
     with current_app.app_context():
         current_app.database_manager.connector.set_database(subscription['database'])
@@ -580,7 +580,6 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
     # Just do this in cloud mode
     if current_app.local_mode:
         return True
-
 
     x_access_token = os.getenv("X-ACCESS-TOKEN")
 

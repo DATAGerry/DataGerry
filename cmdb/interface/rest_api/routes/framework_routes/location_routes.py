@@ -17,9 +17,8 @@
 import logging
 from flask import request, current_app, abort
 
-from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
-from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import (
     LocationsManager,
     TypesManager,

@@ -40,6 +40,9 @@ class KeyGenerator:
         private_key = key.export_key()
         public_key = key.publickey().export_key()
 
+        # LOGGER.error(f"private_key: {private_key}")
+        # LOGGER.error(f"public_key: {public_key}")
+
         asymmetric_key = {
             'private': private_key,
             'public': public_key
@@ -51,5 +54,6 @@ class KeyGenerator:
     def generate_symmetric_aes_key(self):
         """TODO: document"""
         symmetric_aes_key = Random.get_random_bytes(32)
+        # LOGGER.error(f"symmetric_aes_key: {symmetric_aes_key}")
 
         self.settings_writer.write('security', {'symmetric_aes_key': symmetric_aes_key})

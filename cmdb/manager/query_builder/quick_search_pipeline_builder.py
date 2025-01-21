@@ -16,7 +16,8 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
+from cmdb.manager.query_builder import PipelineBuilder
+#TODO: IMPORT-FIX (SearchReferencesPipelineBuilder)
 from cmdb.manager.query_builder.search_references_pipeline_builder import SearchReferencesPipelineBuilder
 
 from cmdb.models.user_model.user import UserModel

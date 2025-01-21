@@ -23,7 +23,7 @@ from bson import json_util
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.database.utils import object_hook
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
 from cmdb.models.type_model.type import TypeModel

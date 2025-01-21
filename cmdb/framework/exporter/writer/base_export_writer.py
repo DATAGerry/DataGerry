@@ -20,7 +20,7 @@ import time
 from flask import Response
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model.user import UserModel

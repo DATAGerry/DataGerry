@@ -16,7 +16,7 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
+from cmdb.manager.query_builder import PipelineBuilder
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

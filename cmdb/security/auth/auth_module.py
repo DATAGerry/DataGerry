@@ -30,9 +30,11 @@ from cmdb.security.auth.providers.ldap_auth_provider import LdapAuthenticationPr
 from cmdb.security.auth.providers.local_auth_provider import LocalAuthenticationProvider
 from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
 
-from cmdb.errors.provider import AuthenticationProviderNotActivated,\
-                                 AuthenticationProviderNotFoundError,\
-                                 AuthenticationError
+from cmdb.errors.provider import (
+    AuthenticationProviderNotActivated,
+    AuthenticationProviderNotFoundError,
+    AuthenticationError,
+)
 from cmdb.errors.manager import ManagerGetError, ManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 

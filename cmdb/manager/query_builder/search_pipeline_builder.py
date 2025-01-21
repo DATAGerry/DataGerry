@@ -16,8 +16,7 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
-from cmdb.manager.query_builder.search_references_pipeline_builder import SearchReferencesPipelineBuilder
+from cmdb.manager.query_builder import PipelineBuilder, SearchReferencesPipelineBuilder
 from cmdb.manager import (
     ObjectsManager,
     CategoriesManager,

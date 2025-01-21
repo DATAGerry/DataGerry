@@ -17,8 +17,7 @@
 import logging
 from flask import abort
 
-from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
-from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
     ObjectsManager,
     TypesManager,

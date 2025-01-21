@@ -140,6 +140,7 @@ class SetupRoutine:
         LOGGER.info('KEY ROUTINE: Generate aes key')
         kg.generate_symmetric_aes_key()
 
+        # return (enable when just want to create keys)
         self.__check_database()
         scm = SecurityManager(self.dbm)
         users_manager = UsersManager(self.dbm)
