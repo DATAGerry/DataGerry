@@ -18,7 +18,7 @@ import logging
 from typing import Union
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.user_model.user import UserModel

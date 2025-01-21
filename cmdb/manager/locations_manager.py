@@ -19,7 +19,7 @@ This module contains the implementation of the LocationsManager
 import logging
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
 from cmdb.models.user_model.user import UserModel

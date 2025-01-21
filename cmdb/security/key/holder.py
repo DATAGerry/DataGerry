@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
+import os
 import logging
 from flask import current_app
 
@@ -43,6 +44,15 @@ class KeyHolder:
         """TODO: document"""
         if current_app.cloud_mode:
             return current_app.asymmetric_key['public']
+            # if current_app.local_mode:
+            #     return current_app.asymmetric_key['public']
+
+            # public_key = os.getenv("DG_RSA_PUBLIC_KEY")
+
+            # if not public_key:
+            #     LOGGER.error("Error: No RSA public key provided!")
+
+            # return public_key
 
         return self.settings_reader.get_value('asymmetric_key', 'security')['public']
 
@@ -51,5 +61,14 @@ class KeyHolder:
         """TODO: document"""
         if current_app.cloud_mode:
             return current_app.asymmetric_key['private']
+            # if current_app.local_mode:
+            #     return current_app.asymmetric_key['private']
+
+            # private_key = os.getenv("DG_RSA_PRIVATE_KEY")
+
+            # if not private_key:
+            #     LOGGER.error("Error: No RSA private key provided!")
+
+            # return private_key
 
         return self.settings_reader.get_value('asymmetric_key', 'security')['private']

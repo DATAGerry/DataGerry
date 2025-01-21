@@ -23,8 +23,8 @@ from bson import Regex, json_util
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.database.utils import object_hook
-from cmdb.manager.query_builder.builder import Builder
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import Builder
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
@@ -34,10 +34,12 @@ from cmdb.security.acl.helpers import verify_access
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager.object_manager import ObjectManagerGetError,\
-                                               ObjectManagerInitError,\
-                                               ObjectManagerInsertError,\
-                                               ObjectManagerDeleteError
+from cmdb.errors.manager.object_manager import (
+    ObjectManagerGetError,
+    ObjectManagerInitError,
+    ObjectManagerInsertError,
+    ObjectManagerDeleteError,
+)
 from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerIterationError, ManagerUpdateError
 from cmdb.errors.security import AccessDeniedError
 # -------------------------------------------------------------------------------------------------------------------- #

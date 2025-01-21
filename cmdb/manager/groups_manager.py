@@ -18,7 +18,7 @@ import logging
 from typing import Union
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
 from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights

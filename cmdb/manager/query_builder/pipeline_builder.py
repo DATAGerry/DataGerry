@@ -16,12 +16,14 @@
 """TODO: document"""
 import logging
 
-from cmdb.manager.query_builder.builder import Builder
+from cmdb.manager.query_builder.builder import Builder # TODO: REFACTOR-FIX
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                PipelineBuilder - CLASS                                               #
+# -------------------------------------------------------------------------------------------------------------------- #
 class PipelineBuilder(Builder):
     """Pipeline query builder for database aggregation search"""
 

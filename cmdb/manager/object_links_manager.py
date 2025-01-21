@@ -19,7 +19,7 @@ from typing import Union
 from datetime import datetime, timezone
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.objects_manager import ObjectsManager # TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
 from cmdb.manager import BaseManager
 

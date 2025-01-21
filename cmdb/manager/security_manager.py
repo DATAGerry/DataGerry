@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
+import os
 import base64
 import logging
 import hashlib
@@ -111,12 +112,22 @@ class SecurityManager:
         with current_app.app_context():
             if current_app.cloud_mode:
                 return current_app.symmetric_key
+                # if current_app.local_mode:
+                #     return current_app.symmetric_key
+
+                # symmetric_key = os.getenv("DG_SYMMETRIC_KEY")
+
+                # if not symmetric_key:
+                #     LOGGER.error("Error: No symmetric key provided!")
+
+                # return symmetric_key
 
             try:
                 symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
             except NoDocumentFound:
                 self.generate_symmetric_aes_key()
                 symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
+
             return symmetric_key
 
 

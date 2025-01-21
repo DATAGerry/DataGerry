@@ -19,7 +19,7 @@ import logging
 from flask import current_app
 
 from cmdb.manager import ObjectsManager
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.object_model.cmdb_object import CmdbObject

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
-from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
+from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder # TODO: IMPORT-FIX
 from cmdb.security.acl.permission import AccessControlPermission
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -63,7 +63,7 @@ class LookedAccessControlQueryBuilder(PipelineBuilder):
         )
 
 
-#TODO: CLASS-FIX
+#TODO: CLASS-FIX (Move to manager query builder)
 class AccessControlQueryBuilder(PipelineBuilder):
     """Query builder for restrict objects in aggregation calls."""
 

@@ -20,8 +20,7 @@ from datetime import datetime, timezone
 from flask import request, current_app, abort
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
-from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
     SecurityManager,
     SettingsReaderManager,
@@ -85,6 +84,7 @@ def post_login():
             user_data = check_user_in_service_portal(request_user_name, request_password)
 
             if not user_data:
+                LOGGER.error("Could not retrieve User from ServicePortal!")
                 return abort(401, 'Could not login')
 
             user_database = None
@@ -95,14 +95,16 @@ def post_login():
 
                 if not check_db_exists(user_database):
                     init_db_routine(user_database)
-                    set_admin_user(user_data, user_data['subscriptions'][0])
+
+                set_admin_user(user_data, user_data['subscriptions'][0])
             # In this case the user selected a subscription in the frontend
             elif request_subscription:
                 user_database = request_subscription['database']
 
                 if not check_db_exists(user_database):
                     init_db_routine(user_database)
-                    set_admin_user(user_data, request_subscription)
+
+                set_admin_user(user_data, request_subscription)
             # User have multiple subscriptions, send them to frontend to select
             elif len(user_data['subscriptions']) > 1:
                 return DefaultResponse(user_data['subscriptions']).make_response()
@@ -115,6 +117,7 @@ def post_login():
             user = retrive_user(user_data, user_database)
             # User does not exist
             if not user:
+                LOGGER.error("Could not retrieve User from database!")
                 return abort(401, 'Could not login!')
 
             current_app.database_manager.connector.set_database(user_database)

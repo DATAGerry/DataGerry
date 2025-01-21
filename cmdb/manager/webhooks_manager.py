@@ -23,7 +23,7 @@ import requests
 
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 from cmdb.database.utils import default
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.base_manager import BaseManager
 from cmdb.manager import WebhooksEventManager
 

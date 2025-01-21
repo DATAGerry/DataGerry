@@ -24,9 +24,8 @@ from ast import literal_eval
 from flask import abort, request
 
 from cmdb.database.mongo_query_builder import MongoDBQueryBuilder
-from cmdb.manager.query_builder.builder_parameters import BuilderParameters
-from cmdb.manager.manager_provider_model.manager_provider import ManagerProvider
-from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
+from cmdb.manager.query_builder import BuilderParameters
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
     ReportsManager,
     ObjectsManager,
@@ -82,13 +81,12 @@ def create_report(params: dict, request_user: UserModel):
         params['mds_mode'] = params['mds_mode'] if params['mds_mode'] in [MdsMode.ROWS,
                                                                           MdsMode.COLUMNS] else MdsMode.ROWS
         params['conditions'] = json.loads(params['conditions'])
-        # LOGGER.debug(f"conditions:{ params['conditions']}")
         params['selected_fields'] = literal_eval(params['selected_fields'])
 
         report_type = reports_manager.get_one_from_other_collection(TypeModel.COLLECTION, params['type_id'])
         params['report_query'] = {'data': str(MongoDBQueryBuilder(params['conditions'],
                                                                   TypeModel.from_data(report_type)).build())}
-        # LOGGER.debug(f"report_query:{ params['report_query']}")
+
         new_report_id = reports_manager.insert_report(params)
     except ManagerInsertError as err:
         #TODO: ERROR-FIX
@@ -216,15 +214,12 @@ def run_report_query(public_id: int, request_user: UserModel):
 
         result = {}
 
-        #Only execute the report if there are conditions
+        # Only execute the report if there are conditions
         if len(report_query) > 0:
-            # LOGGER.debug(f"run_report_query: {report_query}")
-
             builder_params = BuilderParameters(criteria=report_query)
 
             result = objects_manager.iterate(builder_params).results
 
-            # LOGGER.debug(f"len results: {len(result)}")
         api_response = DefaultResponse(result)
     except Exception as err:
         LOGGER.debug("[run_report_query] Exception: %s, Type: %s", err, type(err))
