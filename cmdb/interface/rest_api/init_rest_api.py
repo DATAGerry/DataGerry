@@ -18,7 +18,7 @@ Init module for rest routes
 """
 from flask_cors import CORS
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 import cmdb
 from cmdb.interface.cmdb_app import BaseCmdbApp

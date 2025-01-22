@@ -59,7 +59,7 @@ users_blueprint = APIBlueprint('users', __name__)
 @users_blueprint.route('/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
-@users_blueprint.protect(auth=True, right='base.user-management.user.add')
+# @users_blueprint.protect(auth=True, right='base.user-management.user.add')
 @users_blueprint.validate(UserModel.SCHEMA)
 def insert_user(data: dict, request_user: UserModel):
     """
@@ -150,7 +150,7 @@ def insert_user(data: dict, request_user: UserModel):
 @users_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-@users_blueprint.protect(auth=True, right='base.user-management.user.view')
+# @users_blueprint.protect(auth=True, right='base.user-management.user.view')
 @users_blueprint.parse_collection_parameters()
 def get_users(params: CollectionParameters, request_user: UserModel):
     """
@@ -192,7 +192,7 @@ def get_users(params: CollectionParameters, request_user: UserModel):
 @users_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-@users_blueprint.protect(auth=True, right='base.user-management.user.view', excepted={'public_id': 'public_id'})
+# @users_blueprint.protect(auth=True, right='base.user-management.user.view', excepted={'public_id': 'public_id'})
 def get_user(public_id: int, request_user: UserModel):
     """
     HTTP `GET`/`HEAD` route for a single user resource.
@@ -226,7 +226,7 @@ def get_user(public_id: int, request_user: UserModel):
 @users_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
-@users_blueprint.protect(auth=True, right='base.user-management.user.edit', excepted={'public_id': 'public_id'})
+# @users_blueprint.protect(auth=True, right='base.user-management.user.edit', excepted={'public_id': 'public_id'})
 @users_blueprint.validate(UserModel.SCHEMA)
 def update_user(public_id: int, data: dict, request_user: UserModel):
     """
@@ -261,7 +261,7 @@ def update_user(public_id: int, data: dict, request_user: UserModel):
 @users_blueprint.route('/<int:public_id>/password', methods=['PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
-@users_blueprint.protect(auth=True, right='base.user-management.user.edit', excepted={'public_id': 'public_id'})
+# @users_blueprint.protect(auth=True, right='base.user-management.user.edit', excepted={'public_id': 'public_id'})
 def change_user_password(public_id: int, request_user: UserModel):
     """
     HTTP `PATCH` route for updating a single user password.
@@ -302,7 +302,7 @@ def change_user_password(public_id: int, request_user: UserModel):
 @users_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
-@users_blueprint.protect(auth=True, right='base.user-management.user.delete')
+# @users_blueprint.protect(auth=True, right='base.user-management.user.delete')
 def delete_user(public_id: int, request_user: UserModel):
     """
     HTTP `DELETE` route for delete a single user resource.

@@ -51,7 +51,7 @@ def get_export_file_types():
 @exporter_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@exporter_blueprint.protect(auth=True, right='base.framework.object.view')
+# @exporter_blueprint.protect(auth=True, right='base.framework.object.view')
 def export_objects(params: CollectionParameters, request_user: UserModel):
     """TODO: document"""
     try:

@@ -16,9 +16,7 @@
 """TODO: document"""
 import pytest
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
-
-from cmdb.database.mongo_connector import MongoConnector
+from cmdb.database import MongoConnector, MongoDatabaseManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 @pytest.fixture(scope="session", name="mongodb_parameters")

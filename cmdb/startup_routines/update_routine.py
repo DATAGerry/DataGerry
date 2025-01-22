@@ -17,7 +17,7 @@
 import logging
 from pymongo.errors import CollectionInvalid
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 from cmdb.startup_routines.update_status_enum import UpateStatus
 from cmdb.updater.updater_module import UpdaterModule

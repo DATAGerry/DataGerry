@@ -17,7 +17,7 @@
 import logging
 from typing import Union
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.settings_model.user_setting import UserSettingModel

@@ -63,7 +63,7 @@ media_file_blueprint = APIBlueprint('media_file_blueprint', __name__, url_prefix
 @media_file_blueprint.route('/', methods=['GET', 'HEAD'])
 @media_file_blueprint.parse_collection_parameters()
 @insert_request_user
-@media_file_blueprint.protect(auth=True, right='base.framework.object.view')
+# @media_file_blueprint.protect(auth=True, right='base.framework.object.view')
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_file_list(params: CollectionParameters, request_user: UserModel):
     """
@@ -232,7 +232,7 @@ def update_file(request_user: UserModel):
 @media_file_blueprint.route('/<string:filename>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@media_file_blueprint.protect(auth=True, right='base.framework.object.view')
+# @media_file_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_file(filename: str, request_user: UserModel):
     """
     This method fetch a file to the specified section of the document.
@@ -269,7 +269,7 @@ def get_file(filename: str, request_user: UserModel):
 @media_file_blueprint.route('/download/<path:filename>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@media_file_blueprint.protect(auth=True, right='base.framework.object.view')
+# @media_file_blueprint.protect(auth=True, right='base.framework.object.view')
 def download_file(filename: str, request_user: UserModel):
     """
     This method download a file to the specified section of the document.
@@ -307,7 +307,7 @@ def download_file(filename: str, request_user: UserModel):
 
 @media_file_blueprint.route('<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@media_file_blueprint.protect(auth=True, right='base.framework.object.edit')
+# @media_file_blueprint.protect(auth=True, right='base.framework.object.edit')
 def delete_file(public_id: int, request_user: UserModel):
     """
     This method deletes a file in the specified section of the document for storing workflow data.

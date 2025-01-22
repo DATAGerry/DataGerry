@@ -63,7 +63,7 @@ types_blueprint = APIBlueprint('types', __name__)
 @types_blueprint.route('/', methods=['POST'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.add')
+# @types_blueprint.protect(auth=True, right='base.framework.type.add')
 @types_blueprint.validate(TypeModel.SCHEMA)
 def insert_type(data: dict, request_user: UserModel):
     """
@@ -111,7 +111,7 @@ def insert_type(data: dict, request_user: UserModel):
 @types_blueprint.route('/', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.view')
+# @types_blueprint.protect(auth=True, right='base.framework.type.view')
 @types_blueprint.parse_parameters(TypeIterationParameters)
 def get_types(params: TypeIterationParameters, request_user: UserModel):
     """
@@ -168,7 +168,7 @@ def get_types(params: TypeIterationParameters, request_user: UserModel):
 @types_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.view')
+# @types_blueprint.protect(auth=True, right='base.framework.type.view')
 def get_type(public_id: int, request_user: UserModel):
     """
     HTTP `GET`/`HEAD` route for a single type resource.
@@ -196,7 +196,7 @@ def get_type(public_id: int, request_user: UserModel):
 @types_blueprint.route('/<int:public_id>/count_objects', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.read')
+# @types_blueprint.protect(auth=True, right='base.framework.type.read')
 def count_objects_of_type(public_id: int, request_user: UserModel):
     """
     Return the number of objects in der database with the given public_id as type_id
@@ -222,7 +222,7 @@ def count_objects_of_type(public_id: int, request_user: UserModel):
 @types_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.edit')
+# @types_blueprint.protect(auth=True, right='base.framework.type.edit')
 @types_blueprint.validate(TypeModel.SCHEMA)
 def update_type(public_id: int, data: dict, request_user: UserModel):
     """
@@ -295,7 +295,7 @@ def update_type(public_id: int, data: dict, request_user: UserModel):
 @types_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.delete')
+# @types_blueprint.protect(auth=True, right='base.framework.type.delete')
 def delete_type(public_id: int, request_user: UserModel):
     """
     HTTP `DELETE` route for delete a single type resource.

@@ -23,7 +23,7 @@ from datetime import datetime
 from ast import literal_eval
 from flask import abort, request
 
-from cmdb.database.mongo_query_builder import MongoDBQueryBuilder
+from cmdb.database import MongoDBQueryBuilder
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (

@@ -17,7 +17,7 @@
 import logging
 from dateutil.parser import parse
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import (
     ObjectsManager,
     UsersManager,

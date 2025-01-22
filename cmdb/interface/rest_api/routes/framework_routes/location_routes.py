@@ -57,7 +57,7 @@ location_blueprint = APIBlueprint('locations', __name__)
 @location_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.edit')
+# @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 def create_location(params: dict, request_user: UserModel):
     """
     Creates a location in the database
@@ -119,7 +119,7 @@ def create_location(params: dict, request_user: UserModel):
 @location_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.view')
+# @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_all_locations(params: CollectionParameters, request_user: UserModel):
     """
     Returns all locations based on the params
@@ -156,7 +156,7 @@ def get_all_locations(params: CollectionParameters, request_user: UserModel):
 @location_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.view')
+# @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_locations_tree(params: CollectionParameters, request_user: UserModel):
     """
     Returns all locations as a location tree
@@ -212,7 +212,7 @@ def get_locations_tree(params: CollectionParameters, request_user: UserModel):
 @location_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.view')
+# @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_location(public_id: int, request_user: UserModel):
     """
     Returns the selected location for a given public_id
@@ -237,7 +237,7 @@ def get_location(public_id: int, request_user: UserModel):
 @location_blueprint.route('/<int:object_id>/object', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.view')
+# @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_location_for_object(object_id: int, request_user: UserModel):
     """
     Returns the selected location for a given object_id
@@ -262,7 +262,7 @@ def get_location_for_object(object_id: int, request_user: UserModel):
 @location_blueprint.route('/<int:object_id>/parent', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.view')
+# @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_parent(object_id: int, request_user: UserModel):
     """
     Returns the parent location for a given object_id
@@ -293,7 +293,7 @@ def get_parent(object_id: int, request_user: UserModel):
 @location_blueprint.route('/<int:object_id>/children', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.view')
+# @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_children(object_id: int, request_user: UserModel):
     """
     Get all children of next level for a given object_id
@@ -329,7 +329,7 @@ def get_children(object_id: int, request_user: UserModel):
 @location_blueprint.route('/update_location', methods=['PUT', 'PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@location_blueprint.protect(auth=True, right='base.framework.object.edit')
+# @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 @location_blueprint.parse_request_parameters()
 def update_location_for_object(params: dict, request_user: UserModel):
     """
@@ -379,7 +379,7 @@ def update_location_for_object(params: dict, request_user: UserModel):
 
 @location_blueprint.route('/<int:object_id>/object', methods=['DELETE'])
 @insert_request_user
-@location_blueprint.protect(auth=True, right='base.framework.object.edit')
+# @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 def delete_location_for_object(object_id: int, request_user: UserModel):
     """
     Deletes a location where the object_id is assigned 

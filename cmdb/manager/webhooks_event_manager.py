@@ -18,9 +18,9 @@ This module contains the implementation of the WebhooksEventManager
 """
 import logging
 
+from cmdb.database import MongoDatabaseManager
+from cmdb.manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
 from cmdb.framework.results import IterationResult

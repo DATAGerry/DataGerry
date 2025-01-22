@@ -17,7 +17,7 @@
 from flask import current_app
 from werkzeug.exceptions import abort
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 from cmdb.interface.route_utils import verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel

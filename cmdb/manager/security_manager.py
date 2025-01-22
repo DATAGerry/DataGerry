@@ -26,7 +26,7 @@ from bson import json_util
 from bson.json_util import dumps
 from flask import current_app
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager.settings_writer_manager import SettingsWriterManager #TODO: CYCLIC-IMPORT-FIX
 from cmdb.manager.settings_reader_manager import SettingsReaderManager #TODO: CYCLIC-IMPORT-FIX
 
@@ -115,7 +115,7 @@ class SecurityManager:
                 # if current_app.local_mode:
                 #     return current_app.symmetric_key
 
-                # symmetric_key = os.getenv("DG_SYMMETRIC_KEY")
+                # symmetric_key = base64.b64decode(os.getenv("DG_SYMMETRIC_KEY"))
 
                 # if not symmetric_key:
                 #     LOGGER.error("Error: No symmetric key provided!")

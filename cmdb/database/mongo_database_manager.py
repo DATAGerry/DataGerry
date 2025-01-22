@@ -20,8 +20,7 @@ import logging
 from pymongo.results import DeleteResult, UpdateResult
 
 from cmdb.database.database_manager import DatabaseManager
-from cmdb.database.mongo_connector import MongoConnector
-from cmdb.database.counter import PublicIDCounter
+from cmdb.database import MongoConnector, PublicIDCounter
 
 from cmdb.framework.section_templates.section_template_creator import SectionTemplateCreator
 

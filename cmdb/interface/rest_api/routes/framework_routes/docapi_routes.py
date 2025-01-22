@@ -88,7 +88,7 @@ def create_template(request_user: UserModel):
 @docs_blueprint.route('/template', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@docs_blueprint.protect(auth=True, right='base.docapi.template.view')
+# @docs_blueprint.protect(auth=True, right='base.docapi.template.view')
 @docs_blueprint.parse_collection_parameters()
 def get_template_list(params: CollectionParameters, request_user: UserModel):
     """TODO: document"""

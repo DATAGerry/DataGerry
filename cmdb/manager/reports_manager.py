@@ -18,7 +18,7 @@ This module contains the implementation of the ReportsManager
 """
 import logging
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 

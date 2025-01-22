@@ -22,7 +22,7 @@ from pymongo.errors import CollectionInvalid
 from pymongo import IndexModel
 from pymongo.collection import Collection
 
-from cmdb.database.mongo_connector import MongoConnector
+from cmdb.database import MongoConnector
 
 from cmdb.errors.database import (
     DatabaseAlreadyExists,

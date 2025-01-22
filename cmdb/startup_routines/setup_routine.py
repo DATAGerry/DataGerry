@@ -17,7 +17,7 @@
 import logging
 from datetime import datetime, timezone
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import (
     GroupsManager,
     SecurityManager,
@@ -37,7 +37,7 @@ from cmdb.models.user_management_constants import (
 )
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
-from cmdb.errors.database import ServerTimeoutError, DatabaseNotExists
+from cmdb.errors.database import ServerTimeoutError, DatabaseNotExists, DatabaseAlreadyExists
 from cmdb.errors.manager.user_manager import UserManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -85,7 +85,9 @@ class SetupRoutine:
             # init database
             try:
                 self.__init_database()
-
+            except DatabaseAlreadyExists as err:
+                LOGGER.error("Could not init setup routine because Database already exists!")
+                raise RuntimeError(str(err)) from err
             except Exception as err:
                 self.status = SetupStatus.ERROR
                 raise RuntimeError(

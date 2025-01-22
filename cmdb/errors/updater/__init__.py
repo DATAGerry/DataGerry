@@ -14,19 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all CmdbType errors
+This module provides all Updater errors
 """
-from .type_errors import TypeNotFoundError,\
-                         ExternalFillError,\
-                         TypeReferenceLineFillError,\
-                         FieldNotFoundError,\
-                         FieldInitError
+from .updater_errors import UpdaterException
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'TypeNotFoundError',
-    'ExternalFillError',
-    'TypeReferenceLineFillError',
-    'FieldNotFoundError',
-    'FieldInitError',
+    'UpdaterException',
 ]
