@@ -19,7 +19,7 @@ Server module for web-based services
 import logging
 import multiprocessing
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 from cmdb.process_management.service import AbstractCmdbService
 from cmdb.interface.net_app import create_app

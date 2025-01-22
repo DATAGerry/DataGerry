@@ -19,7 +19,7 @@ This module contains the implementation of the SectionTemplatesManager
 import logging
 from deepdiff import DeepDiff
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependecy)
 from cmdb.manager.objects_manager import ObjectsManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)

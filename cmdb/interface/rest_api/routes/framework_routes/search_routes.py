@@ -41,7 +41,7 @@ search_blueprint = APIBlueprint('search_rest', __name__, url_prefix='/search')
 
 @search_blueprint.route('/quick/count', methods=['GET'])
 @search_blueprint.route('/quick/count/', methods=['GET'])
-@search_blueprint.protect(auth=True)
+# @search_blueprint.protect(auth=True)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 def quick_search_result_counter(request_user: UserModel):

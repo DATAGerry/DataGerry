@@ -20,7 +20,7 @@ import logging
 from typing import Union
 from datetime import datetime, timezone
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 

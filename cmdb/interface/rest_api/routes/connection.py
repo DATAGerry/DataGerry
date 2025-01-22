@@ -17,7 +17,7 @@
 import logging
 from flask import current_app, abort
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 from cmdb import __title__, __version__
 from cmdb.interface.rest_api.responses import DefaultResponse

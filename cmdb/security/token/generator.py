@@ -18,7 +18,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from authlib.jose import jwt
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import SettingsReaderManager
 
 from cmdb import __title__

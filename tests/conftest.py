@@ -19,7 +19,7 @@ import logging
 from datetime import datetime
 import pytest
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import (
     SecurityManager,
     GroupsManager,

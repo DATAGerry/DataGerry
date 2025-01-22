@@ -21,7 +21,7 @@ import logging
 from pymongo import MongoClient
 from pymongo.database import Database
 
-from cmdb.database.connection_status import ConnectionStatus
+from cmdb.database import ConnectionStatus
 
 from cmdb.errors.database import DatabaseConnectionError, SetDatabaseError
 # -------------------------------------------------------------------------------------------------------------------- #

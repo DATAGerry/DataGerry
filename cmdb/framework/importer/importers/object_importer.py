@@ -129,11 +129,11 @@ class ObjectImporter(BaseImporter):
                 existing = self.objects_manager.get_object(current_public_id)
                 current_import_object['creation_time'] = existing.creation_time
                 current_import_object['last_edit_time'] = datetime.now(timezone.utc)
-            except ObjectManagerGetError:
+            except ObjectManagerGetError as err:
                 try:
                     if current_app.cloud_mode:
                         if self.check_config_item_limit_reached(self.request_user, self.objects_manager):
-                            raise ObjectManagerInsertError("Config item limit reached!")
+                            raise ObjectManagerInsertError("Config item limit reached!") from err
 
                     self.objects_manager.insert_object(current_import_object)
 
@@ -141,14 +141,16 @@ class ObjectImporter(BaseImporter):
                         if current_app.cloud_mode:
                             objects_count = self.get_objects_count(self.request_user, self.objects_manager)
 
-                            success = sync_config_items(self.request_user.email, self.request_user.database, objects_count)
+                            success = sync_config_items(self.request_user.email,
+                                                        self.request_user.database,
+                                                        objects_count)
 
                             if not success:
-                                raise Exception()
+                                raise Exception("Status code was not 200!")
                     except Exception as error:
-                        LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
-                except ObjectManagerInsertError as err:
-                    failed_imports.append(ImportFailedMessage(error_message=err.message, obj=current_import_object))
+                        LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
+                except ObjectManagerInsertError as error:
+                    failed_imports.append(ImportFailedMessage(error_message=error.message, obj=current_import_object))
                     current_import_index += 1
                     continue
                 else:
@@ -177,9 +179,9 @@ class ObjectImporter(BaseImporter):
                                                             objects_count)
 
                                 if not success:
-                                    raise Exception()
+                                    raise Exception("Status code was not 200!")
                         except Exception as error:
-                            LOGGER.error(f"Could not sync config items count to service portal. Error: {error}")
+                            LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
                     except ObjectManagerInsertError as err:
                         failed_imports.append(ImportFailedMessage(error_message=err.message, obj=current_import_object))
                         current_import_index += 1

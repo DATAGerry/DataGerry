@@ -21,7 +21,7 @@ import json
 from typing import Union
 from bson import Regex, json_util
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.database.utils import object_hook
 from cmdb.manager.query_builder import Builder
 from cmdb.manager.query_builder import BuilderParameters

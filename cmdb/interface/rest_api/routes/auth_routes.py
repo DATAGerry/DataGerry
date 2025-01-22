@@ -19,7 +19,7 @@ from typing import Tuple
 from datetime import datetime, timezone
 from flask import request, current_app, abort
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
     SecurityManager,
@@ -82,6 +82,7 @@ def post_login():
     try:
         if current_app.cloud_mode:
             user_data = check_user_in_service_portal(request_user_name, request_password)
+            # LOGGER.debug(f"[post_login] user_data: {user_data}")
 
             if not user_data:
                 LOGGER.error("Could not retrieve User from ServicePortal!")
@@ -91,6 +92,7 @@ def post_login():
 
             # If only one subscription directly login the user
             if len(user_data['subscriptions']) == 1:
+                # LOGGER.debug("[post_login] only 1 subscription")
                 user_database = user_data['subscriptions'][0]['database']
 
                 if not check_db_exists(user_database):
@@ -99,6 +101,7 @@ def post_login():
                 set_admin_user(user_data, user_data['subscriptions'][0])
             # In this case the user selected a subscription in the frontend
             elif request_subscription:
+                # LOGGER.debug(f"[post_login] subscription from frontend: {request_subscription}")
                 user_database = request_subscription['database']
 
                 if not check_db_exists(user_database):
@@ -107,6 +110,7 @@ def post_login():
                 set_admin_user(user_data, request_subscription)
             # User have multiple subscriptions, send them to frontend to select
             elif len(user_data['subscriptions']) > 1:
+                # LOGGER.debug(f"[post_login] multiple_subscriptions: {user_data['subscriptions']}")
                 return DefaultResponse(user_data['subscriptions']).make_response()
             # There are either no subscriptions or something went wrong => failed path
             else:
@@ -185,7 +189,7 @@ def post_login():
 @auth_blueprint.route('/settings', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@auth_blueprint.protect(auth=True, right='base.system.view')
+# @auth_blueprint.protect(auth=True, right='base.system.view')
 def get_auth_settings(request_user: UserModel):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
@@ -200,7 +204,7 @@ def get_auth_settings(request_user: UserModel):
 
 @auth_blueprint.route('/providers', methods=['GET'])
 @insert_request_user
-@auth_blueprint.protect(auth=True, right='base.system.view')
+# @auth_blueprint.protect(auth=True, right='base.system.view')
 def get_installed_providers(request_user: UserModel):
     """TODO: document"""
     provider_names: list[dict] = []
@@ -222,7 +226,7 @@ def get_installed_providers(request_user: UserModel):
 @auth_blueprint.route('/providers/<string:provider_class>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@auth_blueprint.protect(auth=True, right='base.system.view')
+# @auth_blueprint.protect(auth=True, right='base.system.view')
 def get_provider_config(provider_class: str, request_user: UserModel):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
@@ -245,7 +249,7 @@ def get_provider_config(provider_class: str, request_user: UserModel):
 @auth_blueprint.route('/settings', methods=['POST', 'PUT'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@auth_blueprint.protect(auth=True, right='base.system.edit')
+# @auth_blueprint.protect(auth=True, right='base.system.edit')
 def update_auth_settings(request_user: UserModel):
     """TODO: document"""
     new_auth_settings_values = request.get_json()

@@ -17,9 +17,8 @@
 import logging
 from pymongo.results import DeleteResult
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.manager.query_builder import BaseQueryBuilder
-from cmdb.manager.query_builder import BuilderParameters
+from cmdb.database import MongoDatabaseManager
+from cmdb.manager.query_builder import BaseQueryBuilder, BuilderParameters
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.acl.permission import AccessControlPermission

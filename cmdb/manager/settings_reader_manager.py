@@ -17,7 +17,7 @@
 import logging
 from typing import Union
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 from cmdb.utils.system_reader import SystemReader
 

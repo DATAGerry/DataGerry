@@ -65,6 +65,7 @@ LOGGER = logging.getLogger(__name__)
 
 DEFAULT_MIME_TYPE = 'application/json'
 SERVICE_PORTAL_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth"
+SERVICE_PORTAL_API_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth/subscription"
 SERVICE_PORTAL_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-item/update"
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -143,6 +144,10 @@ def insert_request_user(func):
         with current_app.app_context():
             users_manager = UsersManager(current_app.database_manager)
         try:
+            # If it request comes from API then no request user need to be set
+            if current_app.cloud_mode and "x-api-key" in request.headers:
+                return func(*args, **kwargs)
+
             token = parse_authorization_header(request.headers['Authorization'])
 
             with current_app.app_context():
@@ -186,9 +191,21 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
             try:
                 auth_method = __get_request_auth_method()
                 api_user_dict = __get_request_api_user()
+                x_api_key = __get_x_api_key()
 
                 if auth_method == AuthMethod.BASIC:
-                    if not __validate_api_access(api_user_dict, required_api_level):
+                    user_instance = check_user_in_service_portal(api_user_dict['email'],
+                                                                 api_user_dict['password'],
+                                                                 x_api_key)
+
+                    # Set the user as request User
+                    if required_api_level != ApiLevel.SUPER_ADMIN:
+                        set_admin_user(user_instance, user_instance['subscriptions'][0])
+                        user_model = retrive_user(user_instance, user_instance['subscriptions'][0]['database'])
+
+                        kwargs.update({'request_user': user_model})
+
+                    if not __validate_api_access(user_instance, required_api_level):
                         return abort(403, "No permission for this action!")
             except Exception as err:
                 LOGGER.warning("[verify_api_access] Exception: %s", err)
@@ -199,6 +216,12 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
 
     return decorator
 
+
+def __get_x_api_key():
+    """TODO: document"""
+    x_api_key = request.headers.get('x-api-key', None)
+    # LOGGER.debug("[__get_x_api_key] Key recieved: %s", x_api_key)
+    return x_api_key
 
 def __get_request_api_user():
     """TODO: document"""
@@ -223,7 +246,7 @@ def __get_request_api_user():
         else:
             return None
     except Exception as err:
-        LOGGER.debug("[__get_request_api_user] User Exception: %s, Type: %s", err, type(err))
+        LOGGER.debug("c User Exception: %s, Type: %s", err, type(err))
         return None
 
 
@@ -231,8 +254,7 @@ def __get_request_auth_method():
     """TODO: document"""
     try:
         auth_header = request.headers.get('Authorization')
-        # LOGGER.debug(f"auth_header: {auth_header}")
-        # LOGGER.debug(f"request: {request.method}")
+
         if auth_header:
             if auth_header.startswith('Basic '):
                 return AuthMethod.BASIC
@@ -246,25 +268,20 @@ def __get_request_auth_method():
         return abort(400, "Invalid auth method!")
 
 
-def __validate_api_access(user_data: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
+def __validate_api_access(user_instance: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
     """TODO: document"""
     # Only validate in cloud mode
     if not current_app.cloud_mode:
         return True
 
-    if not user_data or required_api_level == ApiLevel.LOCKED:
+    if not user_instance or required_api_level == ApiLevel.LOCKED:
         return False
 
     try:
-        user_instance = check_user_in_service_portal(user_data['email'], user_data['password'])
+        if required_api_level == ApiLevel.SUPER_ADMIN:
+            return user_instance['api_level'] >= required_api_level
 
-        if user_instance:
-            if required_api_level == ApiLevel.SUPER_ADMIN:
-                return user_instance['api_level'] >= required_api_level
-
-            return user_instance['subscriptions'][0]['api_level'] >= required_api_level
-
-        return False
+        return user_instance['subscriptions'][0]['api_level'] >= required_api_level
     except Exception as err:
         LOGGER.debug("[validate_api_access] Error: %s, Type: %s", err, type(err))
         return False
@@ -360,24 +377,24 @@ def parse_authorization_header(header):
                 if user_instance:
                     tg = TokenGenerator(current_app.database_manager)
 
-                    if current_app.cloud_mode:
-                        return tg.generate_token(payload={
-                                                    'user': {
-                                                        'public_id': user_instance.get_public_id(),
-                                                        'database': user_instance.database
-                                                    }
-                                                })
+                    token_payload = {
+                                        'user': {
+                                            'public_id': user_instance.get_public_id()
+                                        }
+                                    }
 
-                    return tg.generate_token(payload={
-                                                'user': {
-                                                    'public_id': user_instance.get_public_id()
-                                                }
-                                            })
+                    if current_app.cloud_mode:
+                        token_payload['user']['database'] = user_instance.database
+                        return tg.generate_token(payload=token_payload)
+
+                    return tg.generate_token(payload=token_payload)
 
                 return None
-        except SetDatabaseError:
+        except SetDatabaseError as err:
+            LOGGER.error("[parse_authorization_header] SetDatabaseError: %s", str(err))
             return None
-        except Exception:
+        except Exception as err:
+            LOGGER.error("[parse_authorization_header] Exception: %s", str(err))
             return None
 
     if auth_type in ("bearer", b"bearer"):
@@ -395,7 +412,7 @@ def parse_authorization_header(header):
 
 # ------------------------------------------------------ HELPER ------------------------------------------------------ #
 
-def check_user_in_service_portal(mail: str, password: str):
+def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None):
     """Simulates Users in MySQL DB"""
     if current_app.local_mode:
         try:
@@ -415,8 +432,9 @@ def check_user_in_service_portal(mail: str, password: str):
             LOGGER.debug("[get users from file] Exception: %s, Type: %s", err, type(err))
             return None
 
+    # Validation through service portal
     try:
-        user_data = validate_subscrption_user(mail, password)
+        user_data = validate_subscrption_user(mail, password, x_api_key)
 
         return user_data
 
@@ -543,7 +561,7 @@ def delete_database(db_name: str):
         raise DatabaseNotExists(db_name) from err
 
 
-def validate_subscrption_user(email: str, password: str) -> dict:
+def validate_subscrption_user(email: str, password: str, x_api_key: str = None) -> dict:
     """
     Validates the user credentials
     """
@@ -556,13 +574,20 @@ def validate_subscrption_user(email: str, password: str) -> dict:
         "x-access-token": x_access_token
     }
 
+    target = SERVICE_PORTAL_AUTH_URL
+
     payload = {
         "email": email,
         "password": password
     }
 
+    if x_api_key:
+        payload['x-api-key'] = x_api_key
+
+        target = SERVICE_PORTAL_API_AUTH_URL
+
     try:
-        response = requests.post(SERVICE_PORTAL_AUTH_URL, headers=headers, json=payload, timeout=3)
+        response = requests.post(target, headers=headers, json=payload, timeout=3)
 
         if response.status_code == 200:
             return response.json()
@@ -603,5 +628,6 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
             return True
 
         return False
-    except (requests.exceptions.Timeout, requests.exceptions.RequestException):
+    except (requests.exceptions.Timeout, requests.exceptions.RequestException) as err:
+        LOGGER.error("[sync_config_items] Request Error: %s", str(err))
         return False

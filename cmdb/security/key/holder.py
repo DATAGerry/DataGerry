@@ -15,10 +15,11 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
 import os
+import base64
 import logging
 from flask import current_app
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import SettingsReaderManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -47,7 +48,7 @@ class KeyHolder:
             # if current_app.local_mode:
             #     return current_app.asymmetric_key['public']
 
-            # public_key = os.getenv("DG_RSA_PUBLIC_KEY")
+            # public_key = base64.b64decode(os.getenv("DG_RSA_PUBLIC_KEY"))
 
             # if not public_key:
             #     LOGGER.error("Error: No RSA public key provided!")
@@ -64,7 +65,7 @@ class KeyHolder:
             # if current_app.local_mode:
             #     return current_app.asymmetric_key['private']
 
-            # private_key = os.getenv("DG_RSA_PRIVATE_KEY")
+            # private_key = base64.b64decode(os.getenv("DG_RSA_PRIVATE_KEY"))
 
             # if not private_key:
             #     LOGGER.error("Error: No RSA private key provided!")

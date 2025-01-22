@@ -14,19 +14,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all CmdbType errors
+This module contains all error classes for Updater
 """
-from .type_errors import TypeNotFoundError,\
-                         ExternalFillError,\
-                         TypeReferenceLineFillError,\
-                         FieldNotFoundError,\
-                         FieldInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'TypeNotFoundError',
-    'ExternalFillError',
-    'TypeReferenceLineFillError',
-    'FieldNotFoundError',
-    'FieldInitError',
-]
+class UpdaterError(Exception):
+    """
+    Base UpdaterError
+    """
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)
+
+# -------------------------------------------------- UPDATER ERRORS -------------------------------------------------- #
+
+class UpdaterException(UpdaterError):
+    """
+    Raised when during an update an error occurs
+    """
+    def __init__(self, err: str):
+        self.message = f"Updater Exception: {err}!"
+        super().__init__(self.message)

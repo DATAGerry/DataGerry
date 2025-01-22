@@ -20,7 +20,7 @@ import logging
 from datetime import datetime, timezone
 from pymongo.errors import OperationFailure
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import (
     UsersManager,
     GroupsManager,

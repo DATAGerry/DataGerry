@@ -19,7 +19,7 @@ import logging
 from flask import Flask
 
 from cmdb import __CLOUD_MODE__, __LOCAL_MODE__
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

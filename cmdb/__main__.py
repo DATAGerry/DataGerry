@@ -25,7 +25,7 @@ from argparse import ArgumentParser, Namespace
 import os
 import sys
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
 import cmdb
 from cmdb import __title__

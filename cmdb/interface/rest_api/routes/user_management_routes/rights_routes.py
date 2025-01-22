@@ -37,7 +37,7 @@ rights_blueprint = APIBlueprint('rights', __name__)
 
 @rights_blueprint.route('/', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@rights_blueprint.protect(auth=False, right=None)
+# @rights_blueprint.protect(auth=False, right=None)
 @rights_blueprint.parse_collection_parameters(sort='name', view='list')
 def get_rights(params: CollectionParameters):
     """
@@ -94,7 +94,7 @@ def get_rights(params: CollectionParameters):
 
 @rights_blueprint.route('/<string:name>', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@rights_blueprint.protect(auth=False, right='None')
+# @rights_blueprint.protect(auth=False, right='None')
 def get_right(name: str):
     """
     HTTP `GET`/`HEAD` route for a single right resource.
@@ -126,7 +126,7 @@ def get_right(name: str):
 
 @rights_blueprint.route('/levels', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@rights_blueprint.protect(auth=False, right='None')
+# @rights_blueprint.protect(auth=False, right='None')
 def get_levels():
     """
     HTTP `GET`/`HEAD` route for a static collection of levels.

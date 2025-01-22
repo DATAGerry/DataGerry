@@ -18,9 +18,9 @@ import logging
 from Crypto import Random
 from Crypto.PublicKey import RSA
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
+from cmdb.database import MongoDatabaseManager
 
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
+from cmdb.manager import SettingsWriterManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

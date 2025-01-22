@@ -17,8 +17,7 @@
 import logging
 from abc import abstractmethod
 
-from cmdb.database.mongo_database_manager import MongoDatabaseManager
-from cmdb.utils.system_config_reader import SystemConfigReader
+from cmdb.database import MongoDatabaseManager
 from cmdb.manager import (
     BaseManager,
     TypesManager,
@@ -28,7 +27,10 @@ from cmdb.manager import (
     SettingsReaderManager,
 )
 
+from cmdb.utils.system_config_reader import SystemConfigReader
 from cmdb.updater.updater_settings import UpdateSettings
+
+from cmdb.errors.updater import UpdaterException
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -87,9 +89,3 @@ class Updater(BaseManager):
     def error(self, msg):
         """TODO: document"""
         raise UpdaterException(msg)
-
-#TODO: CLASS-FIX
-class UpdaterException(Exception):
-    """TODO: document"""
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
