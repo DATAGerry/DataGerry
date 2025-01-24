@@ -189,7 +189,7 @@ def post_login():
 @auth_blueprint.route('/settings', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @auth_blueprint.protect(auth=True, right='base.system.view')
+@auth_blueprint.protect(auth=True, right='base.system.view')
 def get_auth_settings(request_user: UserModel):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
@@ -204,7 +204,8 @@ def get_auth_settings(request_user: UserModel):
 
 @auth_blueprint.route('/providers', methods=['GET'])
 @insert_request_user
-# @auth_blueprint.protect(auth=True, right='base.system.view')
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@auth_blueprint.protect(auth=True, right='base.system.view')
 def get_installed_providers(request_user: UserModel):
     """TODO: document"""
     provider_names: list[dict] = []
@@ -226,7 +227,7 @@ def get_installed_providers(request_user: UserModel):
 @auth_blueprint.route('/providers/<string:provider_class>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @auth_blueprint.protect(auth=True, right='base.system.view')
+@auth_blueprint.protect(auth=True, right='base.system.view')
 def get_provider_config(provider_class: str, request_user: UserModel):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
@@ -249,7 +250,7 @@ def get_provider_config(provider_class: str, request_user: UserModel):
 @auth_blueprint.route('/settings', methods=['POST', 'PUT'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @auth_blueprint.protect(auth=True, right='base.system.edit')
+@auth_blueprint.protect(auth=True, right='base.system.edit')
 def update_auth_settings(request_user: UserModel):
     """TODO: document"""
     new_auth_settings_values = request.get_json()

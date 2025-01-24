@@ -52,7 +52,7 @@ groups_blueprint = APIBlueprint('groups', __name__)
 @groups_blueprint.route('/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @groups_blueprint.protect(auth=True, right='base.user-management.group.add')
+@groups_blueprint.protect(auth=True, right='base.user-management.group.add')
 @groups_blueprint.validate(UserGroupModel.SCHEMA)
 def insert_group(data: dict, request_user: UserModel):
     """
@@ -88,7 +88,7 @@ def insert_group(data: dict, request_user: UserModel):
 
 @groups_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-# @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
+@groups_blueprint.protect(auth=True, right='base.user-management.group.view')
 @groups_blueprint.parse_collection_parameters()
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_groups(params: CollectionParameters, request_user: UserModel):
@@ -131,7 +131,7 @@ def get_groups(params: CollectionParameters, request_user: UserModel):
 @groups_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
+@groups_blueprint.protect(auth=True, right='base.user-management.group.view')
 def get_group(public_id: int, request_user: UserModel):
     """
     HTTP `GET`/`HEAD` route for a single group resource.
@@ -165,7 +165,7 @@ def get_group(public_id: int, request_user: UserModel):
 @groups_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @groups_blueprint.protect(auth=True, right='base.user-management.group.edit')
+@groups_blueprint.protect(auth=True, right='base.user-management.group.edit')
 @groups_blueprint.validate(UserGroupModel.SCHEMA)
 def update_group(public_id: int, data: dict, request_user: UserModel):
     """
@@ -207,7 +207,7 @@ def update_group(public_id: int, data: dict, request_user: UserModel):
 @groups_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @groups_blueprint.protect(auth=True, right='base.user-management.group.delete')
+@groups_blueprint.protect(auth=True, right='base.user-management.group.delete')
 @groups_blueprint.parse_parameters(GroupDeletionParameters)
 def delete_group(public_id: int, params: GroupDeletionParameters, request_user: UserModel):
     """

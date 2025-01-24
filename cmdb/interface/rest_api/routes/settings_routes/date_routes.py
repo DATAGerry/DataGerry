@@ -63,7 +63,7 @@ def get_date_settings(request_user: UserModel):
 @date_blueprint.route('/', methods=['POST', 'PUT'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @date_blueprint.protect(auth=True, right='base.system.edit')
+@date_blueprint.protect(auth=True, right='base.system.edit')
 def update_date_settings(request_user: UserModel):
     """TODO: document"""
     new_auth_settings_values = request.get_json()

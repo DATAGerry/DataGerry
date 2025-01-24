@@ -21,7 +21,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import SettingsReaderManager
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.interface.route_utils import login_required, insert_request_user, right_required, verify_api_access
+from cmdb.interface.route_utils import insert_request_user, right_required, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import RootBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
@@ -40,7 +40,6 @@ with current_app.app_context():
 @settings_blueprint.route('/<string:section>/', methods=['GET'])
 @settings_blueprint.route('/<string:section>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@login_required
 @insert_request_user
 @right_required('base.system.view')
 def get_settings_from_section(section: str, request_user: UserModel):
@@ -57,12 +56,11 @@ def get_settings_from_section(section: str, request_user: UserModel):
 
     return api_response.make_response()
 
-
+#TODO: ROUTE-FIX (Remove one route)
 @settings_blueprint.route('/<string:section>/<string:name>/', methods=['GET'])
 @settings_blueprint.route('/<string:section>/<string:name>', methods=['GET'])
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
-@login_required
 @insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
 def get_value_from_section(section: str, name: str, request_user: UserModel):
     """TODO: document"""

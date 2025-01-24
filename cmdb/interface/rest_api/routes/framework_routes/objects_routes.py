@@ -80,7 +80,7 @@ objects_blueprint = APIBlueprint('objects', __name__)
 @objects_blueprint.route('/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.add')
+@objects_blueprint.protect(auth=True, right='base.framework.object.add')
 def insert_object(request_user: UserModel):
     """TODO: document"""
     add_data_dump = json.dumps(request.json)
@@ -206,7 +206,7 @@ def insert_object(request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object(public_id, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -248,7 +248,7 @@ def get_object(public_id, request_user: UserModel):
 @objects_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_objects(params: CollectionParameters, request_user: UserModel):
     """
     Retrieves multiple objects from db regarding the used params
@@ -315,7 +315,7 @@ def get_objects(params: CollectionParameters, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>/native', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_native_object(public_id: int, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -340,7 +340,7 @@ def get_native_object(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/group/<string:value>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def group_objects_by_type_id(value: str, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -376,7 +376,7 @@ def group_objects_by_type_id(value: str, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>/mds_reference', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object_mds_reference(public_id: int, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -420,7 +420,7 @@ def get_object_mds_reference(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>/mds_references', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object_mds_references(public_id: int, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -468,7 +468,7 @@ def get_object_mds_references(public_id: int, request_user: UserModel):
 @objects_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.view')
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object_references(public_id: int, params: CollectionParameters, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -534,7 +534,7 @@ def get_object_references(public_id: int, params: CollectionParameters, request_
 @objects_blueprint.route('/<int:public_id>/state', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
+@objects_blueprint.protect(auth=True, right='base.framework.object.activation')
 def get_object_state(public_id: int, request_user: UserModel):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -561,7 +561,7 @@ def get_object_state(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/clean/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @objects_blueprint.protect(auth=True, right='base.framework.type.clean')
+@objects_blueprint.protect(auth=True, right='base.framework.type.clean')
 def get_unstructured_objects(public_id: int, request_user: UserModel):
     """
     HTTP `GET`/`HEAD` route for a multi resources which are not formatted according the type structure.
@@ -608,7 +608,7 @@ def get_unstructured_objects(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.edit')
+@objects_blueprint.protect(auth=True, right='base.framework.object.edit')
 @objects_blueprint.validate(CmdbObject.SCHEMA)
 def update_object(public_id: int, data: dict, request_user: UserModel):
     """TODO: document"""
@@ -749,7 +749,7 @@ def update_object(public_id: int, data: dict, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>/state', methods=['PUT'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
+@objects_blueprint.protect(auth=True, right='base.framework.object.activation')
 def update_object_state(public_id: int, request_user: UserModel):
     """TODO: document"""
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
@@ -834,7 +834,7 @@ def update_object_state(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/clean/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @objects_blueprint.protect(auth=True, right='base.framework.type.clean')
+@objects_blueprint.protect(auth=True, right='base.framework.type.clean')
 def update_unstructured_objects(public_id: int, request_user: UserModel):
     """
     HTTP `PUT`/`PATCH` route for a multi resources which will be formatted based on the TypeModel
@@ -942,7 +942,7 @@ def update_unstructured_objects(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
+@objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_object(public_id: int, request_user: UserModel):
     """
     Deletes an object and logs the deletion
@@ -1051,7 +1051,7 @@ def delete_object(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>/locations', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
+@objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_object_with_child_locations(public_id: int, request_user: UserModel):
     """TODO: document"""
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
@@ -1118,7 +1118,7 @@ def delete_object_with_child_locations(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/<int:public_id>/children', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
+@objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_object_with_child_objects(public_id: int, request_user: UserModel):
     """
     Deletes an object and all objects which are child objects of it in the location tree.
@@ -1205,7 +1205,7 @@ def delete_object_with_child_objects(public_id: int, request_user: UserModel):
 @objects_blueprint.route('/delete/<string:public_ids>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
+@objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_many_objects(public_ids, request_user: UserModel):
     """TODO: document"""
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)

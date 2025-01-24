@@ -27,7 +27,7 @@ from cmdb.manager import TypesManager
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.type_model.type import TypeModel
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
-from cmdb.interface.route_utils import login_required, insert_request_user, verify_api_access
+from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.blueprints import RootBlueprint
 
 from cmdb.errors.type import TypeNotFoundError
@@ -42,7 +42,6 @@ type_export_blueprint = RootBlueprint('type_export_rest', __name__, url_prefix='
 #TODO: ERROR-FIX (Fix method to GET)
 @type_export_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def export_type(request_user: UserModel):
     """TODO: document"""
@@ -76,7 +75,6 @@ def export_type(request_user: UserModel):
 
 @type_export_blueprint.route('/<string:public_ids>', methods=['POST'])
 @insert_request_user
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def export_type_by_ids(public_ids, request_user: UserModel):
     """TODO: document"""

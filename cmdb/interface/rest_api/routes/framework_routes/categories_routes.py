@@ -56,7 +56,7 @@ categories_blueprint = APIBlueprint('categories', __name__)
 @categories_blueprint.route('/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @categories_blueprint.protect(auth=True, right='base.framework.category.add')
+@categories_blueprint.protect(auth=True, right='base.framework.category.add')
 @categories_blueprint.validate(CategoryModel.SCHEMA)
 def insert_category(data: dict, request_user: UserModel):
     """
@@ -96,7 +96,7 @@ def insert_category(data: dict, request_user: UserModel):
 @categories_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @categories_blueprint.protect(auth=True, right='base.framework.category.view')
+@categories_blueprint.protect(auth=True, right='base.framework.category.view')
 @categories_blueprint.parse_collection_parameters(view='list')
 def get_categories(params: CollectionParameters, request_user: UserModel):
     """
@@ -149,7 +149,7 @@ def get_categories(params: CollectionParameters, request_user: UserModel):
 @categories_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @categories_blueprint.protect(auth=True, right='base.framework.category.view')
+@categories_blueprint.protect(auth=True, right='base.framework.category.view')
 def get_category(public_id: int, request_user: UserModel):
     """
     HTTP `GET`/`HEAD` route to retrieve a single category
@@ -178,7 +178,7 @@ def get_category(public_id: int, request_user: UserModel):
 @categories_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @categories_blueprint.protect(auth=True, right='base.framework.category.edit')
+@categories_blueprint.protect(auth=True, right='base.framework.category.edit')
 @categories_blueprint.validate(CategoryModel.SCHEMA)
 def update_category(public_id: int, data: dict, request_user: UserModel):
     """
@@ -211,7 +211,7 @@ def update_category(public_id: int, data: dict, request_user: UserModel):
 @categories_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @categories_blueprint.protect(auth=True, right='base.framework.category.delete')
+@categories_blueprint.protect(auth=True, right='base.framework.category.delete')
 def delete_category(public_id: int, request_user: UserModel):
     """
     HTTP `DELETE` route to delete a single category

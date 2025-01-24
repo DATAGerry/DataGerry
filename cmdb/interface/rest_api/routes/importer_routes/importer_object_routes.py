@@ -47,7 +47,6 @@ from cmdb.interface.rest_api.routes.importer_routes.import_routes import importe
 from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.interface.route_utils import (
     insert_request_user,
-    login_required,
     right_required,
     verify_api_access,
 )
@@ -72,9 +71,9 @@ LOGGER = logging.getLogger(__name__)
 importer_object_blueprint = NestedBlueprint(importer_blueprint, url_prefix='/object')
 
 # -------------------------------------------------------------------------------------------------------------------- #
+#TODO: ROUTE-FIX (Remove one route)
 @importer_object_blueprint.route('/importer/', methods=['GET'])
 @importer_object_blueprint.route('/importer', methods=['GET'])
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_importer():
     """TODO: document"""
@@ -91,9 +90,9 @@ def get_importer():
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @importer_object_blueprint.route('/importer/config/<string:importer_type>/', methods=['GET'])
 @importer_object_blueprint.route('/importer/config<string:importer_type>', methods=['GET'])
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_default_importer_config(importer_type):
     """TODO: document"""
@@ -107,10 +106,10 @@ def get_default_importer_config(importer_type):
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @importer_object_blueprint.route('/parser/', methods=['GET'])
 @importer_object_blueprint.route('/parser', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@login_required
 def get_parser():
     """TODO: document"""
     parser = list(__OBJECT_PARSER__)
@@ -120,10 +119,10 @@ def get_parser():
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @importer_object_blueprint.route('/parser/default/<string:parser_type>', methods=['GET'])
 @importer_object_blueprint.route('/parser/default/<string:parser_type>/', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@login_required
 def get_default_parser_config(parser_type: str):
     """TODO: document"""
     try:
@@ -136,10 +135,10 @@ def get_default_parser_config(parser_type: str):
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @importer_object_blueprint.route('/parse/', methods=['POST'])
 @importer_object_blueprint.route('/parse', methods=['POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@login_required
 def parse_objects():
     """TODO: document"""
     # TODO: check if request user has the permission 'base.import.object.*'
@@ -177,7 +176,6 @@ def parse_objects():
 
 @importer_object_blueprint.route('/', methods=['POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@login_required
 @insert_request_user
 @right_required('base.import.object.*')
 def import_objects(request_user: UserModel):

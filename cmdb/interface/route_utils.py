@@ -20,7 +20,7 @@ import functools
 import json
 import logging
 from datetime import datetime, timezone
-from functools import wraps
+from typing import Union
 import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
@@ -70,36 +70,13 @@ SERVICE_PORTAL_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-it
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-#@deprecated
-def login_required(f):
-    """
-    Wraps function for routes which requires an authentication
-    """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        """checks if user is logged in and valid
-        """
-        if auth_is_valid():
-            return f(*args, **kwargs)
-
-        return abort(401)
-
-    return decorated
-
-
-#@deprecated
-def auth_is_valid() -> bool:
-    """TODO: document"""
-    try:
-        parse_authorization_header(request.headers['Authorization'])
-        return True
-    except Exception as err:
-        LOGGER.error(err)
-        return False
-
-
-def user_has_right(required_right: str) -> bool:
+def user_has_right(required_right: str, request_user: UserModel = None) -> bool:
     """Check if a user has a specific right"""
+    # Check right for cloud api routes
+    if request_user:
+        return validate_right_cloud_api(required_right, request_user)
+
+    # OpenSource check for rights
     with current_app.app_context():
         users_manager = UsersManager(current_app.database_manager)
         groups_manager = GroupsManager(current_app.database_manager)
@@ -118,7 +95,7 @@ def user_has_right(required_right: str) -> bool:
         if current_app.cloud_mode:
             database = decrypted_token['DATAGERRY']['value']['user']['database']
             users_manager = UsersManager(current_app.database_manager, database)
-            groups_manager = GroupsManager(current_app.database_manager)
+            groups_manager = GroupsManager(current_app.database_manager, database)
 
         user = users_manager.get_user(user_id)
         group = groups_manager.get_group(user.group_id)
@@ -135,16 +112,15 @@ def user_has_right(required_right: str) -> bool:
 
 #@deprecated
 def insert_request_user(func):
-    """helper function which auto injects the user from the token request
-    requires: login_required
     """
-
+    Helper function which auto injects the user from the token request
+    """
     @functools.wraps(func)
     def get_request_user(*args, **kwargs):
         with current_app.app_context():
             users_manager = UsersManager(current_app.database_manager)
         try:
-            # If it request comes from API then no request user need to be set
+            # If the request comes from API then the request user will be set in verify_api_access - method
             if current_app.cloud_mode and "x-api-key" in request.headers:
                 return func(*args, **kwargs)
 
@@ -205,7 +181,7 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
 
                         kwargs.update({'request_user': user_model})
 
-                    if not __validate_api_access(user_instance, required_api_level):
+                    if not __check_api_level(user_instance, required_api_level):
                         return abort(403, "No permission for this action!")
             except Exception as err:
                 LOGGER.warning("[verify_api_access] Exception: %s", err)
@@ -222,6 +198,7 @@ def __get_x_api_key():
     x_api_key = request.headers.get('x-api-key', None)
     # LOGGER.debug("[__get_x_api_key] Key recieved: %s", x_api_key)
     return x_api_key
+
 
 def __get_request_api_user():
     """TODO: document"""
@@ -268,7 +245,7 @@ def __get_request_auth_method():
         return abort(400, "Invalid auth method!")
 
 
-def __validate_api_access(user_instance: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
+def __check_api_level(user_instance: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
     """TODO: document"""
     # Only validate in cloud mode
     if not current_app.cloud_mode:
@@ -307,11 +284,11 @@ def right_required(required_right: str):
 
                 group: UserGroupModel = groups_manager.get_group(current_user.group_id)
                 has_right = group.has_right(required_right)
+
+                if not has_right and not group.has_extended_right(required_right):
+                    return abort(403, 'Request user does not have the right for this action')
             except ManagerGetError:
                 return abort(404, 'Group or right does not exist!')
-
-            if not has_right and not group.has_extended_right(required_right):
-                return abort(403, 'Request user does not have the right for this action')
 
             return func(*args, **kwargs)
 
@@ -411,6 +388,49 @@ def parse_authorization_header(header):
     return None
 
 # ------------------------------------------------------ HELPER ------------------------------------------------------ #
+
+def validate_right_cloud_api(required_right: str, request_user: UserModel) -> bool:
+    """TODO: document"""
+    with current_app.app_context():
+        groups_manager = GroupsManager(current_app.database_manager, request_user.database)
+
+
+    try:
+        group = groups_manager.get_group(request_user.group_id)
+        right_status = group.has_right(required_right)
+
+        if not right_status:
+            right_status = group.has_extended_right(required_right)
+
+        return right_status
+    except Exception:
+        return False
+
+
+# TODO: UNUSED-FIX
+def validate_password(user_name: str, password: str, database: str = None) -> Union[UserModel, None]:
+    """TODO: document"""
+    if database:
+        users_manager = UsersManager(current_app.database_manager, database)
+        security_manager = SecurityManager(current_app.database_manager, database)
+        settings_reader = SettingsReaderManager(current_app.database_manager, database)
+    else:
+        users_manager = UsersManager(current_app.database_manager)
+        security_manager = SecurityManager(current_app.database_manager)
+        settings_reader = SettingsReaderManager(current_app.database_manager)
+
+    auth_settings = settings_reader.get_all_values_from_section('auth',
+                                                                            AuthModule.__DEFAULT_SETTINGS__)
+    auth_module = AuthModule(auth_settings,
+                                security_manager=security_manager,
+                                users_manager=users_manager)
+
+    try:
+        # Returns the UserModel
+        return auth_module.login(user_name, password)
+    except Exception:
+        return None
+
 
 def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None):
     """Simulates Users in MySQL DB"""
@@ -538,8 +558,7 @@ def set_admin_user(user_data: dict, subscription: dict):
 def retrive_user(user_data: dict, database: str):
     """Get user from db"""
     with current_app.app_context():
-        current_app.database_manager.connector.set_database(database)
-        users_manager = UsersManager(current_app.database_manager)
+        users_manager = UsersManager(current_app.database_manager, database)
 
     try:
         return users_manager.get_user_by({'email': user_data['email']})
