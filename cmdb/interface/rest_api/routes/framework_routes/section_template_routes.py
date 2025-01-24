@@ -52,7 +52,7 @@ section_template_blueprint = APIBlueprint('section_templates', __name__)
 @section_template_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.add')
+@section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.add')
 def create_section_template(params: dict, request_user: UserModel):
     """
     Creates a CmdbSectionTemplate in the database
@@ -90,7 +90,7 @@ def create_section_template(params: dict, request_user: UserModel):
 @section_template_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
+@section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
 def get_all_section_templates(params: CollectionParameters, request_user: UserModel):
     """Returns all CmdbSectionTemplates based on the params
 
@@ -127,7 +127,7 @@ def get_all_section_templates(params: CollectionParameters, request_user: UserMo
 @section_template_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
+@section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
 def get_section_template(public_id: int, request_user: UserModel):
     """
     Retrieves the CmdbSectionTemplate with the given public_id
@@ -156,7 +156,7 @@ def get_section_template(public_id: int, request_user: UserModel):
 @section_template_blueprint.route('/<int:public_id>/count', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
+@section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
 def get_global_section_template_count(public_id: int, request_user: UserModel):
     """
     Retrives the count of types and objects using this global CmdbSectionTemplate
@@ -191,7 +191,7 @@ def get_global_section_template_count(public_id: int, request_user: UserModel):
 @section_template_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.edit')
+@section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.edit')
 def update_section_template(params: dict, request_user: UserModel):
     """
     Updates a CmdbSectionTemplate
@@ -244,7 +244,7 @@ def update_section_template(params: dict, request_user: UserModel):
 @section_template_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-# @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.delete')
+@section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.delete')
 def delete_section_template(public_id: int, request_user: UserModel):
     """TODO: document"""
     template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,

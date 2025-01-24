@@ -22,7 +22,7 @@ from cmdb.framework.exporter.writer.base_export_writer import BaseExportWriter
 from cmdb.framework.exporter.writer.supported_exporter_extension import SupportedExporterExtension
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.interface.route_utils import login_required, insert_request_user, verify_api_access
+from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.models.user_model.user import UserModel
@@ -39,7 +39,6 @@ exporter_blueprint = APIBlueprint('exporter', __name__)
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
 @exporter_blueprint.route('/extensions', methods=['GET'])
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_export_file_types():
     """TODO: document"""
@@ -51,7 +50,7 @@ def get_export_file_types():
 @exporter_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @exporter_blueprint.protect(auth=True, right='base.framework.object.view')
+@exporter_blueprint.protect(auth=True, right='base.framework.object.view')
 def export_objects(params: CollectionParameters, request_user: UserModel):
     """TODO: document"""
     try:

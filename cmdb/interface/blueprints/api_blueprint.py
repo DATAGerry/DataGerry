@@ -22,7 +22,7 @@ from flask import Blueprint, abort, request, current_app
 from cmdb.manager import UsersManager
 
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.interface.route_utils import auth_is_valid, user_has_right, parse_authorization_header
+from cmdb.interface.route_utils import user_has_right, parse_authorization_header
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.token.validator import TokenValidator
 
@@ -48,33 +48,50 @@ class APIBlueprint(Blueprint):
         def _protect(f):
             @wraps(f)
             def _decorate(*args, **kwargs):
-
-                if auth:
-                    if not auth_is_valid():
-                        return abort(401)
-
                 if auth and right:
-                    if not user_has_right(right):
+                    request_user = None
+
+                    if current_app.cloud_mode and "x-api-key" in request.headers:
+                        request_user = kwargs['request_user']
+
+                    if not user_has_right(right, request_user):
                         if excepted:
-                            with current_app.app_context():
-                                users_manager = UsersManager(current_app.database_manager)
+                            if request_user:
+                                user_dict = UserModel.to_dict(request_user)
 
-                            token = parse_authorization_header(request.headers['Authorization'])
-                            try:
-                                decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
-                            except TokenValidationError:
-                                return abort(401, "Invalid Token")
+                                for exe_key, exe_value in excepted.items():
+                                    try:
+                                        route_parameter = kwargs[exe_value]
+                                    except KeyError:
+                                        return abort(403, f'User has not the required right {right}')
 
-                            try:
-                                user_id = decrypted_token['DATAGERRY']['value']['user']['public_id']
+                                    if exe_key not in user_dict:
+                                        return abort(403, f'User has not the required right {right}')
 
-                                if current_app.cloud_mode:
-                                    database = decrypted_token['DATAGERRY']['value']['user']['database']
-                                    users_manager = UsersManager(current_app.database_manager, database)
+                                    if user_dict[exe_key] == route_parameter:
+                                        return f(*args, **kwargs)
 
-                                user_dict: dict = UserModel.to_dict(users_manager.get_user(user_id))
+                            else:
+                                with current_app.app_context():
+                                    users_manager = UsersManager(current_app.database_manager)
 
-                                if excepted:
+                                token = parse_authorization_header(request.headers['Authorization'])
+
+                                try:
+                                    decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
+                                except TokenValidationError:
+                                    return abort(401, "Invalid Token")
+
+                                try:
+                                    user_id = decrypted_token['DATAGERRY']['value']['user']['public_id']
+
+                                    if current_app.cloud_mode:
+                                        database = decrypted_token['DATAGERRY']['value']['user']['database']
+                                        users_manager = UsersManager(current_app.database_manager, database)
+
+                                    user_dict: dict = UserModel.to_dict(users_manager.get_user(user_id))
+
+
                                     for exe_key, exe_value in excepted.items():
                                         try:
                                             route_parameter = kwargs[exe_value]
@@ -86,8 +103,9 @@ class APIBlueprint(Blueprint):
 
                                         if user_dict[exe_key] == route_parameter:
                                             return f(*args, **kwargs)
-                            except UserManagerGetError:
-                                return abort(403, "Could not retrieve user!")
+                                except UserManagerGetError:
+                                    return abort(403, "Could not retrieve user!")
+
                         return abort(403, f'User has not the required right {right}')
 
                 return f(*args, **kwargs)

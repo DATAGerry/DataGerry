@@ -44,7 +44,7 @@ LOGGER = logging.getLogger(__name__)
 @links_blueprint.route('/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @links_blueprint.protect(auth=True, right='base.framework.object.add')
+@links_blueprint.protect(auth=True, right='base.framework.object.add')
 def create_object_link(request_user: UserModel):
     """
     Creates a new object link in the database
@@ -96,7 +96,7 @@ def create_object_link(request_user: UserModel):
 @links_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @links_blueprint.protect(auth=True, right='base.framework.object.view')
+@links_blueprint.protect(auth=True, right='base.framework.object.view')
 @links_blueprint.parse_collection_parameters()
 def get_links(params: CollectionParameters, request_user: UserModel):
     """
@@ -136,7 +136,7 @@ def get_links(params: CollectionParameters, request_user: UserModel):
 @links_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @links_blueprint.protect(auth=True, right='base.framework.object.delete')
+@links_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_link(public_id: int, request_user: UserModel):
     """
     Deletes an object link with the given public_id

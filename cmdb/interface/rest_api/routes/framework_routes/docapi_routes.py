@@ -31,7 +31,7 @@ from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate
 from cmdb.framework.results import IterationResult
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
 from cmdb.interface.rest_api.responses import GetMultiResponse, DefaultResponse
-from cmdb.interface.route_utils import login_required, insert_request_user, right_required, verify_api_access
+from cmdb.interface.route_utils import insert_request_user, right_required, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import APIBlueprint, RootBlueprint
 from cmdb.models.user_model.user import UserModel
@@ -47,7 +47,6 @@ docs_blueprint = APIBlueprint('docs', __name__)
 
 @docapi_blueprint.route('/template', methods=['POST'])
 @docapi_blueprint.route('/template/', methods=['POST'])
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 @right_required('base.docapi.template.add')
@@ -88,7 +87,7 @@ def create_template(request_user: UserModel):
 @docs_blueprint.route('/template', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-# @docs_blueprint.protect(auth=True, right='base.docapi.template.view')
+@docs_blueprint.protect(auth=True, right='base.docapi.template.view')
 @docs_blueprint.parse_collection_parameters()
 def get_template_list(params: CollectionParameters, request_user: UserModel):
     """TODO: document"""
@@ -116,10 +115,10 @@ def get_template_list(params: CollectionParameters, request_user: UserModel):
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @docapi_blueprint.route('/template/by/<string:searchfilter>/', methods=['GET'])
 @docapi_blueprint.route('/template/by/<string:searchfilter>', methods=['GET'])
 @insert_request_user
-@login_required
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.view')
 def get_template_list_filtered(searchfilter: str, request_user: UserModel):
@@ -144,9 +143,9 @@ def get_template_list_filtered(searchfilter: str, request_user: UserModel):
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @docapi_blueprint.route('/template/<int:public_id>/', methods=['GET'])
 @docapi_blueprint.route('/template/<int:public_id>', methods=['GET'])
-@login_required
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.view')
@@ -168,9 +167,9 @@ def get_template(public_id, request_user: UserModel):
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @docapi_blueprint.route('/template/name/<string:name>/', methods=['GET'])
 @docapi_blueprint.route('/template/name/<string:name>', methods=['GET'])
-@login_required
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.view')
@@ -191,9 +190,9 @@ def get_template_by_name(name: str, request_user: UserModel):
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
+#TODO: ROUTE-FIX (Remove one route)
 @docapi_blueprint.route('/template', methods=['PUT'])
 @docapi_blueprint.route('/template/', methods=['PUT'])
-@login_required
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.edit')
@@ -229,9 +228,9 @@ def update_template(request_user: UserModel):
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
+#TODO: ROUTE-FIX (Remove one route)
 @docapi_blueprint.route('/template/<int:public_id>/', methods=['DELETE'])
 @docapi_blueprint.route('/template/<int:public_id>', methods=['DELETE'])
-@login_required
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.delete')
@@ -251,9 +250,9 @@ def delete_template(public_id: int, request_user: UserModel):
     return api_response.make_response()
 
 
+#TODO: ROUTE-FIX (Remove one route)
 @docapi_blueprint.route('/template/<int:public_id>/render/<int:object_id>/', methods=['GET'])
 @docapi_blueprint.route('/template/<int:public_id>/render/<int:object_id>', methods=['GET'])
-@login_required
 @insert_request_user
 @right_required('base.framework.object.view')
 def render_object_template(public_id: int, object_id: int, request_user: UserModel):
