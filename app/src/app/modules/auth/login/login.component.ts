@@ -48,6 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     public subscriptions: Array<any> = [];
     public showSubscriptions = false;
+    public isLoading = false; 
 
     private loginSubscription: Subscription = new Subscription();
 
@@ -115,10 +116,13 @@ export class LoginComponent implements OnInit, OnDestroy {
                 next: (response: LoginResponse | Array<any>) => {
 
                     if (Array.isArray(response)) {
+                        this.isLoading = true;
                         this.subscriptions = response;
-                        this.showSubscriptions = true;
-
-                        this.loginForm.get('subscription')?.reset(null);
+                        setTimeout(() => {
+                            this.isLoading = false; 
+                            this.showSubscriptions = true;
+                            this.loginForm.get('subscription')?.reset(null);
+                        }, 1000);
                     } else {
                         // Normal login response
                         const loginResponse = response as LoginResponse;
@@ -132,6 +136,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                     }
                 },
                 error: (err) => {
+                    this.isLoading = false;
                     this.toastService.error(err?.error?.message)
                     this.render.addClass(document.getElementById('login-logo'), 'shake');
                     this.loginForm.reset();
