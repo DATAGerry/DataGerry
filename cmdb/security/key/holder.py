@@ -44,16 +44,17 @@ class KeyHolder:
     def get_public_key(self):
         """TODO: document"""
         if current_app.cloud_mode:
-            return current_app.asymmetric_key['public']
-            # if current_app.local_mode:
-            #     return current_app.asymmetric_key['public']
+            # return current_app.asymmetric_key['public']
+            if current_app.local_mode:
+                return current_app.asymmetric_key['public']
 
-            # public_key = base64.b64decode(os.getenv("DG_RSA_PUBLIC_KEY"))
+            public_key = base64.b64decode(os.getenv("DG_RSA_PUBLIC_KEY"))
+            LOGGER.warning(f"public_key from os env: {public_key}")
 
-            # if not public_key:
-            #     LOGGER.error("Error: No RSA public key provided!")
+            if not public_key:
+                LOGGER.error("Error: No RSA public key provided!")
 
-            # return public_key
+            return public_key
 
         return self.settings_reader.get_value('asymmetric_key', 'security')['public']
 
@@ -61,15 +62,16 @@ class KeyHolder:
     def get_private_key(self):
         """TODO: document"""
         if current_app.cloud_mode:
-            return current_app.asymmetric_key['private']
-            # if current_app.local_mode:
-            #     return current_app.asymmetric_key['private']
+            # return current_app.asymmetric_key['private']
+            if current_app.local_mode:
+                return current_app.asymmetric_key['private']
 
-            # private_key = base64.b64decode(os.getenv("DG_RSA_PRIVATE_KEY"))
+            private_key = base64.b64decode(os.getenv("DG_RSA_PRIVATE_KEY"))
+            LOGGER.warning(f"private_key from os env: {private_key}")
 
-            # if not private_key:
-            #     LOGGER.error("Error: No RSA private key provided!")
+            if not private_key:
+                LOGGER.error("Error: No RSA private key provided!")
 
-            # return private_key
+            return private_key
 
         return self.settings_reader.get_value('asymmetric_key', 'security')['private']

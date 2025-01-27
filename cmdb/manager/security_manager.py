@@ -111,16 +111,16 @@ class SecurityManager:
         """TODO: document"""
         with current_app.app_context():
             if current_app.cloud_mode:
-                return current_app.symmetric_key
-                # if current_app.local_mode:
-                #     return current_app.symmetric_key
+                if current_app.local_mode:
+                    return current_app.symmetric_key
 
-                # symmetric_key = base64.b64decode(os.getenv("DG_SYMMETRIC_KEY"))
+                symmetric_key = base64.b64decode(os.getenv("DG_SYMMETRIC_KEY"))
+                LOGGER.warning(f"symmetric_key from os env: {symmetric_key}")
 
-                # if not symmetric_key:
-                #     LOGGER.error("Error: No symmetric key provided!")
+                if not symmetric_key:
+                    LOGGER.error("Error: No symmetric key provided!")
 
-                # return symmetric_key
+                return symmetric_key
 
             try:
                 symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
