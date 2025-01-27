@@ -166,7 +166,7 @@ class WebhooksManager(BaseManager):
                             webhook_url,
                             data=json.dumps(payload, default=default, ensure_ascii=False, indent=2),
                             headers={'Content-Type': 'application/json'},
-                            timeout=10,
+                            timeout=3,
                         )
 
                         payload['public_id'] = self.webhooks_event_manager.get_next_public_id()
