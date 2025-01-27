@@ -114,7 +114,12 @@ class MongoDatabaseManager(DatabaseManager):
             UpdateResult
         """
         try:
-            formatted_data = {'$set': data} if add_to_set else data
+            # formatted_data = {'$set': data} if add_to_set else data
+            # Only wrap in '$set' if `data` is not an update operator
+            if add_to_set and not any(k.startswith('$') for k in data):
+                formatted_data = {'$set': data}
+            else:
+                formatted_data = data
 
             return self.get_collection(collection).update_one(criteria, formatted_data, *args, **kwargs)
         except Exception as err:

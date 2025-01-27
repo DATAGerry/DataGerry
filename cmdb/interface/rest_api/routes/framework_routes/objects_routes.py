@@ -884,13 +884,11 @@ def update_unstructured_objects(public_id: int, request_user: UserModel):
                     objects_manager.update(criteria={'public_id': obj.public_id},
                                         data={'$pull': {'fields': {"name": field}}},
                                         add_to_set=False)
-                    # objects_manager.update_many_objects(query={'public_id': obj.public_id},
-                    #                                     update={'$pull': {'fields': {"name": field}}})
                 except Exception as error:
                     LOGGER.debug("Clean Removed Type Fields - Update Object: %s, Type: %s", error, type(error))
                     return abort(500, "Could not clean objects!")
-                    # Check all reports and clear selected_fields and conditions
 
+                # Check all reports and clear selected_fields and conditions
                 try:
                     for a_report in reports_for_type:
                         a_report = CmdbReport.from_data(a_report)
@@ -902,8 +900,6 @@ def update_unstructured_objects(public_id: int, request_user: UserModel):
                 except Exception as error:
                     LOGGER.debug("Clean Removed Type Fields - Clean Reports: %s, Type: %s", error, type(error))
                     return abort(500, "Could not clean objects!")
-
-
 
         objects_by_type = objects_manager.iterate(builder_params, request_user).results
 
