@@ -49,7 +49,6 @@ class KeyHolder:
                 return current_app.asymmetric_key['public']
 
             public_key = base64.b64decode(os.getenv("DG_RSA_PUBLIC_KEY"))
-            LOGGER.warning(f"public_key from os env: {public_key}")
 
             if not public_key:
                 LOGGER.error("Error: No RSA public key provided!")
@@ -67,7 +66,6 @@ class KeyHolder:
                 return current_app.asymmetric_key['private']
 
             private_key = base64.b64decode(os.getenv("DG_RSA_PRIVATE_KEY"))
-            LOGGER.warning(f"private_key from os env: {private_key}")
 
             if not private_key:
                 LOGGER.error("Error: No RSA private key provided!")
