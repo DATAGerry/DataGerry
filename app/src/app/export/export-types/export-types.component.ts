@@ -5,6 +5,8 @@ import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms
 import { DatePipe } from '@angular/common';
 import { FileSaverService } from 'ngx-filesaver';
 import { FileService } from '../export.service';
+import { LoaderService } from 'src/app/layout/services/loader.service';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'cmdb-export-types',
@@ -17,9 +19,10 @@ export class ExportTypesComponent implements OnInit {
     public formatList: any[] = [{ id: 0, label: 'json', icon: 'file-code' }];
     public formExport: UntypedFormGroup;
     public isSubmitted: boolean;
+    public isLoading$ = this.loaderService.isLoading$;
 
     constructor(private typeService: TypeService, private exportService: FileService,
-        private datePipe: DatePipe, private fileSaverService: FileSaverService) {
+        private datePipe: DatePipe, private fileSaverService: FileSaverService,  private loaderService: LoaderService) {
         this.formExport = new UntypedFormGroup({
             type: new UntypedFormControl(null, Validators.required),
             format: new UntypedFormControl(null, Validators.required)
@@ -28,7 +31,8 @@ export class ExportTypesComponent implements OnInit {
 
 
     public ngOnInit(): void {
-        this.typeService.getTypeList().subscribe((typeList: CmdbType[]) => {
+        this.loaderService.show();
+        this.typeService.getTypeList().pipe(finalize(() => this.loaderService.hide())).subscribe((typeList: CmdbType[]) => {
             this.typeList = typeList;
         });
     }
@@ -66,7 +70,8 @@ export class ExportTypesComponent implements OnInit {
         this.resetForm();
 
         if (fileExtension != null && typeID != null) {
-            this.exportService.callExportTypeRoute('export/type/' + typeID.toString())
+            this.loaderService.show();
+            this.exportService.callExportTypeRoute('export/type/' + typeID.toString()).pipe(finalize(() => this.loaderService.hide()))
                 .subscribe(res => this.downLoadFile(res));
         }
     }

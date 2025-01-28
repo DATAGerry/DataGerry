@@ -24,3 +24,8 @@
   </button>
   <button *ngIf="mode === 'delete'" type="button" class="btn btn-danger" (click)="onSubmit()">Delete</button>
 </div>
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

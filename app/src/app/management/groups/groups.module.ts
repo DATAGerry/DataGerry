@@ -43,6 +43,7 @@ import { GroupUsersModalComponent } from './modals/group-users-modal/group-users
 import { GroupTableListComponent } from './components/group-table-list/group-table-list.component';
 import { GroupFormHelperComponent } from './components/group-form/group-form-helper/group-form-helper/group-form-helper.component';
 import { GroupAclComponent } from './group-acl/group-acl.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -74,7 +75,8 @@ import { GroupAclComponent } from './group-acl/group-acl.component';
         TableModule,
         UsersModule,
         AclModule,
-        NgbTooltipModule
+        NgbTooltipModule,
+        CoreModule
     ]
 })
 export class GroupsModule {}

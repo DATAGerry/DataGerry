@@ -18,9 +18,10 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 import { ImportService } from '../../../services/import.service';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -45,6 +46,8 @@ export class SelectFileComponent implements OnInit, OnDestroy {
     @Output() public formatChange: EventEmitter<string>;
     @Output() public fileChange: EventEmitter<File>;
 
+    public isLoading$ = this.loaderService.isLoading$;
+
 /* ------------------------------------------------- GETTER / SETTER ------------------------------------------------ */
 
     public get fileFormat() {
@@ -60,7 +63,7 @@ export class SelectFileComponent implements OnInit, OnDestroy {
 /*                                                     LIFE CYCLE                                                     */
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-    public constructor(private importService: ImportService) {
+    public constructor(private importService: ImportService, private loaderService: LoaderService) {
         this.formatChange = new EventEmitter<string>();
         this.fileChange = new EventEmitter<File>();
 
@@ -76,7 +79,9 @@ export class SelectFileComponent implements OnInit, OnDestroy {
 
 
     public ngOnInit(): void {
-        this.importerDefinitionSubscription = this.importService.getObjectImporters().subscribe(importers => {
+        this.loaderService.show();
+        this.importerDefinitionSubscription = this.importService.getObjectImporters()
+        .pipe(finalize(() => this.loaderService.hide())).subscribe(importers => {
             this.importerTypes = importers;
         });
 

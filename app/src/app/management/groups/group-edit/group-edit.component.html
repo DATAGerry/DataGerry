@@ -15,3 +15,9 @@
     <hr/>
     <cmdb-acl-objects-table [group]="group"/>
 </ng-container>
+
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

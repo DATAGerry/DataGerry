@@ -20,10 +20,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportCategoryService } from 'src/app/reporting/services/report-category.service';
 import { TypeService } from 'src/app/framework/services/type.service';
 import { Observable, ReplaySubject, forkJoin, throwError } from 'rxjs';
-import { catchError, takeUntil, tap } from 'rxjs/operators';
+import { catchError, finalize, takeUntil, tap } from 'rxjs/operators';
 import { ReportService } from 'src/app/reporting/services/report.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
     selector: 'app-create-report',
@@ -48,6 +49,9 @@ export class CreateReportComponent implements OnInit, OnDestroy {
         { label: 'inside the columns', value: 'COLUMNS' }
     ];
 
+    public isLoading$ = this.loaderService.isLoading$;
+
+
     /* --------------------------------------------------- LIFECYCLE METHODS -------------------------------------------------- */
 
     constructor(
@@ -58,6 +62,7 @@ export class CreateReportComponent implements OnInit, OnDestroy {
         private toast: ToastService,
         private router: Router,
         private route: ActivatedRoute,
+        private loaderService: LoaderService
     ) { }
 
     ngOnInit(): void {
@@ -132,9 +137,11 @@ export class CreateReportComponent implements OnInit, OnDestroy {
      * @returns An observable of the API response.
      */
     private loadTypes(): Observable<any> {
+        this.loaderService.show();
         this.typeLoading = true;
         const params = { limit: 0, page: 1, sort: 'public_id', order: 1 };
         return this.typeService.getTypes(params).pipe(
+            finalize(() => this.loaderService.hide()),
             tap((response) => {
                 this.types = response.results;
                 this.typeLoading = false;
@@ -168,7 +175,8 @@ export class CreateReportComponent implements OnInit, OnDestroy {
      * @param id - The ID of the report to load.
      */
     private loadReportData(id: number): void {
-        this.reportService.getReportById(id).pipe(takeUntil(this.unsubscribe$)).subscribe(
+        this.loaderService.show();
+        this.reportService.getReportById(id).pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide())).subscribe(
             (report) => {
                 this.createReportForm.patchValue({
                     name: report.name,
@@ -215,6 +223,7 @@ export class CreateReportComponent implements OnInit, OnDestroy {
      */
     onSubmit(): void {
         if (this.createReportForm.valid || !this.filterBuilderValidation) {
+            this.loaderService.show();
             const formValues = this.createReportForm.value;
             const reportData = {
                 public_id: this.reportId,
@@ -229,7 +238,7 @@ export class CreateReportComponent implements OnInit, OnDestroy {
             };
 
             if (this.isEditMode) {
-                this.reportService.updateReport(this.reportId, reportData).subscribe({
+                this.reportService.updateReport(this.reportId, reportData).pipe(finalize(() => this.loaderService.hide())).subscribe({
                     next: () => {
                         this.toast.success('Report updated successfully');
                         this.router.navigate(['/reports/overview']);
@@ -240,7 +249,7 @@ export class CreateReportComponent implements OnInit, OnDestroy {
                 });
 
             } else {
-                this.reportService.createReport(reportData).subscribe({
+                this.reportService.createReport(reportData).pipe(finalize(() => this.loaderService.hide())).subscribe({
                     next: (response) => {
                         this.toast.success('Report created successfully');
                         this.router.navigate(['/reports/overview']);

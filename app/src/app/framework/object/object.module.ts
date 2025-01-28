@@ -74,6 +74,7 @@ import { ObjectBulkChangeEditorComponent } from './object-bulk-change/object-bul
 import { ObjectBulkChangePreviewComponent } from './object-bulk-change/object-bulk-change-preview/object-bulk-change-preview.component';
 import { ObjectBulkChangeFailedComponent } from './object-bulk-change/object-bulk-change-complete/object-bulk-change-failed/object-bulk-change-failed.component';
 import { ObjectBulkChangeCompleteComponent } from './object-bulk-change/object-bulk-change-complete/object-bulk-change-complete.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -136,7 +137,8 @@ import { ObjectBulkChangeCompleteComponent } from './object-bulk-change/object-b
         TableModule,
         NgxPaginationModule,
         MatMenuModule,
-        MatIconModule
+        MatIconModule,
+        CoreModule
     ],
     exports: [
         ObjectViewRenderComponent,

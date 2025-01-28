@@ -35,6 +35,7 @@ import { DeactivateTabComponent } from './log-object-settings/deactivate-tab/dea
 import { DeleteTabComponent } from './log-object-settings/delete-tab/delete-tab.component';
 import { LogSettingsComponent } from './log-settings.component';
 import { LogObjectTableActionsComponent } from './log-object-settings/log-object-table-actions/log-object-table-actions.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -58,7 +59,8 @@ import { LogObjectTableActionsComponent } from './log-object-settings/log-object
         TableModule,
         ObjectModule,
         UsersModule,
-        RenderModule
+        RenderModule,
+        CoreModule
     ]
 })
 export class LogSettingsModule { }

@@ -19,7 +19,7 @@ import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { Subscription, first } from 'rxjs';
+import { Subscription, delay, finalize, first } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
 import { PermissionService } from '../services/permission.service';
@@ -28,6 +28,7 @@ import { UserSettingsDBService } from '../../../management/user-settings/service
 import { LoginResponse } from '../models/responses';
 import { Group } from 'src/app/management/models/group';
 import { ToastService } from 'src/app/layout/toast/toast.service';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
     selector: 'cmdb-login',
@@ -55,6 +56,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     public userName: string;
     public userPW: string;
 
+    public isLoading$ = this.loaderService.isLoading$;
+
     /* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
     get controls() {
         return this.loginForm.controls;
@@ -68,7 +71,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         private authenticationService: AuthService,
         private permissionService: PermissionService,
         private render: Renderer2,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private loaderService: LoaderService
     ) {
         const currentDate = new Date();
         const year = currentDate.getFullYear();
@@ -105,13 +109,14 @@ export class LoginComponent implements OnInit, OnDestroy {
      */
     public onSubmit() {
         this.submitted = true;
+        this.loaderService.show();
 
         this.userName = this.loginForm.controls['username'].value;
         this.userPW = this.loginForm.controls['password'].value;
 
         this.loginSubscription = this.authenticationService
             .login(this.userName, this.userPW)
-            .pipe(first())
+            .pipe(first(), finalize(()=> this.loaderService.hide()))
             .subscribe({
                 next: (response: LoginResponse | Array<any>) => {
 
@@ -159,6 +164,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.loaderService.show();
+
         const payload = {
             user_name: this.userName,
             password: this.userPW,
@@ -167,7 +174,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         this.loginSubscription = this.authenticationService
             .selectSubscription(payload)
-            .pipe(first())
+            .pipe(first(), finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (loginResponse: LoginResponse) => {
                     this.userSettingsDB.syncSettings();

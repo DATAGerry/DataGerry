@@ -27,6 +27,8 @@ import { CmdbType } from '../../framework/models/cmdb-type';
 import { SupportedExporterExtension } from './model/supported-exporter-extension';
 import { CollectionParameters } from '../../services/models/api-parameter';
 import { ToastService } from 'src/app/layout/toast/toast.service';
+import { LoaderService } from 'src/app/layout/services/loader.service';
+import { finalize } from 'rxjs';
 /* ------------------------------------------------------------------------------------------------------------------ */
 @Component({
     selector: 'cmdb-export-objects',
@@ -38,6 +40,7 @@ export class ExportObjectsComponent implements OnInit {
     public formatList: SupportedExporterExtension[] = [];
     public formExport: UntypedFormGroup;
     public isVisible: boolean;
+    public isLoading$ = this.loaderService.isLoading$;
 
     /* ------------------------------------------------------------------------------------------------------------------ */
     /*                                                     LIFE CYCLE                                                     */
@@ -47,7 +50,8 @@ export class ExportObjectsComponent implements OnInit {
         private datePipe: DatePipe,
         private typeService: TypeService,
         private fileSaverService: FileSaverService,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private loaderService: LoaderService,
     ) {
         this.formExport = new UntypedFormGroup({
             type: new UntypedFormControl(null, Validators.required),
@@ -57,7 +61,8 @@ export class ExportObjectsComponent implements OnInit {
 
 
     ngOnInit() {
-        this.typeService.getTypeList().subscribe(data => {
+        this.loaderService.show();
+        this.typeService.getTypeList().pipe(finalize(() => this.loaderService.hide())).subscribe(data => {
             this.typeList = data;
         });
 
@@ -103,7 +108,9 @@ export class ExportObjectsComponent implements OnInit {
             const optional = { classname: fileExtension, zip: false };
             const exportAPI: CollectionParameters = { filter, optional, order: 1, sort: 'public_id' };
 
+            this.loaderService.show();
             this.exportService.callExportRoute(exportAPI)
+            .pipe(finalize(()=>   this.loaderService.hide()))
                 .subscribe({
                     next: res => this.downLoadFile(res, fileExtension),
                     error: e => {

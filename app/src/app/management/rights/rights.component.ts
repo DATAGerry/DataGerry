@@ -21,10 +21,11 @@ import { Right, SecurityLevel } from '../models/right';
 import { ActivatedRoute } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 import { Column, Sort } from '../../layout/table/table.types';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { APIGetMultiResponse } from '../../services/models/api-response';
 import { RightService } from '../services/right.service';
 import { CollectionParameters } from '../../services/models/api-parameter';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
   selector: 'cmdb-rights',
@@ -80,7 +81,14 @@ export class RightsComponent implements OnInit, OnDestroy {
    */
   @ViewChild('groupsRightTemplate', { static: true }) public groupsRightTemplate: TemplateRef<any>;
 
-  constructor(private route: ActivatedRoute, private rightService: RightService) {
+  public isLoading$ = this.loaderService.isLoading$;
+
+
+  constructor(
+    private route: ActivatedRoute, 
+    private rightService: RightService,
+    private loaderService: LoaderService
+  ) {
     this.rights = this.route.snapshot.data.rights as Array<Right>;
   }
 
@@ -131,7 +139,8 @@ export class RightsComponent implements OnInit, OnDestroy {
    * Loads the rights from the api based on the params.
    */
   public loadRightsFromAPI() {
-    this.rightService.getRights(this.params).pipe(takeUntil(this.subscriber))
+    this.loaderService.show()
+    this.rightService.getRights(this.params).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
       .subscribe((response: APIGetMultiResponse<Right>) => {
         this.rights = response.results as Array<Right>;
       });

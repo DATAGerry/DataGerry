@@ -47,6 +47,7 @@ import { DateFormatterPipe } from './layout/pipes/date-formatter.pipe';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { CoreModule } from './core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -68,7 +69,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
         TableModule,
         LayoutModule,
         ToastModule,
-        AppRoutingModule
+        AppRoutingModule,
+        CoreModule
     ],
     exports: [
         BrowserModule

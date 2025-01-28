@@ -100,3 +100,9 @@
 <button class="btn btn-primary next" type="button" [disabled]="configForm.invalid" awNextStep>
     Next Step <i class="fas fa-angle-double-right"></i>
 </button>
+
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

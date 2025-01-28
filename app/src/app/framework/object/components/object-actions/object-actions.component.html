@@ -36,3 +36,8 @@
     </span>
   </div>
 </div>
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="Hang tight, we're getting things ready..."
+></app-loading-popup>

@@ -18,7 +18,7 @@
 import {Component, Input, OnDestroy} from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { finalize, ReplaySubject, takeUntil } from 'rxjs';
 
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -29,6 +29,7 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 import { RenderResult } from '../../../models/cmdb-render';
 import { AccessControlList } from 'src/app/modules/acl/acl.types';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -43,6 +44,7 @@ export class ObjectActionsComponent implements OnDestroy {
 
     public subscriber: ReplaySubject<void>;
     private locationSubscription: ReplaySubject<void> = new ReplaySubject<void>();
+    public isLoading$ = this.loaderService.isLoading$;
 
     private modalRef: NgbModalRef;
 
@@ -52,7 +54,9 @@ export class ObjectActionsComponent implements OnDestroy {
                 private locationService: LocationService, 
                 private sidebarService: SidebarService, 
                 private toastService: ToastService, 
-                private router: Router ) {
+                private router: Router,
+                private loaderService: LoaderService,
+             ) {
 
         this.subscriber = new ReplaySubject<void>();
     }
@@ -107,7 +111,8 @@ export class ObjectActionsComponent implements OnDestroy {
 
         this.modalRef.result.then((result) => {
             if (result) {
-                this.objectService.deleteObject(publicID).pipe(takeUntil(this.subscriber))
+                this.loaderService.show();
+                this.objectService.deleteObject(publicID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
                 .subscribe({
                     next: () => {
                         this.toastService.success(`Object ${ this.renderResult.object_information.object_id } was deleted succesfully!`);

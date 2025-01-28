@@ -17,7 +17,7 @@
 */
 import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReportService } from 'src/app/reporting/services/report.service';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { APIGetMultiResponse } from 'src/app/services/models/api-response';
@@ -27,6 +27,7 @@ import { AddCategoryModalComponent } from 'src/app/framework/category/components
 import { DeleteConfirmationModalComponent } from '../../report-modal/delete-confirmation-modal.component';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Router } from '@angular/router';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
   selector: 'app-report-overview',
@@ -42,6 +43,7 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
   public loading: boolean = false;
   public sort: Sort = { name: 'public_id', order: SortDirection.ASCENDING } as Sort;
   public filter: string;
+  public isLoading$ = this.loaderService.isLoading$;
 
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
 
@@ -53,7 +55,8 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private modalService: NgbModal,
     private toast: ToastService,
-    private router: Router
+    private router: Router,
+    private loaderService: LoaderService
   ) { }
 
 
@@ -82,6 +85,7 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
    * Updates the reports array and total reports count or logs an error if loading fails.
    */
   private loadReports(): void {
+    this.loaderService.show();
     this.loading = true;
     const params: CollectionParameters = {
       filter: this.filterBuilder(),
@@ -92,7 +96,7 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
     };
 
     this.reportService.getAllReports(params)
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (response: APIGetMultiResponse<any>) => {
           if (response && response.results) {
@@ -141,8 +145,9 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
    * @param public_id - The public ID of the report to delete.
    */
   private deleteReport(public_id: number): void {
+    // this.loaderService.show();
     this.reportService.deleteReport(public_id)
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
           this.toast.success('Report deleted successfully');

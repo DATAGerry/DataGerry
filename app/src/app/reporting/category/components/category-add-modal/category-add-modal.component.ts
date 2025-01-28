@@ -18,6 +18,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { finalize } from 'rxjs';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { ReportCategoryService } from 'src/app/reporting/services/report-category.service';
 
@@ -31,9 +33,12 @@ export class AddCategoryModalComponent implements OnInit {
     @Input() categoryData: any = { name: '', predefined: false };
 
     public addCategoryForm: UntypedFormGroup;
+    public isLoading$ = this.loaderService.isLoading$;
 
-    constructor(public modal: NgbActiveModal, private categoryService: ReportCategoryService,
-        private toast: ToastService
+    constructor(public modal: NgbActiveModal, 
+        private categoryService: ReportCategoryService,
+        private toast: ToastService,
+        private loaderService: LoaderService
     ) { }
 
     ngOnInit(): void {
@@ -69,7 +74,8 @@ export class AddCategoryModalComponent implements OnInit {
      * @param categoryData - The data for the new category.
      */
     private addCategory(categoryData: { name: string; predefined: boolean }): void {
-        this.categoryService.createCategory(categoryData).subscribe({
+        this.loaderService.show();
+        this.categoryService.createCategory(categoryData).pipe(finalize(()=>  this.loaderService.hide())).subscribe({
             next: () => {
                 this.modal.close('success');
             },
@@ -85,7 +91,8 @@ export class AddCategoryModalComponent implements OnInit {
      * @param categoryData - The updated data for the category.
      */
     private updateCategory(categoryData: { public_id: number; name: string; predefined: boolean }): void {
-        this.categoryService.updateCategory(categoryData).subscribe({
+        this.loaderService.show();
+        this.categoryService.updateCategory(categoryData).pipe(finalize(()=>  this.loaderService.hide())).subscribe({
             next: () => {
                 this.modal.close('updated');
             },
@@ -101,7 +108,8 @@ export class AddCategoryModalComponent implements OnInit {
      * Closes the modal on success or logs an error and dismisses the modal on failure.
      */
     private deleteCategory() {
-        this.categoryService.deleteCategory(this.categoryData.public_id).subscribe({
+        this.loaderService.show();
+        this.categoryService.deleteCategory(this.categoryData.public_id).pipe(finalize(()=>  this.loaderService.hide())).subscribe({
             next: () => this.modal.close('deleted'),
             error: (error) => {
                 this.toast.error(error?.error?.message);

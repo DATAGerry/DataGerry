@@ -21,9 +21,10 @@ import { GroupService } from '../../services/group.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Right } from '../../models/right';
 import { Group } from '../../models/group';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 import { ToastService } from '../../../layout/toast/toast.service';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
   selector: 'cmdb-group-add',
@@ -35,9 +36,12 @@ export class GroupAddComponent implements OnDestroy {
   public rights: Array<Right> = [];
   public valid: boolean = false;
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
+  public isLoading$ = this.loaderService.isLoading$;
 
-  constructor(private route: ActivatedRoute, private router: Router, private toastService: ToastService,
-    private groupService: GroupService) {
+  constructor(private route: ActivatedRoute,
+              private router: Router, private toastService: ToastService,
+              private groupService: GroupService,
+              private loaderService: LoaderService) {
     this.rights = this.route.snapshot.data.rights as Array<Right>;
   }
 
@@ -47,7 +51,8 @@ export class GroupAddComponent implements OnDestroy {
    */
   public save(group: Group) {
     if (this.valid) {
-      this.groupService.postGroup(group).pipe(takeUntil(this.subscriber)).subscribe((g: Group) => {
+      this.loaderService.show();
+      this.groupService.postGroup(group).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe((g: Group) => {
         this.toastService.success(`Group ${g.label} was added!`);
         this.router.navigate(['/', 'management', 'groups']);
       },

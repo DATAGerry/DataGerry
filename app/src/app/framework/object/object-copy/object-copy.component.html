@@ -64,3 +64,9 @@
         </form>
     </div>
 </div>
+
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="Saving the Object..."
+></app-loading-popup>

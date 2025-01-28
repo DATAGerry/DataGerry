@@ -20,7 +20,7 @@ import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core
 import { FileService } from './service/file.service';
 import { NgbModal, NgbModalConfig, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NewFolderDialogComponent } from './modal/new-folder-dialog/new-folder-dialog.component';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, finalize } from 'rxjs';
 import { FileElement, SelectedFileArray} from './model/file-element';
 import { FileMetadata } from './model/metadata';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -33,6 +33,7 @@ import { RenameDialogComponent } from './modal/rename-dialog/rename-dialog.compo
 import { MoveDialogComponent } from './modal/move-dialog/move-dialog.component';
 import { GeneralModalComponent } from '../../helpers/modals/general-modal/general-modal.component';
 import { MetadataInfoComponent } from './modal/metadata-info/metadata-info.component';
+import { LoaderService } from '../../services/loader.service';
 
 @Component({
   selector: 'cmdb-fileexplorer',
@@ -42,7 +43,7 @@ import { MetadataInfoComponent } from './modal/metadata-info/metadata-info.compo
 export class FileExplorerComponent implements OnInit, OnDestroy {
 
   constructor(private fileService: FileService, private modalService: NgbModal, private config: NgbModalConfig,
-              private scrollService: InfiniteScrollService, private toast: ToastService) {
+              private scrollService: InfiniteScrollService, private toast: ToastService, private loaderService: LoaderService) {
     config.backdrop = 'static';
     config.keyboard = false;
   }
@@ -113,6 +114,8 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
   private lastPageTree: number;
   private readonly treeListScroll: string = 'treeFolderScroll';
 
+  public isLoading$ = this.loaderService.isLoading$;
+
   @HostListener('scroll', ['$event']) onScrollListViewHost(e: Event): void {
     if (this.scrollService.bottomReached(e, this.viewListScroll) && this.page <= this.lastPage) {
       this.loadFiles(this.scrollService.getCollectionParameters(this.viewListScroll), true);
@@ -145,9 +148,10 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
    * @param onScroll Control if it is a new file upload
    */
   public loadFiles(apiParameters?: CollectionParameters, onScroll: boolean = false): void {
+    this.loaderService.show();
     const metadata = this.generateMetadata();
     apiParameters = apiParameters ? apiParameters : this.apiViewListParameter;
-    this.fileService.getAllFilesList(metadata, apiParameters)
+    this.fileService.getAllFilesList(metadata, apiParameters).pipe(finalize(() => this.loaderService.hide()))
       .subscribe((data: APIGetMultiResponse<any>) => {
         if (onScroll) {
           this.fileElements.push(...data.results);
@@ -160,7 +164,9 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
   }
 
   public loadFileTree(apiParameters?: CollectionParameters, onScroll: boolean = false) {
+    this.loaderService.show();
     this.fileService.getAllFilesList(new FileMetadata({folder: true}), apiParameters)
+    .pipe(finalize(() => this.loaderService.hide()))
       .subscribe((data: APIGetMultiResponse<any>) => {
         if (onScroll) {
           this.fileTree.push(...data.results);
@@ -201,7 +207,9 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
   }
 
   private reorderFolderTree(item: FileElement, apiParameter= {page: 1, limit: 100, sort: 'filename', order: -1}) {
+    this.loaderService.show();
     this.fileService.getAllFilesList(new FileMetadata({folder: true}), apiParameter)
+    .pipe(finalize(() =>   this.loaderService.hide()))
       .subscribe((data: APIGetMultiResponse<any>) => {
       for (const el of data.results) {
         if (el.public_id === item.metadata.parent) {
@@ -272,7 +280,8 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
     const metadata = this.generateMetadata();
     this.deleteFileModal(value.filename).then(result => {
       if (result) {
-        this.fileService.deleteFile(value.public_id, metadata).subscribe(() => {
+        this.loaderService.show();
+        this.fileService.deleteFile(value.public_id, metadata).pipe(finalize(() =>  this.loaderService.hide())).subscribe(() => {
             this.reorderFolderTree(value);
             this.selectedFolderElement = new BehaviorSubject<any>(null);
           }
@@ -305,11 +314,12 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
    * @param action renamed or created
    */
   private postFileChanges(changes: any, action: string) {
+    this.loaderService.show();
     const fileElement = this.selectedFolderElement.getValue();
     const fileType = fileElement.metadata.folder ? 'Folder' : 'File';
     fileElement.filename = changes.filename !== undefined ? changes.filename : fileElement.filename;
     fileElement.metadata.parent = changes.parent !== undefined ? changes.parent : fileElement.metadata.parent;
-    this.fileService.putFile(fileElement).subscribe((resp: FileElement) => {
+    this.fileService.putFile(fileElement).pipe(finalize(() => this.loaderService.hide())).subscribe((resp: FileElement) => {
       this.reorderFolderTree(resp);
       this.toast.info(`${fileType} was successfully ${action}: ${fileElement.filename}`);
     });

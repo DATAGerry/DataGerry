@@ -32,6 +32,8 @@ import { RenderResult } from '../../models/cmdb-render';
 import { CmdbType } from '../../models/cmdb-type';
 import { APIUpdateMultiResponse } from '../../../services/models/api-response';
 import { Column } from 'src/app/layout/table/table.types';
+import { LoaderService } from 'src/app/layout/services/loader.service';
+import { finalize } from 'rxjs';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -52,6 +54,7 @@ export class ObjectEditComponent implements OnInit {
     public selectedLocation: number = -1;
     public locationTreeName: string;
     public locationForObjectExists: boolean = false;
+    public isLoading$ = this.loaderService.isLoading$;
 
     // Table Template: Type actions column
     @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
@@ -72,7 +75,8 @@ export class ObjectEditComponent implements OnInit {
         private toastService: ToastService,
         private locationService: LocationService,
         private sidebarService: SidebarService,
-        private _location: Location
+        private _location: Location,
+        private loaderService: LoaderService,
     ) {
         this.route.params.subscribe((params) => {
             this.objectID = params.publicID;
@@ -87,7 +91,8 @@ export class ObjectEditComponent implements OnInit {
 
 
     public ngOnInit(): void {
-        this.objectService.getObject(this.objectID).subscribe({
+        this.loaderService.show();
+        this.objectService.getObject(this.objectID).pipe(finalize(() => this.loaderService.hide())).subscribe({
             next: (rr: RenderResult) => {
                 this.renderResult = rr;
                 this.activeState = this.renderResult.object_information.active;
@@ -147,6 +152,7 @@ export class ObjectEditComponent implements OnInit {
         this.renderForm.markAllAsTouched();
 
         if (this.renderForm.valid) {
+            this.loaderService.show()
             const patchValue = [];
 
             Object.keys(this.renderForm.value).forEach((key: string) => {
@@ -190,7 +196,7 @@ export class ObjectEditComponent implements OnInit {
             this.objectInstance.comment = this.commitForm.get('comment').value;
             this.objectInstance.active = this.activeState;
 
-            this.objectService.putObject(this.objectID, this.objectInstance).subscribe({
+            this.objectService.putObject(this.objectID, this.objectInstance).pipe(finalize(() => this.loaderService.hide())).subscribe({
                 next: (res: APIUpdateMultiResponse) => {
                     if (res.failed.length === 0) {
                         this.objectService.changeState(this.objectID, this.activeState).subscribe((resp: boolean) => {

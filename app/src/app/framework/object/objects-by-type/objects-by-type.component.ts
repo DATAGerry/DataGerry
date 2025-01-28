@@ -19,7 +19,7 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { ActivatedRoute, Data, Router } from '@angular/router';
 
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 
 import { ObjectService } from '../../services/object.service';
 import { FileService } from '../../../export/export.service';
@@ -43,6 +43,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ObjectsDeleteModalComponent } from '../modals/objects-delete-modal/objects-delete-modal.component';
 import { UserSetting } from '../../../management/user-settings/models/user-setting';
 import { SupportedExporterExtension } from '../../../export/export-objects/model/supported-exporter-extension';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -110,6 +111,8 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
     public formatList: any[] = [];
     private deleteManyModalRef: NgbModalRef;
 
+    public isLoading$ = this.loaderService.isLoading$;
+
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(private router: Router,
@@ -121,7 +124,8 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
         private sidebarService: SidebarService,
         private modalService: NgbModal,
         private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>,
-        private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>) {
+        private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>,
+        private loaderService: LoaderService) {
 
         this.route.data.pipe(takeUntil(this.subscriber)).subscribe((data: Data) => {
             if (data.userSetting) {
@@ -317,6 +321,7 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
      * @private
      */
     private getObjectsFromBackend() {
+        this.loaderService.show();
         this.loading = true;
         this.selectedObjects = [];
         this.selectedObjectsIDs = [];
@@ -329,7 +334,7 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
             page: this.page
         };
 
-        this.objectService.getObjects(params).pipe(takeUntil(this.subscriber))
+        this.objectService.getObjects(params).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
             .subscribe((apiResponse: APIGetMultiResponse<RenderResult>) => {
                 this.results = apiResponse.results as Array<RenderResult>;
                 this.totalResults = apiResponse.total;
@@ -1026,8 +1031,9 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
 
             this.deleteManyModalRef.result.then((response: string) => {
                 if (response === 'delete') {
+                    this.loaderService.show();
                     this.objectService.deleteManyObjects(this.selectedObjectsIDs.toString())
-                        .pipe(takeUntil(this.subscriber)).subscribe(() => {
+                        .pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(() => {
                             this.toastService.success(`Deleted ${this.selectedObjects.length} objects successfully`);
                             this.sidebarService.updateTypeCounter(this.type.public_id);
                             this.selectedObjects = [];
@@ -1043,7 +1049,8 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
 
 
     public onObjectDeleteWithLocations(objectID: number) {
-        this.objectService.deleteObjectWithLocations(objectID).pipe(takeUntil(this.subscriber))
+        this.loaderService.show();
+        this.objectService.deleteObjectWithLocations(objectID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
             .subscribe(() => {
                 this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
                 this.loadObjects();
@@ -1054,7 +1061,8 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
     }
 
     public onObjectDeleteWithObjects(objectID: number) {
-        this.objectService.deleteObjectWithChildren(objectID).pipe(takeUntil(this.subscriber))
+        this.loaderService.show();
+        this.objectService.deleteObjectWithChildren(objectID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
             .subscribe(() => {
                 this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
                 this.loadObjects();

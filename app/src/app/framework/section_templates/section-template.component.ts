@@ -17,7 +17,7 @@
 */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -32,6 +32,7 @@ import { CmdbSectionTemplate, Field } from '../models/cmdb-section-template';
 import { SectionTemplateTransformModalComponent } from './layout/modals/section-template-transform/section-template-transform-modal.component';
 import { SectionTemplateCloneModalComponent } from './layout/modals/section-template-clone/section-template-clone-modal.component';
 import { PreviewModalComponent } from '../type/builder/modals/preview-modal/preview-modal.component';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export interface GlobalTemplateCounts {
@@ -49,13 +50,15 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
     private unsubscribe: ReplaySubject<void> = new ReplaySubject<void>();
 
     private modalRef: NgbModalRef;
+    public isLoading$ = this.loaderService.isLoading$;
 
 /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
         private sectionTemplateService: SectionTemplateService,
         private modalService: NgbModal,
-        private toastService: ToastService){
+        private toastService: ToastService,
+        private loaderService: LoaderService){
 
     }
 
@@ -77,7 +80,8 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * Retrieves all section templates from database
      */
     getAllSectionTemplates(){
-        this.sectionTemplateService.getSectionTemplates().pipe(takeUntil(this.unsubscribe))
+        this.loaderService.show();
+        this.sectionTemplateService.getSectionTemplates().pipe(takeUntil(this.unsubscribe), finalize(() => this.loaderService.hide()))
         .subscribe((apiResponse: APIGetMultiResponse<CmdbSectionTemplate>) => {
             this.sectionTemplates = apiResponse.results;
         },
@@ -92,8 +96,10 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * @param sectionTemplate instance of section template which should be deleted
      */
     showDeleteModal(sectionTemplate: CmdbSectionTemplate){
+        this.loaderService.show();
 
-        this.sectionTemplateService.getGlobalSectionTemplateCount(sectionTemplate.public_id).subscribe((response: GlobalTemplateCounts) => {
+        this.sectionTemplateService.getGlobalSectionTemplateCount(sectionTemplate.public_id).pipe(finalize(() => this.loaderService.hide()))
+        .subscribe((response: GlobalTemplateCounts) => {
             let counts: GlobalTemplateCounts = response
 
             this.modalRef = this.modalService.open(SectionTemplateDeleteModalComponent, { size: 'lg' });
@@ -103,7 +109,8 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
             this.modalRef.result.then((sectionTemplateID: number) => {
                 //Delete the section template
                 if(sectionTemplateID > 0){
-                    this.sectionTemplateService.deleteSectionTemplate(sectionTemplateID).subscribe((res: any) => {
+                    this.loaderService.show();
+                    this.sectionTemplateService.deleteSectionTemplate(sectionTemplateID).pipe(finalize(() => this.loaderService.hide())).subscribe((res: any) => {
                         this.toastService.success("Section Template with ID " + sectionTemplateID  + " deleted!");
                         this.getAllSectionTemplates();
                     },
@@ -138,7 +145,9 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
                     'public_id': sectionTemplate.public_id
                 }
 
-                this.sectionTemplateService.updateSectionTemplate(params).subscribe((res: APIUpdateSingleResponse) => {
+                this.loaderService.show();
+
+                this.sectionTemplateService.updateSectionTemplate(params).pipe(finalize(() => this.loaderService.hide())).subscribe((res: APIUpdateSingleResponse) => {
                     this.toastService.success(`Section Template with ID: ${sectionTemplate.public_id} transformed 
                                             to a Global Section Template!`);
                     this.getAllSectionTemplates();
@@ -175,7 +184,9 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
 
                 params.name = this.generateSectionTemplateName(values.isGlobal);
 
-                this.sectionTemplateService.postSectionTemplate(params).subscribe({
+                this.loaderService.show();
+
+                this.sectionTemplateService.postSectionTemplate(params).pipe(finalize(() => this.loaderService.hide())).subscribe({
                     next: (res: any) => {
                         this.toastService.success("Section Template cloned!");
                         this.getAllSectionTemplates();

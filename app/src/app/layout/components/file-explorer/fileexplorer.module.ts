@@ -22,6 +22,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 import { TypeService } from '../../../framework/services/type.service';
+import { CoreModule } from 'src/app/core/core.module';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { TypeService } from '../../../framework/services/type.service';
       CommonModule,
       ReactiveFormsModule,
       NgSelectModule,
-      FormsModule
+      FormsModule,
+      CoreModule
     ],
     exports: [
     ],

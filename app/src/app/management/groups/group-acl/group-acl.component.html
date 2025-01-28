@@ -24,3 +24,9 @@
 </form>
 
 <cmdb-acl-objects-table *ngIf="selectedGroup" [group]="selectedGroup"/>
+
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

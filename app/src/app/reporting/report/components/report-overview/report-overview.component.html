@@ -26,3 +26,8 @@
 <i class="far fa-edit icon-margin btn-edit" (click)="editReport(item.public_id)" title="Edit Report"></i>
 <i class="far fa-trash-alt btn-delete" (click)="openDeleteReportModal(item)" title="Delete Report"></i>
 </ng-template>
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

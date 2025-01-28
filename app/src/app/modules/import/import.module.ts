@@ -52,6 +52,7 @@ import { TypePreviewComponent } from './components/types/type-preview/type-previ
 import { ImportTypeCompleteComponent } from './components/types/import-type-complete/import-type-complete.component';
 import { ImportCompleteComponent } from './components/objects/import-complete/import-complete.component';
 import { FailedImportTableComponent } from './components/objects/failed-import-table/failed-import-table.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -90,7 +91,8 @@ import { FailedImportTableComponent } from './components/objects/failed-import-t
         FormsModule,
         CategoryModule,
         TableModule,
-        AuthModule
+        AuthModule,
+        CoreModule
     ]
 })
 export class ImportModule {}

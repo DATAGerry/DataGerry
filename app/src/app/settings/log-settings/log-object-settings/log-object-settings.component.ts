@@ -22,7 +22,8 @@ import { CmdbLog } from '../../../framework/models/cmdb-log';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from '../../../layout/toast/toast.service';
 import { Observable, forkJoin, ReplaySubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
     selector: 'cmdb-modal-content',
@@ -78,13 +79,18 @@ export class LogObjectSettingsComponent {
     showExistingObjectsLogs: boolean = true;
     showDeletedObjectsLogs: boolean = false;
     showDeleteLogs: boolean = false;
+    public isLoading$ = this.loaderService.isLoading$;
 
     /**
      * Component un-subscriber.
      */
     private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
 
-    constructor(private logService: LogService, private modalService: NgbModal, private toastService: ToastService) {
+    constructor(
+        private logService: LogService, 
+        private modalService: NgbModal, 
+        private toastService: ToastService,
+        private loaderService: LoaderService) {
     }
 
 
@@ -107,11 +113,11 @@ export class LogObjectSettingsComponent {
             this.isDismissClicked = dismissed
         });
         deleteModalRef.result.then(result => {
-            this.logService.deleteLog(result).pipe(takeUntil(this.subscriber)).subscribe(() => {
+            this.loaderService.show();
+            this.logService.deleteLog(result).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(() => {
                 this.toastService.success('Log was deleted!');
             }, (error) => {
-                console.error(error);
-            },
+                        this.toastService.error(error?.error?.message)  },
                 () => {
                     switch (reloadList) {
                         case 'active':

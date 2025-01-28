@@ -28,13 +28,16 @@ import { RightTableLevelCellComponent } from './components/right-table-level-cel
 import { RightTableGroupsCellComponent } from './components/right-table-groups-cell/right-table-groups-cell.component';
 import { RightGroupsModalComponent } from './modals/right-groups-modal/right-groups-modal.component';
 import { GroupsModule } from '../groups/groups.module';
+import { LayoutModule } from 'src/app/layout/layout.module';
+import { CoreModule } from 'src/app/core/core.module';
 
 @NgModule({
   imports: [
     CommonModule,
     RightsRoutingModule,
     TableModule,
-    GroupsModule
+    GroupsModule,
+    CoreModule
   ],
   declarations: [
     RightLevelColorDirective,

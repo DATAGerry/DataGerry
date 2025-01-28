@@ -24,8 +24,9 @@ import { RenderResult } from '../models/cmdb-render';
 import { APIGetMultiResponse } from '../../services/models/api-response';
 import { Column, Sort, SortDirection } from '../../layout/table/table.types';
 import { CollectionParameters } from '../../services/models/api-parameter';
-import { debounceTime, distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize, takeUntil, tap } from 'rxjs/operators';
 import { ToastService } from '../../layout/toast/toast.service';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
   selector: 'cmdb-object',
@@ -140,8 +141,13 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   searchTerms$ = new Subject<string>();
 
+  public isLoading$ = this.loaderService.isLoading$;
 
-  constructor(private objectService: ObjectService<RenderResult>, private toastService: ToastService) {
+
+  constructor(private objectService: ObjectService<RenderResult>, 
+              private toastService: ToastService, 
+              private loaderService: LoaderService
+) {
     this.subscriber = new ReplaySubject<void>();
   }
 
@@ -247,13 +253,14 @@ export class ObjectComponent implements OnInit, OnDestroy {
    * @private
    */
   private loadObjectsFromAPI(): void {
+    this.loaderService.show();
     this.setLoadingState(true);
     const filter = this.filterBuilder();
     const params: CollectionParameters = {
       filter, limit: this.limit,
       sort: this.sort.name, order: this.sort.order, page: this.page
     };
-    this.objectService.getObjects(params).pipe(takeUntil(this.subscriber)).subscribe(
+    this.objectService.getObjects(params).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(
       (apiResponse: APIGetMultiResponse<RenderResult>) => {
         this.objectsAPIResponse = apiResponse;
         this.objects = apiResponse.results as Array<RenderResult>;
@@ -460,7 +467,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
    * @param objectID
    */
   public onObjectDelete(objectID: number) {
-    this.objectService.deleteObject(objectID).pipe(takeUntil(this.subscriber))
+    this.loaderService.show();
+    this.objectService.deleteObject(objectID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
       .subscribe(() => {
         this.toastService.success(`Object ${objectID} was deleted successfully`);
         this.loadObjectsFromAPI();
@@ -471,7 +479,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   public onObjectDeleteWithLocations(objectID: number) {
-    this.objectService.deleteObjectWithLocations(objectID).pipe(takeUntil(this.subscriber))
+    this.loaderService.show();
+    this.objectService.deleteObjectWithLocations(objectID).pipe(takeUntil(this.subscriber), finalize(() =>  this.loaderService.hide()))
       .subscribe(() => {
         this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
         this.loadObjectsFromAPI();
@@ -482,7 +491,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   public onObjectDeleteWithObjects(objectID: number) {
-    this.objectService.deleteObjectWithChildren(objectID).pipe(takeUntil(this.subscriber))
+    this.loaderService.show();
+    this.objectService.deleteObjectWithChildren(objectID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
       .subscribe(() => {
         this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
         this.loadObjectsFromAPI();

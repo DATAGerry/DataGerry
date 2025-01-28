@@ -17,7 +17,7 @@
 */
 import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { finalize, ReplaySubject, takeUntil } from 'rxjs';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap/modal/modal-ref';
@@ -29,6 +29,7 @@ import { APIGetMultiResponse } from '../../../../services/models/api-response';
 import { Column, Sort, SortDirection } from '../../../../layout/table/table.types';
 import { CollectionParameters } from '../../../../services/models/api-parameter';
 import { GeneralModalComponent } from '../../../../layout/helpers/modals/general-modal/general-modal.component';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -79,12 +80,15 @@ export class DocapiListComponent implements OnInit, OnDestroy {
     public sort: Sort = { name: 'public_id', order: SortDirection.DESCENDING } as Sort;
 
     public loading: boolean = false;
+    public isLoading$ = this.loaderService.isLoading$;
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 /*                                                     LIFE CYCLE                                                     */
 /* ------------------------------------------------------------------------------------------------------------------ */
     constructor(
-        private docapiService: DocapiService, private modalService: NgbModal) {
+        private docapiService: DocapiService, 
+        private modalService: NgbModal,
+        private loaderService: LoaderService) {
 
     }
 
@@ -136,6 +140,7 @@ export class DocapiListComponent implements OnInit, OnDestroy {
      * Load/reload types from the api
      */
     private loadTemplatesFromAPI(): void {
+        this.loaderService.show();
         this.loading = true;
         let query;
 
@@ -182,7 +187,7 @@ export class DocapiListComponent implements OnInit, OnDestroy {
             page: this.page
         };
 
-        this.docapiService.getDocTemplateList(params).pipe(takeUntil(this.subscriber)).subscribe(
+        this.docapiService.getDocTemplateList(params).pipe(takeUntil(this.subscriber), finalize(() =>  this.loaderService.hide())).subscribe(
             (apiResponse: APIGetMultiResponse<DocTemplate>) => {
                 this.templateAPIResponse = apiResponse;
                 this.templates = apiResponse.results as Array<DocTemplate>;
@@ -202,7 +207,8 @@ export class DocapiListComponent implements OnInit, OnDestroy {
 
         this.modalRef.result.then((result) => {
             if (result) {
-                this.docapiService.deleteDocTemplate(publicId).subscribe({
+                this.loaderService.show();
+                this.docapiService.deleteDocTemplate(publicId).pipe(finalize(() => this.loaderService.hide())).subscribe({
                     next: resp => console.log(resp),
                     error: error => console.log(error),
                     complete: () => this.loadTemplatesFromAPI()

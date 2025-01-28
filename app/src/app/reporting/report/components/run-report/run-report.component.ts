@@ -19,7 +19,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ReportService } from 'src/app/reporting/services/report.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
-import { catchError, Observable, tap, throwError, forkJoin, switchMap, of } from 'rxjs';
+import { catchError, Observable, tap, throwError, forkJoin, switchMap, of, finalize } from 'rxjs';
 import { TypeService } from 'src/app/framework/services/type.service';
 import { FileSaverService } from 'ngx-filesaver';
 import { FileService } from 'src/app/export/export.service';
@@ -27,6 +27,7 @@ import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Location } from '@angular/common';
 import { unparse } from 'papaparse';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
     selector: 'app-run-report',
@@ -46,6 +47,7 @@ export class RunReportComponent implements OnInit {
     public collectionFilterParameter: any[] = [];
     public sort = { order: -1, name: 'public_id' };
     public selectedObjectsIDs: number[] = [];
+    public isLoading$ = this.loaderService.isLoading$;
 
 
     //properties for pagination and search
@@ -64,6 +66,7 @@ export class RunReportComponent implements OnInit {
         private fileService: FileService,
         private fileSaverService: FileSaverService,
         private location: Location,
+        private loaderService: LoaderService
     ) { }
 
     /**
@@ -132,7 +135,9 @@ export class RunReportComponent implements OnInit {
      * @returns An observable of the report execution response.
      */
     private runReport(id: number): Observable<any> {
+        this.loaderService.show();
         return this.reportService.runReport(id).pipe(
+            finalize(() => this.loaderService.hide()),
             tap((response) => {
                 this.reportResults = response;
             }),
@@ -149,7 +154,9 @@ export class RunReportComponent implements OnInit {
      * @returns An observable of the type retrieval response.
      */
     private loadType(): Observable<any> {
+        this.loaderService.show();
         return this.typeService.getType(this.typeId).pipe(
+            finalize(() =>         this.loaderService.hide()),
             tap((response) => {
                 this.types = response;
             }),
@@ -340,7 +347,6 @@ export class RunReportComponent implements OnInit {
                     this.items.push(item);
                 }
             } else if (this.mdsMode === 'COLUMNS') {
-                // Existing code for COLUMNS mode
 
                 // Create a single item, combining MDS field values
                 const item = { ...baseItem };
@@ -421,7 +427,7 @@ export class RunReportComponent implements OnInit {
      */
     private computeCartesianProduct(arrays: any[][]): any[][] {
         if (arrays.length === 0) {
-            return [[]]; // Return an array with an empty array
+            return [[]];
         }
 
         // If any of the arrays are empty, the Cartesian product should be empty
@@ -531,6 +537,7 @@ export class RunReportComponent implements OnInit {
      * Exports the report data using the specified format.
      */
     public exportingFiles() {
+        this.loaderService.show();
         const see = {
             extension: 'JsonExportFormat',
             label: 'csv',
@@ -575,6 +582,7 @@ export class RunReportComponent implements OnInit {
         };
 
         this.fileService.callExportRoute(exportAPI, see.view)
+        .pipe( finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (res) => {
                     if (res.body instanceof Blob) {

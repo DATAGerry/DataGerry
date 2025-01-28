@@ -17,7 +17,7 @@
 */
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { finalize, ReplaySubject, takeUntil } from 'rxjs';
 
 import { GroupService } from '../../services/group.service';
 import { ToastService } from '../../../layout/toast/toast.service';
@@ -26,6 +26,7 @@ import { PermissionService } from '../../../modules/auth/services/permission.ser
 import { Group } from '../../models/group';
 import { GroupFormComponent } from '../components/group-form/group-form.component';
 import { Right } from '../../models/right';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -43,6 +44,7 @@ export class GroupEditComponent implements OnInit, OnDestroy {
     public rights: Array<Right> = [];
     public valid: boolean = false;
     public group: Group;
+    public isLoading$ = this.loaderService.isLoading$;
 
     public typeEditRight = this.permissionService.hasRight(this.typeEditRightName) ||
         this.permissionService.hasExtendedRight(this.typeEditRightName);
@@ -54,7 +56,8 @@ export class GroupEditComponent implements OnInit, OnDestroy {
         private router: Router,
         private groupService: GroupService,
         private toastService: ToastService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private loaderService: LoaderService
     ) {
         this.rights = this.route.snapshot.data.rights as Array<Right>;
         this.group = this.route.snapshot.data.group as Group;
@@ -78,7 +81,9 @@ export class GroupEditComponent implements OnInit, OnDestroy {
         const editGroup = Object.assign(this.group, group);
 
         if (this.valid) {
-            this.groupService.putGroup(this.group.public_id, editGroup).pipe(takeUntil(this.subscriber))
+            this.loaderService.show();
+            this.groupService.putGroup(this.group.public_id, editGroup)
+            .pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
                 .subscribe((g: Group) => {
                     this.toastService.success(`Group ${g.label} was updated!`);
                     this.router.navigate(['/', 'management', 'groups']);
