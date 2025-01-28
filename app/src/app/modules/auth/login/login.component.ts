@@ -28,7 +28,7 @@ import { UserSettingsDBService } from '../../../management/user-settings/service
 import { LoginResponse } from '../models/responses';
 import { Group } from 'src/app/management/models/group';
 import { ToastService } from 'src/app/layout/toast/toast.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
     selector: 'cmdb-login',

@@ -29,7 +29,7 @@ import { APIGetMultiResponse } from '../../../../services/models/api-response';
 import { Column, Sort, SortDirection } from '../../../../layout/table/table.types';
 import { CollectionParameters } from '../../../../services/models/api-parameter';
 import { GeneralModalComponent } from '../../../../layout/helpers/modals/general-modal/general-modal.component';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

@@ -36,7 +36,7 @@ import { Column, Sort, SortDirection, TableState, TableStatePayload } from '../.
 import { CollectionParameters } from '../../services/models/api-parameter';
 import { UserSetting } from '../../management/user-settings/models/user-setting';
 import { SidebarService } from 'src/app/layout/services/sidebar.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

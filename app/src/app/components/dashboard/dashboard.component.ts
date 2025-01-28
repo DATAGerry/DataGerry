@@ -27,7 +27,7 @@ import { APIGetMultiResponse } from '../../services/models/api-response';
 import { RenderResult } from '../../framework/models/cmdb-render';
 import { Column } from '../../layout/table/table.types';
 import { CollectionParameters } from '../../services/models/api-parameter';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

@@ -43,7 +43,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ObjectsDeleteModalComponent } from '../modals/objects-delete-modal/objects-delete-modal.component';
 import { UserSetting } from '../../../management/user-settings/models/user-setting';
 import { SupportedExporterExtension } from '../../../export/export-objects/model/supported-exporter-extension';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

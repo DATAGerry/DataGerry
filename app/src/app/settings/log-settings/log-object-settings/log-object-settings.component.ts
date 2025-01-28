@@ -23,7 +23,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from '../../../layout/toast/toast.service';
 import { Observable, forkJoin, ReplaySubject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
     selector: 'cmdb-modal-content',

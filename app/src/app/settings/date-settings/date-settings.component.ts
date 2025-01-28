@@ -24,7 +24,7 @@ import { DateSettingsService } from '../services/date-settings.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 import { ToastService } from '../../layout/toast/toast.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-date-settings',

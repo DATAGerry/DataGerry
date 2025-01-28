@@ -26,7 +26,7 @@ import { PermissionService } from '../../../modules/auth/services/permission.ser
 import { Group } from '../../models/group';
 import { GroupFormComponent } from '../components/group-form/group-form.component';
 import { Right } from '../../models/right';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

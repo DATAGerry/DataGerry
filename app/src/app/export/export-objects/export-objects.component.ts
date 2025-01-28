@@ -27,7 +27,7 @@ import { CmdbType } from '../../framework/models/cmdb-type';
 import { SupportedExporterExtension } from './model/supported-exporter-extension';
 import { CollectionParameters } from '../../services/models/api-parameter';
 import { ToastService } from 'src/app/layout/toast/toast.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { finalize } from 'rxjs';
 /* ------------------------------------------------------------------------------------------------------------------ */
 @Component({

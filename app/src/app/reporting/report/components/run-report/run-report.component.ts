@@ -27,7 +27,7 @@ import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Location } from '@angular/common';
 import { unparse } from 'papaparse';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
     selector: 'app-run-report',

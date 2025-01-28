@@ -34,7 +34,7 @@ import { RenderComponent } from '../../render/render.component';
 import { CmdbObject } from '../../models/cmdb-object';
 import { AccessControlPermission } from 'src/app/modules/acl/acl.types';
 import { finalize } from 'rxjs/operators';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 

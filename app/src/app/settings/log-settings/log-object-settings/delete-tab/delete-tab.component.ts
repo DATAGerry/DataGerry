@@ -34,7 +34,7 @@ import { CollectionParameters } from '../../../../services/models/api-parameter'
 import { APIGetMultiResponse } from '../../../../services/models/api-response';
 import { TableComponent } from '../../../../layout/table/table.component';
 import { UserSetting } from '../../../../management/user-settings/models/user-setting';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

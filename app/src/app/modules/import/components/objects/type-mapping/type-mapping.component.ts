@@ -43,7 +43,7 @@ import { JsonMappingComponent } from '../json-mapping/json-mapping.component';
 import { CsvMappingComponent } from '../csv-mapping/csv-mapping.component';
 import { TypeMappingBaseComponent } from './type-mapping-base.component';
 import { AccessControlPermission } from 'src/app/modules/acl/acl.types';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export const mappingComponents: { [type: string]: any } = {

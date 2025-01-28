@@ -18,7 +18,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 import { ImportService } from 'src/app/modules/import/services/import.service';
 /* ------------------------------------------------------------------------------------------------------------------ */

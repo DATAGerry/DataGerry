@@ -25,7 +25,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { APIGetMultiResponse } from '../../services/models/api-response';
 import { RightService } from '../services/right.service';
 import { CollectionParameters } from '../../services/models/api-parameter';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-rights',

@@ -5,7 +5,7 @@ import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms
 import { DatePipe } from '@angular/common';
 import { FileSaverService } from 'ngx-filesaver';
 import { FileService } from '../export.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { finalize } from 'rxjs';
 
 @Component({

@@ -31,7 +31,7 @@ import { CmdbObject } from '../../models/cmdb-object';
 import { RenderResult } from '../../models/cmdb-render';
 import { CmdbType } from '../../models/cmdb-type';
 import { APIUpdateMultiResponse } from '../../../services/models/api-response';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { finalize } from 'rxjs';
 /* ------------------------------------------------------------------------------------------------------------------ */
 

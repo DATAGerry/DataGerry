@@ -22,7 +22,7 @@ import { WebhookService } from '../../services/webhook.service';
 import { Webhook } from '../../models/webhook.model';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Location } from '@angular/common';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { finalize } from 'rxjs';
 
 @Component({

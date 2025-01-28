@@ -29,7 +29,7 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 import { RenderResult } from '../../../models/cmdb-render';
 import { AccessControlList } from 'src/app/modules/acl/acl.types';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

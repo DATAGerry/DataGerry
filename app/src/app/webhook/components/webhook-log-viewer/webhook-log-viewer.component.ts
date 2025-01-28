@@ -25,7 +25,7 @@ import { finalize, ReplaySubject, takeUntil } from 'rxjs';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { APIGetMultiResponse } from 'src/app/services/models/api-response';
 import { Location } from '@angular/common';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
     selector: 'app-webhook-log-viewer',

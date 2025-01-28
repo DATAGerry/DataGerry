@@ -39,7 +39,7 @@ import { ImportService } from '../../../services/import.service';
 import { CsvConfigComponent } from '../csv-config/csv-config.component';
 import { JsonConfigComponent } from '../json-config/json-config.component';
 import { FileConfig } from './file-config';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export const configComponents: { [type: string]: any } = {

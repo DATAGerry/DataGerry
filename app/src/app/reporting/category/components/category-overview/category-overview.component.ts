@@ -27,7 +27,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { Location } from '@angular/common';
 import { ToastService } from 'src/app/layout/toast/toast.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
     selector: 'app-category-overview',

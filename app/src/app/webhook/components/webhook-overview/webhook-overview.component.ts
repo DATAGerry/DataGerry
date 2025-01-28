@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteConfirmationModalComponent } from '../modal/delete-confirmation-modal.component';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { finalize } from 'rxjs';
 
 @Component({

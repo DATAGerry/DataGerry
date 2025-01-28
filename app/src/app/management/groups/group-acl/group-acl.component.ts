@@ -26,7 +26,7 @@ import { ToastService } from '../../../layout/toast/toast.service';
 import { Group } from '../../models/group';
 import { CollectionParameters } from '../../../services/models/api-parameter';
 import { APIGetMultiResponse } from '../../../services/models/api-response';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

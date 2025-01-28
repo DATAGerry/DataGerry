@@ -33,7 +33,7 @@ import { RenameDialogComponent } from './modal/rename-dialog/rename-dialog.compo
 import { MoveDialogComponent } from './modal/move-dialog/move-dialog.component';
 import { GeneralModalComponent } from '../../helpers/modals/general-modal/general-modal.component';
 import { MetadataInfoComponent } from './modal/metadata-info/metadata-info.component';
-import { LoaderService } from '../../services/loader.service';
+import { LoaderService } from '../../../core/services/loader.service';
 
 @Component({
   selector: 'cmdb-fileexplorer',

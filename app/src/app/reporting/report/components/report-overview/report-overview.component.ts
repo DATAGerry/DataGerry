@@ -27,7 +27,7 @@ import { AddCategoryModalComponent } from 'src/app/framework/category/components
 import { DeleteConfirmationModalComponent } from '../../report-modal/delete-confirmation-modal.component';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Router } from '@angular/router';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-report-overview',

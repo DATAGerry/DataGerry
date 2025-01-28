@@ -21,7 +21,7 @@ import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms
 import { finalize, Subscription } from 'rxjs';
 
 import { ImportService } from '../../../services/import.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({

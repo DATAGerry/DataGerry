@@ -30,7 +30,7 @@ import { Column, Sort, SortDirection, TableState, TableStatePayload } from '../.
 import { UserSetting } from '../../management/user-settings/models/user-setting';
 import { convertResourceURL, UserSettingsService } from '../../management/user-settings/services/user-settings.service';
 import { UserSettingsDBService } from '../../management/user-settings/services/user-settings-db.service';
-import { LoaderService } from 'src/app/layout/services/loader.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-category',
