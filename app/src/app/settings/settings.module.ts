@@ -25,6 +25,7 @@ import { SettingsComponent } from './settings.component';
 import { DateSettingsComponent } from './date-settings/date-settings.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import {NgSelectModule} from "@ng-select/ng-select";
     SettingsRoutingModule,
     FormsModule,
     NgSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CoreModule
   ]
 })
 export class SettingsModule {

@@ -22,6 +22,8 @@ import { WebhookService } from '../../services/webhook.service';
 import { Webhook } from '../../models/webhook.model';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Location } from '@angular/common';
+import { LoaderService } from 'src/app/layout/services/loader.service';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-webhook-form',
@@ -31,6 +33,7 @@ import { Location } from '@angular/common';
 export class WebhookFormComponent implements OnInit {
     public webhookForm: FormGroup;
     publicId?: number;
+    public isLoading$ = this.loaderService.isLoading$;
 
     eventOptions = [
         { label: 'Create', value: 'CREATE' },
@@ -46,7 +49,8 @@ export class WebhookFormComponent implements OnInit {
         private router: Router,
         private webhookService: WebhookService,
         private toast: ToastService,
-        private location: Location
+        private location: Location,
+         private loaderService: LoaderService
     ) {
         this.webhookForm = this.fb.group({
             name: ['', Validators.required],
@@ -100,7 +104,8 @@ export class WebhookFormComponent implements OnInit {
      * @param publicId - The public ID of the webhook to load.
      */
     private loadWebhookDetails(publicId: number): void {
-        this.webhookService.getWebhookById(publicId).subscribe({
+        this.loaderService.show();
+        this.webhookService.getWebhookById(publicId).pipe(finalize(() => this.loaderService.hide())).subscribe({
             next: (webhook) => {
                 this.webhookForm.patchValue(webhook);
             },
@@ -120,11 +125,12 @@ export class WebhookFormComponent implements OnInit {
             return;
         }
 
-        const webhook: Webhook = this.webhookForm.value;
+        this.loaderService.show();
 
+        const webhook: Webhook = this.webhookForm.value;
         if (this.publicId) {
             // Update existing webhook
-            this.webhookService.updateWebhook(this.publicId, webhook).subscribe({
+            this.webhookService.updateWebhook(this.publicId, webhook).pipe(finalize(() => this.loaderService.hide())).subscribe({
                 next: () => {
                     this.toast.success('Webhook updated successfully.');
                     this.router.navigate(['/webhooks']);
@@ -135,7 +141,7 @@ export class WebhookFormComponent implements OnInit {
             });
         } else {
             // Create new webhook
-            this.webhookService.createWebhook(webhook).subscribe({
+            this.webhookService.createWebhook(webhook).pipe(finalize(() => this.loaderService.hide())).subscribe({
                 next: () => {
                     this.toast.success('Webhook created successfully.');
                     this.router.navigate(['/webhooks']);

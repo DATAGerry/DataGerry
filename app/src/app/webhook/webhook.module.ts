@@ -10,6 +10,8 @@ import { WebhookLogViewerComponent } from './components/webhook-log-viewer/webho
 import { NgSelectModule } from '@ng-select/ng-select';
 import { UserSettingsResolver } from '../management/user-settings/resolvers/user-settings-resolver.service';
 import { AuthModule } from '../modules/auth/auth.module';
+import { LayoutModule } from '../layout/layout.module';
+import { CoreModule } from '../core/core.module';
 
 const routes: Routes = [
     {
@@ -63,7 +65,9 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         TableModule,
         NgSelectModule,
-        AuthModule
+        AuthModule,
+        // LayoutModule
+        CoreModule
     ],
     providers: [],
 })

@@ -21,10 +21,11 @@ import { WebhookLogService } from '../../services/webhookLog.service';
 import { DeleteConfirmationModalComponent } from '../modal/delete-confirmation-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { finalize, ReplaySubject, takeUntil } from 'rxjs';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { APIGetMultiResponse } from 'src/app/services/models/api-response';
 import { Location } from '@angular/common';
+import { LoaderService } from 'src/app/layout/services/loader.service';
 
 @Component({
     selector: 'app-webhook-log-viewer',
@@ -41,6 +42,7 @@ export class WebhookLogViewerComponent implements OnInit {
     public page: number = 1;
     public sort: Sort = { name: 'webhook_id', order: SortDirection.ASCENDING } as Sort;
     public filter: string;
+    public isLoading$ = this.loaderService.isLoading$;
 
     private unsubscribe$ = new ReplaySubject<void>(1);
 
@@ -50,7 +52,10 @@ export class WebhookLogViewerComponent implements OnInit {
 
     constructor(
         private webhookService: WebhookLogService,
-        private toast: ToastService, private modalService: NgbModal, private location: Location) { }
+        private toast: ToastService, 
+        private modalService: NgbModal, 
+        private location: Location,
+        private loaderService: LoaderService) { }
 
     ngOnInit(): void {
         this.columns = [
@@ -70,7 +75,7 @@ export class WebhookLogViewerComponent implements OnInit {
      */
     private loadLogs(): void {
         this.loading = true;
-
+        this.loaderService.show();
 
         const params: CollectionParameters = {
             filter: this.filterBuilder(),
@@ -80,10 +85,9 @@ export class WebhookLogViewerComponent implements OnInit {
             order: this.sort.order,
         };
 
-
         this.webhookService
             .getAllWebhooks(params)
-            .pipe(takeUntil(this.unsubscribe$))
+            .pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (response: APIGetMultiResponse<any>) => {
                     if (response && response.results) {
@@ -128,7 +132,8 @@ export class WebhookLogViewerComponent implements OnInit {
  * @param publicId - The public ID of the webhook to delete.
  */
     public deleteLog(publicId: number): void {
-        this.webhookService.deleteWebhookLog(publicId).subscribe({
+        this.loaderService.show();
+        this.webhookService.deleteWebhookLog(publicId).pipe(finalize(() => this.loaderService.hide())).subscribe({
             next: (res) => {
                 this.toast.success('Webhook deleted Sucessfully');
                 this.loadLogs();
@@ -181,8 +186,6 @@ export class WebhookLogViewerComponent implements OnInit {
     /* --------------------------------------------------- Pagination, Sorting, and Search Handlers -------------------------------------------------- */
 
 
-
-
     /**
      * Handles changes to the current page in pagination and reloads the logs.
      * @param newPage - The new page number to display.
@@ -191,8 +194,6 @@ export class WebhookLogViewerComponent implements OnInit {
         this.page = newPage;
         this.loadLogs();
     }
-
-
 
 
     /**
@@ -206,8 +207,6 @@ export class WebhookLogViewerComponent implements OnInit {
     }
 
 
-
-
     /**
      * Handles changes to the sorting criteria and reloads the logs.
      * @param sort - The new sort criteria.
@@ -216,8 +215,6 @@ export class WebhookLogViewerComponent implements OnInit {
         this.sort = sort;
         this.loadLogs();
     }
-
-
 
 
     /**
@@ -229,8 +226,6 @@ export class WebhookLogViewerComponent implements OnInit {
         this.page = 1;
         this.loadLogs();
     }
-
-
 
 
     /**
@@ -290,10 +285,9 @@ export class WebhookLogViewerComponent implements OnInit {
     }
 
     /**
- * Navigates back to the previous page in the browser's history.
- */
+     * Navigates back to the previous page in the browser's history.
+     */
     goBack(): void {
         this.location.back()
     }
-
 }
