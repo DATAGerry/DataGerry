@@ -18,19 +18,47 @@
                   <span class="sr-only">Loading...</span>
                 </div>
               </div>
-
               <!-- Login Form -->
               <form id="login-form" [formGroup]="loginForm" class="position-relative" (keydown)="onKeydown($event)">
                 <ng-container *ngIf="!isLoading && !showSubscriptions">
                   <div class="form-label-group">
-                    <input type="text" class="form-control" [placeholder]="userIdentifierPlaceholder" formControlName="username"
-                      [ngClass]="{ 'is-invalid': submitted && controls.username.errors }" required autofocus>
+                    <input type="text" class="form-control" [placeholder]="userIdentifierPlaceholder"
+                      formControlName="username" [ngClass]="{
+                                          'is-invalid':
+                                            (controls.username.touched || controls.username.dirty) &&
+                                            controls.username.invalid
+                                        }" required autofocus />
+
+                    <div class="text-danger mt-1" *ngIf="
+                                          (controls.username.touched || controls.username.dirty) &&
+                                          controls.username.invalid
+                                        ">
+                      <!-- Required Error -->
+                      <small *ngIf="controls.username.errors?.['required']">
+                        {{ userIdentifierPlaceholder }} is required.
+                      </small>
+                      <small *ngIf="
+                                            controls.username.errors?.['strictEmail'] &&
+                                            !controls.username.hasError('required')
+                                          ">
+                        Please enter a valid email address.
+                      </small>
+                    </div>
                   </div>
                   <div class="form-label-group">
                     <input type="password" placeholder="Password" formControlName="password" class="form-control"
                       [ngClass]="{ 'is-invalid': submitted && controls.password.errors }" required>
-                  </div>
 
+                    <div class="text-danger mt-1" *ngIf="
+                      (controls.password.touched || controls.password.dirty) &&
+                      controls.password.invalid
+                    ">
+                      <!-- Required Error -->
+                      <small *ngIf="controls.password.errors?.['required']">
+                       Password is required.
+                      </small>
+                    </div>
+                  </div>
                   <button type="button" id="login-button"
                     class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
                     [disabled]="!loginForm.valid" (click)="onSubmit()">
@@ -75,7 +103,5 @@
   </div>
 </div>
 
-<app-loading-popup 
-  [isVisible]="isLoading$ | async"
-  message="Please hold on, checking your credentials..."
-></app-loading-popup>
+<app-loading-popup [isVisible]="isLoading$ | async"
+  message="Please hold on, checking your credentials..."></app-loading-popup>

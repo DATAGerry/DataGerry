@@ -30,6 +30,7 @@ import { Group } from 'src/app/management/models/group';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { environment } from 'src/environments/environment';
+import { strictEmailValidator } from './strictEmailValidator';
 
 @Component({
     selector: 'cmdb-login',
@@ -88,9 +89,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.render?.addClass(document?.body, 'embedded');
+        const isCloudMode = environment.cloudMode;
+
 
         this.loginForm = new UntypedFormGroup({
-            username: new UntypedFormControl('', [Validators.required]),
+            username: new UntypedFormControl(
+                '',
+                isCloudMode
+                  ? [Validators.required,  strictEmailValidator]
+                  : [Validators.required]
+              ),
             password: new UntypedFormControl('', [Validators.required]),
             subscription: new UntypedFormControl(null)
         });
