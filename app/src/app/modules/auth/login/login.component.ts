@@ -146,7 +146,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                     this.isLoading = false;
                     this.toastService?.error(err?.error?.message)
                     this.render?.addClass(document?.getElementById('login-logo'), 'shake');
-                     this.loginForm?.reset();
                     setTimeout(() => {
                         this.render?.removeClass(document?.getElementById('login-logo'), 'shake');
                     }, 500);
