@@ -97,3 +97,9 @@
         </form>
     </div>
 </div>
+
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="Updating the Object..."
+></app-loading-popup>

@@ -28,6 +28,8 @@ import { PermissionGuard } from './guards/permission.guard';
 import { LoginComponent } from './login/login.component';
 import { SessionTimeoutModalComponent } from './modals/session-timeout-modal/session-timeout-modal.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { LayoutModule } from 'src/app/layout/layout.module';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -44,7 +46,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
         FormsModule,
         RouterModule,
         ReactiveFormsModule,
-        NgSelectModule
+        NgSelectModule,
+        // LayoutModule
+        CoreModule
     ],
     providers: [
         PermissionGuard,

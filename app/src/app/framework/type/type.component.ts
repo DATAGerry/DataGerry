@@ -20,7 +20,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 
 import { FileSaverService } from 'ngx-filesaver';
 
@@ -36,6 +36,7 @@ import { Column, Sort, SortDirection, TableState, TableStatePayload } from '../.
 import { CollectionParameters } from '../../services/models/api-parameter';
 import { UserSetting } from '../../management/user-settings/models/user-setting';
 import { SidebarService } from 'src/app/layout/services/sidebar.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -95,9 +96,11 @@ export class TypeComponent implements OnInit, OnDestroy {
 
     // Loading indicator
     public loading: boolean = false;
+    public isLoading$ = this.loaderService.isLoading$;
 
     public tableStateSubject: BehaviorSubject<TableState> = new BehaviorSubject<TableState>(undefined);
     public tableStates: Array<TableState> = [];
+
 
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
@@ -111,7 +114,8 @@ export class TypeComponent implements OnInit, OnDestroy {
         private router: Router,
         private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>,
         private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>,
-        private sideBarService: SidebarService
+        private sideBarService: SidebarService,
+        private loaderService: LoaderService
     ) {
 
         this.route.data.pipe(takeUntil(this.subscriber)).subscribe((data: Data) => {
@@ -263,6 +267,7 @@ export class TypeComponent implements OnInit, OnDestroy {
      */
     private loadTypesFromAPI(): void {
         this.loading = true;
+        this.loaderService.show()
         let query;
 
         if (this.filter) {
@@ -308,7 +313,7 @@ export class TypeComponent implements OnInit, OnDestroy {
             page: this.page
         };
 
-        this.typeService.getTypes(params).pipe(takeUntil(this.subscriber)).subscribe(
+        this.typeService.getTypes(params).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(
             (apiResponse: APIGetMultiResponse<CmdbType>) => {
                 this.typesAPIResponse = apiResponse;
                 this.types = apiResponse.results as Array<CmdbType>;

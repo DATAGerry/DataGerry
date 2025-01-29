@@ -38,6 +38,7 @@ import { CategoryNodeComponent } from './components/category-node/category-node.
 import { AddCategoryModalComponent } from './components/modals/add-category-modal/add-category-modal.component';
 import { CategoryViewComponent } from './category-view/category-view.component';
 import { DeleteCategoryModalComponent } from './components/modals/delete-category-modal/delete-category-modal.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -63,7 +64,8 @@ import { DeleteCategoryModalComponent } from './components/modals/delete-categor
         FormsModule,
         IconPickerModule,
         AuthModule,
-        TableModule
+        TableModule,
+        CoreModule
     ]
 })
 export class CategoryModule {}

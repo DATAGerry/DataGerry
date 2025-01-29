@@ -62,3 +62,8 @@
         (deleteLocationsEmitter)="onObjectDeleteWithLocations(item.object_information.object_id)"
     ></cmdb-object-table-actions>
 </ng-template>
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

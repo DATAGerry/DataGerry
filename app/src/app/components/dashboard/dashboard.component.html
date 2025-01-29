@@ -84,3 +84,8 @@
 <ng-template #dateTemplate let-data="data">
     {{data | dateFormatter}}
 </ng-template>
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="Loading Dashboard..."
+></app-loading-popup>

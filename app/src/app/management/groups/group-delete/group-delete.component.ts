@@ -21,9 +21,10 @@ import { Group } from '../../models/group';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { GroupService } from '../../services/group.service';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 import { ToastService } from '../../../layout/toast/toast.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-group-delete',
@@ -37,9 +38,14 @@ export class GroupDeleteComponent implements OnDestroy {
   public deleteForm: UntypedFormGroup;
 
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
+  public isLoading$ = this.loaderService.isLoading$;
 
-  constructor(private route: ActivatedRoute, private router: Router, private groupService: GroupService,
-    private toast: ToastService) {
+
+  constructor(private route: ActivatedRoute, 
+    private router: Router, 
+    private groupService: GroupService,
+    private toast: ToastService,
+    private loaderService: LoaderService) {
     this.group = this.route.snapshot.data.group as Group;
     this.groups = this.route.snapshot.data.groups as Array<Group>;
 
@@ -54,9 +60,11 @@ export class GroupDeleteComponent implements OnDestroy {
    */
   public delete() {
     if (this.deleteForm.valid) {
+      this.loaderService.show();
       const action = this.deleteForm.get('deleteGroupAction').value;
       const groupID = this.deleteForm.get('deleteGroupOption').value;
-      this.groupService.deleteGroup(this.group.public_id, action, groupID).pipe(takeUntil(this.subscriber)).subscribe(() => {
+      this.groupService.deleteGroup(this.group.public_id, action, groupID).
+          pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(() => {
         this.toast.success(`Group ${this.group.label} was deleted`);
         this.router.navigate(['/', 'management', 'groups']);
       },

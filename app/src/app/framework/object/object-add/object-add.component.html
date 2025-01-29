@@ -17,7 +17,7 @@
                     type="submit"
                     class="btn btn-success mr-2"
                     (click)="saveObject()"
-                    [disabled]="!renderForm.valid"
+                    [disabled]="!renderForm.valid && !isSaving"
                 >Save</button>
             </div>
         </div>
@@ -93,3 +93,8 @@
         </div>
     </form>
 </ng-template>
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

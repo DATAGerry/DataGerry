@@ -24,6 +24,8 @@ import { TableModule } from "../../layout/table/table.module";
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'; // Import NgbModule
 import { AddCategoryModalComponent } from './components/category-add-modal/category-add-modal.component';
+import { LayoutModule } from 'src/app/layout/layout.module';
+import { CoreModule } from 'src/app/core/core.module';
 
 
 @NgModule({
@@ -37,7 +39,7 @@ import { AddCategoryModalComponent } from './components/category-add-modal/categ
         ReportCategoryRoutingModule,
         TableModule,
         NgbModule,
-        ReactiveFormsModule
-    ]
+        ReactiveFormsModule,
+        CoreModule    ]
 })
 export class ReportCategoryModule { }

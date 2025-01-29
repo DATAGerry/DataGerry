@@ -17,6 +17,8 @@
 */
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 import { ImportService } from 'src/app/modules/import/services/import.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -31,12 +33,13 @@ export class ImportTypesComponent implements OnInit {
     public preview: any;
     public done: boolean = false;
     public errorHandling = [];
+    public isLoading$ = this.loaderService.isLoading$;
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 /*                                                     LIFE CYCLE                                                     */
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-    public constructor(private importService: ImportService) {
+    public constructor(private importService: ImportService, private loaderService: LoaderService) {
 
     }
 
@@ -58,13 +61,14 @@ export class ImportTypesComponent implements OnInit {
 /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
     public importTypeFile() {
+        this.loaderService.show();
         const action = this.fileForm.get('action').value;
         const theJSON = JSON.stringify(this.fileForm.get('file').value);
         const formData = new FormData();
         formData.append('uploadFile', theJSON);
 
         if (action === 'update') {
-            this.importService.postUpdateTypeParser(formData).subscribe(res => {
+            this.importService.postUpdateTypeParser(formData).pipe(finalize(() => this.loaderService.hide())).subscribe(res => {
                 if (Object.keys(res).length > 0) {
                     this.errorHandling.push(res);
                 }
@@ -72,7 +76,7 @@ export class ImportTypesComponent implements OnInit {
                 this.done = true;
             });
         } else {
-            this.importService.postCreateTypeParser(formData).subscribe(res => {
+            this.importService.postCreateTypeParser(formData).pipe(finalize(() => this.loaderService.hide())).subscribe(res => {
                 if (Object.keys(res).length > 0) {
                     this.errorHandling.push(res);
                 }

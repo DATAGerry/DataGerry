@@ -18,7 +18,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { finalize, ReplaySubject, takeUntil } from 'rxjs';
 
 import { GroupService } from '../../services/group.service';
 import { ToastService } from '../../../layout/toast/toast.service';
@@ -26,6 +26,7 @@ import { ToastService } from '../../../layout/toast/toast.service';
 import { Group } from '../../models/group';
 import { CollectionParameters } from '../../../services/models/api-parameter';
 import { APIGetMultiResponse } from '../../../services/models/api-response';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -63,8 +64,10 @@ export class GroupAclComponent implements OnInit, OnDestroy {
         return this.objectsACLGroupForm.get('group') as UntypedFormControl;
     }
 
+    public isLoading$ = this.loaderService.isLoading$;
+
 /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
-    constructor(private groupService: GroupService, private toast: ToastService) {
+    constructor(private groupService: GroupService, private toast: ToastService, private loaderService: LoaderService) {
         this.objectsACLGroupForm = new UntypedFormGroup({
             group: new UntypedFormControl(undefined)
         });
@@ -73,7 +76,8 @@ export class GroupAclComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.groupsLoading = true;
-        this.groupService.getGroups(this.groupParams).pipe(takeUntil(this.subscriber))
+        this.loaderService.show();
+        this.groupService.getGroups(this.groupParams).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (apiResponse: APIGetMultiResponse<Group>) => {
                     this.groups = apiResponse.results as Array<Group>;
@@ -102,8 +106,9 @@ export class GroupAclComponent implements OnInit, OnDestroy {
      * Load the groups from backend
      */
     private loadGroupsFromAPI() {
+        this.loaderService.show();
         this.groupsLoading = true;
-        this.groupService.getGroups(this.groupParams).pipe(takeUntil(this.subscriber))
+        this.groupService.getGroups(this.groupParams).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
             .subscribe({
                 next:(apiResponse: APIGetMultiResponse<Group>) => {
                     this.groups = this.groups.concat(apiResponse.results as Array<Group>);

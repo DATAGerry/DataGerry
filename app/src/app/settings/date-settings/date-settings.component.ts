@@ -21,9 +21,10 @@ import 'moment-timezone';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { DateSettingsService } from '../services/date-settings.service';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 import { ToastService } from '../../layout/toast/toast.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-date-settings',
@@ -66,7 +67,12 @@ export class DateSettingsComponent implements OnInit, OnDestroy {
    */
   public regionalForm: UntypedFormGroup;
 
-  constructor(private dateSettingsService: DateSettingsService, private toast: ToastService) {
+  public isLoading$ = this.loaderService.isLoading$;
+
+  constructor(private dateSettingsService: DateSettingsService, 
+              private toast: ToastService,
+              private loaderService: LoaderService) {
+
     this.regionalForm = new UntypedFormGroup({
       date_format: new UntypedFormControl('YYYY-MM-DD', Validators.required),
       timezone: new UntypedFormControl(moment.tz.guess(true)),
@@ -74,7 +80,8 @@ export class DateSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dateSettingsService.getDateSettings().pipe(takeUntil(this.subscriber)).subscribe((dateSettings: any) => {
+    this.loaderService.show();
+    this.dateSettingsService.getDateSettings().pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe((dateSettings: any) => {
       this.regionalForm.patchValue(dateSettings);
     });
 
@@ -123,8 +130,9 @@ export class DateSettingsComponent implements OnInit, OnDestroy {
 
   public onSave(): void {
     if (this.regionalForm.valid) {
+      this.loaderService.show()
       this.dateSettingsService.postDateSettings(this.regionalForm.getRawValue())
-        .pipe(takeUntil(this.subscriber)).subscribe(() => {
+        .pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(() => {
           this.toast.success('Date Settings config was updated!');
       });
     }

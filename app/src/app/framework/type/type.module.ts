@@ -52,6 +52,7 @@ import {
   TypeBuilderStepValidStatusComponent
 } from './type-builder/type-builder-step.component';
 import { TypePreviewStepComponent } from './type-builder/type-preview-step/type-preview-step.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -90,7 +91,8 @@ import { TypePreviewStepComponent } from './type-builder/type-preview-step/type-
         AuthModule,
         TableModule,
         IconPickerModule,
-        UsersModule
+        UsersModule,
+        CoreModule
     ]
 })
 export class TypeModule {}

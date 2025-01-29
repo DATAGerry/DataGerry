@@ -38,6 +38,7 @@ import { SectionTemplateAddComponent } from './layout/section-template-add/secti
 import { SectionTemplateDeleteModalComponent } from './layout/modals/section-template-delete/section-template-delete-modal.component';
 import { SectionTemplateTransformModalComponent } from './layout/modals/section-template-transform/section-template-transform-modal.component';
 import { SectionTemplateCloneModalComponent } from './layout/modals/section-template-clone/section-template-clone-modal.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -47,7 +48,7 @@ import { SectionTemplateCloneModalComponent } from './layout/modals/section-temp
         SectionTemplateAddComponent,
         SectionTemplateDeleteModalComponent,
         SectionTemplateTransformModalComponent,
-        SectionTemplateCloneModalComponent
+        SectionTemplateCloneModalComponent,
     ],
     imports: [
         SectionTemplateRoutingModule,
@@ -61,7 +62,8 @@ import { SectionTemplateCloneModalComponent } from './layout/modals/section-temp
         BuilderModule,
         MatCheckboxModule,
         ToastModule,
-        AuthModule
+        AuthModule,
+        CoreModule
     ],
     providers:[
         SectionTemplateService

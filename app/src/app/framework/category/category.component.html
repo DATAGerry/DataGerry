@@ -52,3 +52,9 @@
     </div>
   </div>
 </div>
+
+
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Loading the Categories..."
+></app-loading-popup>

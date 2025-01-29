@@ -22,6 +22,8 @@ import { Router } from '@angular/router';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteConfirmationModalComponent } from '../modal/delete-confirmation-modal.component';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-webhook-overview',
@@ -40,6 +42,7 @@ export class WebhookOverviewComponent implements OnInit {
 
 
     public columns: Array<any>;
+    public isLoading$ = this.loaderService.isLoading$;
 
     /* --------------------------------------------------- LIFECYCLE METHODS -------------------------------------------------- */
 
@@ -47,6 +50,7 @@ export class WebhookOverviewComponent implements OnInit {
         private router: Router,
         private toast: ToastService,
         private modalService: NgbModal,
+         private loaderService: LoaderService
     ) { }
 
     ngOnInit(): void {
@@ -69,6 +73,7 @@ export class WebhookOverviewComponent implements OnInit {
      */
     private loadWebhooks(): void {
         this.loading = true;
+        this.loaderService.show();
 
         this.webhookService.getAllWebhooks({
             filter: '',
@@ -76,7 +81,7 @@ export class WebhookOverviewComponent implements OnInit {
             page: this.page,
             sort: 'name',
             order: 1,
-        }).subscribe({
+        }).pipe(finalize(() => this.loaderService.hide())).subscribe({
             next: (data) => {
                 this.webhooks = data.results;
                 this.totalWebhooks = data.total;
@@ -107,8 +112,9 @@ export class WebhookOverviewComponent implements OnInit {
      * @param publicId - The public ID of the webhook to delete.
      */
     public deleteWebhook(publicId: number): void {
+        this.loaderService.show();
 
-        this.webhookService.deleteWebhook(publicId).subscribe({
+        this.webhookService.deleteWebhook(publicId).pipe(finalize(() => this.loaderService.hide())).subscribe({
             next: (res) => {
                 this.toast.success('Webhook deleted Sucessfully')
                 this.loadWebhooks()

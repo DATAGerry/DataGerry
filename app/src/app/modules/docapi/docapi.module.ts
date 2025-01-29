@@ -39,6 +39,7 @@ import { DocapiBuilderSettingsStepComponent } from './components/docapi-builder-
 import { DocapiEditComponent } from './components/docapi-edit/docapi-edit.component';
 import { DocapiBuilderTypeStepBaseComponent } from './components/docapi-builder-type-step-base/docapi-builder-type-step-base.component';
 import { DocapiBuilderStyleStepComponent } from './components/docapi-builder-style-step/docapi-builder-style-step.component';
+import { CoreModule } from 'src/app/core/core.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 @NgModule({
     declarations: [
@@ -63,7 +64,8 @@ import { DocapiBuilderStyleStepComponent } from './components/docapi-builder-sty
         ArchwizardModule,
         LayoutModule,
         TableModule,
-        FontAwesomeModule
+        FontAwesomeModule,
+        CoreModule
     ],
     providers: [
         {

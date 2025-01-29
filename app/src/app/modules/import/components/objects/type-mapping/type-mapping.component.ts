@@ -34,7 +34,7 @@ import {
 } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription } from 'rxjs';
 
 import { TypeService } from '../../../../../framework/services/type.service';
 
@@ -43,6 +43,7 @@ import { JsonMappingComponent } from '../json-mapping/json-mapping.component';
 import { CsvMappingComponent } from '../csv-mapping/csv-mapping.component';
 import { TypeMappingBaseComponent } from './type-mapping-base.component';
 import { AccessControlPermission } from 'src/app/modules/acl/acl.types';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export const mappingComponents: { [type: string]: any } = {
@@ -89,6 +90,7 @@ export class TypeMappingComponent extends TypeMappingBaseComponent implements On
     private component: any;
     public componentRef: ComponentRef<any>;
     private currentFactory: ComponentFactory<any>;
+    public isLoading$ = this.loaderService.isLoading$;
 
 
     public get currentTypeID(): number {
@@ -102,7 +104,8 @@ export class TypeMappingComponent extends TypeMappingBaseComponent implements On
     constructor(
         private typeService: TypeService,
         private ref: ChangeDetectorRef,
-        private resolver: ComponentFactoryResolver
+        private resolver: ComponentFactoryResolver,
+        private loaderService: LoaderService
     ) {
         super();
 
@@ -119,8 +122,10 @@ export class TypeMappingComponent extends TypeMappingBaseComponent implements On
 
 
     public ngOnInit(): void {
+        this.loaderService.show();
         this.typeListSubscription = this.typeService.getTypeList(
             [AccessControlPermission.READ, AccessControlPermission.CREATE, AccessControlPermission.UPDATE])
+            .pipe(finalize(() => this.loaderService.hide()))
             .subscribe((typeList: CmdbType[]) => {
                 this.typeList = typeList;
 
@@ -130,7 +135,8 @@ export class TypeMappingComponent extends TypeMappingBaseComponent implements On
             });
 
             this.valueChangeSubscription = this.configForm.get('typeID').valueChanges.subscribe((typeID: number) => {
-                this.typeService.getType(+typeID).subscribe((typeInstance: CmdbType) => {
+                this.loaderService.show();
+                this.typeService.getType(+typeID).pipe(finalize(() => this.loaderService.hide())).subscribe((typeInstance: CmdbType) => {
                     this.typeInstance = Object.assign(new CmdbType(), typeInstance) as CmdbType;
                     this.typeIDSubject.next(+typeID);
                     this.typeChange.emit({ typeID: this.currentTypeID, typeInstance: this.typeInstance });

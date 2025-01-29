@@ -31,6 +31,8 @@ import { CmdbObject } from '../../models/cmdb-object';
 import { RenderResult } from '../../models/cmdb-render';
 import { CmdbType } from '../../models/cmdb-type';
 import { APIUpdateMultiResponse } from '../../../services/models/api-response';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { finalize } from 'rxjs';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -48,6 +50,8 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
 
     private originalLocationData: RenderResult;
     private newLocationParentID: number = 0;
+    public isLoading$ = this.loaderService.isLoading$;
+
 
     /* ------------------------------------------------------------------------------------------------------------------ */
     /*                                                     LIFE CYCLE                                                     */
@@ -60,7 +64,8 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private sidebarService: SidebarService,
         private toastService: ToastService,
-        private locationService: LocationService) {
+        private locationService: LocationService,
+        private loaderService: LoaderService,) {
 
         this.route.params.subscribe((params) => {
             this.objectID = params.publicID;
@@ -71,7 +76,8 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
 
 
     public ngOnInit(): void {
-        this.objectService.getObject(this.objectID).subscribe((rr: RenderResult) => {
+        this.loaderService.show();
+        this.objectService.getObject(this.objectID).pipe(finalize(() => this.loaderService.hide())).subscribe((rr: RenderResult) => {
             this.renderResult = rr;
 
             for (let field of this.renderResult.fields) {
@@ -103,6 +109,7 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
         this.renderForm.markAllAsTouched();
 
         if (this.renderForm.valid) {
+            this.loaderService.show();
             const newObjectInstance = new CmdbObject();
             newObjectInstance.type_id = this.renderResult.type_information.type_id;
             newObjectInstance.active = this.renderResult.type_information.active;
@@ -115,7 +122,6 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
                     this.newLocationParentID = this.renderForm.get(field).value;
                 }
 
-                console.log("field", field);
                 if (field.startsWith("dg-mds-")) {
                     newObjectInstance.multi_data_sections.push(this.renderForm.get(field).value)
                 } else {
@@ -127,7 +133,7 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
             });
 
             let ack = null;
-            this.objectService.postObject(newObjectInstance).subscribe(newObjectID => {
+            this.objectService.postObject(newObjectInstance).pipe(finalize(() => this.loaderService.hide())).subscribe(newObjectID => {
                 ack = newObjectID;
 
                 if (this.newLocationParentID > 0) {

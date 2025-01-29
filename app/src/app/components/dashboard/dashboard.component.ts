@@ -17,7 +17,7 @@
 */
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
-import { ReplaySubject, Subscription, takeUntil } from 'rxjs';
+import { finalize, ReplaySubject, Subscription, takeUntil } from 'rxjs';
 
 import { ObjectService } from '../../framework/services/object.service';
 import { ToastService } from '../../layout/toast/toast.service';
@@ -27,6 +27,7 @@ import { APIGetMultiResponse } from '../../services/models/api-response';
 import { RenderResult } from '../../framework/models/cmdb-render';
 import { Column } from '../../layout/table/table.types';
 import { CollectionParameters } from '../../services/models/api-parameter';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -73,16 +74,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     public totalObjects: number = 0;
     private subscription: Subscription;
+    public isLoading$ = this.loaderService.isLoading$;
 
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
         private objectService: ObjectService,
         private toastService: ToastService,
-        private sidebarService: SidebarService
-    ) {
-
-    }
+        private sidebarService: SidebarService,
+        private loaderService: LoaderService,
+    ) {}
 
 
     public ngOnInit(): void {
@@ -204,28 +205,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * Returns the number of objects
      */
     private countObjects(): void {
+        this.loaderService.show();
         const apiParameters: CollectionParameters = {
             limit: 1, sort: 'public_id', order: 1, page: 1,
             filter: [{ $match: {} }]
         };
-        this.objectService.getObjects(apiParameters).pipe(takeUntil(this.unSubscribe))
-            .subscribe((apiResponse: APIGetMultiResponse<RenderResult>) => {
-                this.objectCount = apiResponse.total;
+        this.objectService.getObjects(apiParameters).pipe(takeUntil(this.unSubscribe),
+        finalize(() => this.loaderService.hide()))
+            .subscribe({
+                next: (apiResponse: APIGetMultiResponse<RenderResult>) => {
+                    this.objectCount = apiResponse.total;
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
             });
     }
+    
 
     /**
      * Retrieves and sets the total number of objects from the service.
      */
     private countTotalObjects(): void {
-        this.subscription = this.objectService.getConfigItemsLimit().subscribe({
-            next: (limit) => {
-                this.totalObjects = limit;
-            },
-            error: (error) => {
-                this.toastService.error(error?.error?.message);
-            }
-        });
+        this.loaderService.show();
+        this.objectService.getConfigItemsLimit().pipe(takeUntil(this.unSubscribe),
+        finalize(() => this.loaderService.hide()))
+            .subscribe({
+                next: (limit) => {
+                    this.totalObjects = limit;
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                },
+                complete: () => {
+                    this.newestLoading = false;          }
+            });
     }
 
 
@@ -234,14 +248,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
      */
     private loadNewestObjects(): void {
         this.newestLoading = true;
+        this.loaderService.show();
         const apiParameters: CollectionParameters = { page: this.newestPage, limit: 10, order: -1 };
-        this.objectService.getNewestObjects(apiParameters).pipe(takeUntil(this.unSubscribe))
+        this.objectService.getNewestObjects(apiParameters).pipe(takeUntil(this.unSubscribe) ,
+        finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (apiResponse: APIGetMultiResponse<RenderResult>) => {
                     this.newestObjects = apiResponse.results as Array<RenderResult>;
                     this.newestObjectsCount = apiResponse.total;
                 },
                 error: (error) => {
+                    this.newestLoading = false;
                     this.toastService.error(error?.error?.message);
                 },
                 complete: () => {
@@ -253,14 +270,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private loadLatestObjects(): void {
         this.latestLoading = true;
+        this.loaderService.show();
         const apiParameters: CollectionParameters = { page: this.latestPage, limit: 10, order: -1 };
-        this.objectService.getLatestObjects(apiParameters).pipe(takeUntil(this.unSubscribe))
+        this.objectService.getLatestObjects(apiParameters).pipe(takeUntil(this.unSubscribe),
+        finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (apiResponse: APIGetMultiResponse<RenderResult>) => {
                     this.latestObjects = apiResponse.results as Array<RenderResult>;
                     this.latestObjectsCount = apiResponse.total;
                 },
                 error: (error) => {
+                    this.latestLoading = false;
                     this.toastService.error(`Error while loading latest objects: ${error}`);
                 },
                 complete: () => {
@@ -342,14 +362,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     /* ------------------------------------------------ CHARTS FUNCTIONS ------------------------------------------------ */
 
-    private generateObjectChar() {
-        this.objectService.groupObjectsByType('type_id').pipe(takeUntil(this.unSubscribe)).subscribe(values => {
-            for (const obj of values) {
-                this.labelsObject.push(obj.label);
-                this.colorsObject.push(this.getRandomColor());
-                this.itemsObject.push(obj.count);
-            }
-        });
+    private generateObjectChar(): void {
+        this.loaderService.show();
+        this.objectService.groupObjectsByType('type_id').pipe(takeUntil(this.unSubscribe),
+        finalize(() => this.loaderService.hide()))
+            .subscribe({
+                next: (values) => {
+                    for (const obj of values) {
+                        this.labelsObject.push(obj.label);
+                        this.colorsObject.push(this.getRandomColor());
+                        this.itemsObject.push(obj.count);
+                    }
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
+            });
     }
 
 

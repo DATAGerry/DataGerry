@@ -18,7 +18,7 @@
 import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 
 import { ReplaySubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReportCategoryService } from 'src/app/reporting/services/report-category.service';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { APIGetMultiResponse } from 'src/app/services/models/api-response';
@@ -27,6 +27,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { Location } from '@angular/common';
 import { ToastService } from 'src/app/layout/toast/toast.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
     selector: 'app-category-overview',
@@ -43,6 +44,7 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
     public sort: Sort = { name: 'public_id', order: SortDirection.ASCENDING } as Sort;
     public filter: string;
     public columns: Array<any>;
+    public isLoading$ = this.loaderService.isLoading$;
 
     @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
 
@@ -50,8 +52,10 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
 
     constructor(
         private categoryService: ReportCategoryService,
-        private modalService: NgbModal, private location: Location,
-        private toast: ToastService) { }
+        private modalService: NgbModal, 
+        private location: Location,
+        private toast: ToastService,
+        private loaderService: LoaderService) { }
 
 
     ngOnInit(): void {
@@ -76,6 +80,7 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
      * Loads the list of categories with specified parameters.
      */
     private loadCategories(): void {
+        this.loaderService.show();
         this.loading = true;
         const params: CollectionParameters = {
             filter: this.filterBuilder(),
@@ -84,7 +89,7 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
             sort: this.sort.name === 'public_id_str' ? 'public_id' : this.sort.name,
             order: this.sort.order
         };
-        this.categoryService.getAllCategories(params).pipe(takeUntil(this.unsubscribe$)).subscribe(
+        this.categoryService.getAllCategories(params).pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide())).subscribe(
             (response: APIGetMultiResponse<any>) => {
                 this.categories = response.results;
                 this.totalCategories = response.total;
@@ -101,8 +106,9 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
      */
     public deleteCategory(id: number): void {
         if (confirm('Are you sure you want to delete this category?')) {
+            this.loaderService.show();
             this.categoryService.deleteCategory(id)
-                .pipe(takeUntil(this.unsubscribe$))
+                .pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide()))
                 .subscribe({
                     next: () => {
                         alert('Category deleted successfully');

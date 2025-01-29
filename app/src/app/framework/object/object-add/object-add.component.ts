@@ -33,6 +33,9 @@ import { CmdbMode } from '../../modes.enum';
 import { RenderComponent } from '../../render/render.component';
 import { CmdbObject } from '../../models/cmdb-object';
 import { AccessControlPermission } from 'src/app/modules/acl/acl.types';
+import { finalize } from 'rxjs/operators';
+import { LoaderService } from 'src/app/core/services/loader.service';
+
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -52,11 +55,13 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
     public objectInstance: CmdbObject;
     public renderForm: UntypedFormGroup;
     public fieldsGroups: UntypedFormGroup;
+    public isLoading$ = this.loaderService.isLoading$;
 
     @Output() parentSubmit = new EventEmitter<any>();
     @ViewChild(RenderComponent, { static: false }) render: RenderComponent;
 
     private parentID: number;
+    public isSaving: boolean = false;
 
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
@@ -67,7 +72,9 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private sidebarService: SidebarService,
         private locationService: LocationService,
-        private toastService: ToastService) {
+        private toastService: ToastService,
+        private loaderService: LoaderService,
+    ) {
 
         this.objectInstance = new CmdbObject();
         this.typeIDSubject = new BehaviorSubject<number>(null);
@@ -96,7 +103,9 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
 
 
     public ngOnInit(): void {
-        this.typeService.getTypeList(AccessControlPermission.CREATE).pipe(takeUntil(this.subscriber))
+        this.loaderService.show();
+        this.typeService.getTypeList(AccessControlPermission.CREATE).pipe(takeUntil(this.subscriber),
+             finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (typeList: CmdbType[]) => {
                     this.typeList = typeList;
@@ -137,8 +146,14 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
 
     public saveObject() {
         this.renderForm.markAllAsTouched();
-
         if (this.renderForm.valid) {
+
+            if (this.isSaving) {
+                return;
+            }
+            this.loaderService.show();
+            this.isSaving = true;
+
             this.objectInstance.type_id = this.currentTypeID;
             this.objectInstance.version = '1.0.0';
             this.objectInstance.author_id = this.userService.getCurrentUser().public_id;
@@ -171,7 +186,11 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
             });
 
             let newID = null;
-            this.objectService.postObject(this.objectInstance).pipe(takeUntil(this.subscriber))
+            this.objectService.postObject(this.objectInstance).pipe(takeUntil(this.subscriber),
+            finalize(() => {
+                this.loaderService.hide();
+                this.isSaving = false;
+            }))
                 .subscribe({
                     next: newObjectID => {
                         newID = newObjectID;
@@ -199,7 +218,9 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
         }
 
         if (this.parentID) {
-            this.locationService.postLocation(params)
+            this.locationService.postLocation(params).pipe(
+                finalize(() => this.loaderService.hide())
+            )
                 .subscribe({
                     next: () => {
                         this.locationService.locationTreeName = "";

@@ -23,13 +23,14 @@ import { CategoryService } from '../services/category.service';
 import { CmdbMode } from '../modes.enum';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { SidebarService } from '../../layout/services/sidebar.service';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { APIGetMultiResponse } from '../../services/models/api-response';
 import { CollectionParameters } from '../../services/models/api-parameter';
 import { Column, Sort, SortDirection, TableState, TableStatePayload } from '../../layout/table/table.types';
 import { UserSetting } from '../../management/user-settings/models/user-setting';
 import { convertResourceURL, UserSettingsService } from '../../management/user-settings/services/user-settings.service';
 import { UserSettingsDBService } from '../../management/user-settings/services/user-settings-db.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-category',
@@ -87,13 +88,17 @@ export class CategoryComponent implements OnInit, OnDestroy {
 
   public tableStates: Array<TableState> = [];
 
+  public isLoading$ = this.loaderService.isLoading$;
+
   public get tableState(): TableState {
     return this.tableStateSubject.getValue() as TableState;
   }
 
   constructor(private categoryService: CategoryService, private route: ActivatedRoute, private sidebarService: SidebarService,
               private router: Router, private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>,
-              private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>) {
+              private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>,
+              private loaderService: LoaderService
+            ) {
     this.categories = [];
     this.displayMode = this.displayModeSubject.asObservable();
     this.displayModeSubject.next(this.route.snapshot.data.mode);
@@ -178,8 +183,9 @@ export class CategoryComponent implements OnInit, OnDestroy {
    * Load categories from the backend.
    */
   private loadCategories(): void {
+    this.loaderService.show();
     this.categoryService.getCategories(this.apiParameters).pipe(
-      takeUntil(this.unSubscribe)).subscribe((response: APIGetMultiResponse<CmdbCategory>) => {
+      takeUntil(this.unSubscribe), finalize(() => this.loaderService.hide())).subscribe((response: APIGetMultiResponse<CmdbCategory>) => {
       this.categoriesAPIResponse = response;
       this.categories = this.categoriesAPIResponse.results;
       this.totalResults = response.total;
@@ -287,8 +293,9 @@ export class CategoryComponent implements OnInit, OnDestroy {
    * Rest caller updates every category in tree
    */
   public onSave(): void {
+    this.loaderService.show()
     const observers = this.saveTree(this.categoryTree);
-    forkJoin(observers).subscribe(() => {
+    forkJoin(observers).pipe(finalize(() => this.loaderService.hide())).subscribe(() => {
       this.sidebarService.loadCategoryTree();
       this.dataLoader();
     });

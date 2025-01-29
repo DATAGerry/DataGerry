@@ -32,13 +32,14 @@ import {
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 import { ImportService } from '../../../services/import.service';
 
 import { CsvConfigComponent } from '../csv-config/csv-config.component';
 import { JsonConfigComponent } from '../json-config/json-config.component';
 import { FileConfig } from './file-config';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export const configComponents: { [type: string]: any } = {
@@ -63,11 +64,15 @@ export class FileConfigComponent extends FileConfig implements OnInit, OnChanges
     public componentRef: ComponentRef<any>;
     private currentFactory: ComponentFactory<any>;
 
+    public isLoading$ = this.loaderService.isLoading$;
+
 /* ------------------------------------------------------------------------------------------------------------------ */
 /*                                                     LIFE CYCLE                                                     */
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-    constructor(private resolver: ComponentFactoryResolver, private importService: ImportService) {
+    constructor(private resolver: ComponentFactoryResolver, 
+                private importService: ImportService,
+                private loaderService: LoaderService) {
         super();
 
         this.configChange = new EventEmitter<any>();
@@ -90,8 +95,9 @@ export class FileConfigComponent extends FileConfig implements OnInit, OnChanges
                 this.resetConfigSub();
                 this.component = configComponents[this.fileFormat];
                 this.currentFactory = this.resolver.resolveComponentFactory(this.component);
-    
-                this.importService.getObjectParserDefaultConfig(this.fileFormat).subscribe(defaultParserConfig => {
+                this.loaderService.show();
+                this.importService.getObjectParserDefaultConfig(this.fileFormat)
+                .pipe(finalize(() => this.loaderService.hide())).subscribe(defaultParserConfig => {
                     this.defaultParserConfig = defaultParserConfig;
                     this.componentRef = this.fileConfig.createComponent(this.currentFactory);
                     this.componentRef.instance.configForm = this.configForm;
