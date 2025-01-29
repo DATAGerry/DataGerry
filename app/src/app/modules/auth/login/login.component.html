@@ -20,10 +20,10 @@
               </div>
 
               <!-- Login Form -->
-              <form id="login-form" [formGroup]="loginForm" class="position-relative">
+              <form id="login-form" [formGroup]="loginForm" class="position-relative" (keydown)="onKeydown($event)">
                 <ng-container *ngIf="!isLoading && !showSubscriptions">
                   <div class="form-label-group">
-                    <input type="text" class="form-control" placeholder="Username" formControlName="username"
+                    <input type="text" class="form-control" [placeholder]="userIdentifierPlaceholder" formControlName="username"
                       [ngClass]="{ 'is-invalid': submitted && controls.username.errors }" required autofocus>
                   </div>
                   <div class="form-label-group">

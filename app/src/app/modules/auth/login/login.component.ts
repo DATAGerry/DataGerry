@@ -29,6 +29,7 @@ import { LoginResponse } from '../models/responses';
 import { Group } from 'src/app/management/models/group';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'cmdb-login',
@@ -56,11 +57,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     public userName: string;
     public userPW: string;
 
-    public isLoading$ = this.loaderService.isLoading$;
+    public isLoading$ = this.loaderService?.isLoading$;
 
     /* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
     get controls() {
-        return this.loginForm.controls;
+        return this.loginForm?.controls;
     }
 
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
@@ -75,7 +76,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         private loaderService: LoaderService
     ) {
         const currentDate = new Date();
-        const year = currentDate.getFullYear();
+        const year = currentDate?.getFullYear();
         const dateBefore = new Date(`${year}-12-18`);
         const dateAfter = new Date(`${year}-12-31`);
 
@@ -86,7 +87,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.render.addClass(document.body, 'embedded');
+        this.render?.addClass(document?.body, 'embedded');
 
         this.loginForm = new UntypedFormGroup({
             username: new UntypedFormControl('', [Validators.required]),
@@ -96,8 +97,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        this.render.removeClass(document.body, 'embedded');
-        this.loginSubscription.unsubscribe();
+        this.render?.removeClass(document?.body, 'embedded');
+        this.loginSubscription?.unsubscribe();
     }
 
     /* ------------------------------------------------ HELPER FUNCTIONS ------------------------------------------------ */
@@ -109,44 +110,45 @@ export class LoginComponent implements OnInit, OnDestroy {
      */
     public onSubmit() {
         this.submitted = true;
-        this.loaderService.show();
+        this.loaderService?.show();
 
-        this.userName = this.loginForm.controls['username'].value;
-        this.userPW = this.loginForm.controls['password'].value;
+        this.userName = this.loginForm?.controls['username']?.value;
+        this.userPW = this.loginForm?.controls['password']?.value;
 
         this.loginSubscription = this.authenticationService
             .login(this.userName, this.userPW)
-            .pipe(first(), finalize(()=> this.loaderService.hide()))
+            .pipe(first(), finalize(()=> this.loaderService?.hide()))
             .subscribe({
                 next: (response: LoginResponse | Array<any>) => {
 
+                    // Login with multiple subscriptions
                     if (Array.isArray(response)) {
                         this.isLoading = true;
                         this.subscriptions = response;
                         setTimeout(() => {
                             this.isLoading = false; 
                             this.showSubscriptions = true;
-                            this.loginForm.get('subscription')?.reset(null);
+                            this.loginForm?.get('subscription')?.reset(null);
                         }, 1000);
                     } else {
                         // Normal login response
                         const loginResponse = response as LoginResponse;
 
-                        this.userSettingsDB.syncSettings();
-                        this.permissionService.storeUserRights(loginResponse.user.group_id)
+                        this.userSettingsDB?.syncSettings();
+                        this.permissionService?.storeUserRights(loginResponse?.user.group_id)
                             .pipe(first())
                             .subscribe((group: Group) => {
-                                this.router.navigate(['/']);
+                                this.router?.navigate(['/']);
                             });
                     }
                 },
                 error: (err) => {
                     this.isLoading = false;
-                    this.toastService.error(err?.error?.message)
-                    this.render.addClass(document.getElementById('login-logo'), 'shake');
-                    this.loginForm.reset();
+                    this.toastService?.error(err?.error?.message)
+                    this.render?.addClass(document?.getElementById('login-logo'), 'shake');
+                     this.loginForm?.reset();
                     setTimeout(() => {
-                        this.render.removeClass(document.getElementById('login-logo'), 'shake');
+                        this.render?.removeClass(document?.getElementById('login-logo'), 'shake');
                     }, 500);
                 }
             });
@@ -159,12 +161,12 @@ export class LoginComponent implements OnInit, OnDestroy {
      */
     public onSelectSubscription(): void {
 
-        const chosenSub = this.loginForm.get('subscription')?.value;
+        const chosenSub = this.loginForm?.get('subscription')?.value;
         if (!chosenSub) {
             return;
         }
 
-        this.loaderService.show();
+        this.loaderService?.show();
 
         const payload = {
             user_name: this.userName,
@@ -174,29 +176,50 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         this.loginSubscription = this.authenticationService
             .selectSubscription(payload)
-            .pipe(first(), finalize(() => this.loaderService.hide()))
+            .pipe(first(), finalize(() => this.loaderService?.hide()))
             .subscribe({
                 next: (loginResponse: LoginResponse) => {
-                    this.userSettingsDB.syncSettings();
+                    this.userSettingsDB?.syncSettings();
                     this.permissionService
-                        .storeUserRights(loginResponse.user.group_id)
+                        .storeUserRights(loginResponse?.user.group_id)
                         .pipe(first())
                         .subscribe(() => {
-                            this.router.navigate(['/']);
+                            this.router?.navigate(['/']);
                         });
                 },
                 error: (err) => {
-
-                    this.toastService.error(err?.error?.message)
+                    this.toastService?.error(err?.error?.message)
                 },
             });
     }
+
+
+    /**
+     * Triggers form submission when the Enter key is pressed and the form is valid.
+     * @param event - The keyboard event.
+     */
+    public onKeydown(event: KeyboardEvent): void {
+        if (event?.key === 'Enter' && this.loginForm?.valid) {
+            event?.preventDefault();
+            this.onSubmit();
+        }
+    }
+
+    
+    /**
+     * Returns the placeholder text for the login input field.
+     * @returns 'Email' if in cloud mode, otherwise 'Username'.
+     */
+    get userIdentifierPlaceholder(): string {
+        return environment?.cloudMode ? 'Email' : 'Username';
+    }
+    
 
     /**
      * Go back to login fields
      */
     public goBack(): void {
         this.showSubscriptions = false;
-        this.loginForm.get('subscription')?.reset(null);
+        this.loginForm?.get('subscription')?.reset(null);
     }
 }
