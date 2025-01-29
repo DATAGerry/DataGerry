@@ -19,7 +19,7 @@ import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { Subscription, delay, finalize, first } from 'rxjs';
+import { Subscription, finalize, first } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
 import { PermissionService } from '../services/permission.service';

@@ -20,7 +20,6 @@ export class LoaderService {
   }
 
   private updateLoadingState(): void {
-    console.log('counterr', this.loadingCounter)
     this.isLoadingSubject.next(this.loadingCounter > 0);
   }
 }
