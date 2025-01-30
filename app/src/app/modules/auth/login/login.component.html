@@ -46,9 +46,19 @@
                     </div>
                   </div>
                   <div class="form-label-group">
-                    <input type="password" placeholder="Password" formControlName="password" class="form-control"
-                      [ngClass]="{ 'is-invalid': submitted && controls.password.errors }" required>
-
+                    <div class="input-group mb-3">
+                      <input [type]="passwordVisible ? 'text' : 'password'" class="form-control" placeholder="Password"
+                        aria-label="Password" formControlName="password" required />
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility()"
+                          aria-label="Toggle password visibility">
+                          <i class="fas" [ngClass]="{
+                                                  'fa-eye': !passwordVisible,
+                                                  'fa-eye-slash': passwordVisible
+                                                }"></i>
+                        </button>
+                      </div>
+                    </div>
                     <div class="text-danger mt-1" *ngIf="
                       (controls.password.touched || controls.password.dirty) &&
                       controls.password.invalid

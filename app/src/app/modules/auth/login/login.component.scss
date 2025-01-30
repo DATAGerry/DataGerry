@@ -83,6 +83,54 @@
     max-width: 400px;
   }
 
+    /* Input fields style, including eye button */
+  .form-label-group {
+    .form-control {
+      border-radius: 1rem !important;
+      padding: 0.5rem 1.25rem;
+      height: calc(2.5rem + 2px);
+      transition: all 0.2s ease;
+      
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+      }
+    }
+  
+    .input-group {
+      .form-control {
+        border-radius: 1rem 0 0 1rem !important;
+        border-right: none;
+        padding-right: 2.5rem;
+      }
+  
+      .input-group-append {
+        margin-left: -1px;
+        z-index: 5;
+  
+        .btn {
+          border-radius: 0 1rem 1rem 0 !important;
+          border-left: none;
+          height: calc(2.5rem + 2px);
+          padding: 0 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-color: #ced4da !important;
+          i {
+            font-size: 1.1rem;
+            width: 1.25em;
+          }
+        }
+      }
+    }
+  
+    &:first-child .form-control {
+      padding: 0.5rem 1.25rem;
+    }
+  }
+
+
+
 /* Fallback for Edge
 -------------------------------------------------- */
 
