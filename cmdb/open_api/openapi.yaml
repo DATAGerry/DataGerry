@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+    title: DataGerry API
+    description: |
+        DataGerry Cloud API documentation
+        <br><hr><br>
+        The API requires **BasicAuth** (Email and Password) and the **API-Key** of the Subscription which is provided in the Service Portal.
+    version: 2.3.0
+
+servers:
+    - url: https://api.datagerry.com/rest
+      description: DataGerry API Entrypoint
+
+tags:
+    - name: CmdbObjects
+      description: Operations related to CmdbObjects
+
+paths:
+    /objects:
+        $ref: "./paths/objects/objects.yaml"
+    /objects/{public_id}:
+        $ref: "./paths/objects/objects-by-id.yaml"
+    /objects/delete/{public_ids}:
+        $ref: "./paths/objects/objects-many.yaml"
+    /objects/state/{public_id}:
+        $ref: "./paths/objects/objects-state.yaml"
+
+components:
+    schemas:
+        CmdbObject:
+            $ref: "./components/schemas/CmdbObject.yaml"
+        MultiDataSection:
+            $ref: "./components/schemas/MultiDataSection.yaml"
+        CollectionParameters:
+            $ref: "./components/schemas/CollectionParameters.yaml"
+    securitySchemes:
+        $ref: "./components/security.yaml"
+
+security:
+    - BasicAuth: []
+    - XApiKey: []

@@ -1,0 +1,44 @@
+type: object
+properties:
+    filter:
+        oneOf:
+            - type: array
+              items:
+                  type: object
+                  additionalProperties: true
+            - type: object
+              additionalProperties: true
+            - type: 'null'
+        default: null
+        description: The filter criteria can be a list of dictionaries, a dictionary or empty, depending on the use case.
+    limit:
+        type: integer
+        default: 10
+        description: Limits the number of results which should be retrieved. A limit of 0 equals unlimited.
+    sort:
+        type: string
+        default: "public_id"
+    order:
+        type: integer
+        default: 1
+    page:
+        type: integer
+        default: 1
+    projection:
+        oneOf:
+            - type: object
+              additionalProperties:
+                type: integer
+            - type: 'null'
+        default: null
+        description: The projection can either be a dictionary or null. If null, no projection is applied.
+example:
+    filter:
+        type_id: 3
+    limit: 10
+    sort: "public_id"
+    order: 1
+    page: 1
+    projection:
+        public_id: 1
+        type_id: 1

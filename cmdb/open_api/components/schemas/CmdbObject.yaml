@@ -1,0 +1,51 @@
+type: object
+properties:
+    public_id:
+        type: integer
+        example: 1
+    type_id:
+        type: integer
+        example: 2
+    status:
+        type: boolean
+        default: true
+    version:
+        type: string
+        default: 1.0.0
+    author_id:
+        type: integer
+        nullable: true
+        example: 3
+    creation_time:
+        type: object
+        nullable: true
+    last_edit_time:
+        type: object
+        nullable: true
+    active:
+        type: boolean
+        default: true
+    fields:
+        type: array
+        items:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: "The name of the field"
+                    example: "text-c99dcca8-f3f2-4ca1-beb8-0fe23f29c2dc"
+                value:
+                    oneOf:
+                        - type: string
+                          description: "A string value for the field."
+                          example: "Example Value"
+                        - type: number
+                          description: "A numeric value for the field."
+                          example: 123.45
+                        - type: boolean
+                          description: "A boolean value for the field."
+    multi_data_sections:
+        type: array
+        items:
+            $ref: './MultiDataSection.yaml'
+        default: []

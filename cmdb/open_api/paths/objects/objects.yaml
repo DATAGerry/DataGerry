@@ -1,0 +1,115 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                     INSERT OBJECT                                                    #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+post:
+    tags: 
+        -  CmdbObjects
+    summary: Insert a new CmdbObject
+    description: |
+        Required User Right: **base.framework.object.add**
+        <br><hr><br>
+        Inserts a new CmdbObject into the database.
+        <br><br>
+        The **public_id** and **creation_time** properties will be automatically created if there are none.
+    operationId: insert_object
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: '../../components/schemas/CmdbObject.yaml'
+    responses:
+        "200":
+            description: New CmdbObject was created and the **public_id** of it is returned.
+            content:
+                application/json:
+                    schema:
+                        type: integer
+                        example: 21
+        "400":
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Maximum number of config items reached
+                - Object with given **public_id** already exists
+            content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                        example: "Maximum number of config items reached"
+        "403":
+            $ref: '../../components/responses.yaml#/Forbidden'
+        "500":
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Type of object could not be retrieved
+                - Object could not be inserted in database
+                - The created object could not be retrieved from database
+                - Object could not be rendered
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Object could not be inserted in database"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                      GET OBJECTS                                                     #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags: 
+        -  CmdbObjects
+    summary: Retrieve CmdbObjects
+    description: |
+        Required User Right: **base.framework.object.view**
+        <br><hr><br>
+        Returns all objects if no **CollectionParameters** are passed
+    parameters: 
+        - name: CollectionParameters
+          in: query
+          description: Parameters for filtering, limiting, sorting, and pagination of CmdbObjects
+          required: false
+          schema:
+            $ref: '../../components/schemas/CollectionParameters.yaml'
+    operationId: get_objects
+    responses:
+        "200":
+            description: Returns a **list of CmdbObjects** matching the filter criteria
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '../../components/schemas/CmdbObject.yaml'
+        "400":
+            description: Could not iterate the objects
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not iterate the objects"
+        "404":
+            description: |
+                Multiple cases are possible:
+                <br>
+                - No objects found
+                - Could not retrive objects
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrive objects"

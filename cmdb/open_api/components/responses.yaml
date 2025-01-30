@@ -1,0 +1,11 @@
+Forbidden:
+  description: No permission to access this resource!
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            example: "You do not have permission to access this resource"
+

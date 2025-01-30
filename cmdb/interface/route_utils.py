@@ -334,7 +334,11 @@ def parse_authorization_header(header):
                     if not user_data:
                         return None
 
-                    current_app.database_manager.connector.set_database(user_data['database'])
+                    if current_app.local_mode:
+                        # Test API only with user with 1 subscription
+                        current_app.database_manager.connector.set_database(user_data['subscriptions'][0]['database'])
+                    else:
+                        current_app.database_manager.connector.set_database(user_data['database'])
 
                 users_manager = UsersManager(current_app.database_manager)
                 security_manager = SecurityManager(current_app.database_manager)

@@ -1,0 +1,105 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                  UPDATE OBJECT STATE                                                 #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+put:
+    tags:
+        - CmdbObjects
+    summary: Update the state of a single CmdbObject
+    description: |
+        Required User Right: **base.framework.object.activation*
+        <br><hr><br>
+        Updates the state of the CmdbObject with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbObject for which the state should be updated
+          required: true
+          schema:
+              type: integer
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    type: boolean
+                    example: true
+    operationId: update_object_state
+    responses:
+        "200":
+            description: Returns the updated CmdbObject with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        $ref: "../../components/schemas/CmdbObject.yaml"
+        "400":
+            description: The provided state is not a boolean value (true/false)
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Object state is not a boolean value (true/false)!"
+        "403":
+            $ref: '../../components/responses.yaml#/Forbidden'
+        "404":
+            description: Could not retrieve the CmdbObject with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve the object!"
+        "500":
+            description: Could not render the object
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not render the object"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                   GET OBJECT STATE                                                   #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags:
+        - CmdbObjects
+    summary: Retrieve the state of a single CmdbObject
+    description: |
+        Required User Right: **base.framework.object.activation*
+        <br><hr><br>
+        Returns the state of the CmdbObject with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbObject for which the state should be returned
+          required: true
+          schema:
+              type: integer
+    operationId: get_object_state
+    responses:
+        "200":
+            description: Returns the state of the CmdbObject with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        type: boolean
+                        example: true
+        "404":
+            description: CmdbObject with the given **public_id** was not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrive the requested object"

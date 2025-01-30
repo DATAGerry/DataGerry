@@ -106,7 +106,7 @@ class CmdbObject(CmdbDAO):
                  multi_data_sections: list = None,
                  last_edit_time=None,
                  editor_id: int = None,
-                 status: int = None,
+                 status: bool = True,
                  version: str = '1.0.0',
                  **kwargs):
         """init of object

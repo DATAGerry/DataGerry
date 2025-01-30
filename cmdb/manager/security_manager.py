@@ -114,14 +114,7 @@ class SecurityManager:
                 if current_app.local_mode:
                     return current_app.symmetric_key
 
-                base_sym_key = os.getenv("DG_SYMMETRIC_KEY")
-                LOGGER.warning(f"symmetric_key from os env: {base_sym_key}")
-
                 symmetric_key = base64.b64decode(os.getenv("DG_SYMMETRIC_KEY"))
-                LOGGER.warning(f"Test decode symmetric_key from local variable: {base64.b64decode(base_sym_key)}")
-
-                symmetric_key = base64.b64decode(os.getenv("DG_SYMMETRIC_KEY"))
-                LOGGER.warning(f"Decoded symmetric_key from os env: {symmetric_key}")
 
                 if not symmetric_key:
                     LOGGER.error("Error: No symmetric key provided!")
