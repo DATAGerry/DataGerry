@@ -11,7 +11,7 @@ post:
         <br><hr><br>
         Inserts a new CmdbObject into the database.
         <br><br>
-        The **public_id** and **creation_time** properties will be automatically created if there are none.
+        The **public_id**, **author_id** and **creation_time** properties will be automatically created and don't need to be provided.
     operationId: insert_object
     requestBody:
         required: true
@@ -67,7 +67,7 @@ post:
 get:
     tags: 
         -  CmdbObjects
-    summary: Retrieve CmdbObjects
+    summary: Retrieve multiple CmdbObjects
     description: |
         Required User Right: **base.framework.object.view**
         <br><hr><br>

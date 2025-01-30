@@ -14,6 +14,8 @@ servers:
 tags:
     - name: CmdbObjects
       description: Operations related to CmdbObjects
+    - name: CmdbCategories
+      description: Operations related to CmdbCategories
 
 paths:
     /objects:
@@ -24,11 +26,17 @@ paths:
         $ref: "./paths/objects/objects-many.yaml"
     /objects/state/{public_id}:
         $ref: "./paths/objects/objects-state.yaml"
+    /categories:
+        $ref: "./paths/categories/categories.yaml"
+    /categories/{public_id}:
+        $ref: "./paths/categories/categories-by-id.yaml"
 
 components:
     schemas:
         CmdbObject:
             $ref: "./components/schemas/CmdbObject.yaml"
+        CmdbCategory:
+            $ref: "./components/schemas/CmdbCategory.yaml"
         MultiDataSection:
             $ref: "./components/schemas/MultiDataSection.yaml"
         CollectionParameters:

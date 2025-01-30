@@ -1,0 +1,97 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                    INSERT CATEGORY                                                   #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+post:
+    tags:
+        - CmdbCategories
+    summary: Insert a new CmdbCategory
+    description: |
+        Required User Right: **base.framework.category.add**
+        <br><hr><br>
+        Inserts a new CmdbCategory into the database
+        <br><br>
+        The **public_id** and **creation_time** properties will be automatically created and don't need to be provided.
+    operationId: insert_category
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: "../../components/schemas/CmdbCategory.yaml"
+    responses:
+        "200":
+            description: The assigned **public_id** and the created CmdbCategory are returned
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            result_id:
+                                type: integer
+                                description: "The **public_id** of the created CmdbCategory"
+                                example: 12345
+                            raw:
+                                $ref: "../../components/schemas/CmdbCategory.yaml"
+        "400":
+            description: Could not insert the new CmdbCategory in database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not insert the new CmdbCategory in database"
+        "404":
+            description: Could not retrieve the created CmdbCategory from database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve the created CmdbCategory from database"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                    GET CATEGORIES                                                    #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags:
+        - CmdbCategories
+    summary: Retrieve multiple CmdbCategories
+    description: |
+        Required User Right: **base.framework.category.view**
+        <br><hr><br>
+        Retrieves mutliple CmdbCategories
+        <br><br>
+        The **public_id** and **creation_time** properties will be automatically created.
+    operationId: get_categories
+    parameters:
+        - name: CollectionParameters
+          in: query
+          description: Parameters for filtering, limiting, sorting, and pagination of CmdbCategories
+          required: false
+          schema:
+            $ref: '../../components/schemas/CollectionParameters.yaml'
+    responses:
+        "200":
+            description: Returns a **list of CmdbCategories** matching the filter criteria
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '../../components/schemas/CmdbCategory.yaml'
+        "400":
+            description: Could not retrieve CmdbCategories from database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve CmdbCategories from database"
