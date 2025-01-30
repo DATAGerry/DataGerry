@@ -255,7 +255,7 @@ export class ObjectService<T = CmdbObject | RenderResult> implements ApiServiceP
     public changeState(publicID: number, status: boolean) {
         const options = this.options;
         options.params = new HttpParams();
-        return this.api.callPut<boolean>(`${this.servicePrefix}/${publicID}/state`, status, options).pipe(
+        return this.api.callPut<boolean>(`${this.servicePrefix}/state/${publicID}`, status, options).pipe(
             map((apiResponse) => {
                 return apiResponse.body;
             }),

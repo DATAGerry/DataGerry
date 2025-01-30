@@ -1,0 +1,12 @@
+BasicAuth:
+    type: http
+    scheme: basic
+    description: |
+        Basic authentication is required. Use your email and password.
+
+XApiKey:
+    type: apiKey
+    name: x-api-key
+    in: header
+    description: |
+        Additionally an API-Key must be included in the 'x-api-key' header for authentication.

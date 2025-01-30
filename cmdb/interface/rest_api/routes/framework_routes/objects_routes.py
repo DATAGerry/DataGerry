@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Definition of all routes for objects"""
+"""
+Definition of all routes for objects
+"""
 import json
 import copy
 import logging
@@ -91,7 +93,7 @@ def insert_object(request_user: UserModel):
 
     if current_app.cloud_mode:
         if check_config_item_limit_reached(request_user):
-            return abort(405, "The maximum amout of objects is reached!")
+            return abort(400, "The maximum amout of objects is reached!")
 
     try:
         new_object_data = json.loads(add_data_dump, object_hook=json_util.object_hook)
@@ -104,7 +106,7 @@ def insert_object(request_user: UserModel):
             except ObjectManagerGetError as err:
                 LOGGER.warning("[insert_object] ObjectManagerGetError: %s , Type: %s", err, type(err))
             else:
-                return abort(400, f'Type with PublicID {new_object_data["public_id"]} already exists.')
+                return abort(400, f'Object with PublicID {new_object_data["public_id"]} already exists.')
 
         if 'active' not in new_object_data:
             new_object_data['active'] = True
@@ -118,14 +120,14 @@ def insert_object(request_user: UserModel):
         except Exception as err:
             #TODO: ERROR-FIX
             LOGGER.warning("[DEBUG] Error: %s , Type: %s", err, type(err))
-            return abort(500)
+            return abort(500, "Object could not be inserted in database!")
 
         try:
             current_type_instance = objects_manager.get_object_type(new_object_data['type_id'])
         except Exception as err:
             #TODO: ERROR-FIX
             LOGGER.warning("[DEBUG] Error: %s , Type: %s", err, type(err))
-            return abort(500)
+            return abort(500, "Type of object could not be retrieved")
 
         try:
             current_object = objects_manager.get_object(new_object_id)
@@ -148,7 +150,7 @@ def insert_object(request_user: UserModel):
         except Exception as err:
             #TODO: ERROR-FIX
             LOGGER.warning("[DEBUG] Error: %s , Type: %s", err, type(err))
-            return abort(500)
+            return abort(500, "Object could not be rendered!")
 
         try:
             if current_app.cloud_mode:
@@ -233,7 +235,7 @@ def get_object(public_id, request_user: UserModel):
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
         LOGGER.error("[get_object] InstanceRenderError: %s", err.message)
-        return abort(500)
+        return abort(500, "Could not render the object!")
     except Exception as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_object] Exception: %s", err)
@@ -301,13 +303,14 @@ def get_objects(params: CollectionParameters, request_user: UserModel):
 
     except ManagerIterationError:
         #TODO: ERROR-FIX
-        return abort(400)
+        return abort(400, "Could not iterate the objects")
     except ManagerGetError:
         return abort(404, "No objects found!")
     except Exception as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_objects] Exception: %s", err)
         return abort(404, "Could not retrive objects!")
+
 
     return api_response.make_response()
 
@@ -339,7 +342,7 @@ def get_native_object(public_id: int, request_user: UserModel):
 
 @objects_blueprint.route('/group/<string:value>', methods=['GET'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.ADMIN)
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def group_objects_by_type_id(value: str, request_user: UserModel):
     """TODO: document"""
@@ -531,7 +534,7 @@ def get_object_references(public_id: int, params: CollectionParameters, request_
     return api_response.make_response()
 
 
-@objects_blueprint.route('/<int:public_id>/state', methods=['GET'])
+@objects_blueprint.route('/state/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
@@ -546,8 +549,8 @@ def get_object_state(public_id: int, request_user: UserModel):
             api_response = DefaultResponse(found_object.active)
 
             return api_response.make_response()
-        else:
-            abort(404, f"Object with ID:{public_id} not found!")
+
+        abort(404, f"Object with ID:{public_id} not found!")
     except ObjectManagerGetError as err:
         LOGGER.debug("[get_object_state] ObjectManagerGetError: %s", err.message)
         return abort(404)
@@ -746,7 +749,7 @@ def update_object(public_id: int, data: dict, request_user: UserModel):
     return api_response.make_response()
 
 
-@objects_blueprint.route('/<int:public_id>/state', methods=['PUT'])
+@objects_blueprint.route('/state/<int:public_id>', methods=['PUT'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
@@ -759,7 +762,7 @@ def update_object_state(public_id: int, request_user: UserModel):
     if isinstance(request.json, bool):
         state = request.json
     else:
-        return abort(400)
+        return abort(400, "Object state is not a boolean value (true/false)!")
     try:
         found_object = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
     except ObjectManagerGetError as err:
@@ -1002,7 +1005,7 @@ def delete_object(public_id: int, request_user: UserModel):
         return abort(403, f"Access denied for object with public_id: {public_id}")
     except ObjectManagerDeleteError:
         #TODO: ERROR-FIX
-        return abort(400)
+        return abort(400, "Could not delete the object")
     except Exception:
         #TODO: ERROR-FIX
         return abort(500)
@@ -1046,7 +1049,7 @@ def delete_object(public_id: int, request_user: UserModel):
 
 @objects_blueprint.route('/<int:public_id>/locations', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.ADMIN)
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_object_with_child_locations(public_id: int, request_user: UserModel):
     """TODO: document"""
@@ -1113,7 +1116,7 @@ def delete_object_with_child_locations(public_id: int, request_user: UserModel):
 
 @objects_blueprint.route('/<int:public_id>/children', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.ADMIN)
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_object_with_child_objects(public_id: int, request_user: UserModel):
     """
@@ -1233,7 +1236,7 @@ def delete_many_objects(public_ids, request_user: UserModel):
                 location_for_object = locations_manager.get_location_for_object(current_object_instance.public_id)
 
                 if location_for_object:
-                    return abort(405, """It is not possible to bulk delete objects if any of them has a location""")
+                    return abort(400, """It is not possible to bulk delete objects if any of them has a location""")
             except ManagerGetError:
                 pass
 
@@ -1251,6 +1254,7 @@ def delete_many_objects(public_ids, request_user: UserModel):
                                                           False,
                                                           objects_manager).result()
             except ObjectManagerGetError as err:
+                #TODO: ERROR-FIX
                 LOGGER.debug("[delete_many_objects] ObjectManagerGetError: %s", err.message)
                 return abort(404)
             except InstanceRenderError as err:

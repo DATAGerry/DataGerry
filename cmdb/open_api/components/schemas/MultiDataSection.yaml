@@ -1,0 +1,34 @@
+type: object
+properties:
+    section_id:
+        type: string
+        description: "Unique identifier for the section"
+    highest_id:
+        type: integer
+        description: "The highest multi_data_id in the section"
+    values:
+        type: array
+        items:
+            type: object
+            properties:
+                multi_data_id:
+                    type: integer
+                    description: "Unique identifier for the multi-data item"
+                data:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                                description: "Unique identifier for the field"
+                            value:
+                                oneOf:
+                                    - type: string
+                                      description: "A string value for the field."
+                                      example: "Example Value"
+                                    - type: number
+                                      description: "A numeric value for the field."
+                                      example: 123.45
+                                    - type: boolean
+                                      description: "A boolean value for the field."
