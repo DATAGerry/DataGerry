@@ -162,8 +162,8 @@ def get_reports(params: CollectionParameters, request_user: UserModel):
 
 
 @reports_blueprint.route('/<int:public_id>/count_reports_of_type', methods=['GET'])
-@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def count_reports_of_type(public_id: int, request_user: UserModel):
     """
     Return the number of reports in der database with the given public_id of Type
@@ -309,12 +309,16 @@ def delete_report(public_id: int, request_user: UserModel):
         ack: bool = reports_manager.delete({'public_id':public_id})
     except ManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_report] ManagerGetError: %s", err.message)
+        LOGGER.error("[delete_report] ManagerGetError: %s", err.message)
         return abort(400, f"Could not retrieve Report with ID: {public_id}!")
     except ManagerDeleteError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_report] ManagerDeleteError: %s", err)
+        LOGGER.error("[delete_report] ManagerDeleteError: %s", err)
         return abort(400, f"Could not delete Report with ID: {public_id}!")
+    except Exception as err:
+        #TODO: ERROR-FIX
+        LOGGER.error("[delete_report] Exception: %s", err)
+        return abort(500, "An internal server error occured!")
 
     api_response = DefaultResponse(ack)
 

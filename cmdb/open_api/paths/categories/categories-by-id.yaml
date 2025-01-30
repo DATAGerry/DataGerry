@@ -1,0 +1,130 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                     GET CATEGORY                                                     #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags:
+        - CmdbCategories
+    summary: Retrieve a single CmdbCategory
+    description: |
+        Required User Right: **base.framework.category.view**
+        <br><hr><br>
+        Returns the CmdbCategory with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbCategory which should be retrieved
+          required: true
+          schema:
+              type: integer
+    operationId: get_category
+    responses:
+        "200":
+            description: Returns the CmdbCategory with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        $ref: "../../components/schemas/CmdbCategory.yaml"
+        "404":
+            description: Could not retrive the requested CmdbCategory
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrive the requested CmdbCategory"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                    UPDATE CATEGORY                                                   #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+put:
+    tags:
+        - CmdbCategories
+    summary: Update a single CmdbCategory
+    description: |
+        Required User Right: **base.framework.category.edit**
+        <br><hr><br>
+        Updates the CmdbCategory with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbCategory which should be updated
+          required: true
+          schema:
+              type: integer
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: '../../components/schemas/CmdbCategory.yaml'
+    operationId: update_category
+    responses:
+        "200":
+            description: Returns the updated CmdbCategory with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        $ref: "../../components/schemas/CmdbCategory.yaml"
+        "400":
+            description: Could not update the requested CmdbCategory
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not update the CmdbCategory"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                    DELETE CATEGORY                                                   #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+delete: 
+    tags:
+        - CmdbCategories
+    summary: Delete a single CmdbCategory
+    description: |
+        Required User Right: **base.framework.category.delete**
+        <br><hr><br>
+        Deletes the CmdbCategory with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbCategory which should be deleted
+          required: true
+          schema:
+              type: integer
+    operationId: delete_category
+    responses:
+        "200":
+            description: Returns true if the CmdbCategory with the given **public_id** was deleted
+            content:
+                application/json:
+                    schema:
+                        type: boolean
+                        example: true
+        "400":
+            description: Could not delete the CmdbCategory
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not delete the CmdbCategory"
+        "404":
+            description: Could not retrieve the child categeories
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve the child categeories"
