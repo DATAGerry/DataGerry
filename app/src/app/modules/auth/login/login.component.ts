@@ -42,6 +42,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     public static xmasLogoUrl: string = '/assets/img/datagerry_logo_xmas.svg';
     public static defaultFallItems: string = '/assets/img/nut.svg';
     public static xmasFallItems: string = '/assets/img/snowflake.svg';
+    public passwordVisible: boolean = false;
+
 
     public imageUrl: string = LoginComponent.defaultLogoUrl;
     public itemUrl: string = LoginComponent.defaultFallItems;
@@ -229,4 +231,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.showSubscriptions = false;
         this.loginForm?.get('subscription')?.reset(null);
     }
+
+    
+    /**
+     * Toggles the visibility of the password input field.
+     */
+    public togglePasswordVisibility(): void {
+        this.passwordVisible = !this.passwordVisible;
+      }
 }
