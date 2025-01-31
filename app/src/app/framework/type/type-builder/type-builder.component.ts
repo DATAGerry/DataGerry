@@ -18,7 +18,7 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Observable, ReplaySubject, Subscription, takeUntil } from 'rxjs';
+import { finalize, Observable, ReplaySubject, Subscription, takeUntil } from 'rxjs';
 
 import { TypeService } from '../../services/type.service';
 import { UserService } from '../../../management/services/user.service';
@@ -35,6 +35,7 @@ import { CollectionParameters } from '../../../services/models/api-parameter';
 import { APIGetMultiResponse } from '../../../services/models/api-response';
 import { AccessControlList } from 'src/app/modules/acl/acl.types';
 import { SectionIdentifierService } from '../services/SectionIdentifierService.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -87,6 +88,9 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
     isFieldHighlighted: boolean = false;
     disableFields: boolean = false
     isSectionWithoutFields: boolean = false
+
+    public isLoading$ = this.loaderService.isLoading$;
+
     /* ------------------------------------------------------------------------------------------------------------------ */
     /*                                                     LIFE CYCLE                                                     */
     /* ------------------------------------------------------------------------------------------------------------------ */
@@ -100,7 +104,8 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         private sidebarService: SidebarService,
         private validationService: ValidationService,
         private changeDetector: ChangeDetectorRef,
-        private sectionIdentifierService: SectionIdentifierService
+        private sectionIdentifierService: SectionIdentifierService,
+         private loaderService: LoaderService,
     ) {
 
     }
@@ -244,6 +249,10 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
 
 
     public saveType() {
+        if(this.isSaveButtonDisabled){
+            this.toast.error('Form is invalid or incomplete. Cannot save.');
+            return;
+        }
         const saveTypeInstance: CmdbType = Object.assign({}, this.typeInstance) as CmdbType;
         const sections: Array<CmdbTypeSection> = [];
 
@@ -265,10 +274,11 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         saveTypeInstance.render_meta.sections = sections;
 
         if (this.mode === CmdbMode.Create) {
+            this.loaderService.show();
             let newTypeID = null;
             saveTypeInstance.editor_id = undefined;
 
-            this.typeService.postType(saveTypeInstance).subscribe({
+            this.typeService.postType(saveTypeInstance).pipe(finalize(() => this.loaderService.hide())).subscribe({
                 next: (typeIDResp: CmdbType) => {
                     newTypeID = +typeIDResp.public_id;
                     this.router.navigate(['/framework/type/'], { queryParams: { typeAddSuccess: newTypeID } });
@@ -280,8 +290,9 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
                 }
             });
         } else if (this.mode === CmdbMode.Edit) {
+            this.loaderService.show();
             saveTypeInstance.editor_id = this.userService.getCurrentUser().public_id;
-            this.typeService.putType(saveTypeInstance).subscribe({
+            this.typeService.putType(saveTypeInstance).pipe(finalize(() =>  this.loaderService.hide())).subscribe({
                 next: (updateResp: CmdbType) => {
                     this.toast.success(`Type was successfully edited: TypeID: ${updateResp.public_id}`);
                     this.sidebarService.loadCategoryTree();
@@ -294,4 +305,5 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
             });
         }
     }
+
 }

@@ -66,6 +66,10 @@ export class NewFolderDialogComponent implements OnInit {
   }
 
   public createFolder(): void {
+    if(this.basicForm.invalid){
+      this.toast.error('Please fill the required field')
+      return;
+    }
     const folder = new File(['folder'], this.name.value, {
       type: 'application/json',
     });
