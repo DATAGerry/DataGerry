@@ -93,8 +93,9 @@ export class ExportObjectsComponent implements OnInit {
 
 
     public exportObjectByTypeID() {
-        if (!this.formExport.valid) {
-            return false;
+        if (this.formExport.invalid) {
+            this.toastService.error('Please select the required fields');
+            return;
         }
 
         const typeID = this.formExport.get('type').value;

@@ -73,6 +73,7 @@ export class SectionTemplateBuilderComponent implements OnInit {
     isLabelValid = true;
     isValid$: Observable<boolean>;
 
+    public isFormValid: boolean = false;
 
     public basicControls = [
         new Controller('text', new TextControl()),
@@ -111,6 +112,10 @@ export class SectionTemplateBuilderComponent implements OnInit {
 
         this.isValid$ = this.validationService.getIsValid();
 
+        this.isValid$.subscribe(valid => {
+            this.isFormValid = valid;
+          });
+
         this.formGroup.controls['isGlobal'].valueChanges.subscribe(isGlobal => {
             if (isGlobal) {
                 if (this.initialSection.name.includes('dg_gst-')) {
@@ -139,6 +144,11 @@ export class SectionTemplateBuilderComponent implements OnInit {
      * Decides if a section template should be crated or updated
      */
     public handleSectionTemplate() {
+
+        if (this.initialSection.fields.length === 0 || !this.isFormValid) {
+            this.toastService.error("Form is invalid or incomplete. Cannot save.");
+            return;
+          }
 
         this.initialSection.label = this.sectionComponent.form.controls['label'].value;
 
