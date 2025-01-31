@@ -1,0 +1,49 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                       GET USERS                                                      #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags:
+        - CmdbUsers
+    summary: Retrieve multiple CmdbUsers
+    description: |
+        Required User Right: **base.user-management.user.view**
+        <br><hr><br>
+        Returns all **CmdbUsers** if no **CollectionParameters** are passed
+    operationId: get_users
+    parameters:
+        - name: CollectionParameters
+          in: query
+          description: Parameters for filtering, limiting, sorting, and pagination of **CmdbUsers**
+          required: false
+          schema:
+              $ref: "../../components/schemas/CollectionParameters.yaml"
+    responses:
+        "200":
+            description: Returns a **list of CmdbUsers** matching the filter criteria
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: "../../components/schemas/CmdbUser.yaml"
+        "400":
+            description: Could not iterate **CmdbUsers**
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not iterate CmdbUsers"
+        "500":
+            description: An unexpected error occured
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error!"

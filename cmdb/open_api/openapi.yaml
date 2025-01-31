@@ -23,6 +23,8 @@ tags:
       description: API Routes related to CmdbCategories
     - name: CmdbSectionTemplates
       description: API Routes related to CmdbSectionTemplates
+    - name: CmdbUsers
+      description: API Routes related to CmdbUsers
 
 paths:
     /objects:
@@ -47,6 +49,10 @@ paths:
         $ref: "./paths/section_templates/section-templates.yaml"
     /section_templates/{public_id}:
         $ref: "./paths/section_templates/section-templates-by-id.yaml"
+    /users:
+        $ref: "./paths/users/users.yaml"
+    /users/{public_id}:
+        $ref: "./paths/users/users-by-id.yaml"
 
 components:
     schemas:
@@ -64,6 +70,8 @@ components:
             $ref: "./components/schemas/CmdbSectionTemplate.yaml"
         MultiDataSection:
             $ref: "./components/schemas/MultiDataSection.yaml"
+        CmdbUser:
+            $ref: "./components/schemas/CmdbUser.yaml"
         CollectionParameters:
             $ref: "./components/schemas/CollectionParameters.yaml"
     securitySchemes:
