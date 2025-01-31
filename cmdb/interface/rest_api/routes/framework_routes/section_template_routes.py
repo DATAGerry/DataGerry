@@ -74,11 +74,13 @@ def create_section_template(params: dict, request_user: UserModel):
 
         created_section_template_id = template_manager.insert_section_template(params)
     except ManagerInsertError as err:
+        # TODO: ERROR-FIX
         LOGGER.debug("[create_section_template] ManagerInsertError: %s", err.message)
-        return abort(500, "Could not create the section template!")
-    except Exception as err:
-        LOGGER.debug("[create_section_template] Exception: %s", err)
         return abort(400, "Could not create the section template!")
+        # TODO: ERROR-FIX
+    except Exception as err:
+        LOGGER.error("[create_section_template] Exception: %s. Type: %s", err, type(err))
+        return abort(500, "Internal server error!")
 
     api_response = DefaultResponse(created_section_template_id)
 
@@ -118,8 +120,8 @@ def get_all_section_templates(params: CollectionParameters, request_user: UserMo
         LOGGER.debug("[get_all_section_templates] ManagerIterationError: %s", err.message)
         return abort(400, "Could not retrieve SectionTemplates!")
     except Exception as err:
-        LOGGER.debug("[get_all_section_templates] Exception: %s", err)
-        return abort(400, "Could not retrive SectionTemplates!")
+        LOGGER.error("[get_all_section_templates] Exception: %s. Type: %s", err, type(err))
+        return abort(500, "Internal Server Error!")
 
     return api_response.make_response()
 
@@ -224,7 +226,7 @@ def update_section_template(params: dict, request_user: UserModel):
     except ManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_section_template] ManagerGetError: %s", err.message)
-        return abort(400, f"Could not retrieve SectionTemplate with ID: {params['public_id']}!")
+        return abort(404, f"Could not retrieve SectionTemplate with ID: {params['public_id']}!")
     except ManagerUpdateError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[update_section_template] ManagerUpdateError: %s", err.message)
@@ -232,8 +234,8 @@ def update_section_template(params: dict, request_user: UserModel):
     except NoDocumentFound:
         return abort(404, "Section template not found!")
     except Exception as err:
-        LOGGER.debug("[update_section_template] Exception: %s, Type: %s", err, type(err))
-        return abort(400, "Unexcepted error occured during the update of the SectionTemplate!")
+        LOGGER.error("[update_section_template] Exception: %s, Type: %s", err, type(err))
+        return abort(500, "Internal server error!")
 
     api_response = UpdateSingleResponse(result.acknowledged)
 
@@ -267,13 +269,13 @@ def delete_section_template(public_id: int, request_user: UserModel):
         LOGGER.debug("[delete_section_template] ManagerGetError: %s", err.message)
         return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
     except DisallowedActionError:
-        return abort(405, f"Disallowed action for section template with ID: {public_id}")
+        return abort(400, f"Disallowed action for section template with ID: {public_id}")
     except ManagerDeleteError as err:
         LOGGER.debug("[delete_section_template] ManagerDeleteError: %s", err)
         return abort(400, f"Could not delete SectionTemplate with public_id: {public_id}!")
     except Exception as err:
-        LOGGER.debug("[update_section_template] Exception: %s, Type: %s", err, type(err))
-        return abort(400, "Unexcepted error occured during the deletion of the SectionTemplate!")
+        LOGGER.error("[delete_section_template] Exception: %s, Type: %s", err, type(err))
+        return abort(500, "Unexcepted error occured during the deletion of the SectionTemplate!")
 
     api_response = DefaultResponse(ack)
 

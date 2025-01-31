@@ -1,0 +1,99 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                CREATE SECTION TEMPLATE                                               #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+post:
+    tags:
+        - CmdbSectionTemplates
+    summary: Insert a new CmdbSectionTemplate
+    description: |
+        Required User Right: **base.framework.sectionTemplate.add**
+        <br><hr><br>
+        Inserts a new CmdbSectionTemplate into the database
+        <br><br>
+        The **public_id** property will be automatically created and don't need to be provided.
+    operationId: create_section_template
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: "../../components/schemas/CmdbSectionTemplate.yaml"
+    responses:
+        "200":
+            description: The **public_id** of created CmdbSectionTemplate
+            content:
+                application/json:
+                    schema:
+                        type: integer
+                        example: 24
+        "400":
+            description: CmdbSectionTemplate could not be created
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "CmdbSectionTemplate could not be created"
+        "500":
+            description: An unexpected error occured
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                 GET SECTION TEMPLATES                                                #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags: 
+        -  CmdbSectionTemplates
+    summary: Retrieve multiple CmdbSectionTemplates
+    description: |
+        Required User Right: **base.framework.sectionTemplate.view**
+        <br><hr><br>
+        Returns all CmdbSectionTemplates if no **CollectionParameters** are passed
+    parameters: 
+        - name: CollectionParameters
+          in: query
+          description: Parameters for filtering, limiting, sorting, and pagination of CmdbSectionTemplates
+          required: false
+          schema:
+            $ref: '../../components/schemas/CollectionParameters.yaml'
+    operationId: get_all_section_templates
+    responses:
+        "200":
+            description: Returns a **list of CmdbSectionTemplates** matching the filter criteria
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '../../components/schemas/CmdbSectionTemplate.yaml'
+        "400":
+            description: Could not retrieve SectionTemplates
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve SectionTemplates"
+        "500":
+            description: An unexpected error occured
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error!"

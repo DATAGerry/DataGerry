@@ -21,6 +21,8 @@ tags:
       description: API Routes related to CmdbTypes
     - name: CmdbCategories
       description: API Routes related to CmdbCategories
+    - name: CmdbSectionTemplates
+      description: API Routes related to CmdbSectionTemplates
 
 paths:
     /objects:
@@ -41,6 +43,10 @@ paths:
         $ref: "./paths/categories/categories.yaml"
     /categories/{public_id}:
         $ref: "./paths/categories/categories-by-id.yaml"
+    /section_templates:
+        $ref: "./paths/section_templates/section-templates.yaml"
+    /section_templates/{public_id}:
+        $ref: "./paths/section_templates/section-templates-by-id.yaml"
 
 components:
     schemas:
@@ -54,6 +60,8 @@ components:
             $ref: "./components/schemas/CmdbTypeField.yaml"
         CmdbTypeRenderMeta:
             $ref: "./components/schemas/CmdbTypeRenderMeta.yaml"
+        CmdbSectionTemplate:
+            $ref: "./components/schemas/CmdbSectionTemplate.yaml"
         MultiDataSection:
             $ref: "./components/schemas/MultiDataSection.yaml"
         CollectionParameters:
