@@ -181,10 +181,13 @@ def get_users(params: CollectionParameters, request_user: UserModel):
                                         body=request.method == 'HEAD')
     except ManagerIterationError:
         #TODO: ERROR-FIX
-        return abort(400)
+        return abort(400, "Could not retrieve users")
     except ManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
+        #TODO: ERROR-FIX (is it used?)
+        return abort(400, "Could not retrieve users")
+    except Exception as err:
+        LOGGER.error("[get_users] Exception: %s. Type: %s", err, type(err))
+        return abort(500, "Internal Server Error!")
 
     return api_response.make_response()
 
@@ -215,7 +218,10 @@ def get_user(public_id: int, request_user: UserModel):
         user: UserModel = users_manager.get_user(public_id)
     except UserManagerGetError:
         #TODO: MESSAGE-FIX
-        return abort(404)
+        return abort(404, "Could not retrieve user")
+    except Exception as err:
+        LOGGER.error("[get_user] Exception: %s. Type: %s", err, type(err))
+        return abort(500, "Internal Server Error!")
 
     api_response = GetSingleResponse(UserModel.to_dict(user), body=request.method == 'HEAD')
 

@@ -1,0 +1,48 @@
+type: object
+properties:
+    public_id:
+        type: integer
+    user_name:
+        type: string
+        nullable: false
+    active:
+        type: boolean
+        default: true
+    group_id:
+        type: integer
+    registration_time:
+        type: string
+        format: date-time
+    authenticator:
+        type: string
+        description: "Authentication provider used by the user"
+    database:
+        type: string
+        nullable: true
+    api_level:
+        type: integer
+        description: "User's API access level"
+        nullable: true
+    config_items_limit:
+        type: integer
+        description: "Limit of configuration items accessible by the user"
+        nullable: true
+        default: 1000
+    email:
+        type: string
+        format: email
+    password:
+        type: string
+        description: "User's hashed password"
+        nullable: false
+    image:
+        type: string
+        format: uri
+        description: "Profile image URL"
+        nullable: true
+    first_name:
+        type: string
+        nullable: true
+    last_name:
+        type: string
+        nullable: true
