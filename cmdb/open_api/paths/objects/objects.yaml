@@ -71,7 +71,7 @@ get:
     description: |
         Required User Right: **base.framework.object.view**
         <br><hr><br>
-        Returns all objects if no **CollectionParameters** are passed
+        Returns all CmdbObjects if no **CollectionParameters** are passed
     parameters: 
         - name: CollectionParameters
           in: query

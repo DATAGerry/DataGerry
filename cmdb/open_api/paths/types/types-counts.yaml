@@ -1,0 +1,48 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                 COUNT OBJECTS OF TYPE                                                #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags:
+        - CmdbTypes
+    summary: Retrieve the amount of CmdbObjects of the CmdbType
+    description: |
+        Required User Right: **base.framework.type.read**
+        <br><hr><br>
+        Returns amount of CmdbObjects of CmdbType with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbType for which the objects should be counted
+          required: true
+          schema:
+              type: integer
+    operationId: count_objects_of_type
+    responses:
+        "200":
+            description: Returns the amount of CmdbObjects with the corresponding CmdbType
+            content:
+                application/json:
+                    schema:
+                        type: integer
+                        example: 23
+        "404":
+            description: Could not retrive CmdbObjects
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrive CmdbObjects"
+        "500":
+            description: Internat server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internat server error"

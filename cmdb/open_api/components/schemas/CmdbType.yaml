@@ -1,0 +1,42 @@
+type: object
+properties:
+    public_id:
+        type: integer
+    name:
+        type: string
+        pattern: '(\\w+)-*(\\w)([\\w-]*)'
+    label:
+        type: string
+    author_id:
+        type: integer
+    editor_id:
+        type: integer
+        nullable: true
+    selectable_as_parent:
+        type: boolean
+        default: true
+    global_template_ids:
+        type: array
+        items:
+            type: string
+    active:
+        type: boolean
+        default: true
+    fields:
+        type: array
+        items:
+            $ref: './CmdbTypeField.yaml'
+    version:
+        type: string
+    description:
+        type: string
+        nullable: true
+    render_meta:
+        $ref: './CmdbTypeRenderMeta.yaml'
+    acl:
+        type: object
+        additionalProperties: true
+        properties:
+          activated:
+            type: boolean
+            description: Indicates whether the ACL is activated

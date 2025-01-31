@@ -1,27 +1,27 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                    INSERT CATEGORY                                                   #
+#                                                      INSERT TYPE                                                     #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 post:
-    tags:
-        - CmdbCategories
-    summary: Insert a new CmdbCategory
+    tags: 
+        -  CmdbTypes
+    summary: Insert a new CmdbType
     description: |
-        Required User Right: **base.framework.category.add**
+        Required User Right: **base.framework.type.add**
         <br><hr><br>
-        Inserts a new CmdbCategory into the database
+        Inserts a new CmdbType into the database.
         <br><br>
         The **public_id** and **creation_time** properties will be automatically created and don't need to be provided.
-    operationId: insert_category
+    operationId: insert_type
     requestBody:
         required: true
         content:
             application/json:
                 schema:
-                    $ref: "../../components/schemas/CmdbCategory.yaml"
+                    $ref: '../../components/schemas/CmdbType.yaml'
     responses:
         "200":
-            description: The assigned **public_id** and the created CmdbCategory are returned
+            description: The assigned **public_id** and the created CmdbType are returned
             content:
                 application/json:
                     schema:
@@ -29,12 +29,16 @@ post:
                         properties:
                             result_id:
                                 type: integer
-                                description: "The **public_id** of the created CmdbCategory"
+                                description: "The **public_id** of the created CmdbType"
                                 example: 12345
                             raw:
-                                $ref: "../../components/schemas/CmdbCategory.yaml"
+                                $ref: "../../components/schemas/CmdbType.yaml"
         "400":
-            description: Could not insert the new CmdbCategory in database
+            description: |
+                Multiple cases are possible:
+                <br>
+                - The CmdbType could not be inserted
+                - CmdbType with given **public_id** already exists
             content:
                 application/json:
                     schema:
@@ -42,9 +46,9 @@ post:
                         properties:
                             error:
                                 type: string
-                                example: "Could not insert the new CmdbCategory in database"
+                                example: "CmdbType with given **public_id** already exists"
         "404":
-            description: Could not retrieve the created CmdbCategory from database
+            description: Could not retrieve the created CmdbType from database
             content:
                 application/json:
                     schema:
@@ -52,39 +56,39 @@ post:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve the created CmdbCategory from database"
+                                example: "Could not retrieve the created CmdbType from database"
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                    GET CATEGORIES                                                    #
+#                                                       GET TYPES                                                      #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 get:
     tags:
-        - CmdbCategories
-    summary: Retrieve multiple CmdbCategories
+        - CmdbTypes
+    summary: Retrieve multiple CmdbTypes
     description: |
-        Required User Right: **base.framework.category.view**
+        Required User Right: **base.framework.type.view**
         <br><hr><br>
-        Returns all CmdbCategories if no **CollectionParameters** are passed
-    operationId: get_categories
+        Returns all CmdbTypes if no **CollectionParameters** are passed
+    operationId: get_types
     parameters:
         - name: CollectionParameters
           in: query
-          description: Parameters for filtering, limiting, sorting, and pagination of CmdbCategories
+          description: Parameters for filtering, limiting, sorting, and pagination of CmdbTypes
           required: false
           schema:
             $ref: '../../components/schemas/CollectionParameters.yaml'
     responses:
         "200":
-            description: Returns a **list of CmdbCategories** matching the filter criteria
+            description: Returns a **list of CmdbTypes** matching the filter criteria
             content:
                 application/json:
                     schema:
                         type: array
                         items:
-                            $ref: '../../components/schemas/CmdbCategory.yaml'
+                            $ref: '../../components/schemas/CmdbType.yaml'
         "400":
-            description: Could not retrieve CmdbCategories from database
+            description: Could not iterate CmdbTypes
             content:
                 application/json:
                     schema:
@@ -92,4 +96,14 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve CmdbCategories from database"
+                                example: "Could not iterate CmdbTypes"
+        "404":
+            description: Could not retrieve CmdbTypes from database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve CmdbTypes from database"
