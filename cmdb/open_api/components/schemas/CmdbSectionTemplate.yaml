@@ -1,0 +1,49 @@
+type: object
+properties:
+    public_id:
+        type: integer
+    is_global:
+        type: boolean
+        default: false
+    predefined:
+        type: boolean
+        default: false
+    name:
+        type: string
+        nullable: false
+    label:
+        type: string
+        nullable: false
+    type:
+        type: string
+        default: "section"
+    fields:
+        type: array
+        items:
+            type: object
+            properties:
+                type:
+                    type: string
+                    enum: ["text", "number", "boolean", "date"] # Extendable
+                name:
+                    type: string
+                    nullable: false
+                label:
+                    type: string
+                    nullable: false
+                regex:
+                    type: string
+                    description: "Optional regex pattern for validation"
+                    nullable: true
+                helperText:
+                    type: string
+                    description: "Optional helper text for the field"
+                    nullable: true
+            required: 
+                - type
+                - name
+                - label
+required:
+- name
+- label
+- fields
