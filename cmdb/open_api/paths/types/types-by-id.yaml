@@ -1,0 +1,139 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                       GET TYPE                                                       #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+get:
+    tags:
+        - CmdbTypes
+    summary: Retrieve a single CmdbType
+    description: |
+        Required User Right: **base.framework.type.view**
+        <br><hr><br>
+        Returns the CmdbType with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbType which should be retrieved
+          required: true
+          schema:
+              type: integer
+    operationId: get_type
+    responses:
+        "200":
+            description: Returns the CmdbType with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        $ref: "../../components/schemas/CmdbType.yaml"
+        "404":
+            description: Could not retrive the requested CmdbType
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrive the requested CmdbType"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                      UPDATE TYPE                                                     #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+put:
+    tags:
+        - CmdbTypes
+    summary: Update a single CmdbType
+    description: |
+        Required User Right: **base.framework.type.edit**
+        <br><hr><br>
+        Updates the CmdbType with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbType which should be updated
+          required: true
+          schema:
+              type: integer
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: "../../components/schemas/CmdbType.yaml"
+    operationId: update_type
+    responses:
+        "200":
+            description: Returns the updated CmdbType with the given **public_id**
+            content:
+                application/json:
+                    schema:
+                        $ref: "../../components/schemas/CmdbType.yaml"
+        "400":
+            description: Could not update the requested CmdbType
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not update the CmdbType"
+        "404":
+            description: Could not retrieve the CmdbType from database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve the CmdbType"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                      DELETE TYPE                                                     #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+delete: 
+    tags:
+        - CmdbTypes
+    summary: Delete a single CmdbType
+    description: |
+        Required User Right: **base.framework.type.delete**
+        <br><hr><br>
+        Deletes the CmdbType with the given **public_id**
+    parameters:
+        - name: public_id
+          in: path
+          description: The **public_id** of the CmdbType which should be deleted
+          required: true
+          schema:
+              type: integer
+    operationId: delete_type
+    responses:
+        "200":
+            description: Returns the CmdbType with the given **public_id** which was deleted
+            content:
+                application/json:
+                    schema:
+                        $ref: "../../components/schemas/CmdbType.yaml"
+        "400":
+            description: Could not delete the CmdbType
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not delete the CmdbType"
+        "404":
+            description: Could not retrieve the CmdbType from database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve the CmdbType"

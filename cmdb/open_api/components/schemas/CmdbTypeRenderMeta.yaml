@@ -1,0 +1,59 @@
+type: object
+properties:
+    icon:
+        type: string
+        nullable: true
+    sections:
+        type: array
+        items:
+            type: object
+            properties:
+                type:
+                    type: string
+                name:
+                    type: string
+                label:
+                    type: string
+                hidden_fields:
+                    type: array
+                    items:
+                        type: string
+                reference:
+                    type: object
+                    properties:
+                        type_id:
+                            type: integer
+                        section_name:
+                            type: string
+                        selected_fields:
+                            type: array
+                            items:
+                                type: string
+                fields:
+                    type: array
+                    items:
+                        type: string
+    externals:
+        type: array
+        items:
+            type: object
+            properties:
+                name:
+                    type: string
+                href:
+                    type: string
+                label:
+                    type: string
+                icon:
+                    type: string
+                fields:
+                    type: array
+                    items:
+                        type: string
+    summary:
+        type: object
+        properties:
+            fields:
+                type: array
+                items:
+                    type: string

@@ -97,10 +97,10 @@ def insert_type(data: dict, request_user: UserModel):
         raw_doc = types_manager.get_type(result_id)
     except ManagerGetError:
         #TODO: ERROR-FIX
-        return abort(404)
+        return abort(404, "Can not retrieve the created Type from the database!")
     except ManagerInsertError as err:
         LOGGER.debug("[insert_type] ManagerInsertError: %s", err.message)
-        return abort(400, "The Type could not be inserted !")
+        return abort(400, "The Type could not be inserted!")
 
     api_response = InsertSingleResponse(result_id=result_id, raw=TypeModel.to_json(raw_doc))
 
@@ -166,8 +166,8 @@ def get_types(params: TypeIterationParameters, request_user: UserModel):
 
 
 @types_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
-@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @types_blueprint.protect(auth=True, right='base.framework.type.view')
 def get_type(public_id: int, request_user: UserModel):
     """
@@ -193,7 +193,7 @@ def get_type(public_id: int, request_user: UserModel):
     return api_response.make_response()
 
 
-@types_blueprint.route('/<int:public_id>/count_objects', methods=['GET'])
+@types_blueprint.route('/count_objects/<int:public_id>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.read')

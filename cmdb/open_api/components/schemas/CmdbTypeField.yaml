@@ -1,0 +1,61 @@
+type: object
+properties:
+    type:
+        type: string
+    required:
+        type: boolean
+    name:
+        type: string
+    rows:
+        type: integer
+    label:
+        type: string
+    description:
+        type: string
+    regex:
+        type: string
+    placeholder:
+        type: string
+    value:
+        type: string
+        nullable: true
+    helperText:
+        type: string
+    default:
+        type: integer
+        nullable: true
+    options:
+        type: array
+        items:
+            type: object
+            properties:
+                name:
+                    type: string
+                label:
+                    type: string
+    ref_types:
+        type: array
+        items:
+            oneOf:
+                - type: integer
+                - type: array
+    summaries:
+        type: array
+        items:
+            type: object
+            properties:
+                type_id:
+                    type: integer
+                line:
+                    type: string
+                label:
+                    type: string
+                fields:
+                    type: array
+                    items:
+                        type: string
+                icon:
+                    type: string
+                prefix:
+                    type: boolean
+                    default: true

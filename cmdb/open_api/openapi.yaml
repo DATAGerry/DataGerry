@@ -6,6 +6,9 @@ info:
         <br><hr><br>
         The API requires **BasicAuth** (Email and Password) and the **API-Key** of the Subscription which is provided in the Service Portal.
     version: 2.3.0
+    license:
+        name: GNU Affero General Public License
+        url: https://www.gnu.org/licenses/gpl-3.0
 
 servers:
     - url: https://api.datagerry.com/rest
@@ -13,9 +16,11 @@ servers:
 
 tags:
     - name: CmdbObjects
-      description: Operations related to CmdbObjects
+      description: API Routes related to CmdbObjects
+    - name: CmdbTypes
+      description: API Routes related to CmdbTypes
     - name: CmdbCategories
-      description: Operations related to CmdbCategories
+      description: API Routes related to CmdbCategories
 
 paths:
     /objects:
@@ -26,6 +31,12 @@ paths:
         $ref: "./paths/objects/objects-many.yaml"
     /objects/state/{public_id}:
         $ref: "./paths/objects/objects-state.yaml"
+    /types:
+        $ref: "./paths/types/types.yaml"
+    /types/{public_id}:
+        $ref: "./paths/types/types-by-id.yaml"
+    /types/count_objects/{public_id}:
+        $ref: "./paths/types/types-counts.yaml"
     /categories:
         $ref: "./paths/categories/categories.yaml"
     /categories/{public_id}:
@@ -37,6 +48,12 @@ components:
             $ref: "./components/schemas/CmdbObject.yaml"
         CmdbCategory:
             $ref: "./components/schemas/CmdbCategory.yaml"
+        CmdbType:
+            $ref: "./components/schemas/CmdbType.yaml"
+        CmdbTypeField:
+            $ref: "./components/schemas/CmdbTypeField.yaml"
+        CmdbTypeRenderMeta:
+            $ref: "./components/schemas/CmdbTypeRenderMeta.yaml"
         MultiDataSection:
             $ref: "./components/schemas/MultiDataSection.yaml"
         CollectionParameters:
