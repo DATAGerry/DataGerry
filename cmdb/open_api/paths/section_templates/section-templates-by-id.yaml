@@ -68,8 +68,11 @@ put:
             content:
                 application/json:
                     schema:
-                        type: boolean
-                        example: true
+                        type: object
+                        properties:
+                            result:
+                                type: boolean
+                                example: true
         "400":
             description: Could not update the requested CmdbSectionTemplate
             content:

@@ -31,7 +31,10 @@ put:
             content:
                 application/json:
                     schema:
-                        $ref: "../../components/schemas/CmdbObject.yaml"
+                        type: object
+                        properties:
+                            result:
+                                $ref: "../../components/schemas/CmdbObject.yaml"
         "400":
             description: The provided state is not a boolean value (true/false)
             content:

@@ -56,11 +56,6 @@ class CmdbObject(CmdbDAO):
         'type_id': {
             'type': 'integer'
         },
-        'status': {
-            'type': 'boolean',
-            'required': False,
-            'default': True
-        },
         'version': {
             'type': 'string',
             'default': DEFAULT_VERSION
@@ -106,7 +101,6 @@ class CmdbObject(CmdbDAO):
                  multi_data_sections: list = None,
                  last_edit_time=None,
                  editor_id: int = None,
-                 status: bool = True,
                  version: str = '1.0.0',
                  **kwargs):
         """init of object
@@ -123,7 +117,6 @@ class CmdbObject(CmdbDAO):
             **kwargs: additional data
         """
         self.type_id = type_id
-        self.status = status
         self.version = version
         self.creation_time = creation_time
         self.author_id = author_id
@@ -157,7 +150,6 @@ class CmdbObject(CmdbDAO):
         return cls(
             public_id=data.get('public_id'),
             type_id=data.get('type_id'),
-            status=data.get('status', False),
             version=data.get('version'),
             creation_time=creation_time,
             author_id=data.get('author_id'),
@@ -175,7 +167,6 @@ class CmdbObject(CmdbDAO):
         return {
             'public_id': instance.get_public_id(),
             'type_id': instance.get_type_id(),
-            'status': instance.status,
             'version': instance.version,
             'creation_time': instance.creation_time,
             'author_id': instance.author_id,

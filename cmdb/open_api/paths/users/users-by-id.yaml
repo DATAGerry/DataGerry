@@ -24,7 +24,10 @@ get:
             content:
                 application/json:
                     schema:
-                        $ref: "../../components/schemas/CmdbUser.yaml"
+                        type: object
+                        properties:
+                            result:
+                                $ref: "../../components/schemas/CmdbUser.yaml"
         "404":
             description: Could not retrive the **CmdbUser**
             content:

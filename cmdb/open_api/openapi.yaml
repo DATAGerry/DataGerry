@@ -4,7 +4,7 @@ info:
     description: |
         DataGerry Cloud API documentation
         <br><hr><br>
-        The API requires **BasicAuth** (Email and Password) and the **API-Key** of the Subscription which is provided in the Service Portal.
+        The API requires **BasicAuth** (Email and Password) and the **API-Key** of the subscription which is provided in the Service Portal.
     version: 2.3.0
     license:
         name: GNU Affero General Public License
@@ -16,15 +16,15 @@ servers:
 
 tags:
     - name: CmdbObjects
-      description: API Routes related to CmdbObjects
-    - name: CmdbTypes
-      description: API Routes related to CmdbTypes
+      description: API Routes related to **CmdbObjects**
+    - name: CmdbTypes 
+      description: API Routes related to **CmdbTypes**
     - name: CmdbCategories
-      description: API Routes related to CmdbCategories
+      description: API Routes related to **CmdbCategories**
     - name: CmdbSectionTemplates
-      description: API Routes related to CmdbSectionTemplates
+      description: API Routes related to **CmdbSectionTemplates**
     - name: CmdbUsers
-      description: API Routes related to CmdbUsers
+      description: API Routes related to **CmdbUsers**
 
 paths:
     /objects:

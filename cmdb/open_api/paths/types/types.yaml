@@ -84,9 +84,15 @@ get:
             content:
                 application/json:
                     schema:
-                        type: array
-                        items:
-                            $ref: '../../components/schemas/CmdbType.yaml'
+                        type: object
+                        properties:
+                            results:
+                                type: array
+                                items:
+                                    $ref: '../../components/schemas/CmdbType.yaml'
+                            total:
+                                type: integer
+                                description: Total amount of returned CmdbTypes
         "400":
             description: Could not iterate CmdbTypes
             content:

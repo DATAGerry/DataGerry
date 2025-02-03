@@ -86,9 +86,15 @@ get:
             content:
                 application/json:
                     schema:
-                        type: array
-                        items:
-                            $ref: '../../components/schemas/CmdbObject.yaml'
+                        type: object
+                        properties:
+                            results:
+                                type: array
+                                items:
+                                    $ref: '../../components/schemas/CmdbObject.yaml'
+                            total:
+                                type: integer
+                                description: the total amount of results
         "400":
             description: Could not iterate the objects
             content:

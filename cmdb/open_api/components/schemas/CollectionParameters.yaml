@@ -14,16 +14,23 @@ properties:
     limit:
         type: integer
         default: 10
+        nullable: true
         description: Limits the number of results which should be retrieved. A limit of 0 equals unlimited.
     sort:
         type: string
         default: "public_id"
+        nullable: true
+        description: A property by which the results should be sorted
     order:
         type: integer
         default: 1
+        nullable: true
+        description: The sorting order. 1 eqauls ascending, -1 descending
     page:
         type: integer
         default: 1
+        nullable: true
+        description: Used for pagination
     projection:
         oneOf:
             - type: object

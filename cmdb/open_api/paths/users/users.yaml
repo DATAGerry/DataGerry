@@ -24,9 +24,15 @@ get:
             content:
                 application/json:
                     schema:
-                        type: array
-                        items:
-                            $ref: "../../components/schemas/CmdbUser.yaml"
+                        type: object
+                        properties:
+                            results:
+                                type: array
+                                items:
+                                    $ref: "../../components/schemas/CmdbUser.yaml"
+                            total:
+                                type: integer
+                                description: The amount of CmdbUsers returned
         "400":
             description: Could not iterate **CmdbUsers**
             content:

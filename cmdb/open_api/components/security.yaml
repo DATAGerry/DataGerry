@@ -9,4 +9,5 @@ XApiKey:
     name: x-api-key
     in: header
     description: |
-        Additionally an API-Key must be included in the 'x-api-key' header for authentication.
+        Additionally an API-Key must be included in the 'x-api-key' header for authentication.<br>
+        The API-KEY is provided in the Service Portal.
