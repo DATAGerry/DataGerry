@@ -2,10 +2,10 @@ type: object
 properties:
     section_id:
         type: string
-        description: "Unique identifier for the section"
+        description: Unique identifier for the section
     highest_id:
         type: integer
-        description: "The highest multi_data_id in the section"
+        description: The highest multi_data_id in the section
     values:
         type: array
         items:
@@ -13,7 +13,7 @@ properties:
             properties:
                 multi_data_id:
                     type: integer
-                    description: "Unique identifier for the multi-data item"
+                    description: Unique identifier for the multi-data item
                 data:
                     type: array
                     items:
@@ -21,14 +21,17 @@ properties:
                         properties:
                             name:
                                 type: string
-                                description: "Unique identifier for the field"
+                                description: Unique identifier for the field
                             value:
                                 oneOf:
                                     - type: string
-                                      description: "A string value for the field."
+                                      description: A string value for the field
                                       example: "Example Value"
                                     - type: number
-                                      description: "A numeric value for the field."
+                                      description: A numeric value for the field
                                       example: 123.45
                                     - type: boolean
-                                      description: "A boolean value for the field."
+                                      description: A boolean value for the field
+                                    - type: string
+                                      format: date-time
+                                      description: A date value for the field

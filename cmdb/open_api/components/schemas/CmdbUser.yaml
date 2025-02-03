@@ -2,47 +2,58 @@ type: object
 properties:
     public_id:
         type: integer
+        description: public_id of the CmdbUser
     user_name:
         type: string
         nullable: false
+        description: The displayed user name of the CmdbUser
     active:
         type: boolean
         default: true
+        description: Activation status of the CmdbUser. If true then the user is active
     group_id:
         type: integer
+        nullable: false
+        description: The public_id of the CmdbGroup to which the CmdbUser is assigned
     registration_time:
         type: string
         format: date-time
+        description: The moment at which the CmdbUser was created
     authenticator:
         type: string
-        description: "Authentication provider used by the user"
+        description: Authentication provider used by the CmdbUser like local authentification or LDAP
     database:
         type: string
         nullable: true
+        description: Only relevant in cloud version of DataGerry
     api_level:
         type: integer
-        description: "User's API access level"
         nullable: true
+        description: Only relevant in cloud version of DataGerry
     config_items_limit:
         type: integer
-        description: "Limit of configuration items accessible by the user"
         nullable: true
         default: 1000
+        description: Only relevant in cloud version of DataGerry
     email:
         type: string
         format: email
+        nullable: false
+        description: Email of the CmdbUser
     password:
         type: string
-        description: "User's hashed password"
         nullable: false
+        description: Password of the CmdbUser
     image:
         type: string
         format: uri
-        description: "Profile image URL"
         nullable: true
+        description: Profile image URL of the CmdbUser
     first_name:
         type: string
         nullable: true
+        description: first name of the CmdbUser
     last_name:
         type: string
         nullable: true
+        description: last name of the CmdbUser

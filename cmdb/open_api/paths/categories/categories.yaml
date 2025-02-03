@@ -80,9 +80,16 @@ get:
             content:
                 application/json:
                     schema:
-                        type: array
-                        items:
-                            $ref: '../../components/schemas/CmdbCategory.yaml'
+                        type: object
+                        properties:
+                            results:
+                                type: array
+                                items:
+                                    $ref: '../../components/schemas/CmdbCategory.yaml'
+                            total:
+                                type: integer
+                                description: the total amount of results
+
         "400":
             description: Could not retrieve CmdbCategories from database
             content:

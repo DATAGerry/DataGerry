@@ -2,30 +2,47 @@ type: object
 properties:
     type:
         type: string
+        description: The type of the CmdbTypeField like "text" or "number" describing the type of value it stores
     required:
         type: boolean
+        description: If true the CmdbTypeField can not be empty when creating an CmdbObject of this tpye
     name:
         type: string
+        description: Unique name of the field (should not start with 'dg-' since this is used internally by DataGerry)
     rows:
         type: integer
+        nullable: true
+        description: Used to set the initial amount of rows which are displayed for a TextArea-field
     label:
         type: string
+        description: The displayed label of the CmdbType
     description:
         type: string
+        nullable: true
+        description: Description of the CmdbField
     regex:
         type: string
+        nullable: true
+        description: A regex validation for the field
     placeholder:
         type: string
+        nullable: true
+        description: A hint displayed in the CmdbField if it is empty
     value:
         type: string
         nullable: true
+        description: The value of the CmdbField
     helperText:
         type: string
+        nullable: true
+        description: A helper text which can store additional information about the CmdbField
     default:
         type: integer
         nullable: true
+        description: The default value for the CmdbField will be set every time a new CmdbObject is created of this CmdbType
     options:
         type: array
+        nullable: true
         items:
             type: object
             properties:
@@ -35,12 +52,14 @@ properties:
                     type: string
     ref_types:
         type: array
+        nullable: true
         items:
             oneOf:
                 - type: integer
                 - type: array
     summaries:
         type: array
+        nullable: true
         items:
             type: object
             properties:

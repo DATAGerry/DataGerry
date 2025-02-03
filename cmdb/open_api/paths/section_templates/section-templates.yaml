@@ -74,9 +74,13 @@ get:
             content:
                 application/json:
                     schema:
-                        type: array
-                        items:
-                            $ref: '../../components/schemas/CmdbSectionTemplate.yaml'
+                        type: object
+                        properties:
+                            results:
+                                $ref: '../../components/schemas/CmdbSectionTemplate.yaml'
+                            total:
+                                type: integer
+                                description: The amount of CmdbSectionTemplates
         "400":
             description: Could not retrieve SectionTemplates
             content:

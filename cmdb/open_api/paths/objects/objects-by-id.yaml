@@ -80,7 +80,10 @@ put:
             content:
                 application/json:
                     schema:
-                        $ref: "../../components/schemas/CmdbObject.yaml"
+                        type: object
+                        properties:
+                            results:
+                                $ref: "../../components/schemas/CmdbObject.yaml"
         "403":
             $ref: '../../components/responses.yaml#/Forbidden'
 

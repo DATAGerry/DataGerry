@@ -24,7 +24,10 @@ get:
             content:
                 application/json:
                     schema:
-                        $ref: "../../components/schemas/CmdbCategory.yaml"
+                        type: object
+                        properties:
+                            result:
+                                $ref: "../../components/schemas/CmdbCategory.yaml"
         "404":
             description: Could not retrive the requested CmdbCategory
             content:
@@ -68,7 +71,10 @@ put:
             content:
                 application/json:
                     schema:
-                        $ref: "../../components/schemas/CmdbCategory.yaml"
+                        type: object
+                        properties:
+                            result:
+                                $ref: "../../components/schemas/CmdbCategory.yaml"
         "400":
             description: Could not update the requested CmdbCategory
             content:
@@ -102,12 +108,14 @@ delete:
     operationId: delete_category
     responses:
         "200":
-            description: Returns true if the CmdbCategory with the given **public_id** was deleted
+            description: Returns the deleted CmdbCategory with the given **public_id**
             content:
                 application/json:
                     schema:
-                        type: boolean
-                        example: true
+                        type: object
+                        properties:
+                            raw:
+                                $ref: "../../components/schemas/CmdbCategory.yaml"
         "400":
             description: Could not delete the CmdbCategory
             content:

@@ -2,21 +2,27 @@ type: object
 properties:
     public_id:
         type: integer
+        description: The public_id of the CmdbSectionTemplate
     is_global:
         type: boolean
         default: false
+        description: If true the CmdbSectionTemplate is a global template, else it is a default template
     predefined:
         type: boolean
         default: false
+        description: If true then this CmdbSectionTemplate is provided by DataGerry and is not deletable
     name:
         type: string
         nullable: false
+        description: The name of the CmdbSectionTemplate
     label:
         type: string
         nullable: false
+        description: The displayed label of the CmdbSectionTemplate
     type:
         type: string
         default: "section"
+        description: The type of the CmdbSectionTemplate, current only 'section' is available
     fields:
         type: array
         items:
@@ -24,20 +30,23 @@ properties:
             properties:
                 type:
                     type: string
-                    enum: ["text", "number", "boolean", "date"] # Extendable
+                    enum: ["text", "number", "boolean", "date"]
+                    description: The type of data which this field is storing
                 name:
                     type: string
                     nullable: false
+                    description: The unique name of the field
                 label:
                     type: string
                     nullable: false
+                    description: The displayed label of the field
                 regex:
                     type: string
-                    description: "Optional regex pattern for validation"
+                    description: Optional regex pattern for validation
                     nullable: true
                 helperText:
                     type: string
-                    description: "Optional helper text for the field"
+                    description: Optional helper text for the field
                     nullable: true
             required: 
                 - type
