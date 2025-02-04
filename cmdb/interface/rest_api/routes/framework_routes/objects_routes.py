@@ -44,7 +44,7 @@ from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.models.log_model.log_action_enum import LogAction
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
-from cmdb.models.object_link_model.link import ObjectLinkModel
+from cmdb.models.object_link_model.link import CmdbObjectLink
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.framework.results import IterationResult
 from cmdb.framework.rendering.cmdb_render import CmdbRender
@@ -964,6 +964,7 @@ def delete_object(public_id: int, request_user: UserModel):
 
         # Remove object links and references
         if current_object_instance:
+            #TODO: ERROR-FIX (consider exceptions of CmdbObjectLink)
             delete_object_links(public_id, request_user)
             objects_manager.delete_all_object_references(public_id)
 
@@ -1062,6 +1063,7 @@ def delete_object_with_child_locations(public_id: int, request_user: UserModel):
 
         # Remove object links and references
         if current_object_instance:
+            #TODO: ERROR-FIX (consider exceptions of CmdbObjectLink)
             delete_object_links(public_id, request_user)
             objects_manager.delete_all_object_references(public_id)
 
@@ -1140,6 +1142,7 @@ def delete_object_with_child_objects(public_id: int, request_user: UserModel):
 
         # Remove object links and references
         if current_object_instance:
+            #TODO: ERROR-FIX (consider exceptions of CmdbObjectLink)
             delete_object_links(public_id, request_user)
             objects_manager.delete_all_object_references(public_id)
 
@@ -1244,6 +1247,7 @@ def delete_many_objects(public_ids, request_user: UserModel):
         for current_object_instance in objects:
             try:
                 # Remove object links and references
+                #TODO: ERROR-FIX (consider exceptions of CmdbObjectLink)
                 delete_object_links(current_object_instance.public_id, request_user)
                 objects_manager.delete_all_object_references(current_object_instance.public_id)
 
@@ -1343,7 +1347,7 @@ def delete_object_links(public_id: int, request_user: UserModel) -> None:
     object_link_filter: dict = {'$or': [{'primary': public_id}, {'secondary': public_id}]}
     builder_params = BuilderParameters(object_link_filter)
 
-    links: list[ObjectLinkModel] = object_links_manager.iterate(builder_params).results
+    links: list[CmdbObjectLink] = object_links_manager.iterate(builder_params).results
 
     for link in links:
         object_links_manager.delete({'public_id':link.public_id})

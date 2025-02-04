@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from cmdb.models.cmdb_dao import CmdbDAO
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectLinkModel(CmdbDAO):
+class CmdbObjectLink(CmdbDAO):
     """TODO: document"""
 
     COLLECTION = "framework.links"
@@ -44,19 +44,11 @@ class ObjectLinkModel(CmdbDAO):
         return self.secondary
 
 
-    def get_creation_time(self) -> datetime:
-        """TODO: document"""
-        return self.creation_time
-
-
-    def get_partners(self) -> list[int, int]:
-        """TODO: document"""
-        return self.get_primary(), self.get_secondary()
-
-
     @classmethod
-    def from_data(cls, data: dict) -> "ObjectLinkModel":
-        """Convert the database data to a link instance."""
+    def from_data(cls, data: dict) -> "CmdbObjectLink":
+        """
+        Convert the database data to a CmdbObjectLink instance
+        """
         return cls(
             public_id=data.get('public_id'),
             primary=int(data.get('primary')),
@@ -66,8 +58,10 @@ class ObjectLinkModel(CmdbDAO):
 
 
     @classmethod
-    def to_json(cls, instance: "ObjectLinkModel") -> dict:
-        """Convert a links instance to json conform data."""
+    def to_json(cls, instance: "CmdbObjectLink") -> dict:
+        """
+        Convert a CmdbObjectLink instance to json conform data
+        """
         return {
             'public_id': instance.public_id,
             'primary': instance.primary,

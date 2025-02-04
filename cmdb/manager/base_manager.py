@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Contains implementation of BaseManager"""
+"""
+Implementation of the BaseManager for all Managers requiring a database connection
+"""
 import logging
 from pymongo.results import DeleteResult
 
@@ -23,11 +25,14 @@ from cmdb.manager.query_builder import BaseQueryBuilder, BuilderParameters
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.manager import ManagerInsertError,\
-                                ManagerGetError,\
-                                ManagerUpdateError,\
-                                ManagerDeleteError,\
-                                ManagerIterationError
+from cmdb.errors.database import DocumentGetError
+from cmdb.errors.manager import (
+    ManagerInsertError,
+    ManagerGetError,
+    ManagerUpdateError,
+    ManagerDeleteError,
+    ManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -54,7 +59,7 @@ class BaseManager:
 
     def insert(self, data: dict, skip_public: bool = False) -> int:
         """
-        Insert document/object into database
+        Insert document into database
 
         Args:
             data (dict): Data which should be inserted
@@ -99,13 +104,16 @@ class BaseManager:
 
             return aggregation_result , total
         #TODO: ERROR-FIX
-        except ManagerGetError as err:
+        except Exception as err:
             raise ManagerIterationError(err) from err
 
 
     def get_one(self, *args, **kwargs):
         """
         Calls MongoDB find operation for a single document
+
+        Raises:
+            ManagerGetError: When the 'find_one' operation fails
 
         Returns:
             Cursor over the result set
@@ -120,13 +128,16 @@ class BaseManager:
         """
         Calls MongoDB find operation for a single document from another collection
 
+        Raises:
+            ManagerGetError: When the find_one operation fails
+        
         Returns:
             Cursor over the result set
         """
         try:
             return self.dbm.find_one(collection, public_id)
-        except Exception as err:
-            raise ManagerGetError(err) from err
+        except DocumentGetError as err:
+            raise ManagerGetError(err.message) from err
 
 
     def get_many_from_other_collection(self,
@@ -196,17 +207,20 @@ class BaseManager:
         except Exception as err:
             raise ManagerGetError(err) from err
 
-    def get_one_by(self, criteria: dict):
-        """
-        Retrieves a single document defined by a filter
 
+    def get_one_by(self, criteria: dict) -> dict:
+        """
+        Retrieves a single document defined by the given critera
+
+        Raises:
+            ManagerGetError: When the 'find_one_by' operation fails
         Args:
             criteria (dict): Filter for the document
         """
         try:
             return self.dbm.find_one_by(self.collection, criteria)
-        except Exception as err:
-            raise ManagerGetError(err) from err
+        except DocumentGetError as err:
+            raise ManagerGetError(err.message) from err
 
 
     def get_many(self,

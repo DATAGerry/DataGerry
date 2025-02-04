@@ -32,8 +32,8 @@ class DatabaseConnectionError(DataBaseError):
     """
     Error if connection to database broke up or unable to connect
     """
-    def __init__(self, db_name: str):
-        self.message = f"Could not connect to database {db_name}"
+    def __init__(self, err: str):
+        self.message = f"Could not connect to database. Error: {err}"
         super().__init__(self.message)
 
 

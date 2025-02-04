@@ -13,22 +13,32 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""This module contains the implementation of the ObjectLinksManager"""
+"""
+This module contains the implementation of the ObjectLinksManager
+"""
 import logging
 from typing import Union
 from datetime import datetime, timezone
 
 from cmdb.database import MongoDatabaseManager
+
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.manager.objects_manager import ObjectsManager # TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
 from cmdb.manager import BaseManager
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.object_link_model.link import ObjectLinkModel
+from cmdb.models.object_link_model.link import CmdbObjectLink
+from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerDeleteError, ManagerIterationError
+from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerDeleteError
+from cmdb.errors.manager.object_link_manager import (
+    ObjectLinksManagerInsertError,
+    ObjectLinksManagerGetError,
+    ObjectLinksManagerGetObjectError,
+    ObjectLinksManagerIterationError,
+    ObjectLinksManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -38,7 +48,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class ObjectLinksManager(BaseManager):
     """
-    The ObjectLinksManager handles the interaction between the ObjectLinks-API and the Database
+    The ObjectLinksManager handles the interaction between the CmdbObjectLink-API and the Database
     Extends: BaseManager
     Depends: ObjectsManager
     """
@@ -48,111 +58,123 @@ class ObjectLinksManager(BaseManager):
         Set the database connection and the queue for sending events
 
         Args:
-            database_manager (MongoDatabaseManager): Active database managers instance.
+            dbm (MongoDatabaseManager): Active database managers instance
+            database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
         if database:
             dbm.connector.set_database(database)
 
-        self.objects_manager = ObjectsManager(dbm)
-
-        super().__init__(ObjectLinkModel.COLLECTION, dbm)
+        super().__init__(CmdbObjectLink.COLLECTION, dbm)
 
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-    def insert_object_link(self,
-                           link: Union[dict, ObjectLinkModel],
-                           user: UserModel = None,
-                           permission: AccessControlPermission = AccessControlPermission.CREATE) -> int:
+    def insert_object_link(self, link: Union[dict, CmdbObjectLink]) -> int:
         """
-        Insert a single object link into the database
+        Insert a single CmdbObjectLink into the database
 
         Args:
-            link (ObjectLinkModel): Raw data of the link
-            user: User requesting this operation
-            permission: acl permission
+            link (dict/CmdbObjectLink): Data of the CmdbObjectLink as object or dictionary
+
+        Raises:
+            ObjectLinksManagerInsertError: When the CmdbObjectLink could not be inserted in the database
+            ObjectLinksManagerGetObjectError: When a CmdbObject could not be retrived
+
         Returns:
             int: The public_id of the new inserted object link
         """
         try:
-            if isinstance(link, ObjectLinkModel):
-                link = ObjectLinkModel.to_json(link)
+            if isinstance(link, CmdbObjectLink):
+                link = CmdbObjectLink.to_json(link)
 
             if 'creation_time' not in link:
                 link['creation_time'] = datetime.now(timezone.utc)
 
-            if user and permission:
-                self.objects_manager.get_object(link['primary'], user, permission)
-                self.objects_manager.get_object(link['secondary'], user, permission)
+            # Verify both objects exist
+            primary_object = self.get_one_from_other_collection(CmdbObject.COLLECTION, link['primary'])
+            secondary_object = self.get_one_from_other_collection(CmdbObject.COLLECTION, link['secondary'])
 
-            new_public_id = self.insert(link)
-        except ManagerGetError as err:
-            #TODO: ERROR-FIX
-            LOGGER.debug("[insert_object_link] ManagerGetError: %s", err.message)
-            raise ManagerGetError(err) from err
+            if not primary_object:
+                raise ObjectLinksManagerGetObjectError(f"Object with ID: {link['primary']} not found!")
+            if not secondary_object:
+                raise ObjectLinksManagerGetObjectError(f"Object with ID: {link['secondary']} not found!")
+
+            new_link_public_id = self.insert(link)
         except ManagerInsertError as err:
-            #TODO: ERROR-FIX
-            LOGGER.debug("[insert_object_link] ManagerInsertError: %s", err.message)
-            raise ManagerInsertError(err) from err
+            LOGGER.debug("[insert_object_link] %s", err.message)
+            raise ObjectLinksManagerInsertError(err.message) from err
+        except (ManagerGetError, ObjectLinksManagerGetObjectError) as err:
+            LOGGER.debug("[insert_object_link] %s", err.message)
+            raise ObjectLinksManagerGetObjectError(err.message) from err
 
-        return new_public_id
+        return new_link_public_id
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-    def iterate(self,
-                builder_params: BuilderParameters,
-                user: UserModel = None,
-                permission: AccessControlPermission = None) -> IterationResult[ObjectLinkModel]:
+    def iterate(
+            self,
+            builder_params: BuilderParameters,
+            user: UserModel = None,
+            permission: AccessControlPermission = None) -> IterationResult[CmdbObjectLink]:
         """
-        TODO: document
+        Iterates over CmdbObjectLinks
+
+        Args:
+            builder_params (BuilderParameters): Iteration conditions
+            user (UserModel): CmdbUser requesting this operation
+            permission (AccessControlPermission): Required permission for this operation
+
+        Raises:
+            ObjectLinksManagerIterationError: When an error occured during iteration
+
+        Returns:
+            IterationResult[CmdbObjectLink]: All CmdbObjectLinks matching the builder_params
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            iteration_result: IterationResult[ObjectLinkModel] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(ObjectLinkModel)
+            iteration_result: IterationResult[CmdbObjectLink] = IterationResult(aggregation_result, total)
+            iteration_result.convert_to(CmdbObjectLink)
         except Exception as err:
-            raise ManagerIterationError(err) from err
+            LOGGER.debug("[iterate] Exception: %s", err)
+            raise ObjectLinksManagerIterationError(err) from err
 
         return iteration_result
 
 
-    def get_link(self,
-                 public_id: int,
-                 user: UserModel = None,
-                 permission: AccessControlPermission = None) -> ObjectLinkModel:
+    def get_link(self, public_id: int) -> CmdbObjectLink:
         """
-        Get a single object link by its public_id
+        Retrieve a single CmdbObjectLink by its public_id
 
         Args:
-            public_id (int): public_id of the object link
-            user: User requesting this operation
-            permission: acl permission
+            public_id (int): public_id of the CmdbObjectLink
+
+        Raises:
+            ObjectLinksManagerGetError: When the CmdbObjectLink could not be retrieved
+
         Returns:
-            ObjectLinkModel: Instance of CmdbLink with data
+            CmdbObjectLink: Instance of CmdbLink
         """
         try:
             link_instance = self.get_one(public_id)
-            link = ObjectLinkModel.from_data(link_instance)
 
-            if user and permission:
-                self.objects_manager.get_object(link.primary, user, permission)
-                self.objects_manager.get_object(link.secondary, user, permission)
-
-            return link
+            link = CmdbObjectLink.from_data(link_instance)
         except ManagerGetError as err:
-            LOGGER.debug("ManagerGetError: %s", err)
-            raise ManagerGetError(f'ObjectLinkModel with ID: {public_id} not found!') from err
+            LOGGER.debug("[get_link] %s", err.message)
+            raise ObjectLinksManagerGetError(f'CmdbObjectLink with ID: {public_id} not found!') from err
+
+        return link
 
 
     def check_link_exists(self, criteria: dict) -> bool:
         """
-        Checks if an object link exists with given primary and secondary public_id
+        Checks if an CmdbObjectLink exists with given primary and secondary public_id of CmdbObjects
 
         Args:
             criteria (dict): Dict with primary and secondary public_id's
+
         Returns:
-            bool: True if object link exists, else False
+            bool: True if CmdbObjectLink exists, else False
         """
         try:
             link_instance = self.get_one_by(criteria)
@@ -163,29 +185,29 @@ class ObjectLinksManager(BaseManager):
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete_object_link(self,
-               public_id: int,
-               user: UserModel = None,
-               permission: AccessControlPermission = AccessControlPermission.DELETE) -> ObjectLinkModel:
+    def delete_object_link(self, public_id: int) -> CmdbObjectLink:
         """
-        Delete a existing object link with the given public_id
+        Deletes a CmdbObjectLink with the given public_id
 
         Args:
-            public_id (int): public_id of the object link
-            user: User requesting this operation
-            permission: acl permission
+            public_id (int): public_id of the CmdbObjectLink
+
+        Raises:
+            ObjectLinksManagerGetError: When the CmdbObjectLink could not be retrieved
+            ObjectLinksManagerDeleteError: When the CmdbObjectlink could not be deleted
+
         Returns:
-            ObjectLinkModel: The deleted link as its model
+            CmdbObjectLink: The retrieved instance of the CmdbObjectLink before it was deleted
         """
         try:
             link: dict = self.get_one(public_id)
 
-            if user and permission:
-                self.objects_manager.get_object(link['primary'], user, permission)
-                self.objects_manager.get_object(link['secondary'], user, permission)
-
             self.delete({'public_id':public_id})
+        except ManagerGetError as err:
+            LOGGER.debug("[delete_object_link] %s", err.message)
+            raise ObjectLinksManagerGetError(err) from err
+        except ManagerDeleteError as err:
+            LOGGER.debug("[delete_object_link] %s", err.message)
+            raise ObjectLinksManagerDeleteError(err) from err
 
-            return link
-        except Exception as err:
-            raise ManagerDeleteError(err) from err
+        return link

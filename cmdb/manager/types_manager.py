@@ -213,8 +213,10 @@ class TypesManager(BaseManager):
         """
         #TODO: REFACTOR-FIX try/except block
         if isinstance(update_type, TypeModel):
+            LOGGER.debug("update is TypeModel")
             new_version_type = TypeModel.to_json(update_type)
         else:
+            LOGGER.debug("update not TypeModel")
             new_version_type = json.loads(json.dumps(update_type, default=json_util.default), object_hook=object_hook)
 
         try:
