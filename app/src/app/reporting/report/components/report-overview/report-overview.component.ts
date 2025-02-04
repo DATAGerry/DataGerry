@@ -100,7 +100,6 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: APIGetMultiResponse<any>) => {
           if (response && response.results) {
-            console.log('response', response)
             this.reports = response.results;
             this.totalReports = response.total || 0;
           } else {
