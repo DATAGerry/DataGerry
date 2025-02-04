@@ -1,0 +1,16 @@
+.. _admin-guide:
+
+############
+Admin Manual
+############
+
+.. toctree::
+    :numbered:
+
+    setup
+    gettingstarted
+    framework
+    advanced-concepts
+    docapi
+    user-management
+    authentication
