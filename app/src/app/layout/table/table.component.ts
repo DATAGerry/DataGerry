@@ -56,6 +56,9 @@ export class TableComponent<T> implements OnInit, OnDestroy {
 
     private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
 
+   // Represents row from reports overview (for row with selected fields empty)
+    @Input() reportRowValidationClass: (item: any) => { [className: string]: boolean };
+    
     // Array of possible custom buttons displayed in header
     @Input() public customButtons: Array<TemplateRef<any>>;
     // html table id
@@ -272,6 +275,7 @@ export class TableComponent<T> implements OnInit, OnDestroy {
         this.subscriber.complete();
         this.routerSubscription.unsubscribe();
     }
+
 
     /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 

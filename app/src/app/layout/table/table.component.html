@@ -97,7 +97,11 @@
                 *ngFor="let item of items; let rowIndex = index"
                 [item]="item"
                 [rowIndex]="rowIndex"
-                [ngClass]="rowClasses">
+                [ngClass]="[
+                (rowClasses && rowClasses.length ? rowClasses.join(' ') : ''),
+                reportRowValidationClass ? reportRowValidationClass(item) : ''
+              ]"
+                >
                 <td
                     *ngIf="selectEnabled"
                     [ngStyle]="{'width': '2rem'}"

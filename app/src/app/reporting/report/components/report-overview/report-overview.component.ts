@@ -100,6 +100,7 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: APIGetMultiResponse<any>) => {
           if (response && response.results) {
+            console.log('response', response)
             this.reports = response.results;
             this.totalReports = response.total || 0;
           } else {
@@ -123,6 +124,10 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
    * @param id - The ID of the report to run.
    */
   public runReport(report: any): void {
+    if (this.hasMissingRequiredFields(report)) {
+      this.toast.warning('Cannot run report - no fields selected');
+      return;
+    }
     const { public_id, type_id, selected_fields, mds_mode } = report;
 
     this.router.navigate(['/reports/run', public_id], {
@@ -145,7 +150,7 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
    * @param public_id - The public ID of the report to delete.
    */
   private deleteReport(public_id: number): void {
-    // this.loaderService.show();
+     this.loaderService.show();
     this.reportService.deleteReport(public_id)
       .pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide()))
       .subscribe({
@@ -256,6 +261,7 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
     return query;
   }
 
+
   /* --------------------------------------------------- MODALS METHODS -------------------------------------------------- */
 
 
@@ -291,5 +297,23 @@ export class ReportOverviewComponent implements OnInit, OnDestroy {
       },
       () => { }
     );
+  }
+
+
+  /* --------------------------------------------------- HELPER METHODS -------------------------------------------------- */
+
+  /**
+   * Returns a CSS class for invalid reports (if no selected fields).
+   */
+  public reportRowValidationClass = (report: any): string => {
+    return !report.selected_fields?.length ? 'invalid-report-row' : '';
+  };
+  
+
+  /**
+   * Checks if a report has missing required fields (no selected fields).
+   */
+  public hasMissingRequiredFields(report: any): boolean {
+    return !report.selected_fields?.length;
   }
 }
