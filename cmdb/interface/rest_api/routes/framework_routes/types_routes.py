@@ -245,20 +245,22 @@ def update_type(public_id: int, data: dict, request_user: UserModel):
 
     try:
         unchanged_type = types_manager.get_type(public_id)
-        data.setdefault('last_edit_time', datetime.now(timezone.utc))
-        type_ = TypeModel.from_data(data=data)
+        data['last_edit_time'] = datetime.now(timezone.utc)
+
+        type_ = TypeModel.from_data(data)
+
         types_manager.update_type(public_id, TypeModel.to_json(type_))
         api_response = UpdateSingleResponse(result=data)
     except ManagerGetError as err:
         LOGGER.warning("[update_type] ManagerGetError: %s", err.message)
         #TODO: ERROR-FIX
-        return abort(404)
+        return abort(404, "Could not retrieve the Type which should be updated!")
     except ManagerUpdateError as err:
         LOGGER.warning("[update_type] ManagerUpdateError: %s", err.message)
         return abort(400, f"Type with public_id: {public_id} could not be updated!")
     except Exception as err:
         LOGGER.warning("[update_type] Update Type Exception: %s", err)
-        return abort(400, f"Type with public_id: {public_id} could not be updated!")
+        return abort(500, f"Type with public_id: {public_id} could not be updated!")
 
     # when types are updated, update all locations with relevant data from this type
     updated_type = types_manager.get_type(public_id)

@@ -14,69 +14,60 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all ObjectsManager errors
+This module contains the classes of all ObjectLinksManager errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectManagerError(Exception):
+class ObjectLinksManagerError(Exception):
     """
-    Base ObjectsManager error
+    Base ObjectLinksManager error
     """
     def __init__(self, message: str):
         self.message = message
         super().__init__(message)
 
-# ---------------------------------------------- ObjectsManager Errors ----------------------------------------------- #
+# --------------------------------------------- ObjectLinksManager errors -------------------------------------------- #
 
-class ObjectManagerInsertError(ObjectManagerError):
+class ObjectLinksManagerInsertError(ObjectLinksManagerError):
     """
-    Raised when ObjectsManager could not insert a CmdbObject
+    Raised when ObjectLinksManager could not insert a CmdbObjectLink
     """
     def __init__(self, err: str):
-        self.message = f"ObjectManagerInsertError: {err}"
+        self.message = f"ObjectLinksManagerInsertError: {err}"
         super().__init__(self.message)
 
 
-class ObjectManagerDeleteError(ObjectManagerError):
+class ObjectLinksManagerGetError(ObjectLinksManagerError):
     """
-    Raised when ObjectsManager could not delete a CmdbObject
+    Raised when ObjectLinksManager could not retrieve a CmdbObjectLink
     """
     def __init__(self, err: str):
-        self.message = f"ObjectManagerDeleteError: {err}"
+        self.message = f"ObjectLinksManagerGetError: {err}"
         super().__init__(self.message)
 
 
-class ObjectManagerUpdateError(ObjectManagerError):
+class ObjectLinksManagerGetObjectError(ObjectLinksManagerError):
     """
-    Raised when ObjectsManager could not update a CmdbObject
+    Raised when ObjectLinksManager could not retrieve an CmdbObject
     """
     def __init__(self, err: str):
-        self.message = f"ObjectManagerUpdateError: {err}"
+        self.message = f"ObjectLinksManagerGetObjectError: {err}"
         super().__init__(self.message)
 
 
-class ObjectManagerGetError(ObjectManagerError):
+class ObjectLinksManagerIterationError(ObjectLinksManagerError):
     """
-    Raised when ObjectsManager could not retrieve a CmdbObject
+    Raised when ObjectLinksManager could not iterate over CmdbObjectLinks
     """
     def __init__(self, err: str):
-        self.message = f"ObjectManagerGetError: {err}"
+        self.message = f"ObjectLinksManagerIterationError: {err}"
         super().__init__(self.message)
 
 
-class ObjectManagerInitError(ObjectManagerError):
+class ObjectLinksManagerDeleteError(ObjectLinksManagerError):
     """
-    Raised when ObjectsManager could not initialise a CmdbObject
+    Raised when ObjectLinksManager could not delete a CmdbObjectLink
     """
     def __init__(self, err: str):
-        self.message = f"ObjectManagerInitError: {err}"
-        super().__init__(self.message)
-
-
-class TypeNotSetError(ObjectManagerError):
-    """
-    Raised when the type_id was not set for a CmdbObject
-    """
-    def __init__(self):
-        self.message = "The CmdbObject has no type_id!"
+        self.message = f"ObjectLinksManagerDeleteError: {err}"
         super().__init__(self.message)

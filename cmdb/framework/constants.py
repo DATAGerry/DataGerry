@@ -28,7 +28,7 @@ from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.models.type_model.type import TypeModel
 from cmdb.models.category_model.category import CategoryModel
-from cmdb.models.object_link_model.link import ObjectLinkModel
+from cmdb.models.object_link_model.link import CmdbObjectLink
 from cmdb.models.log_model.cmdb_meta_log import CmdbMetaLog
 from cmdb.models.log_model.cmdb_log import CmdbLog
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
@@ -44,7 +44,7 @@ __COLLECTIONS__ = [
     TypeModel,
     CategoryModel,
     CmdbMetaLog,
-    ObjectLinkModel,
+    CmdbObjectLink,
     CmdbLocation,
     CmdbSectionTemplate,
     CmdbReportCategory,

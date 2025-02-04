@@ -75,6 +75,16 @@ class TypeModel(CmdbDAO):
             'nullable': True,
             'required': False
         },
+        'creation_time': {
+            'type': 'dict',
+            'nullable': True,
+            'required': False
+        },
+        'last_edit_time': {
+            'type': 'dict',
+            'nullable': True,
+            'required': False
+        },
         'selectable_as_parent': {
             'type': 'boolean',
             'default': True
@@ -336,11 +346,20 @@ class TypeModel(CmdbDAO):
 
     #pylint: disable=too-many-arguments
     #pylint: disable=too-many-locals
-    def __init__(self, public_id: int, name: str, author_id: int, render_meta: TypeRenderMeta,
-                 creation_time: datetime = None, last_edit_time: datetime = None, editor_id: int = None,
-                 active: bool = True,  selectable_as_parent: bool = True,
-                 global_template_ids: list[int] = None, fields: list = None, version: str = None,
-                 label: str = None, description: str = None, acl: AccessControlList = None):
+    def __init__(self, public_id: int,
+                 name: str,
+                 author_id: int,
+                 render_meta: TypeRenderMeta,
+                 creation_time: datetime = None,
+                 last_edit_time: datetime = None,
+                 editor_id: int = None,
+                 active: bool = True,
+                 selectable_as_parent: bool = True,
+                 global_template_ids: list[int] = None,
+                 fields: list = None, version: str = None,
+                 label: str = None,
+                 description: str = None,
+                 acl: AccessControlList = None):
         try:
             self.name: str = name
             self.label: str = label or self.name.title()

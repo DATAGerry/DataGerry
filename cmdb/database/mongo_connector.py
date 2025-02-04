@@ -78,16 +78,18 @@ class MongoConnector:
 
             return ConnectionStatus(connected=True, message=str(status))
         except Exception as err:
-            raise DatabaseConnectionError(err) from err
+            raise DatabaseConnectionError(str(err)) from err
 
 
     def disconnect(self) -> ConnectionStatus:
         """
         Disconnect from database
-        Returns: connection status
+
+        Returns:
+            ConnectionStatus: The disconnected status
         """
         self.client.close()
-        return ConnectionStatus(connected=False)
+        return ConnectionStatus(connected=False, message="Disconnected")
 
 
     def is_connected(self) -> bool:

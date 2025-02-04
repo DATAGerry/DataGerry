@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Contains Manager Error Classes"""
+"""
+Contains general Manager Error Classes
+"""
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ManagerError(Exception):
@@ -25,42 +27,42 @@ class ManagerError(Exception):
 # -------------------------------------------------- MANAGER ERRORS -------------------------------------------------- #
 
 class ManagerGetError(ManagerError):
-    """Manager exception for get operations"""
+    """Manager error for get operations"""
     def __init__(self, err: str):
-        self.message = f'Error while GET: {err}'
+        self.message = f'ManagerGetError: {err}'
         super().__init__(self.message)
 
 
 class ManagerIterationError(ManagerError):
-    """Manager exception for iteration operations"""
+    """Manager error for iteration operations"""
     def __init__(self, err: str):
-        self.message = f'Error while ITERATION: {err}'
+        self.message = f'ManagerIterationError: {err}'
         super().__init__(self.message)
 
 
 class ManagerInsertError(ManagerError):
-    """Manager exception for insert operations"""
+    """Manager error for insert operations"""
     def __init__(self, err: str):
-        self.message = f'Error while INSERT: {err}'
+        self.message = f'ManagerInsertError: {err}'
         super().__init__(self.message)
 
 
 class ManagerUpdateError(ManagerError):
-    """Manager exception for update operations"""
+    """Manager error for update operations"""
     def __init__(self, err: str):
-        self.message = f'Error while UPDATE: {err}'
+        self.message = f'ManagerUpdateError: {err}'
         super().__init__(self.message)
 
 
 class ManagerDeleteError(ManagerError):
-    """Manager exception for delete operations"""
+    """Manager error for delete operations"""
     def __init__(self, err: str):
-        self.message = f'Error while DELETE: {err}'
+        self.message = f'ManagerDeleteError: {err}'
         super().__init__(self.message)
 
 
 class DisallowedActionError(ManagerError):
-    """Manager exception when an illegal action is initiated"""
+    """Manager exception when an illegal action is requested"""
     def __init__(self, err: str):
-        self.message = f'Disallowed Action: {err}'
+        self.message = f'DisallowedActionError: {err}'
         super().__init__(self.message)
