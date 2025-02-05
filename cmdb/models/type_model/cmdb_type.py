@@ -26,6 +26,7 @@ from cmdb.models.type_model.type_summary import TypeSummary
 from cmdb.models.type_model.type_external_link import TypeExternalLink
 from cmdb.models.type_model.type_section import TypeSection
 from cmdb.models.type_model.type_render_meta import TypeRenderMeta
+from cmdb.class_schema.cmdb_type_schema import get_cmdb_type_schema
 
 from cmdb.errors.cmdb_object import RequiredInitKeyNotFoundError
 from cmdb.errors.type import FieldNotFoundError, FieldInitError
@@ -34,10 +35,10 @@ from cmdb.errors.type import FieldNotFoundError, FieldInitError
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                   TypeModel - CLASS                                                  #
+#                                                   CmdbType - CLASS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 #pylint: disable=too-many-instance-attributes
-class TypeModel(CmdbDAO):
+class CmdbType(CmdbDAO):
     """
     Model class of the framework type
     Extends: CmdbDAO
@@ -53,296 +54,13 @@ class TypeModel(CmdbDAO):
     COLLECTION = "framework.types"
     MODEL = 'Type'
     DEFAULT_VERSION = '1.0.0'
-    SCHEMA: dict = {
-        'public_id': {
-            'type': 'integer'
-        },
-        'name': {
-            'type': 'string',
-            'required': True,
-            'regex': r'(\w+)-*(\w)([\w-]*)'  # kebab case validation,
-        },
-        'label': {
-            'type': 'string',
-            'required': False
-        },
-        'author_id': {
-            'type': 'integer',
-            'required': True
-        },
-        'editor_id': {
-            'type': 'integer',
-            'nullable': True,
-            'required': False
-        },
-        'creation_time': {
-            'type': 'dict',
-            'nullable': True,
-            'required': False
-        },
-        'last_edit_time': {
-            'type': 'dict',
-            'nullable': True,
-            'required': False
-        },
-        'selectable_as_parent': {
-            'type': 'boolean',
-            'default': True
-        },
-        'global_template_ids':{
-            'type': 'list',
-            'required': False,
-            'schema': {
-                'type': 'string',
-            }
-        },
-        'active': {
-            'type': 'boolean',
-            'required': False,
-            'default': True
-        },
-        'fields': {
-            'type': 'list',
-            'required': False,
-            'default': None,
-            'schema': {
-                'type': 'dict',
-                'schema': {
-                    "type": {
-                        'type': 'string',  # Text, Password, Textarea, radio, select, date
-                        'required': True
-                    },
-                    "required": {
-                        'type': 'boolean',
-                        'required': False
-                    },
-                    "name": {
-                        'type': 'string',
-                        'required': True
-                    },
-                    "rows": {
-                        'type': 'integer',
-                        'required': False
-                    },
-                    "label": {
-                        'type': 'string',
-                        'required': True
-                    },
-                    "description": {
-                        'type': 'string',
-                        'required': False,
-                    },
-                    "regex": {
-                        'type': 'string',
-                        'required': False
-                    },
-                    "placeholder": {
-                        'type': 'string',
-                        'required': False,
-                    },
-                    "value": {
-                        'required': False,
-                        'nullable': True,
-                    },
-                    "helperText": {
-                        'type': 'string',
-                        'required': False,
-                    },
-                    "default": {
-                        'type': 'integer',
-                        'nullable': True,
-                        'empty': True
-                    },
-                    "options": {
-                        'type': 'list',
-                        'empty': True,
-                        'required': False,
-                        'schema': {
-                            'type': 'dict',
-                            'schema': {
-                                "name": {
-                                    'type': 'string',
-                                    'required': True
-                                },
-                                "label": {
-                                    'type': 'string',
-                                    'required': True
-                                },
-                            }
-                        }
-                    },
-                    "ref_types": {
-                        'type': 'list',  # List of public_id of type
-                        'required': False,
-                        'empty': True,
-                        'schema': {
-                            'type': ['integer', 'list'],
-                        }
-                    },
-                    "summaries": {
-                        'type': 'list',
-                        'empty': True,
-                        'schema': {
-                            'type': 'dict',
-                            'schema': {
-                                "type_id": {
-                                    'type': 'integer',
-                                    'required': True
-                                },
-                                "line": {
-                                    'type': 'string',
-                                    # enter curved brackets for field interpolation example: Customer IP {}
-                                    'required': True
-                                },
-                                "label": {
-                                    'type': 'string',
-                                    'required': True
-                                },
-                                "fields": {  # List of field names
-                                    'type': 'list',
-                                    'empty': True,
-                                },
-                                "icon": {
-                                    'type': 'string',  # Free Font Awesome example: 'fa fa-cube'
-                                    'required': True
-                                },
-                                "prefix": {
-                                    'type': 'boolean',
-                                    'required': False,
-                                    'default': True
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-        },
-        'version': {
-            'type': 'string',
-            'default': DEFAULT_VERSION
-        },
-        'description': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True
-        },
-        'render_meta': {
-            'type': 'dict',
-            'allow_unknown': False,
-            'schema': {
-                'icon': {
-                    'type': 'string',
-                    'nullable': True
-                },
-                'sections': {
-                    'type': 'list',
-                    'schema': {
-                        'type': 'dict',
-                        'schema': {
-                            "type": {
-                                'type': 'string',
-                                'required': True
-                            },
-                            "name": {
-                                'type': 'string',
-                                'required': True
-                            },
-                            "label": {
-                                'type': 'string',
-                                'required': True
-                            },
-                            "hidden_fields": {
-                                'type': 'list',
-                                'required': False
-                            },
-                            "reference": {
-                                'type': 'dict',
-                                'empty': True,
-                                'schema': {
-                                    "type_id": {
-                                        'type': 'integer',
-                                        'required': True
-                                    },
-                                    "section_name": {
-                                        'type': 'string',
-                                        'required': True
-                                    },
-                                    'selected_fields': {
-                                        'type': 'list',
-                                        'empty': True
-                                    }
-                                }
-                            },
-                            'fields': {
-                                'type': 'list',
-                                'empty': True,
-                            }
-                        }
-                    },
-                    'empty': True
-                },
-                'externals': {
-                    'type': 'list',
-                    'schema': {
-                        'type': 'dict',
-                        'schema': {
-                            'name': {
-                                'type': 'string',
-                                'required': True
-                            },
-                            'href': {
-                                'type': 'string',  # enter curved brackets for field interpolation example: Field {}
-                                'required': True
-                            },
-                            'label': {
-                                'type': 'string',
-                                'required': True
-                            },
-                            'icon': {
-                                'type': 'string',
-                                'required': True
-                            },
-                            'fields': {
-                                'type': 'list',
-                                'schema': {
-                                    'type': 'string',
-                                    'required': False
-                                },
-                                'empty': True,
-                            }
-                        }
-                    },
-                    'empty': True,
-                },
-                'summary': {
-                    'type': 'dict',
-                    'schema': {
-                        'fields': {
-                            'type': 'list',
-                            'schema': {
-                                'type': 'string',
-                                'required': False
-                            },
-                            'empty': True,
-                        }
-                    },
-                    'empty': True
-                }
-            }
-        },
-        'acl': {
-            'type': 'dict',
-            'allow_unknown': True,
-            'required': False,
-        }
-    }
+    SCHEMA: dict = get_cmdb_type_schema()
 
     INDEX_KEYS = [{
         'keys': [('name', CmdbDAO.DAO_ASCENDING)],
         'name': 'name',
         'unique': True
     }]
-
 
     #pylint: disable=too-many-arguments
     #pylint: disable=too-many-locals
@@ -364,7 +82,7 @@ class TypeModel(CmdbDAO):
             self.name: str = name
             self.label: str = label or self.name.title()
             self.description: str = description
-            self.version: str = version or TypeModel.DEFAULT_VERSION
+            self.version: str = version or CmdbType.DEFAULT_VERSION
             self.selectable_as_parent: bool = selectable_as_parent
             self.global_template_ids: list = global_template_ids or []
             self.active: bool = active
@@ -384,15 +102,15 @@ class TypeModel(CmdbDAO):
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
     @classmethod
-    def from_data(cls, data: dict) -> "TypeModel":
+    def from_data(cls, data: dict) -> "CmdbType":
         """
-        Generates a TypeModel object from a dict
+        Generates a CmdbType object from a dict
 
         Args:
-            data (dict): Data with which the TypeModel should be instantiated
+            data (dict): Data with which the CmdbType should be instantiated
 
         Returns:
-            TypeModel: TypeModel class with given data
+            CmdbType: CmdbType class with given data
         """
         try:
             creation_time = data.get('creation_time', None)
@@ -426,7 +144,7 @@ class TypeModel(CmdbDAO):
 
 
     @classmethod
-    def to_json(cls, instance: "TypeModel") -> dict:
+    def to_json(cls, instance: "CmdbType") -> dict:
         """Convert a type instance to json conform data"""
         try:
             return {
@@ -540,7 +258,7 @@ class TypeModel(CmdbDAO):
 
 
     def get_icon(self) -> str:
-        """Retrieves the icon of the current TypeModel"""
+        """Retrieves the icon of the current CmdbType"""
         try:
             return self.render_meta.icon
         except IndexError:
@@ -549,7 +267,7 @@ class TypeModel(CmdbDAO):
 
     def has_sections(self) -> bool:
         """
-        Checks if the TypeModel has any sections
+        Checks if the CmdbType has any sections
 
         Returns:
             (bool): True if at least one section is present else False
@@ -558,7 +276,7 @@ class TypeModel(CmdbDAO):
 
 
     def get_fields(self) -> list:
-        """Retuns all fields of the TypeModel"""
+        """Retuns all fields of the CmdbType"""
         return self.fields
 
 

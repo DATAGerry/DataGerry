@@ -23,12 +23,16 @@ from bson import json_util
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.database.utils import object_hook
+
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
-from cmdb.models.type_model.type import TypeModel
-from cmdb.models.type_model.type_field_section import TypeFieldSection
+from cmdb.models.type_model import (
+    CmdbType,
+    TypeFieldSection,
+)
 from cmdb.models.object_model.cmdb_object import CmdbObject
+
 from cmdb.framework.results import IterationResult, ListResult
 
 from cmdb.errors.manager import ManagerGetError, ManagerInsertError
@@ -56,11 +60,11 @@ class TypesManager(BaseManager):
         if database:
             dbm.connector.set_database(database)
 
-        super().__init__(TypeModel.COLLECTION, dbm)
+        super().__init__(CmdbType.COLLECTION, dbm)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-    def insert_type(self, new_type: Union[TypeModel, dict]) -> int:
+    def insert_type(self, new_type: Union[CmdbType, dict]) -> int:
         """
         Insert a single type into the system.
 
@@ -80,8 +84,8 @@ class TypesManager(BaseManager):
             int: The Public ID of the new inserted type
         """
         try:
-            if isinstance(new_type, TypeModel):
-                type_to_add = TypeModel.to_json(new_type)
+            if isinstance(new_type, CmdbType):
+                type_to_add = CmdbType.to_json(new_type)
             else:
                 type_to_add = json.loads(json.dumps(new_type, default=json_util.default), object_hook=object_hook)
         except Exception as err:
@@ -104,7 +108,7 @@ class TypesManager(BaseManager):
         return self.get_next_public_id()
 
 
-    def get_type(self, public_id: int) -> TypeModel:
+    def get_type(self, public_id: int) -> CmdbType:
         """
         Get a single type by its public_id
 
@@ -118,19 +122,19 @@ class TypesManager(BaseManager):
                 - When Type could not be inserted in database
 
         Returns:
-            TypeModel: Instance of TypeModel with data.
+            CmdbType: Instance of CmdbType with data.
         """
 
         requested_type = self.get_one(public_id)
 
         try:
-            return TypeModel.from_data(requested_type)
+            return CmdbType.from_data(requested_type)
         except Exception as err:
             #TODO: ERROR-FIX (Needs a TypesManagerGetError)
             raise ManagerGetError(str(err)) from err
 
 
-    def iterate(self, builder_params: BuilderParameters) -> IterationResult[TypeModel]:
+    def iterate(self, builder_params: BuilderParameters) -> IterationResult[CmdbType]:
         """
         Iterate over a collection of type resources.
 
@@ -142,7 +146,7 @@ class TypesManager(BaseManager):
             order: sort order
 
         Returns:
-            IterationResult: Instance of IterationResult with generic TypeModel.
+            IterationResult: Instance of IterationResult with generic CmdbType.
         """
 
         try:
@@ -150,13 +154,13 @@ class TypesManager(BaseManager):
         except Exception as err:
             raise TypesManagerGetError(err) from err
 
-        iteration_result: IterationResult[TypeModel] = IterationResult(aggregation_result, total)
-        iteration_result.convert_to(TypeModel)
+        iteration_result: IterationResult[CmdbType] = IterationResult(aggregation_result, total)
+        iteration_result.convert_to(CmdbType)
 
         return iteration_result
 
 
-    def find_types(self, criteria: dict) -> ListResult[TypeModel]:
+    def find_types(self, criteria: dict) -> ListResult[CmdbType]:
         """
         Get a list of types by a filter query.
         Args:
@@ -166,24 +170,24 @@ class TypesManager(BaseManager):
             ListResult
         """
         results = self.find(criteria=criteria)
-        types: list[TypeModel] = [TypeModel.from_data(result) for result in results]
+        types: list[CmdbType] = [CmdbType.from_data(result) for result in results]
 
         return ListResult(types)
 
 
     def count_types(self):
         """TODO: document"""
-        return self.count_documents(TypeModel.COLLECTION)
+        return self.count_documents(CmdbType.COLLECTION)
 
 
-    def get_all_types(self) -> list[TypeModel]:
+    def get_all_types(self) -> list[CmdbType]:
         """TODO: document"""
         try:
             raw_types: list[dict] = self.get_many()
         except Exception as err:
             raise ManagerGetError(err) from err
         try:
-            return [TypeModel.from_data(type) for type in raw_types]
+            return [CmdbType.from_data(type) for type in raw_types]
         except Exception as err:
             #TODO: ERROR-FIX
             raise ManagerGetError(err) from err
@@ -192,14 +196,14 @@ class TypesManager(BaseManager):
     def get_types_by(self, sort='public_id', **requirements):
         """TODO: document"""
         try:
-            return [TypeModel.from_data(data) for data in self.get_many(sort=sort, **requirements)]
+            return [CmdbType.from_data(data) for data in self.get_many(sort=sort, **requirements)]
         except Exception as err:
             #TODO: ERROR-FIX
             raise ManagerGetError(err) from err
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
-    def update_type(self, public_id: int, update_type: Union[TypeModel, dict]):
+    def update_type(self, public_id: int, update_type: Union[CmdbType, dict]):
         """
         Update an existing type in the system
 
@@ -208,15 +212,13 @@ class TypesManager(BaseManager):
             type: New type data
 
         Notes:
-            If a TypeModel instance was passed as type argument,
+            If a CmdbType instance was passed as type argument,
             it will be auto converted via the model `to_json` method.
         """
         #TODO: REFACTOR-FIX try/except block
-        if isinstance(update_type, TypeModel):
-            LOGGER.debug("update is TypeModel")
-            new_version_type = TypeModel.to_json(update_type)
+        if isinstance(update_type, CmdbType):
+            new_version_type = CmdbType.to_json(update_type)
         else:
-            LOGGER.debug("update not TypeModel")
             new_version_type = json.loads(json.dumps(update_type, default=json_util.default), object_hook=object_hook)
 
         try:
@@ -231,7 +233,7 @@ class TypesManager(BaseManager):
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete_type(self, public_id: int) -> TypeModel:
+    def delete_type(self, public_id: int) -> CmdbType:
         """
         Delete a existing type by its PublicID.
 
@@ -239,10 +241,10 @@ class TypesManager(BaseManager):
             public_id (int): PublicID of the type in the system.
 
         Returns:
-            TypeModel: The deleted type as its model.
+            CmdbType: The deleted type as its model.
         """
         #TODO: REFACTOR-FIX try/except block
-        raw_type: TypeModel = self.get_type(public_id)
+        raw_type: CmdbType = self.get_type(public_id)
 
         try:
             self.delete({'public_id': public_id})
@@ -320,7 +322,7 @@ class TypesManager(BaseManager):
         return found_objects
 
 
-    def update_multi_data_fields(self, target_type: TypeModel, added_fields: dict, deleted_fields: dict):
+    def update_multi_data_fields(self, target_type: CmdbType, added_fields: dict, deleted_fields: dict):
         """TODO: document"""
         all_type_objects = self.get_objects_for_type(target_type.public_id)
 
@@ -348,7 +350,7 @@ class TypesManager(BaseManager):
         return all_type_objects
 
 
-    def handle_mutli_data_sections(self, target_type: TypeModel, updated_data: dict):
+    def handle_mutli_data_sections(self, target_type: CmdbType, updated_data: dict):
         """TODO: document"""
         added_fields: dict = {}
         deleted_fields: dict = {}

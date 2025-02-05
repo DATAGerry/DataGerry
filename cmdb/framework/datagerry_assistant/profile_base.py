@@ -21,7 +21,7 @@ from flask import current_app
 
 from cmdb.manager import TypesManager
 
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from .profile_type_constructor import ProfileTypeConstructor
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -38,7 +38,7 @@ class ProfileBase:
         self.type_dict: dict = {}
         self.created_type_ids: dict = created_type_ids
 
-        self.type_collection = TypeModel.COLLECTION
+        self.type_collection = CmdbType.COLLECTION
 
         with current_app.app_context():
             self.types_manager = TypesManager(current_app.database_manager)

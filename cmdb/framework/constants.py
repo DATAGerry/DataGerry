@@ -26,7 +26,7 @@ from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.category_model.category import CategoryModel
 from cmdb.models.object_link_model.link import CmdbObjectLink
 from cmdb.models.log_model.cmdb_meta_log import CmdbMetaLog
@@ -41,7 +41,7 @@ CmdbLog.register_log_type(CmdbObjectLog.__name__, CmdbObjectLog)
 # List of init collections
 __COLLECTIONS__ = [
     CmdbObject,
-    TypeModel,
+    CmdbType,
     CategoryModel,
     CmdbMetaLog,
     CmdbObjectLink,

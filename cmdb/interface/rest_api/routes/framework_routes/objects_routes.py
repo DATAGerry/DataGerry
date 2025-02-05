@@ -38,7 +38,7 @@ from cmdb.manager import (
 
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.webhook_model.webhook_event_type_enum import WebhookEventType
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.object_model.cmdb_object import CmdbObject
@@ -389,7 +389,7 @@ def get_object_mds_reference(public_id: int, request_user: UserModel):
                                                                    request_user,
                                                                    AccessControlPermission.READ)
 
-        referenced_type: TypeModel = objects_manager.get_object_type(referenced_object.get_type_id())
+        referenced_type: CmdbType = objects_manager.get_object_type(referenced_object.get_type_id())
 
     except ManagerGetError:
         #TODO: ERROR-FIX
@@ -442,7 +442,7 @@ def get_object_mds_references(public_id: int, request_user: UserModel):
                                                                        request_user,
                                                                        AccessControlPermission.READ)
 
-            referenced_type: TypeModel = objects_manager.get_object_type(referenced_object.get_type_id())
+            referenced_type: CmdbType = objects_manager.get_object_type(referenced_object.get_type_id())
 
         except ManagerGetError:
             #TODO: ERROR-FIX
@@ -578,7 +578,7 @@ def get_unstructured_objects(public_id: int, request_user: UserModel):
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:
-        type_instance: TypeModel = objects_manager.get_object_type(public_id)
+        type_instance: CmdbType = objects_manager.get_object_type(public_id)
 
         builder_params = BuilderParameters({'type_id': public_id},
                                            limit=0,
@@ -840,7 +840,7 @@ def update_object_state(public_id: int, request_user: UserModel):
 @objects_blueprint.protect(auth=True, right='base.framework.type.clean')
 def update_unstructured_objects(public_id: int, request_user: UserModel):
     """
-    HTTP `PUT`/`PATCH` route for a multi resources which will be formatted based on the TypeModel
+    HTTP `PUT`/`PATCH` route for a multi resources which will be formatted based on the CmdbType
     Args:
         public_id (int): Public ID of the type.
     Raises:

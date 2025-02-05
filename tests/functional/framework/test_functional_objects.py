@@ -22,10 +22,13 @@ from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
-from cmdb.models.type_model.type import TypeModel
-from cmdb.models.type_model.type_summary import TypeSummary
-from cmdb.models.type_model.type_field_section import TypeFieldSection
-from cmdb.models.type_model.type_render_meta import TypeRenderMeta
+from cmdb.models.type_model import (
+    CmdbType,
+    TypeFieldSection,
+    TypeSummary,
+    TypeRenderMeta,
+)
+
 from cmdb.security.acl.control import AccessControlList
 from cmdb.security.acl.group_acl import GroupACL
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -33,7 +36,7 @@ from cmdb.security.acl.group_acl import GroupACL
 @fixture(scope='module', name="example_type")
 def fixture_example_type():
     """TODO: document"""
-    return TypeModel(
+    return CmdbType(
         public_id=1, name='test', label='Test', author_id=1, creation_time=datetime.now(),
         active=True, version=None, description='Test type',
         render_meta=TypeRenderMeta(
@@ -55,8 +58,14 @@ def fixture_example_type():
 def fixture_example_object():
     "TODO: document"
     return CmdbObject(
-        public_id=1, type_id=1, status=True, creation_time=datetime.now(timezone.utc),
-        author_id=1, active=True, fields=[], version='1.0.0'
+        public_id=1,
+        type_id=1,
+        status=True,
+        creation_time=datetime.now(timezone.utc),
+        author_id=1,
+        active=True,
+        fields=[],
+        version='1.0.0'
     )
 
 
@@ -73,7 +82,7 @@ def fixture_collection(connector, database_name):
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
     """TODO: document"""
-    collection.insert_one(document=TypeModel.to_json(example_type))
+    collection.insert_one(document=CmdbType.to_json(example_type))
     dummy_type = example_type
     dummy_type.public_id = 2
     dummy_type.fields = []
@@ -93,7 +102,7 @@ def setup(request, collection, example_type):
                                  }
                              ],
                              "value": ""})
-    collection.insert_one(document=TypeModel.to_json(dummy_type))
+    collection.insert_one(document=CmdbType.to_json(dummy_type))
 
     def drop_collection():
         collection.drop()
@@ -104,7 +113,7 @@ def setup(request, collection, example_type):
 class TestFrameworkObjects:
     """TODO: document"""
     OBJECT_COLLECTION: str = CmdbObject.COLLECTION
-    TYPE_COLLECTION: str = TypeModel.COLLECTION
+    TYPE_COLLECTION: str = CmdbType.COLLECTION
     ROUTE_URL: str = '/objects'
 
     def test_insert_object(self, rest_api, example_object, full_access_user, none_access_user):

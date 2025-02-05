@@ -16,7 +16,7 @@
 """TODO: document"""
 import logging
 
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.category_model.category import CategoryModel
 from cmdb.models.category_model.category_node import CategoryNode
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -30,7 +30,7 @@ class CategoryTree:
     """Base tree holder"""
     MODEL = 'CategoryTree'
 
-    def __init__(self, categories: list[CategoryModel], types: list[TypeModel] = None):
+    def __init__(self, categories: list[CategoryModel], types: list[CmdbType] = None):
         """TODO: document"""
         self._categories = categories
         self._types = types
@@ -61,7 +61,7 @@ class CategoryTree:
 
 
     @classmethod
-    def __create_tree(cls, categories, parent: int = None, types: list[TypeModel] = None) -> list[CategoryNode]:
+    def __create_tree(cls, categories, parent: int = None, types: list[CmdbType] = None) -> list[CategoryNode]:
         """
         Generate the category tree from list structure
         Args:

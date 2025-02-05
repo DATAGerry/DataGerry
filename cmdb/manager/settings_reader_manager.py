@@ -89,12 +89,14 @@ class SettingsReaderManager(SystemReader):
         Returns:
             key value dict of all elements inside section
         """
-        try:
-            section_values = self.dbm.find_one_by(collection=SettingsReaderManager.COLLECTION, filter={'_id': section})
-        except NoDocumentFound as err:
+
+        section_values = self.dbm.find_one_by(collection=SettingsReaderManager.COLLECTION, filter={'_id': section})
+
+        if not section_values:
             if default:
                 return default
-            raise SectionError(section) from err
+
+            raise SectionError(section)
 
         return section_values
 

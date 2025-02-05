@@ -121,9 +121,10 @@ class SecurityManager:
 
                 return symmetric_key
 
-            try:
-                symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
-            except NoDocumentFound:
+
+            symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
+
+            if not symmetric_key:
                 self.generate_symmetric_aes_key()
                 symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
 

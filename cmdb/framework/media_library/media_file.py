@@ -122,8 +122,8 @@ class MediaFile(BaseMediaFile):
         Get all metadata of the file
         The metadata fields:
             permission:   the action of officially allowing someone to do a particular thing
-            ref_to:       ObjectId of Object (TypeModel, CmdbObject etc.)
-            ref_to_type:  Strint: Type of Object (TypeModel, CmdbObject etc.)
+            ref_to:       ObjectId of Object (CmdbType, CmdbObject etc.)
+            ref_to_type:  Strint: Type of Object (CmdbType, CmdbObject etc.)
             mime_type:    File type
         Returns:
             list: all sources

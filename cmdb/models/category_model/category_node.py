@@ -16,7 +16,7 @@
 """TODO: document"""
 import logging
 
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.category_model.category import CategoryModel
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -29,13 +29,13 @@ class CategoryNode:
     """Class of a category node inside the category tree"""
 
     def __init__(self, category: CategoryModel, children: list["CategoryNode"] = None,
-                    types: list[TypeModel] = None):
+                    types: list[CmdbType] = None):
         self.category: CategoryModel = category
         self.node_order: int = self.category.get_meta().get_order()
         self.children: list["CategoryNode"] = sorted(children or [], key=lambda node: (
                                                             node.get_order() is None, node.get_order()))
         # prevent wrong type order
-        self.types: list[TypeModel] = [type_ for id_ in self.category.types for type_ in types if
+        self.types: list[CmdbType] = [type_ for id_ in self.category.types for type_ in types if
                                         id_ == type_.public_id]
 
 
@@ -46,7 +46,7 @@ class CategoryNode:
             'category': CategoryModel.to_json(instance.category),
             'node_order': instance.node_order,
             'children': [CategoryNode.to_json(child_node) for child_node in instance.children],
-            'types': [TypeModel.to_json(type) for type in instance.types]
+            'types': [CmdbType.to_json(type) for type in instance.types]
         }
 
 

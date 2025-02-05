@@ -27,20 +27,23 @@ from cmdb.manager import (
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.rendering.render_result import RenderResult
 from cmdb.models.object_model.cmdb_object import CmdbObject
-from cmdb.models.type_model.type import TypeModel
-from cmdb.models.type_model.type_reference import TypeReference
-from cmdb.models.type_model.type_external_link import TypeExternalLink
-from cmdb.models.type_model.type_field_section import TypeFieldSection
-from cmdb.models.type_model.type_reference_section import TypeReferenceSection
-from cmdb.models.type_model.type_multi_data_section import TypeMultiDataSection
+from cmdb.models.type_model import (
+    CmdbType,
+    TypeReference,
+    TypeExternalLink,
+    TypeFieldSection,
+    TypeReferenceSection,
+    TypeMultiDataSection,
+)
 from cmdb.models.user_model.user import UserModel
 
 from cmdb.errors.manager import ManagerGetError
 from cmdb.errors.manager.object_manager import ObjectManagerGetError
+from cmdb.errors.manager.user_manager import UserManagerGetError
 from cmdb.errors.type import TypeReferenceLineFillError, FieldNotFoundError, FieldInitError
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.render import ObjectInstanceError, TypeInstanceError, InstanceRenderError
-from cmdb.errors.manager.user_manager import UserManagerGetError
+
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -54,14 +57,14 @@ class CmdbRender:
     AUTHOR_ANONYMOUS_NAME = 'unknown'
 
     def __init__(self, object_instance: CmdbObject,
-                 type_instance: TypeModel,
+                 type_instance: CmdbType,
                  render_user: UserModel,
                  ref_render=False,
                  dbm: MongoDatabaseManager = None):
         """TODO: document"""
         self.dbm = dbm
         self.object_instance: CmdbObject = object_instance
-        self.type_instance: TypeModel = type_instance
+        self.type_instance: CmdbType = type_instance
         self.render_user: UserModel = render_user
 
         if dbm:
@@ -95,9 +98,9 @@ class CmdbRender:
 
 
     @property
-    def type_instance(self) -> TypeModel:
+    def type_instance(self) -> CmdbType:
         """
-        Object of the class TypeModel that has already been instantiated.
+        Object of the class CmdbType that has already been instantiated.
         The data should come from the database and already be validated.
         This already happens when the object is instantiated.
         """
@@ -105,12 +108,12 @@ class CmdbRender:
 
 
     @type_instance.setter
-    def type_instance(self, type_instance: TypeModel):
+    def type_instance(self, type_instance: CmdbType):
         """
         Property setter for type_instance. The render only checks whether the passed object
         belongs to the correct class, not whether it is valid.
         """
-        if not isinstance(type_instance, TypeModel):
+        if not isinstance(type_instance, CmdbType):
             raise TypeInstanceError()
 
         self._type_instance = type_instance
@@ -269,7 +272,7 @@ class CmdbRender:
 
                             if field['type'] == 'ref':
                                 reference_object: CmdbObject = self.objects_manager.get_object(reference_id)
-                                ref_type: TypeModel = self.objects_manager.get_object_type(
+                                ref_type: CmdbType = self.objects_manager.get_object_type(
                                                                                 reference_object.get_type_id()
                                                                            )
                                 field['reference'] = {
@@ -369,7 +372,7 @@ class CmdbRender:
         if ref_section_field and ref_section_field.get('type', '') == 'ref-section-field':
             try:
                 instance = self.objects_manager.get_object(ref_section_field.get('value'))
-                reference_type: TypeModel = self.objects_manager.get_object_type(instance.get_type_id())
+                reference_type: CmdbType = self.objects_manager.get_object_type(instance.get_type_id())
                 render = CmdbRender(instance, ref_type, self.render_user, True, self.dbm)
                 fields = render.result(level).fields
                 res = next((x for x in fields if x['name'] == ref_section_field.get('name', '')), None)

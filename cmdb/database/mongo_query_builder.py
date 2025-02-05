@@ -20,7 +20,7 @@ import logging
 from typing import Union
 from datetime import datetime
 
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 
 from cmdb.errors.mongo_query_builder import (
     MongoQueryBuilderInitError,
@@ -41,7 +41,7 @@ class MongoDBQueryBuilder:
     """
     The MongoDBQueryBuilder generates a MongoDB query from a dict of rules
     """
-    def __init__(self, query_data: dict, report_type: TypeModel):
+    def __init__(self, query_data: dict, report_type: CmdbType):
         try:
             self.condition = None
             self.rules = None
