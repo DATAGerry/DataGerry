@@ -108,7 +108,7 @@ class CmdbObjectLog(CmdbMetaLog):
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbObjectLog":
-        """Create a instance of TypeModel from database values"""
+        """Create a instance of CmdbType from database values"""
         return cls(
             public_id=data.get('public_id'),
             object_id=data.get('object_id'),

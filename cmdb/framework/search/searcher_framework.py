@@ -21,7 +21,7 @@ from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model.user import UserModel
 from cmdb.models.object_model.cmdb_object import CmdbObject
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.framework.rendering.render_list import RenderList
 from cmdb.framework.rendering.render_result import RenderResult
 from cmdb.framework.search.search_result import SearchResult
@@ -74,7 +74,7 @@ class SearcherFramework:
 
         group_stage: dict = {
             'group': [
-                SearchPipelineBuilder.lookup_(TypeModel.COLLECTION, 'type_id', 'public_id', 'lookup_data'),
+                SearchPipelineBuilder.lookup_(CmdbType.COLLECTION, 'type_id', 'public_id', 'lookup_data'),
                 SearchPipelineBuilder.unwind_('$lookup_data'),
                 SearchPipelineBuilder.project_({'_id': 0, 'type_id': 1, 'label': '$lookup_data.label'}),
                 SearchPipelineBuilder.group_('$$ROOT.type_id', {'types': {'$first': '$$ROOT'}, 'total': {'$sum': 1}}),

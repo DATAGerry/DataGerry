@@ -46,8 +46,8 @@ class ProfileTypeConstructor:
                            icon: str,
                            selectable_as_parent: bool = True) -> dict:
         """
-        Initialses the creation of the TypeModel. This method should always be called First when
-        creating a new TypeModel with the TypeConstructor.
+        Initialses the creation of the CmdbType. This method should always be called First when
+        creating a new CmdbType with the TypeConstructor.
 
         Args:
             type_data (list): Sections with fields which should be added to this type
@@ -58,7 +58,7 @@ class ProfileTypeConstructor:
                                                    Defaults to True.
 
         Returns:
-            dict: The initialized TypeModel
+            dict: The initialized CmdbType
         """
         self.__create_type_body(name, label,icon,selectable_as_parent)
         self.__create_sections_and_fields(type_data)
@@ -68,7 +68,7 @@ class ProfileTypeConstructor:
 
     def __create_type_body(self, name: str, label: str, icon: str, selectable_as_parent: bool = True) -> None:
         """
-        Genereates a TypeModel skeleton for the current type
+        Genereates a CmdbType skeleton for the current type
 
         Args:
             name (str): name for the type

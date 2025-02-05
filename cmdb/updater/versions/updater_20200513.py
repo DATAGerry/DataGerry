@@ -17,7 +17,7 @@
 import logging
 
 from cmdb.updater.updater import Updater
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class Update20200513(Updater):
 
     def start_update(self):
         """TODO: document"""
-        collection = TypeModel.COLLECTION
+        collection = CmdbType.COLLECTION
         all_types: list[dict] = []
 
         all_types = self.dbm.find_all(collection)

@@ -17,7 +17,7 @@
 import logging
 
 from cmdb.models.category_model.category import CategoryModel
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.updater.updater import Updater
 
 from cmdb.errors.manager.object_manager import ObjectManagerInsertError
@@ -85,10 +85,10 @@ class Update20200512(Updater):
             Do not use type_instance.category_id here - doesnt exists anymore
         """
         return [type.get('public_id') for type in
-                self.dbm.find_all(collection=TypeModel.COLLECTION,
+                self.dbm.find_all(collection=CmdbType.COLLECTION,
                                                filter={'category_id': category_id})]
 
 
     def __clear_up_types(self):
         """Removes the category_id field from type collection"""
-        self.dbm.unset_update_many(collection=TypeModel.COLLECTION, criteria={}, data='category_id')
+        self.dbm.unset_update_many(collection=CmdbType.COLLECTION, criteria={}, data='category_id')

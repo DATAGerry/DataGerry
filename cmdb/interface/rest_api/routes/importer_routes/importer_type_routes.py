@@ -24,7 +24,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import TypesManager
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.interface.rest_api.routes.importer_routes.import_routes import importer_blueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
@@ -57,7 +57,7 @@ def add_type(request_user: UserModel):
             LOGGER.error(e)
             return abort(400)
         try:
-            type_instance = TypeModel.from_data(new_type_data)
+            type_instance = CmdbType.from_data(new_type_data)
             types_manager.insert_type(type_instance)
         except (ManagerInsertError, Exception) as err:
             #TODO: ERROR-FIX
@@ -80,7 +80,7 @@ def update_type(request_user: UserModel):
 
     for add_data_dump in data_dump:
         try:
-            update_type_instance = TypeModel.from_data(add_data_dump)
+            update_type_instance = CmdbType.from_data(add_data_dump)
         except Exception:
             #TODO: ERROR-FIX
             return abort(400)

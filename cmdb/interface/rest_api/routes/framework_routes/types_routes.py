@@ -28,7 +28,7 @@ from cmdb.manager import (
 )
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.framework.results import IterationResult
@@ -64,13 +64,13 @@ types_blueprint = APIBlueprint('types', __name__)
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.add')
-@types_blueprint.validate(TypeModel.SCHEMA)
+@types_blueprint.validate(CmdbType.SCHEMA)
 def insert_type(data: dict, request_user: UserModel):
     """
     HTTP `POST` route for insert a single type resource
 
     Args:
-        data (TypeModel.SCHEMA): Insert data of a new type
+        data (CmdbType.SCHEMA): Insert data of a new type
 
     Raises:
         ManagerGetError: If the inserted resource could not be found after inserting
@@ -99,10 +99,10 @@ def insert_type(data: dict, request_user: UserModel):
         #TODO: ERROR-FIX
         return abort(404, "Can not retrieve the created Type from the database!")
     except ManagerInsertError as err:
-        LOGGER.debug("[insert_type] ManagerInsertError: %s", err.message)
+        LOGGER.error("[insert_type] ManagerInsertError: %s", err.message)
         return abort(400, "The Type could not be inserted!")
 
-    api_response = InsertSingleResponse(result_id=result_id, raw=TypeModel.to_json(raw_doc))
+    api_response = InsertSingleResponse(result_id=result_id, raw=CmdbType.to_json(raw_doc))
 
     return api_response.make_response()
 
@@ -121,7 +121,7 @@ def get_types(params: TypeIterationParameters, request_user: UserModel):
         params (CollectionParameters): Passed parameters over the http query string
 
     Returns:
-        GetMultiResponse: Which includes a IterationResult of the TypeModel.
+        GetMultiResponse: Which includes a IterationResult of the CmdbType.
 
     Example:
         You can pass any parameter based on the CollectionParameters.
@@ -146,9 +146,9 @@ def get_types(params: TypeIterationParameters, request_user: UserModel):
     builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
     try:
-        iteration_result: IterationResult[TypeModel] = types_manager.iterate(builder_params)
+        iteration_result: IterationResult[CmdbType] = types_manager.iterate(builder_params)
 
-        types = [TypeModel.to_json(type) for type in iteration_result.results]
+        types = [CmdbType.to_json(type) for type in iteration_result.results]
 
         api_response = GetMultiResponse(types,
                                         total=iteration_result.total,
@@ -180,7 +180,7 @@ def get_type(public_id: int, request_user: UserModel):
         ManagerGetError: When the selected type does not exists.
 
     Returns:
-        GetSingleResponse: Which includes the json data of a TypeModel.
+        GetSingleResponse: Which includes the json data of a CmdbType.
     """
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
@@ -188,7 +188,7 @@ def get_type(public_id: int, request_user: UserModel):
         type_ = types_manager.get_type(public_id)
     except ManagerGetError:
         return abort(404)
-    api_response = GetSingleResponse(TypeModel.to_json(type_), body=request.method == 'HEAD')
+    api_response = GetSingleResponse(CmdbType.to_json(type_), body=request.method == 'HEAD')
 
     return api_response.make_response()
 
@@ -223,14 +223,14 @@ def count_objects_of_type(public_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.edit')
-@types_blueprint.validate(TypeModel.SCHEMA)
+@types_blueprint.validate(CmdbType.SCHEMA)
 def update_type(public_id: int, data: dict, request_user: UserModel):
     """
     HTTP `PUT`/`PATCH` route for update a single type resource.
 
     Args:
         public_id (int): Public ID of the updatable type
-        data (TypeModel.SCHEMA): New type data to update
+        data (CmdbType.SCHEMA): New type data to update
 
     Raises:
         ManagerGetError: When the type with the `public_id` was not found.
@@ -247,19 +247,19 @@ def update_type(public_id: int, data: dict, request_user: UserModel):
         unchanged_type = types_manager.get_type(public_id)
         data['last_edit_time'] = datetime.now(timezone.utc)
 
-        type_ = TypeModel.from_data(data)
+        type_ = CmdbType.from_data(data)
 
-        types_manager.update_type(public_id, TypeModel.to_json(type_))
+        types_manager.update_type(public_id, CmdbType.to_json(type_))
         api_response = UpdateSingleResponse(result=data)
     except ManagerGetError as err:
-        LOGGER.warning("[update_type] ManagerGetError: %s", err.message)
+        LOGGER.error("[update_type] ManagerGetError: %s", err.message)
         #TODO: ERROR-FIX
         return abort(404, "Could not retrieve the Type which should be updated!")
     except ManagerUpdateError as err:
-        LOGGER.warning("[update_type] ManagerUpdateError: %s", err.message)
+        LOGGER.error("[update_type] ManagerUpdateError: %s", err.message)
         return abort(400, f"Type with public_id: {public_id} could not be updated!")
     except Exception as err:
-        LOGGER.warning("[update_type] Update Type Exception: %s", err)
+        LOGGER.error("[update_type] Update Type Exception: %s", err)
         return abort(500, f"Type with public_id: {public_id} could not be updated!")
 
     # when types are updated, update all locations with relevant data from this type
@@ -331,14 +331,14 @@ def delete_type(public_id: int, request_user: UserModel):
 
         deleted_type = types_manager.delete_type(public_id)
 
-        api_response = DeleteSingleResponse(raw=TypeModel.to_json(deleted_type))
+        api_response = DeleteSingleResponse(raw=CmdbType.to_json(deleted_type))
     except ManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_type] ManagerGetError: %s", err.message)
+        LOGGER.error("[delete_type] ManagerGetError: %s", err.message)
         return abort(404)
     except Exception as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_type] Exception: %s", err)
+        LOGGER.error("[delete_type] Exception: %s", err)
         return abort(400)
 
     return api_response.make_response()

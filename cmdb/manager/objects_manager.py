@@ -28,7 +28,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.acl.helpers import verify_access
 from cmdb.security.acl.permission import AccessControlPermission
@@ -247,7 +247,7 @@ class ObjectsManager(BaseManager):
         return ack
 
 
-    def get_object_type(self, type_id: int) -> TypeModel:
+    def get_object_type(self, type_id: int) -> CmdbType:
         """
         Retrieves the CmdbType for the given public_id of the CmdbType
 
@@ -258,11 +258,11 @@ class ObjectsManager(BaseManager):
             ObjectManagerGetError: When CmdbType could not be retrieved
 
         Returns:
-            TypeModel: CmdbType with the given type_id
+            CmdbType: CmdbType with the given type_id
         """
         try:
-            requested_type = self.get_one_from_other_collection(TypeModel.COLLECTION, type_id)
-            requested_type = TypeModel.from_data(requested_type)
+            requested_type = self.get_one_from_other_collection(CmdbType.COLLECTION, type_id)
+            requested_type = CmdbType.from_data(requested_type)
         except Exception as err:
             LOGGER.debug("[get_object_type] Error: %s, Type: %s", err, type(err))
             raise ObjectManagerGetError(f"Error while retrieving type with ID: {type_id}. Error: {err}") from err
@@ -366,7 +366,7 @@ class ObjectsManager(BaseManager):
         # query.append({'$sort': {sort: order}})
 
         try:
-            results = list(self.aggregate_from_other_collection(TypeModel.COLLECTION, query))
+            results = list(self.aggregate_from_other_collection(CmdbType.COLLECTION, query))
         except ManagerIterationError as err:
             #TODO: ERROR-FIX
             LOGGER.debug("[get_mds_references_for_object] aggregation error: %s", err.message)

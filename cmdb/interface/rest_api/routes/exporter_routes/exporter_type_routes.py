@@ -25,7 +25,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import TypesManager
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.blueprints import RootBlueprint
@@ -48,7 +48,7 @@ def export_type(request_user: UserModel):
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
     try:
-        type_list = [TypeModel.to_json(type) for type in types_manager.get_all_types()]
+        type_list = [CmdbType.to_json(type) for type in types_manager.get_all_types()]
         resp = json.dumps(type_list, default=default, indent=2)
     except TypeNotFoundError:
         #TODO: ERROR-FIX
@@ -88,7 +88,7 @@ def export_type_by_ids(public_ids, request_user: UserModel):
                     query_list.append({key: int(v)})
                 except (ValueError, TypeError):
                     return abort(400)
-        type_list_data = json.dumps([TypeModel.to_json(type_) for type_ in
+        type_list_data = json.dumps([CmdbType.to_json(type_) for type_ in
                                     types_manager.get_types_by(sort="public_id", **{'$or': query_list})],
                                     default=default, indent=2)
     except TypeNotFoundError:

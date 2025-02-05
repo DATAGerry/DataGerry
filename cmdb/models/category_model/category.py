@@ -17,7 +17,7 @@
 import logging
 from typing import Union
 
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.category_model.category_meta import CategoryMeta
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -87,7 +87,7 @@ class CategoryModel(CmdbDAO):
                  label: str = None,
                  meta: CategoryMeta = None,
                  parent: int = None,
-                 types: Union[list[int], list[TypeModel]] = None):
+                 types: Union[list[int], list[CmdbType]] = None):
         """TODO: document"""
         self.name: str = name
         self.label: str = label
@@ -97,7 +97,7 @@ class CategoryModel(CmdbDAO):
             raise ValueError(f'Category {name} has his own ID as Parent')
 
         self.parent: int = parent
-        self.types: Union[list[int], list[TypeModel]] = types or []
+        self.types: Union[list[int], list[CmdbType]] = types or []
         super().__init__(public_id=public_id)
 
 
@@ -168,7 +168,7 @@ class CategoryModel(CmdbDAO):
         return self.get_number_of_types() > 0
 
 
-    def get_types(self) -> Union[list[int], list[TypeModel]]:
+    def get_types(self) -> Union[list[int], list[CmdbType]]:
         """Get list of type ids in this category"""
         if not self.types:
             self.types = []

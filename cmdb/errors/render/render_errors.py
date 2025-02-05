@@ -39,7 +39,7 @@ class ObjectInstanceError(RenderError):
 
 class TypeInstanceError(RenderError):
     """
-    Raised when the passed object is not an instance of TypeModel
+    Raised when the passed object is not an instance of CmdbType
     """
     def __init__(self):
         self.message = "Not an instance of CmdbObject!"

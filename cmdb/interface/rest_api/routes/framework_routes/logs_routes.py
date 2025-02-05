@@ -269,10 +269,13 @@ def delete_log(public_id: int, request_user: UserModel):
 
     try:
         deleted = logs_manager.delete({'public_id':public_id})
+
+        api_response = DefaultResponse(deleted)
+
+        return api_response.make_response()
     except ManagerDeleteError as err:
-        LOGGER.debug("[delete_log] ManagerDeleteError: %s", err.message)
+        LOGGER.error("[delete_log] %s", err.message)
         return abort(400, f"Could not delete the log with the ID:{public_id}!")
-
-    api_response = DefaultResponse(deleted)
-
-    return api_response.make_response(deleted)
+    except Exception as err:
+        LOGGER.debug("[delete_log] Exception: %s. Type: %s", err, type(err))
+        return abort(500, f"Could not delete the log with the ID:{public_id}!")

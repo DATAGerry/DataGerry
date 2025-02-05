@@ -26,8 +26,10 @@ from cmdb.manager.objects_manager import ObjectsManager #TODO: CYCLIC-IMPORT-FIX
 from cmdb.manager import BaseManager
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.type_model.type import TypeModel
-from cmdb.models.type_model.type_field_section import TypeFieldSection
+from cmdb.models.type_model import (
+    CmdbType,
+    TypeFieldSection,
+)
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.framework.results import IterationResult, ListResult
@@ -179,7 +181,7 @@ class SectionTemplatesManager(BaseManager):
         counts['types'] = len(found_types.results)
         objects_count: int = 0
 
-        a_type: TypeModel
+        a_type: CmdbType
         for a_type in found_types.results:
             objects: list = self.objects_manager.get_objects_by(type_id=a_type.public_id)
             objects_count += len(objects)
@@ -209,7 +211,7 @@ class SectionTemplatesManager(BaseManager):
 
         types_to_change = self.get_types_using_template(new_params['name'])
 
-        a_type: TypeModel
+        a_type: CmdbType
         for a_type in types_to_change:
 
             to_change_global_section: TypeFieldSection = a_type.get_section(new_params['name'])
@@ -383,7 +385,7 @@ class SectionTemplatesManager(BaseManager):
         Sets all new fields on every object
 
         Args:
-            type_id (int): ID of the TypeModel
+            type_id (int): ID of the CmdbType
             new_field_names (list[str]): List of names of new fields
         """
         section_objects: list = self.objects_manager.get_objects_by(type_id=type_id)
@@ -409,7 +411,7 @@ class SectionTemplatesManager(BaseManager):
         """
         found_types: ListResult = self.get_types_using_template(template_name)
 
-        a_type: TypeModel
+        a_type: CmdbType
         for a_type in found_types:
             #remove the template_name from the type
             a_type.global_template_ids.remove(template_name)

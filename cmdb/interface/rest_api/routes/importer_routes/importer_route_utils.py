@@ -27,7 +27,7 @@ from cmdb.manager import TypesManager
 
 from cmdb.framework.importer.helper.importer_helper import load_parser_class
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.security import AccessDeniedError
@@ -70,7 +70,7 @@ def generate_parsed_output(request_file, file_format, parser_config):
     return output
 
 
-def verify_import_access(user: UserModel, _type: TypeModel, types_manager: TypesManager):
+def verify_import_access(user: UserModel, _type: CmdbType, types_manager: TypesManager):
     """Validate if a user has access to objects of this type."""
 
     location = 'acl.groups.includes.' + str(user.group_id)
@@ -98,5 +98,5 @@ def verify_import_access(user: UserModel, _type: TypeModel, types_manager: Types
 
     types_ = types_manager.iterate(builder_params)
 
-    if len([TypeModel.to_json(_) for _ in types_.results]) == 0:
+    if len([CmdbType.to_json(_) for _ in types_.results]) == 0:
         raise AccessDeniedError(f'The objects of the type `{_type.name}` are protected by ACL permission!')

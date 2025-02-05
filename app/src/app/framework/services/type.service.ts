@@ -434,7 +434,7 @@ export class TypeService<T = CmdbType> implements ApiServicePrefix {
      * @returns (Observable<number>): Number of objects with the given type_id
      */
     public countTypeObjects(typeID: number): Observable<number> {
-        return this.api.callGet<number>(this.servicePrefix + '/count_objects' + typeID, this.options).pipe(
+        return this.api.callGet<number>(this.servicePrefix + '/count_objects/' + typeID, this.options).pipe(
             map((apiResponse: HttpResponse<number>) => {
                 return apiResponse.body;
             })

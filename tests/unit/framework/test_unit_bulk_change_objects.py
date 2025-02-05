@@ -22,10 +22,13 @@ from pymongo.collection import Collection
 from pytest import fixture
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
-from cmdb.models.type_model.type import TypeModel
-from cmdb.models.type_model.type_summary import TypeSummary
-from cmdb.models.type_model.type_field_section import TypeFieldSection
-from cmdb.models.type_model.type_render_meta import TypeRenderMeta
+from cmdb.models.type_model import (
+    CmdbType,
+    TypeFieldSection,
+    TypeSummary,
+    TypeRenderMeta,
+)
+
 from cmdb.security.acl.control import AccessControlList
 from cmdb.security.acl.group_acl import GroupACL
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -33,7 +36,7 @@ from cmdb.security.acl.group_acl import GroupACL
 @fixture(scope='module', name="example_type")
 def fixture_example_type():
     """TODO: document"""
-    return TypeModel(
+    return CmdbType(
         public_id=1, name='test', label='Test', author_id=1, creation_time=datetime.now(),
         active=True, version=None, description='Test type',
         render_meta=TypeRenderMeta(
@@ -95,14 +98,14 @@ def fixture_change_object() -> dict:
 def fixture_collection(connector, database_name):
     """TODO: document"""
     client: MongoClient = connector.client
-    collection: Collection = client.get_database(database_name).get_collection(TypeModel.COLLECTION)
+    collection: Collection = client.get_database(database_name).get_collection(CmdbType.COLLECTION)
     return collection
 
 
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
     """TODO: document"""
-    collection.insert_one(document=TypeModel.to_json(example_type))
+    collection.insert_one(document=CmdbType.to_json(example_type))
 
     def drop_collection():
         collection.drop()

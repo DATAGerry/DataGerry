@@ -469,13 +469,15 @@ class MongoDatabaseManager:
         """
         try:
             cursor_result = self.find(collection, limit=1, *args, **kwargs)
+
+            for result in cursor_result.limit(-1):
+                return result
+
         except Exception as err:
             raise DocumentGetError(collection, str(err)) from err
 
-        for result in cursor_result.limit(-1):
-            return result
-
-        raise NoDocumentFound(collection)
+        # No document was found
+        return None
 
 
     def find_one(self, collection: str, public_id: int, *args, **kwargs):

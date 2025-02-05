@@ -18,7 +18,7 @@ import logging
 
 from cmdb.security.acl.control import AccessControlList
 from cmdb.security.acl.permission import AccessControlPermission
-from cmdb.models.type_model.type import TypeModel
+from cmdb.models.type_model import CmdbType
 from cmdb.models.user_model.user import UserModel
 
 from cmdb.errors.security import AccessDeniedError
@@ -28,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def has_access_control(model: TypeModel, user: UserModel, permission: AccessControlPermission) -> bool:
+def has_access_control(model: CmdbType, user: UserModel, permission: AccessControlPermission) -> bool:
     """Check if a user has access to object/objects for a given permission"""
     acl: AccessControlList = model.acl
 
@@ -38,7 +38,7 @@ def has_access_control(model: TypeModel, user: UserModel, permission: AccessCont
     return True
 
 
-def verify_access(model: TypeModel, user: UserModel = None, permission: AccessControlPermission = None):
+def verify_access(model: CmdbType, user: UserModel = None, permission: AccessControlPermission = None):
     """Validate if a user has access to objects of this type."""
     if not user or not permission:
         return
