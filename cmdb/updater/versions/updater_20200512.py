@@ -16,11 +16,11 @@
 """TODO: document"""
 import logging
 
-from cmdb.models.category_model.category import CategoryModel
+from cmdb.models.category_model import CmdbCategory
 from cmdb.models.type_model import CmdbType
 from cmdb.updater.updater import Updater
 
-from cmdb.errors.manager.object_manager import ObjectManagerInsertError
+from cmdb.errors.manager.objects_manager import ObjectManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -41,27 +41,27 @@ class Update20200512(Updater):
 
     def start_update(self):
         """TODO: document"""
-        collection = CategoryModel.COLLECTION
-        new_categories: list[CategoryModel] = []
+        collection = CmdbCategory.COLLECTION
+        new_categories: list[CmdbCategory] = []
         raw_categories_old_structure: list[dict] = self.dbm.find_all(collection=collection,
                                                                                   filter={})
         for idx, old_raw_category in enumerate(raw_categories_old_structure):
             new_categories.append(self.__convert_category_to_new_structure(old_raw_category, index=idx))
 
-        self.dbm.delete_collection(collection=CategoryModel.COLLECTION)
-        self.dbm.create_collection(CategoryModel.COLLECTION)
-        self.dbm.create_indexes(CategoryModel.COLLECTION, CategoryModel.get_index_keys())
+        self.dbm.delete_collection(collection=CmdbCategory.COLLECTION)
+        self.dbm.create_collection(CmdbCategory.COLLECTION)
+        self.dbm.create_indexes(CmdbCategory.COLLECTION, CmdbCategory.get_index_keys())
 
         for category in new_categories:
             try:
-                self.categories_manager.insert_category(CategoryModel.to_json(category))
+                self.categories_manager.insert_category(CmdbCategory.to_json(category))
             except ObjectManagerInsertError:
                 continue
         self.__clear_up_types()
         super().increase_updater_version(20200512)
 
 
-    def __convert_category_to_new_structure(self, old_raw_category: dict, index: int) -> CategoryModel:
+    def __convert_category_to_new_structure(self, old_raw_category: dict, index: int) -> CmdbCategory:
         """Converts a category from old < 20200512 structure to new format """
         old_raw_category['meta'] = {
             'icon': old_raw_category.get('icon', None),
@@ -73,7 +73,7 @@ class Update20200512(Updater):
             parent = None
 
         old_raw_category['parent'] = parent
-        category = CategoryModel.from_data(old_raw_category)
+        category = CmdbCategory.from_data(old_raw_category)
         category.types = self.__get_types_in_category(old_raw_category.get('public_id'))
 
         return category

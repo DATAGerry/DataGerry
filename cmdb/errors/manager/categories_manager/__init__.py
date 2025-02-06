@@ -14,17 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the MediaFilesManager
+This module provides all errors for the CategoriesManager
 """
-from .media_file_manager_errors import MediaFileManagerGetError,\
-                                       MediaFileManagerInsertError,\
-                                       MediaFileManagerUpdateError,\
-                                       MediaFileManagerDeleteError
+from .categories_manager_errors import (
+    CategoriesManagerError,
+    CategoriesManagerInsertError,
+    CategoriesManagerGetError,
+    CategoriesManagerUpdateError,
+    CategoriesManagerDeleteError,
+    CategoriesManagerIterationError,
+    CategoriesManagerTreeInitError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'MediaFileManagerGetError',
-    'MediaFileManagerInsertError',
-    'MediaFileManagerUpdateError',
-    'MediaFileManagerDeleteError',
+    'CategoriesManagerError',
+    'CategoriesManagerInsertError',
+    'CategoriesManagerGetError',
+    'CategoriesManagerUpdateError',
+    'CategoriesManagerDeleteError',
+    'CategoriesManagerIterationError',
+    'CategoriesManagerTreeInitError',
 ]

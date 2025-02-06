@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Definition of all routes for CmdbSectionTemplates"""
+"""
+Implementation of all API routes for CmdbCategories
+"""
 import logging
 from datetime import datetime, timezone
 from flask import request, abort
@@ -23,8 +25,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import CategoriesManager
 
 from cmdb.models.user_model.user import UserModel
-from cmdb.models.category_model.category import CategoryModel
-from cmdb.models.category_model.category_tree import CategoryTree
+from cmdb.models.category_model import CmdbCategory, CategoryTree
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -38,12 +39,13 @@ from cmdb.interface.rest_api.responses import (
     GetSingleResponse,
 )
 
-from cmdb.errors.manager import (
-    ManagerGetError,
-    ManagerInsertError,
-    ManagerDeleteError,
-    ManagerUpdateError,
-    ManagerIterationError,
+from cmdb.errors.manager.categories_manager import (
+    CategoriesManagerInsertError,
+    CategoriesManagerGetError,
+    CategoriesManagerUpdateError,
+    CategoriesManagerDeleteError,
+    CategoriesManagerIterationError,
+    CategoriesManagerTreeInitError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -57,39 +59,40 @@ categories_blueprint = APIBlueprint('categories', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.add')
-@categories_blueprint.validate(CategoryModel.SCHEMA)
+@categories_blueprint.validate(CmdbCategory.SCHEMA)
 def insert_category(data: dict, request_user: UserModel):
     """
-    HTTP `POST` route for insert a category into the database
+    HTTP `POST` route to insert a CmdbCategory into the database
 
     Args:
-        data (CategoryModel.SCHEMA): Insert data of a new category
-
-    Raises:
-        ManagerGetError: If the inserted resource could not be found after inserting.
-        ManagerInsertError: If something went wrong during insertion.
+        `data` (CmdbCategory.SCHEMA): Data of the CmdbCategory which should be inserted
+        `request_user` (UserModel): User requesting this data
 
     Returns:
-        InsertSingleResponse: Insert response with the new category and its public_id.
+        `InsertSingleResponse`: The new CmdbCategory and its public_id
     """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
-
-    data.setdefault('creation_time', datetime.now(timezone.utc))
-
     try:
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
+
+        data.setdefault('creation_time', datetime.now(timezone.utc))
+
         result_id: int = categories_manager.insert_category(data)
 
-        new_category = categories_manager.get_category(result_id)
-    except ManagerGetError as err:
-        LOGGER.debug("[insert_category] ManagerGetError: %s", err.message)
-        return abort(404, "Could not retrieve the created categeory from database!")
-    except ManagerInsertError as err:
-        LOGGER.debug("[insert_category] ManagerInsertError: %s", err.message)
-        return abort(400, "Could not insert the new categeory in database)!")
+        created_category = categories_manager.get_category(result_id)
 
-    api_response = InsertSingleResponse(result_id=result_id, raw=new_category)
+        api_response = InsertSingleResponse(created_category, result_id)
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except CategoriesManagerInsertError as err:
+        LOGGER.error("[insert_category] CategoriesManagerInsertError: %s", err, exc_info=True)
+        return abort(400, "Could not insert the new category in the database!")
+    except CategoriesManagerGetError as err:
+        LOGGER.error("[insert_category] CategoriesManagerGetError: %s", err, exc_info=True)
+        return abort(404, "Could not retrieve the created category from the database!")
+    except Exception as err:
+        LOGGER.error("[insert_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -100,23 +103,21 @@ def insert_category(data: dict, request_user: UserModel):
 @categories_blueprint.parse_collection_parameters(view='list')
 def get_categories(params: CollectionParameters, request_user: UserModel):
     """
-    HTTP `GET`/`HEAD` route for getting a iterable collection of categories
+    HTTP `GET`/`HEAD` route for getting multiple CmdbCategories
 
     Args:
-        params (CollectionParameters): Passed parameters over the http query string + optional `view` parameter.
+        `params` (CollectionParameters): Filter for requested CmdbCategories
+        `request_user` (UserModel): User requesting this data
+
     Returns:
-        GetMultiResponse: Which includes a IterationResult of the CategoryModel.
-        If the view parameter with tree was set the route returns a GetMultiResponse<CategoryTree>.
-    Example:
-        You can pass any parameter based on the CollectionParameters.
-        Optional parameters are passed over the function declaration.
-        The `view` parameter is optional and default `list`, but can be `tree` for the category tree view.
+        GetMultiResponse: All the CmdbCategories matching the CollectionParameters
     """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
-
-    body = request.method == 'HEAD'
-
     try:
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
+
+        body = request.method == 'HEAD'
+
         if params.optional['view'] == 'tree':
             tree: CategoryTree = categories_manager.tree
             api_response = GetMultiResponse(CategoryTree.to_json(tree),
@@ -130,20 +131,26 @@ def get_categories(params: CollectionParameters, request_user: UserModel):
         # if view is not 'tree'
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[CategoryModel] = categories_manager.iterate(builder_params)
+        iteration_result: IterationResult[CmdbCategory] = categories_manager.iterate(builder_params)
 
-        category_list = [CategoryModel.to_json(category) for category in iteration_result.results]
+        category_list = [CmdbCategory.to_json(category) for category in iteration_result.results]
 
         api_response = GetMultiResponse(category_list,
                                         iteration_result.total,
                                         params,
                                         request.url,
                                         body)
-    except ManagerIterationError as err:
-        LOGGER.debug("[get_categories] ManagerIterationError: %s", err.message)
-        return abort(400, "Could not retrieve categories from database!")
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except CategoriesManagerIterationError as err:
+        LOGGER.error("[get_categories] CategoriesManagerIterationError: %s", err, exc_info=True)
+        return abort(400, "Could not retrieve categories from database!")
+    except CategoriesManagerTreeInitError as err:
+        LOGGER.error("[get_categories] CategoriesManagerTreeInitError: %s", err, exc_info=True)
+        return abort(500, "Could not place the categories into a tree structure!")
+    except Exception as err:
+        LOGGER.error("[get_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @categories_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -152,26 +159,31 @@ def get_categories(params: CollectionParameters, request_user: UserModel):
 @categories_blueprint.protect(auth=True, right='base.framework.category.view')
 def get_category(public_id: int, request_user: UserModel):
     """
-    HTTP `GET`/`HEAD` route to retrieve a single category
+    HTTP `GET`/`HEAD` route to retrieve a single CmdbCategory
 
     Args:
-        public_id (int): public_id of the category
-    Raises:
-        ManagerGetError: When the selected category could not be retrieved
+        `public_id` (int): public_id of the CmdbCategory
+        `request_user` (UserModel): User requesting this data
+
     Returns:
-        GetSingleResponse: Which includes the json data of the CategoryModel
+        `GetSingleResponse`: The requested CmdbCategory
     """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
-
     try:
-        category_instance = categories_manager.get_category(public_id)
-    except ManagerGetError as err:
-        LOGGER.debug("[get_category] ManagerGetError: %s", err.message)
-        return abort(404, "Could not retrieve the requested categeory from database!")
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
 
-    api_response = GetSingleResponse(category_instance, body = request.method == 'HEAD')
+        requested_category = categories_manager.get_category(public_id)
 
-    return api_response.make_response()
+        api_response = GetSingleResponse(requested_category, body = request.method == 'HEAD')
+
+        return api_response.make_response()
+    except CategoriesManagerGetError as err:
+        LOGGER.error("[get_category] CategoriesManagerGetError: %s", err, exc_info=True)
+        return abort(404, "Could not retrieve the requested category from the database!")
+    except Exception as err:
+        LOGGER.error("[get_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -179,30 +191,34 @@ def get_category(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.edit')
-@categories_blueprint.validate(CategoryModel.SCHEMA)
+@categories_blueprint.validate(CmdbCategory.SCHEMA)
 def update_category(public_id: int, data: dict, request_user: UserModel):
     """
-    HTTP `PUT`/`PATCH` route to update a single category
+    HTTP `PUT`/`PATCH` route to update a single CmdbCategory
 
     Args:
-        public_id (int): public_id of the category which should be updated
-        data (CategoryModel.SCHEMA): New category data to update
-    Raises:
-        ManagerUpdateError: When something went wrong during the updating
-    Returns:
-        UpdateSingleResponse: With update result of the new updated category
-    """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
+        `public_id` (int): public_id of the CmdbCategory which should be updated
+        `data` (CmdbCategory.SCHEMA): New CmdbCategory data
+        `request_user` (UserModel): User requesting this data
 
+    Returns:
+        `UpdateSingleResponse`: The new data of the CmdbCategory
+    """
     try:
-        category = CategoryModel.from_data(data)
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
+
+        category = CmdbCategory.from_data(data)
 
         categories_manager.update_category(public_id, category)
 
         api_response = UpdateSingleResponse(result=data)
-    except ManagerUpdateError as err:
-        LOGGER.debug("[update_category] ManagerUpdateError: %s", err.message)
-        return abort(400, f"Could not update the categeory with public_id: {public_id}!")
+    except CategoriesManagerUpdateError as err:
+        LOGGER.error("[update_category] CategoriesManagerUpdateError: %s", err, exc_info=True)
+        return abort(400, "Could not update the category!")
+    except Exception as err:
+        LOGGER.error("[update_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
     return api_response.make_response()
 
@@ -214,19 +230,19 @@ def update_category(public_id: int, data: dict, request_user: UserModel):
 @categories_blueprint.protect(auth=True, right='base.framework.category.delete')
 def delete_category(public_id: int, request_user: UserModel):
     """
-    HTTP `DELETE` route to delete a single category
+    HTTP `DELETE` route to delete a single CmdbCategory
 
     Args:
-        public_id (int): public_id of the category which should be deleted
-    Raises:
-        ManagerDeleteError: When something went wrong during the deletion
-        ManagerGetError: When the child categories could not be retrieved
-    Returns:
-        DeleteSingleResponse: Delete result with the deleted category as data
-    """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
+        `public_id` (int): public_id of the CmdbCategory which should be deleted
+        `request_user` (UserModel): User requesting this data
 
+    Returns:
+        `DeleteSingleResponse`: The deleted CmdbCategory data
+    """
     try:
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
+
         category_instance = categories_manager.get_category(public_id)
         categories_manager.delete_category(public_id)
 
@@ -234,11 +250,16 @@ def delete_category(public_id: int, request_user: UserModel):
         categories_manager.reset_children_categories(public_id)
 
         api_response = DeleteSingleResponse(raw=category_instance)
-    except ManagerGetError as err:
-        LOGGER.debug("[delete_category] ManagerGetError: %s", err.message)
-        return abort(404, "Could not retrieve the child categeories from the database!")
-    except ManagerDeleteError as err:
-        LOGGER.debug("[delete_category] ManagerDeleteError: %s", err.message)
-        return abort(400, f"Could not delete the categeory with the ID:{public_id}!")
-
-    return api_response.make_response()
+        return api_response.make_response()
+    except CategoriesManagerDeleteError as err:
+        LOGGER.error("[delete_category] CategoriesManagerDeleteError: %s", err, exc_info=True)
+        return abort(400, f"Could not delete the category with the ID:{public_id}")
+    except CategoriesManagerGetError as err:
+        LOGGER.error("[delete_category] CategoriesManagerGetError: %s", err, exc_info=True)
+        return abort(404, "Could not retrieve a category from the database!")
+    except CategoriesManagerUpdateError as err:
+        LOGGER.error("[update_category] CategoriesManagerUpdateError: %s", err, exc_info=True)
+        return abort(500, "Could not update a child category although the requested category got deleted!")
+    except Exception as err:
+        LOGGER.error("[delete_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")

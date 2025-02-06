@@ -64,6 +64,10 @@ class BaseManager:
         Args:
             data (dict): Data which should be inserted
             skip_public (bool): Skip the public id creation and counter increment
+
+        Raises:
+            ManagerInsertError: When the insertion failed
+
         Returns:
             int: New public_id of inserted document
             None: If anything goes wrong
@@ -144,27 +148,38 @@ class BaseManager:
                                        collection: str,
                                        sort: str = 'public_id',
                                        direction: int = -1,
-                                       limit=0,
+                                       limit: int = 0,
                                        **requirements: dict) -> list[dict]:
-        """Get all documents from the database which have the passing requirements
+        """
+        Get all documents from the database which have the passing requirements
 
         Args:
+            collection (str): The target collection
             sort (str): sort by given key - default public_id
+            direction (int): 1 = ascending, -1 = descending
+            limit (int): limit the amount of 
             **requirements (dict): dictionary of key value pairs
 
+        Raises:
+            ManagerGetError: When documents could not be retrieved
+
         Returns:
-            list: list of all documents
+            list: list of all retrieved documents
         """
-        requirements_filter = {}
-        formatted_sort = [(sort, direction)]
+        try:
+            requirements_filter = {}
+            formatted_sort = [(sort, direction)]
 
-        for k, req in requirements.items():
-            requirements_filter.update({k: req})
+            for k, req in requirements.items():
+                requirements_filter.update({k: req})
 
-        return self.dbm.find_all(collection=collection,
-                                 limit=limit,
-                                 filter=requirements_filter,
-                                 sort=formatted_sort)
+            return self.dbm.find_all(collection=collection,
+                                    limit=limit,
+                                    filter=requirements_filter,
+                                    sort=formatted_sort)
+        except Exception as err:
+            LOGGER.debug("[get_many_from_other_collection] Exception: %s. Type: %s", err, type(err))
+            raise ManagerGetError(str(err)) from err
 
 
     def get(self, *args, **kwargs):
@@ -300,11 +315,12 @@ class BaseManager:
         try:
             return self.dbm.count(collection, *args, **kwargs)
         except Exception as err:
-            LOGGER.debug("[count_documents] Error: %s , Type: %s", err, type(err))
+            LOGGER.debug("[count_documents] Exception: %s , Type: %s", err, type(err))
             raise ManagerGetError(err) from err
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
+    #TODO: ERROR-FIX (keyword before argument)
     def update(self, criteria: dict, data: dict, add_to_set: bool = True, *args, **kwargs):
         """
         Calls MongoDB update operation

@@ -13,12 +13,20 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
-from .cmdb_category import CmdbCategory
-from .category_tree import CategoryTree
+"""
+This module provides all errors for the UsersManager
+"""
+from .users_manager_errors import (
+    UserManagerGetError,
+    UserManagerInsertError,
+    UserManagerUpdateError,
+    UserManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'CmdbCategory',
-    'CategoryTree',
+    'UserManagerGetError',
+    'UserManagerInsertError',
+    'UserManagerUpdateError',
+    'UserManagerDeleteError',
 ]

@@ -17,7 +17,7 @@
 import logging
 
 from cmdb.models.type_model import CmdbType
-from cmdb.models.category_model.category import CategoryModel
+from cmdb.models.category_model.cmdb_category import CmdbCategory
 from cmdb.models.category_model.category_node import CategoryNode
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -30,10 +30,10 @@ class CategoryTree:
     """Base tree holder"""
     MODEL = 'CategoryTree'
 
-    def __init__(self, categories: list[CategoryModel], types: list[CmdbType] = None):
+    def __init__(self, categories: list[CmdbCategory], types: list[CmdbType] = None):
         """TODO: document"""
-        self._categories = categories
-        self._types = types
+        self._categories: list[CmdbCategory] = categories
+        self._types: list[CmdbType] = types
         self._tree: list[CategoryNode] = sorted(self.__create_tree(self._categories, types=self._types),
                                                              key=lambda node: (
                                                              node.get_order() is None, node.get_order()))
@@ -44,7 +44,7 @@ class CategoryTree:
         return len(self._tree)
 
 
-    def flat(self) -> list[CategoryModel]:
+    def flat(self) -> list[CmdbCategory]:
         """Returns a flatted tree with tree like category order"""
         flatted = []
         for node in self.tree:
@@ -82,7 +82,7 @@ class CategoryTree:
     @classmethod
     def from_data(cls, raw_categories: list[dict]) -> "CategoryTree":
         """Create the category list from raw data"""
-        categories: list[CategoryModel] = [CategoryModel.from_data(category) for category in raw_categories]
+        categories: list[CmdbCategory] = [CmdbCategory.from_data(category) for category in raw_categories]
         return cls(categories=categories)
 
 

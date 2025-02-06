@@ -64,7 +64,7 @@ from cmdb.interface.rest_api.responses.response_parameters.collection_parameters
 
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.manager import ManagerGetError, ManagerUpdateError, ManagerInsertError, ManagerIterationError
-from cmdb.errors.manager.object_manager import (
+from cmdb.errors.manager.objects_manager import (
     ObjectManagerGetError,
     ObjectManagerUpdateError,
     ObjectManagerDeleteError,

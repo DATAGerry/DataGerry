@@ -23,7 +23,7 @@ from dateutil.parser import parse
 
 from cmdb.models.cmdb_dao import CmdbDAO
 
-from cmdb.errors.manager.object_manager import TypeNotSetError
+from cmdb.errors.manager.objects_manager import TypeNotSetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

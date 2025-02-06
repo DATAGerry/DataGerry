@@ -14,17 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the UsersManager
+This module provides all errors for the ObjectLinksManager
 """
-from .user_manager_errors import UserManagerGetError,\
-                                 UserManagerInsertError,\
-                                 UserManagerUpdateError,\
-                                 UserManagerDeleteError
+from .object_links_manager_errors import (
+    ObjectLinksManagerInsertError,
+    ObjectLinksManagerGetError,
+    ObjectLinksManagerGetObjectError,
+    ObjectLinksManagerIterationError,
+    ObjectLinksManagerDeleteError,
+)
+
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'UserManagerGetError',
-    'UserManagerInsertError',
-    'UserManagerUpdateError',
-    'UserManagerDeleteError',
+    'ObjectLinksManagerInsertError',
+    'ObjectLinksManagerGetError',
+    'ObjectLinksManagerGetObjectError',
+    'ObjectLinksManagerIterationError',
+    'ObjectLinksManagerDeleteError',
 ]

@@ -17,6 +17,8 @@
 import logging
 from typing import Union
 
+from cmdb.class_schema.cmdb_category_schema import get_cmdb_category_schema
+
 from cmdb.models.type_model import CmdbType
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.category_model.category_meta import CategoryMeta
@@ -25,53 +27,14 @@ from cmdb.models.category_model.category_meta import CategoryMeta
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                 CategoryModel - CLASS                                                #
+#                                                 CmdbCategory - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
-class CategoryModel(CmdbDAO):
+class CmdbCategory(CmdbDAO):
     """TODO: document"""
 
     COLLECTION = 'framework.categories'
     MODEL = 'Category'
-    SCHEMA: dict = {
-        'public_id': {
-            'type': 'integer'
-        },
-        'name': {
-            'type': 'string',
-            'required': True,
-            'regex': r'(\w+)-*(\w)([\w-]*)'  # kebab case validation,
-        },
-        'label': {
-            'type': 'string',
-            'required': False
-        },
-        'parent': {
-            'type': 'integer',
-            'nullable': True,
-            'default': None
-        },
-        'types': {
-            'type': 'list',
-            'default': []
-        },
-        'meta': {
-            'type': 'dict',
-            'schema': {
-                'icon': {
-                    'type': 'string',
-                    'empty': True
-                },
-                'order': {
-                    'type': 'integer',
-                    'nullable': True
-                }
-            },
-            'default': {
-                'icon': '',
-                'order': None,
-            }
-        }
-    }
+    SCHEMA: dict = get_cmdb_category_schema()
 
     INDEX_KEYS = [
         {'keys': [('name', CmdbDAO.DAO_ASCENDING)], 'name': 'name', 'unique': True},
@@ -102,7 +65,7 @@ class CategoryModel(CmdbDAO):
 
 
     @classmethod
-    def from_data(cls, data: dict) -> "CategoryModel":
+    def from_data(cls, data: dict) -> "CmdbCategory":
         """Create a instance of a category from database"""
         raw_meta: dict = data.get('meta', None)
 
@@ -117,7 +80,7 @@ class CategoryModel(CmdbDAO):
 
 
     @classmethod
-    def to_json(cls, instance: "CategoryModel") -> dict:
+    def to_json(cls, instance: "CmdbCategory") -> dict:
         """Convert a category instance to json conform data"""
         meta = instance.get_meta()
 

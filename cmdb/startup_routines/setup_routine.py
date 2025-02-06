@@ -38,7 +38,7 @@ from cmdb.models.user_management_constants import (
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
 from cmdb.errors.database import ServerTimeoutError, DatabaseNotExists, DatabaseAlreadyExists
-from cmdb.errors.manager.user_manager import UserManagerInsertError
+from cmdb.errors.manager.users_manager import UserManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

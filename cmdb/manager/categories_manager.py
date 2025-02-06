@@ -13,17 +13,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""This module contains the implementation of the CategoriesManager"""
+"""
+This module contains the implementation of the CategoriesManager
+"""
 import logging
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
-from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
 
-from cmdb.models.category_model.category import CategoryModel
-from cmdb.models.category_model.category_tree import CategoryTree
+from cmdb.models.category_model import CmdbCategory, CategoryTree
 from cmdb.models.user_model.user import UserModel
+from cmdb.models.type_model import CmdbType
+
 from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
@@ -34,6 +36,14 @@ from cmdb.errors.manager import (
     ManagerUpdateError,
     ManagerDeleteError,
 )
+from cmdb.errors.manager.categories_manager import (
+    CategoriesManagerInsertError,
+    CategoriesManagerGetError,
+    CategoriesManagerUpdateError,
+    CategoriesManagerDeleteError,
+    CategoriesManagerIterationError,
+    CategoriesManagerTreeInitError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -43,167 +53,234 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class CategoriesManager(BaseManager):
     """
-    The CategoriesManager handles the interaction between the Categories-API and the Database
+    The CategoriesManager handles the interaction between the CmdbCategories-API and the database
     Extends: BaseManager
-    Depends: TypesManager
     """
-
     def __init__(self, dbm: MongoDatabaseManager, database:str = None):
         """
         Set the database connection and the queue for sending events
 
         Args:
-            database_manager (MongoDatabaseManager): Active database managers instance.
+            `dbm` (MongoDatabaseManager): Active database managers instance
+            `database` (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
         if database:
             dbm.connector.set_database(database)
 
-        self.types_manager = TypesManager(dbm)
-        super().__init__(CategoryModel.COLLECTION, dbm)
+        super().__init__(CmdbCategory.COLLECTION, dbm)
 
 
     @property
     def tree(self) -> CategoryTree:
         """
-        Get the complete category list as nested tree.
+        Get the CmdbCategories as a nested tree
+
+        Raises:
+            `CategoriesManagerTreeInitError`: When the CategoryTree Initialisation failed
 
         Returns:
-            CategoryTree: Categories as tree structure.
+            `CategoryTree`: CmdbCategories as a tree structure
         """
-        # Find all types
-        types = self.types_manager.find_types({}).results
-        build_params = BuilderParameters({})
-        categories = self.iterate(build_params).results
+        try:
 
-        return CategoryTree(categories, types)
+            types = self.get_many_from_other_collection(CmdbType.COLLECTION)
+            cmdb_types: list[CmdbType] = [CmdbType.from_data(a_type) for a_type in types]
+
+            build_params = BuilderParameters({})
+            categories = self.iterate(build_params).results
+
+            category_tree = CategoryTree(categories, cmdb_types)
+        except Exception as err:
+            raise CategoriesManagerTreeInitError(str(err)) from err
+
+        return category_tree
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
     def insert_category(self, category: dict) -> int:
         """
-        Insert a ategory into the database
+        Insert a CmdbCategory into the database
 
         Args:
-            category (dict): Raw data of the category
+            `category` (dict): Raw data of the CmdbCategory
+
+        Raises:
+            `CategoriesManagerInsertError`: When a CmdbCategory could not be inserted into the database
+
         Returns:
-            int: The public_id of the new inserted category
+            `int`: The public_id of the created CmdbCategory
         """
-        if isinstance(category, CategoryModel):
-            category = CategoryModel.to_json(category)
+        #TODO: ERROR-FIX (try-catch block)
+        if isinstance(category, CmdbCategory):
+            category = CmdbCategory.to_json(category)
 
         try:
             ack = self.insert(category)
-        except Exception as error:
-            raise ManagerInsertError(error) from error
+        except ManagerInsertError as err:
+            raise CategoriesManagerInsertError(err) from err
 
         return ack
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-    def get_category(self, public_id: int):
-        """TODO: document"""
+    def get_category(self, public_id: int) -> dict:
+        """
+        Retrieves a CmdbCategory from the database
+
+        Args:
+            `public_id` (int): public_id of the CmdbCategory
+
+        Raises:
+            `CategoriesManagerGetError`: When a CmdbCategory could not be retrieved
+
+        Returns:
+            `dict`: Raw data of the CmdbCategory
+        """
         try:
             return self.get_one(public_id)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            raise ManagerGetError(str(err)) from err
+        except ManagerGetError as err:
+            raise CategoriesManagerGetError(err) from err
 
 
     def iterate(self,
                 builder_params: BuilderParameters,
                 user: UserModel = None,
-                permission: AccessControlPermission = None) -> IterationResult[CategoryModel]:
+                permission: AccessControlPermission = None) -> IterationResult[CmdbCategory]:
         """
-        TODO: document
+        Retrieves multiple CmdbCategories
+
+        Args:
+            `builder_params` (BuilderParameters): Filter for which CmdbCategories should be retrieved
+            `user` (UserModel, optional): CmdbUser requestion this operation. Defaults to None
+            `permission` (AccessControlPermission, optional): Required permission for the operation. Defaults to None
+
+        Raises:
+            `CategoriesManagerIterationError`: When the iteration failed
+            `CategoriesManagerIterationError`: When an unexpected error occured
+
+        Returns:
+            `IterationResult[CmdbCategory]`: All CmdbCategories matching the filter
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            iteration_result: IterationResult[CategoryModel] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CategoryModel)
+            # TODO: ERROR-FIX (catch IterationResult exceptions)
+            iteration_result: IterationResult[CmdbCategory] = IterationResult(aggregation_result, total)
+            iteration_result.convert_to(CmdbCategory)
+        except ManagerIterationError as err:
+            raise CategoriesManagerIterationError(err) from err
         except Exception as err:
-            raise ManagerIterationError(err) from err
+            # TODO: ERROR-FIX (catch IterationResult exceptions)
+            raise CategoriesManagerIterationError(err) from err
 
         return iteration_result
 
 
-    def get_categories_by(self, sort='public_id', **requirements: dict) -> list[CategoryModel]:
-        """Get a list of categories by special requirements"""
-        try:
-            raw_categories = self.get_many_from_other_collection(collection=CategoryModel.COLLECTION,
-                                                                 sort=sort,
-                                                                 **requirements)
-        except Exception as error:
-            #TODO: ERROR-FIX (need category get error)
-            raise ManagerGetError(error) from error
-        try:
-            return [CategoryModel.from_data(category) for category in raw_categories]
-        except Exception as error:
-            #TODO: ERROR-FIX (need category init error)
-            raise ManagerGetError(error) from error
-
-
-    def count_categories(self):
+    def get_categories_by(self, sort='public_id', **requirements: dict) -> list[CmdbCategory]:
         """
-        Returns the number of categories
+        Retrieves a list of CmdbCategories according to the 'requirements'
 
         Args:
-            criteria (dict): Filter for counting documents like {'type_id: 1} 
+            `sort` (str, optional): key be which the results should be sorted. Defaults to 'public_id'
 
         Raises:
-            ObjectManagerGetError: When an error occures during counting objects
+            `CategoriesManagerGetError`: When the CmdbCategories could not be retrieved
+            `CategoriesManagerGetError`: When an Exception occured
 
         Returns:
-            (int): Returns the number of documents with the given criteria
+            `list[CmdbCategory]`: list of CmdbCategories match the requirements
+        """
+        try:
+            raw_categories = self.get_many_from_other_collection(collection=CmdbCategory.COLLECTION,
+                                                                 sort=sort,
+                                                                 **requirements)
+
+            return [CmdbCategory.from_data(category) for category in raw_categories]
+        except ManagerGetError as err:
+            raise CategoriesManagerGetError(err) from err
+        except Exception as err:
+            #TODO: ERROR-FIX (need CmdbCategory init error)
+            raise CategoriesManagerGetError(err) from err
+
+
+    def count_categories(self) -> int:
+        """
+        Returns the number of CmdbCategories
+
+        Raises:
+            `CategoriesManagerGetError`: When an error occures during counting CmdbCategories
+
+        Returns:
+            `int`: Returns the number of CmdbCategories
         """
         try:
             categories_count = self.count_documents(self.collection)
-        except Exception as err:
-            #TODO: ERROR-FIX (CategoriesManagerGetError)
-            raise ManagerGetError(err) from err
+        except ManagerGetError as err:
+            raise CategoriesManagerGetError(err) from err
 
         return categories_count
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
-    def update_category(self, public_id:int, data: dict):
-        """TODO: document"""
+    def update_category(self, public_id:int, data: dict) -> None:
+        """
+        Updates a CmdbCategory in the database
+
+        Args:
+            `public_id` (int): public_id of the CmdbCategory which should be updated
+            `data` (dict): The data with new values for the CmdbCategory
+
+        Raises:
+            `CategoriesManagerUpdateError`: When the update operation fails
+        """
         try:
-            self.update({'public_id':public_id}, CategoryModel.to_json(data))
-        except Exception as err:
-            #TODO: ERROR-FIX
-            raise ManagerUpdateError(str(err)) from err
+            self.update({'public_id':public_id}, CmdbCategory.to_json(data))
+        except ManagerUpdateError as err:
+            raise CategoriesManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete_category(self, public_id: int):
-        """TODO: document"""
+    def delete_category(self, public_id: int) -> bool:
+        """
+        Deletes a CmdbCategory from the database
+
+        Args:
+            `public_id` (int): public_id of the CmdbCategory which should be deleted
+
+        Raises:
+            `CategoriesManagerDeleteError`: When the delete operation fails
+
+        Returns:
+            `bool`: Status if deletion  was successful
+        """
         try:
             return self.delete({'public_id':public_id})
-        except Exception as err:
-            #TODO: ERROR-FIX
-            raise ManagerDeleteError(str(err)) from err
+        except ManagerDeleteError as err:
+            raise CategoriesManagerDeleteError(err) from err
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
 
     def reset_children_categories(self, public_id: int) -> None:
         """
-        Sets the parent attribute to null for all children of a category
+        Sets the parent attribute to null for all children of a CmdbCategory
 
         Args:
-            public_id (int): public_id of parent category
+            `public_id` (int): public_id of the parent category
+
+        Raises:
+            `CategoriesManagerGetError`: When the child CmdbCategories could not be retrieved
+            `CategoriesManagerUpdateError`: When a child CmdbCategory could not be updated
         """
         try:
             # Get all children
             cursor_result = self.get(filter={'parent': public_id})
 
-            # Update all child categories
+            # Update all child CmdbCategories
             for category in cursor_result:
                 category['parent'] = None
                 category_public_id = category['public_id']
                 self.update({'public_id':category_public_id}, category)
         except ManagerGetError as err:
-            raise ManagerGetError(err) from err
+            raise CategoriesManagerGetError(err) from err
         except ManagerUpdateError as err:
-            LOGGER.debug("[reset_children_categories] ManagerUpdateError: %s", err.message)
-            raise ManagerUpdateError(err) from err
+            raise CategoriesManagerUpdateError(err) from err

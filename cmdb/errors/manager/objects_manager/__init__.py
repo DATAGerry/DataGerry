@@ -16,7 +16,7 @@
 """
 This module provides all errors for the ObjectsManager
 """
-from .object_manager_errors import (
+from .objects_manager_errors import (
     ObjectManagerInsertError,
     ObjectManagerDeleteError,
     ObjectManagerUpdateError,

@@ -56,7 +56,7 @@ from cmdb.errors.security import (
     RequestTimeoutError,
     RequestError,
 )
-from cmdb.errors.manager.user_manager import UserManagerInsertError, UserManagerGetError
+from cmdb.errors.manager.users_manager import UserManagerInsertError, UserManagerGetError
 from cmdb.errors.database import SetDatabaseError
 from cmdb.errors.database.database_errors import DatabaseNotExists
 # -------------------------------------------------------------------------------------------------------------------- #

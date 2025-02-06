@@ -64,8 +64,8 @@ delete:
             description: |
                 Multiple cases are possible:
                 <br>
-                - Server internal error
-                - Object could not be rendered
+                - Internal server error
+                - CmdbObject could not be rendered
             content:
                 application/json:
                     schema:

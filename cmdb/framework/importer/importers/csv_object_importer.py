@@ -30,7 +30,7 @@ from cmdb.framework.importer.responses.csv_object_parser_response import CsvObje
 from cmdb.framework.importer.helper.improve_object import ImproveObject
 from cmdb.framework.importer.responses.importer_object_response import ImporterObjectResponse
 
-from cmdb.errors.manager.object_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectManagerGetError
 from cmdb.errors.importer import ImportRuntimeError, ParserRuntimeError
 # -------------------------------------------------------------------------------------------------------------------- #
 
