@@ -26,7 +26,7 @@ from cmdb.interface.route_utils import user_has_right, parse_authorization_heade
 from cmdb.models.user_model.user import UserModel
 from cmdb.security.token.validator import TokenValidator
 
-from cmdb.errors.manager.user_manager import UserManagerGetError
+from cmdb.errors.manager.users_manager import UserManagerGetError
 from cmdb.errors.security import TokenValidationError
 # -------------------------------------------------------------------------------------------------------------------- #
 

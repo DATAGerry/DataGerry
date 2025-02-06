@@ -31,7 +31,7 @@ from cmdb.security.auth.providers.ldap_auth_config import LdapAuthenticationProv
 
 from cmdb.errors.provider import GroupMappingError, AuthenticationError
 from cmdb.errors.manager import ManagerGetError, ManagerUpdateError
-from cmdb.errors.manager.user_manager import UserManagerGetError, UserManagerInsertError
+from cmdb.errors.manager.users_manager import UserManagerGetError, UserManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

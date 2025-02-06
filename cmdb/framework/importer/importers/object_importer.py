@@ -34,7 +34,7 @@ from cmdb.framework.importer.responses.object_parser_response import ObjectParse
 from cmdb.interface.route_utils import sync_config_items
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.manager.object_manager import ObjectManagerDeleteError,\
+from cmdb.errors.manager.objects_manager import ObjectManagerDeleteError,\
                                                ObjectManagerInsertError,\
                                                ObjectManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #

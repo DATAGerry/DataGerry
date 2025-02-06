@@ -45,7 +45,7 @@ from cmdb.interface.route_utils import (
 )
 from cmdb.interface.rest_api.responses import DefaultResponse, LoginResponse
 
-from cmdb.errors.manager.user_manager import UserManagerInsertError, UserManagerGetError
+from cmdb.errors.manager.users_manager import UserManagerInsertError, UserManagerGetError
 from cmdb.errors.provider import AuthenticationProviderNotActivated, AuthenticationProviderNotFoundError
 from cmdb.errors.security.security_errors import (
     AuthSettingsInitError,

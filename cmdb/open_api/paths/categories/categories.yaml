@@ -53,6 +53,16 @@ post:
                             error:
                                 type: string
                                 example: "Could not retrieve the created CmdbCategory from database"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                    GET CATEGORIES                                                    #
@@ -100,3 +110,17 @@ get:
                             error:
                                 type: string
                                 example: "Could not retrieve CmdbCategories from database"
+        "500":
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Internal server error
+                - Could not initialise CmdbCategories in a tree structure
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"

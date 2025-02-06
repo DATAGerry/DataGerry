@@ -34,7 +34,7 @@ from cmdb.security.acl.helpers import verify_access
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager.object_manager import (
+from cmdb.errors.manager.objects_manager import (
     ObjectManagerGetError,
     ObjectManagerInitError,
     ObjectManagerInsertError,

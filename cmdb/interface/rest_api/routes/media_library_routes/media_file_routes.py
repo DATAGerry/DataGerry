@@ -45,7 +45,7 @@ from cmdb.interface.rest_api.responses import (
     DefaultResponse,
 )
 
-from cmdb.errors.manager.media_file_manager import (
+from cmdb.errors.manager.media_files_manager import (
     MediaFileManagerGetError,
     MediaFileManagerInsertError,
     MediaFileManagerUpdateError,

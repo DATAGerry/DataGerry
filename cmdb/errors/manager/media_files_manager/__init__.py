@@ -14,22 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the ObjectLinksManager
+This module provides all errors for the MediaFilesManager
 """
-from .object_link_manager_errors import (
-    ObjectLinksManagerInsertError,
-    ObjectLinksManagerGetError,
-    ObjectLinksManagerGetObjectError,
-    ObjectLinksManagerIterationError,
-    ObjectLinksManagerDeleteError,
+from .media_files_manager_errors import (
+    MediaFileManagerGetError,
+    MediaFileManagerInsertError,
+    MediaFileManagerUpdateError,
+    MediaFileManagerDeleteError,
 )
-
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ObjectLinksManagerInsertError',
-    'ObjectLinksManagerGetError',
-    'ObjectLinksManagerGetObjectError',
-    'ObjectLinksManagerIterationError',
-    'ObjectLinksManagerDeleteError',
+    'MediaFileManagerGetError',
+    'MediaFileManagerInsertError',
+    'MediaFileManagerUpdateError',
+    'MediaFileManagerDeleteError',
 ]

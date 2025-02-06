@@ -47,7 +47,7 @@ from cmdb.errors.manager import (
     ManagerDeleteError,
     ManagerIterationError,
 )
-from cmdb.errors.manager.user_manager import UserManagerGetError
+from cmdb.errors.manager.users_manager import UserManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

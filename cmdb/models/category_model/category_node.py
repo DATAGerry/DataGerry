@@ -17,7 +17,7 @@
 import logging
 
 from cmdb.models.type_model import CmdbType
-from cmdb.models.category_model.category import CategoryModel
+from cmdb.models.category_model.cmdb_category import CmdbCategory
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -28,9 +28,9 @@ LOGGER = logging.getLogger(__name__)
 class CategoryNode:
     """Class of a category node inside the category tree"""
 
-    def __init__(self, category: CategoryModel, children: list["CategoryNode"] = None,
+    def __init__(self, category: CmdbCategory, children: list["CategoryNode"] = None,
                     types: list[CmdbType] = None):
-        self.category: CategoryModel = category
+        self.category: CmdbCategory = category
         self.node_order: int = self.category.get_meta().get_order()
         self.children: list["CategoryNode"] = sorted(children or [], key=lambda node: (
                                                             node.get_order() is None, node.get_order()))
@@ -43,7 +43,7 @@ class CategoryNode:
     def to_json(cls, instance: "CategoryNode"):
         """Get the node as json"""
         return {
-            'category': CategoryModel.to_json(instance.category),
+            'category': CmdbCategory.to_json(instance.category),
             'node_order': instance.node_order,
             'children': [CategoryNode.to_json(child_node) for child_node in instance.children],
             'types': [CmdbType.to_json(type) for type in instance.types]
@@ -57,7 +57,7 @@ class CategoryNode:
         return self.node_order
 
 
-    def flatten(self) -> list[CategoryModel]:
+    def flatten(self) -> list[CmdbCategory]:
         """Flats a category node and its children"""
         return [self.category] + sum(
             (c.flatten() for c in self.children),

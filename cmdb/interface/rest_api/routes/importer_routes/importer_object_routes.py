@@ -61,7 +61,7 @@ from cmdb.interface.rest_api.routes.importer_routes.importer_route_utils import 
 
 from cmdb.errors.manager import ManagerInsertError
 from cmdb.errors.security import AccessDeniedError
-from cmdb.errors.manager.object_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectManagerGetError
 from cmdb.errors.render import InstanceRenderError
 from cmdb.errors.importer import ImportRuntimeError, ParserRuntimeError, ImporterLoadError, ParserLoadError
 # -------------------------------------------------------------------------------------------------------------------- #

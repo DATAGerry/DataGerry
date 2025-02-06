@@ -30,7 +30,7 @@ from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
 from cmdb.interface.rest_api.responses import DeleteSingleResponse, InsertSingleResponse, GetMultiResponse
 
-from cmdb.errors.manager.object_link_manager import (
+from cmdb.errors.manager.object_links_manager import (
     ObjectLinksManagerInsertError,
     ObjectLinksManagerGetError,
     ObjectLinksManagerGetObjectError,

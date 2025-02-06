@@ -38,6 +38,16 @@ get:
                             error:
                                 type: string
                                 example: "Could not retrive the requested CmdbCategory"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                    UPDATE CATEGORY                                                   #
@@ -85,6 +95,16 @@ put:
                             error:
                                 type: string
                                 example: "Could not update the CmdbCategory"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                    DELETE CATEGORY                                                   #
@@ -127,7 +147,11 @@ delete:
                                 type: string
                                 example: "Could not delete the CmdbCategory"
         "404":
-            description: Could not retrieve the child categeories
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Could not retrieve the target CmdbCategory from the database
+                - Could not retrieve a child CmdbCategory which need to be updated
             content:
                 application/json:
                     schema:
@@ -135,4 +159,18 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve the child categeories"
+                                example: "Could not retrieve a CmdbCategory"
+        "500":
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Internal server error
+                - A child CmdbCategory could not be updated
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"

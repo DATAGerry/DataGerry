@@ -38,8 +38,8 @@ from cmdb.models.type_model import (
 from cmdb.models.user_model.user import UserModel
 
 from cmdb.errors.manager import ManagerGetError
-from cmdb.errors.manager.object_manager import ObjectManagerGetError
-from cmdb.errors.manager.user_manager import UserManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectManagerGetError
+from cmdb.errors.manager.users_manager import UserManagerGetError
 from cmdb.errors.type import TypeReferenceLineFillError, FieldNotFoundError, FieldInitError
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.render import ObjectInstanceError, TypeInstanceError, InstanceRenderError

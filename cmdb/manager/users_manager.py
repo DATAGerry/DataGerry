@@ -29,7 +29,7 @@ from cmdb.errors.manager import ManagerUpdateError,\
                                 ManagerGetError,\
                                 ManagerIterationError,\
                                 ManagerInsertError
-from cmdb.errors.manager.user_manager import UserManagerGetError,\
+from cmdb.errors.manager.users_manager import UserManagerGetError,\
                                              UserManagerInsertError,\
                                              UserManagerDeleteError
 # -------------------------------------------------------------------------------------------------------------------- #

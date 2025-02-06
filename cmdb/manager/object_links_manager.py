@@ -32,7 +32,7 @@ from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerDeleteError
-from cmdb.errors.manager.object_link_manager import (
+from cmdb.errors.manager.object_links_manager import (
     ObjectLinksManagerInsertError,
     ObjectLinksManagerGetError,
     ObjectLinksManagerGetObjectError,
@@ -48,9 +48,8 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class ObjectLinksManager(BaseManager):
     """
-    The ObjectLinksManager handles the interaction between the CmdbObjectLink-API and the Database
+    The ObjectLinksManager handles the interaction between the CmdbObjectLink-API and the database
     Extends: BaseManager
-    Depends: ObjectsManager
     """
 
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):

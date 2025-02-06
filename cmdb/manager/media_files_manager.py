@@ -26,10 +26,12 @@ from cmdb.interface.rest_api.responses import GridFsResponse
 from cmdb.framework.media_library.media_file import MediaFile
 from cmdb.framework.media_library.media_file import FileMetadata
 
-from cmdb.errors.manager.media_file_manager import MediaFileManagerGetError,\
-                                                   MediaFileManagerInsertError,\
-                                                   MediaFileManagerUpdateError,\
-                                                   MediaFileManagerDeleteError
+from cmdb.errors.manager.media_files_manager import (
+    MediaFileManagerGetError,
+    MediaFileManagerInsertError,
+    MediaFileManagerUpdateError,
+    MediaFileManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

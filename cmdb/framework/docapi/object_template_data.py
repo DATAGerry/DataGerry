@@ -21,7 +21,7 @@ from cmdb.manager import ObjectsManager
 from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.framework.docapi.abstract_template_data import AbstractTemplateData
 
-from cmdb.errors.manager.object_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
