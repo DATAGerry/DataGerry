@@ -20,7 +20,7 @@ from flask import current_app
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import SettingsReaderManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.route_utils import insert_request_user, right_required, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import RootBlueprint
@@ -42,7 +42,7 @@ with current_app.app_context():
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 @right_required('base.system.view')
-def get_settings_from_section(section: str, request_user: UserModel):
+def get_settings_from_section(section: str, request_user: CmdbUser):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
@@ -62,7 +62,7 @@ def get_settings_from_section(section: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
-def get_value_from_section(section: str, name: str, request_user: UserModel):
+def get_value_from_section(section: str, name: str, request_user: CmdbUser):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)

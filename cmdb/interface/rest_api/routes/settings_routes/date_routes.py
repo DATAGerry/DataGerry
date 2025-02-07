@@ -24,7 +24,7 @@ from cmdb.manager import (
 )
 
 from cmdb.settings.date_settings import DateSettingsDAO
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
@@ -40,7 +40,7 @@ LOGGER = logging.getLogger(__name__)
 @date_blueprint.route('/', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_date_settings(request_user: UserModel):
+def get_date_settings(request_user: CmdbUser):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                         request_user)
@@ -64,7 +64,7 @@ def get_date_settings(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @date_blueprint.protect(auth=True, right='base.system.edit')
-def update_date_settings(request_user: UserModel):
+def update_date_settings(request_user: CmdbUser):
     """TODO: document"""
     new_auth_settings_values = request.get_json()
 

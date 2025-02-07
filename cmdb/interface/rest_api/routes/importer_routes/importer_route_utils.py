@@ -26,7 +26,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import TypesManager
 
 from cmdb.framework.importer.helper.importer_helper import load_parser_class
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
 from cmdb.security.acl.permission import AccessControlPermission
 
@@ -70,7 +70,7 @@ def generate_parsed_output(request_file, file_format, parser_config):
     return output
 
 
-def verify_import_access(user: UserModel, _type: CmdbType, types_manager: TypesManager):
+def verify_import_access(user: CmdbUser, _type: CmdbType, types_manager: TypesManager):
     """Validate if a user has access to objects of this type."""
 
     location = 'acl.groups.includes.' + str(user.group_id)

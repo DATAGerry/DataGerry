@@ -71,7 +71,7 @@ class CategoriesManagerDeleteError(CategoriesManagerError):
         """
         Raised when CategoriesManager could not delete a CmdbCategory
         """
-        super().__init__(f"CategoriesManagerDeleteError: {err}")
+        super().__init__(err)
 
 
 class CategoriesManagerIterationError(CategoriesManagerError):

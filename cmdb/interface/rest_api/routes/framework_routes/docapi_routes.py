@@ -34,7 +34,7 @@ from cmdb.interface.rest_api.responses import GetMultiResponse, DefaultResponse
 from cmdb.interface.route_utils import insert_request_user, right_required, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import APIBlueprint, RootBlueprint
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.docapi import DocapiGetError, DocapiInsertError, DocapiUpdateError, DocapiDeleteError
 from cmdb.errors.manager import ManagerIterationError, ManagerGetError
@@ -50,7 +50,7 @@ docs_blueprint = APIBlueprint('docs', __name__)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 @right_required('base.docapi.template.add')
-def create_template(request_user: UserModel):
+def create_template(request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                      request_user)
@@ -89,7 +89,7 @@ def create_template(request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @docs_blueprint.protect(auth=True, right='base.docapi.template.view')
 @docs_blueprint.parse_collection_parameters()
-def get_template_list(params: CollectionParameters, request_user: UserModel):
+def get_template_list(params: CollectionParameters, request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                     request_user)
@@ -121,7 +121,7 @@ def get_template_list(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.view')
-def get_template_list_filtered(searchfilter: str, request_user: UserModel):
+def get_template_list_filtered(searchfilter: str, request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                                          request_user)
@@ -149,7 +149,7 @@ def get_template_list_filtered(searchfilter: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.view')
-def get_template(public_id, request_user: UserModel):
+def get_template(public_id, request_user: CmdbUser):
     """
     TODO: document
     """
@@ -173,7 +173,7 @@ def get_template(public_id, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.view')
-def get_template_by_name(name: str, request_user: UserModel):
+def get_template_by_name(name: str, request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                                             request_user)
@@ -196,7 +196,7 @@ def get_template_by_name(name: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.edit')
-def update_template(request_user: UserModel):
+def update_template(request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                                             request_user)
@@ -234,7 +234,7 @@ def update_template(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.docapi.template.delete')
-def delete_template(public_id: int, request_user: UserModel):
+def delete_template(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                                             request_user)
@@ -255,7 +255,7 @@ def delete_template(public_id: int, request_user: UserModel):
 @docapi_blueprint.route('/template/<int:public_id>/render/<int:object_id>', methods=['GET'])
 @insert_request_user
 @right_required('base.framework.object.view')
-def render_object_template(public_id: int, object_id: int, request_user: UserModel):
+def render_object_template(public_id: int, object_id: int, request_user: CmdbUser):
     """TODO: document"""
     docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
                                                                             request_user)

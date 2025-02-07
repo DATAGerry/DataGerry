@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 
 from cmdb.manager import ObjectsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser
 from cmdb.framework.importer.content_types import JSONContent
 from cmdb.framework.importer.importers.object_importer import ObjectImporter
@@ -42,7 +42,7 @@ class JsonObjectImporter(ObjectImporter, JSONContent):
                  config: JsonObjectImporterConfig = None,
                  parser: JsonObjectParser = None,
                  objects_manager: ObjectsManager = None,
-                 request_user: UserModel = None):
+                 request_user: CmdbUser = None):
         super().__init__(
             file=file,
             file_type=self.FILE_TYPE,

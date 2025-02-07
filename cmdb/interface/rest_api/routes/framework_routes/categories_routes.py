@@ -24,7 +24,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import CategoriesManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.category_model import CmdbCategory, CategoryTree
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -60,13 +60,13 @@ categories_blueprint = APIBlueprint('categories', __name__)
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.add')
 @categories_blueprint.validate(CmdbCategory.SCHEMA)
-def insert_category(data: dict, request_user: UserModel):
+def insert_category(data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route to insert a CmdbCategory into the database
 
     Args:
         `data` (CmdbCategory.SCHEMA): Data of the CmdbCategory which should be inserted
-        `request_user` (UserModel): User requesting this data
+        `request_user` (CmdbUser): User requesting this data
 
     Returns:
         `InsertSingleResponse`: The new CmdbCategory and its public_id
@@ -85,10 +85,10 @@ def insert_category(data: dict, request_user: UserModel):
 
         return api_response.make_response()
     except CategoriesManagerInsertError as err:
-        LOGGER.error("[insert_category] CategoriesManagerInsertError: %s", err, exc_info=True)
+        LOGGER.error("[insert_category] %s", err, exc_info=True)
         return abort(400, "Could not insert the new category in the database!")
     except CategoriesManagerGetError as err:
-        LOGGER.error("[insert_category] CategoriesManagerGetError: %s", err, exc_info=True)
+        LOGGER.error("[insert_category] %s", err, exc_info=True)
         return abort(404, "Could not retrieve the created category from the database!")
     except Exception as err:
         LOGGER.error("[insert_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
@@ -101,13 +101,13 @@ def insert_category(data: dict, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.view')
 @categories_blueprint.parse_collection_parameters(view='list')
-def get_categories(params: CollectionParameters, request_user: UserModel):
+def get_categories(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting multiple CmdbCategories
 
     Args:
         `params` (CollectionParameters): Filter for requested CmdbCategories
-        `request_user` (UserModel): User requesting this data
+        `request_user` (CmdbUser): User requesting this data
 
     Returns:
         GetMultiResponse: All the CmdbCategories matching the CollectionParameters
@@ -143,10 +143,10 @@ def get_categories(params: CollectionParameters, request_user: UserModel):
 
         return api_response.make_response()
     except CategoriesManagerIterationError as err:
-        LOGGER.error("[get_categories] CategoriesManagerIterationError: %s", err, exc_info=True)
+        LOGGER.error("[get_categories] %s", err, exc_info=True)
         return abort(400, "Could not retrieve categories from database!")
     except CategoriesManagerTreeInitError as err:
-        LOGGER.error("[get_categories] CategoriesManagerTreeInitError: %s", err, exc_info=True)
+        LOGGER.error("[get_categories] %s", err, exc_info=True)
         return abort(500, "Could not place the categories into a tree structure!")
     except Exception as err:
         LOGGER.error("[get_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
@@ -157,13 +157,13 @@ def get_categories(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.view')
-def get_category(public_id: int, request_user: UserModel):
+def get_category(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbCategory
 
     Args:
         `public_id` (int): public_id of the CmdbCategory
-        `request_user` (UserModel): User requesting this data
+        `request_user` (CmdbUser): User requesting this data
 
     Returns:
         `GetSingleResponse`: The requested CmdbCategory
@@ -178,7 +178,7 @@ def get_category(public_id: int, request_user: UserModel):
 
         return api_response.make_response()
     except CategoriesManagerGetError as err:
-        LOGGER.error("[get_category] CategoriesManagerGetError: %s", err, exc_info=True)
+        LOGGER.error("[get_category] %s", err, exc_info=True)
         return abort(404, "Could not retrieve the requested category from the database!")
     except Exception as err:
         LOGGER.error("[get_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
@@ -192,14 +192,14 @@ def get_category(public_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.edit')
 @categories_blueprint.validate(CmdbCategory.SCHEMA)
-def update_category(public_id: int, data: dict, request_user: UserModel):
+def update_category(public_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update a single CmdbCategory
 
     Args:
         `public_id` (int): public_id of the CmdbCategory which should be updated
         `data` (CmdbCategory.SCHEMA): New CmdbCategory data
-        `request_user` (UserModel): User requesting this data
+        `request_user` (CmdbUser): User requesting this data
 
     Returns:
         `UpdateSingleResponse`: The new data of the CmdbCategory
@@ -214,7 +214,7 @@ def update_category(public_id: int, data: dict, request_user: UserModel):
 
         api_response = UpdateSingleResponse(result=data)
     except CategoriesManagerUpdateError as err:
-        LOGGER.error("[update_category] CategoriesManagerUpdateError: %s", err, exc_info=True)
+        LOGGER.error("[update_category] %s", err, exc_info=True)
         return abort(400, "Could not update the category!")
     except Exception as err:
         LOGGER.error("[update_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
@@ -228,13 +228,13 @@ def update_category(public_id: int, data: dict, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.delete')
-def delete_category(public_id: int, request_user: UserModel):
+def delete_category(public_id: int, request_user: CmdbUser):
     """
     HTTP `DELETE` route to delete a single CmdbCategory
 
     Args:
         `public_id` (int): public_id of the CmdbCategory which should be deleted
-        `request_user` (UserModel): User requesting this data
+        `request_user` (CmdbUser): User requesting this data
 
     Returns:
         `DeleteSingleResponse`: The deleted CmdbCategory data
@@ -252,13 +252,13 @@ def delete_category(public_id: int, request_user: UserModel):
         api_response = DeleteSingleResponse(raw=category_instance)
         return api_response.make_response()
     except CategoriesManagerDeleteError as err:
-        LOGGER.error("[delete_category] CategoriesManagerDeleteError: %s", err, exc_info=True)
+        LOGGER.error("[delete_category] %s", err, exc_info=True)
         return abort(400, f"Could not delete the category with the ID:{public_id}")
     except CategoriesManagerGetError as err:
-        LOGGER.error("[delete_category] CategoriesManagerGetError: %s", err, exc_info=True)
+        LOGGER.error("[delete_category] %s", err, exc_info=True)
         return abort(404, "Could not retrieve a category from the database!")
     except CategoriesManagerUpdateError as err:
-        LOGGER.error("[update_category] CategoriesManagerUpdateError: %s", err, exc_info=True)
+        LOGGER.error("[update_category] %s", err, exc_info=True)
         return abort(500, "Could not update a child category although the requested category got deleted!")
     except Exception as err:
         LOGGER.error("[delete_category] Exception: %s. Type: %s", err, type(err), exc_info=True)

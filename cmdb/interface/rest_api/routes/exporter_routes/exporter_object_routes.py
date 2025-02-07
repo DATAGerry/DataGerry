@@ -25,7 +25,7 @@ from cmdb.interface.rest_api.responses.response_parameters.collection_parameters
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.utils.helpers import load_class
 from cmdb.security.acl.permission import AccessControlPermission
 
@@ -51,7 +51,7 @@ def get_export_file_types():
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @exporter_blueprint.protect(auth=True, right='base.framework.object.view')
-def export_objects(params: CollectionParameters, request_user: UserModel):
+def export_objects(params: CollectionParameters, request_user: CmdbUser):
     """TODO: document"""
     try:
         _config = ExporterConfig(parameters=params, options=params.optional)

@@ -22,7 +22,7 @@ from pymongo.results import DeleteResult
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BaseQueryBuilder, BuilderParameters
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.database import DocumentGetError
@@ -81,13 +81,13 @@ class BaseManager:
 
     def iterate_query(self,
                       builder_params: BuilderParameters,
-                      user: UserModel = None,
+                      user: CmdbUser = None,
                       permission: AccessControlPermission = None):
         """
         Performs an aggregation on the database
         Args:
             builder_params (BuilderParameters): Contains input to identify the target of action
-            user (UserModel, optional): User requesting this action
+            user (CmdbUser, optional): User requesting this action
             permission (AccessControlPermission, optional): Permission which should be checked for the user
         Raises:
             ManagerIterationError: Raised when something goes wrong during the aggregate part
@@ -117,7 +117,7 @@ class BaseManager:
         Calls MongoDB find operation for a single document
 
         Raises:
-            ManagerGetError: When the 'find_one' operation fails
+            `ManagerGetError`: When the 'find_one' operation fails
 
         Returns:
             Cursor over the result set

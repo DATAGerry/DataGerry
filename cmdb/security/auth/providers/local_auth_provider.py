@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@ from cmdb.manager import (
 
 from cmdb.security.auth.base_authentication_provider import BaseAuthenticationProvider
 from cmdb.security.auth.providers.local_auth_config import LocalAuthenticationProviderConfig
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.manager import ManagerGetError
 from cmdb.errors.provider import AuthenticationError
@@ -48,13 +48,13 @@ class LocalAuthenticationProvider(BaseAuthenticationProvider):
                          users_manager=users_manager)
 
 
-    def authenticate(self, user_name: str, password: str) -> UserModel:
+    def authenticate(self, user_name: str, password: str) -> CmdbUser:
         """TODO: document"""
         try:
             if current_app.cloud_mode:
-                user: UserModel = self.users_manager.get_user_by({'email': user_name})
+                user = self.users_manager.get_user_by({'email': user_name})
             else:
-                user: UserModel = self.users_manager.get_user_by({'user_name': user_name})
+                user = self.users_manager.get_user_by({'user_name': user_name})
         except ManagerGetError as err:
             raise AuthenticationError(str(err)) from err
         login_pass = self.security_manager.generate_hmac(password)

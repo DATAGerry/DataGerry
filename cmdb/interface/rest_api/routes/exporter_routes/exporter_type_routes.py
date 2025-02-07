@@ -24,7 +24,7 @@ from cmdb.database.utils import default
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import TypesManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -43,7 +43,7 @@ type_export_blueprint = RootBlueprint('type_export_rest', __name__, url_prefix='
 @type_export_blueprint.route('/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def export_type(request_user: UserModel):
+def export_type(request_user: CmdbUser):
     """TODO: document"""
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
@@ -76,7 +76,7 @@ def export_type(request_user: UserModel):
 @type_export_blueprint.route('/<string:public_ids>', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def export_type_by_ids(public_ids, request_user: UserModel):
+def export_type_by_ids(public_ids, request_user: CmdbUser):
     """TODO: document"""
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 

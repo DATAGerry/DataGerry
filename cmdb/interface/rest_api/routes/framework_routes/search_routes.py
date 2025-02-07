@@ -25,7 +25,7 @@ from cmdb.manager import ObjectsManager
 
 from cmdb.framework.search.search_param import SearchParam
 from cmdb.framework.search.searcher_framework import SearcherFramework
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
@@ -44,7 +44,7 @@ search_blueprint = APIBlueprint('search_rest', __name__, url_prefix='/search')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @search_blueprint.protect(auth=True)
-def quick_search_result_counter(request_user: UserModel):
+def quick_search_result_counter(request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -71,7 +71,7 @@ def quick_search_result_counter(request_user: UserModel):
 @search_blueprint.route('/', methods=['GET', 'POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
-def search_framework(request_user: UserModel):
+def search_framework(request_user: CmdbUser):
     """TODO: document"""
     objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 

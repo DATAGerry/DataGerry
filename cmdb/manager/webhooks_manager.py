@@ -118,7 +118,7 @@ class WebhooksManager(BaseManager):
 
         Args:
             builder_params (BuilderParameters): Contains input to identify the target of action
-            user (UserModel, optional): User requesting this action
+
         Raises:
             ManagerIterationError: Raised when something goes wrong during the aggregate part
             ManagerIterationError: Raised when something goes wrong during the building of the IterationResult

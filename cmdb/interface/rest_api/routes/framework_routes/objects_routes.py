@@ -37,7 +37,7 @@ from cmdb.manager import (
 )
 
 from cmdb.security.acl.permission import AccessControlPermission
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
 from cmdb.models.webhook_model.webhook_event_type_enum import WebhookEventType
 from cmdb.models.location_model.cmdb_location import CmdbLocation
@@ -83,7 +83,7 @@ objects_blueprint = APIBlueprint('objects', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.add')
-def insert_object(request_user: UserModel):
+def insert_object(request_user: CmdbUser):
     """TODO: document"""
     add_data_dump = json.dumps(request.json)
 
@@ -209,7 +209,7 @@ def insert_object(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_object(public_id, request_user: UserModel):
+def get_object(public_id, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -251,13 +251,13 @@ def get_object(public_id, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_objects(params: CollectionParameters, request_user: UserModel):
+def get_objects(params: CollectionParameters, request_user: CmdbUser):
     """
     Retrieves multiple objects from db regarding the used params
 
     Args:
         params (CollectionParameters): Parameters for which objects and how they should be returned
-        request_user (UserModel): User requesting this operation
+        request_user (CmdbUser): User requesting this operation
 
     Returns:
         (Response): The objects from db fitting the params
@@ -319,7 +319,7 @@ def get_objects(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_native_object(public_id: int, request_user: UserModel):
+def get_native_object(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -344,7 +344,7 @@ def get_native_object(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def group_objects_by_type_id(value: str, request_user: UserModel):
+def group_objects_by_type_id(value: str, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -380,7 +380,7 @@ def group_objects_by_type_id(value: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_object_mds_reference(public_id: int, request_user: UserModel):
+def get_object_mds_reference(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -424,7 +424,7 @@ def get_object_mds_reference(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_object_mds_references(public_id: int, request_user: UserModel):
+def get_object_mds_references(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -472,7 +472,7 @@ def get_object_mds_references(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_object_references(public_id: int, params: CollectionParameters, request_user: UserModel):
+def get_object_references(public_id: int, params: CollectionParameters, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -538,7 +538,7 @@ def get_object_references(public_id: int, params: CollectionParameters, request_
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
-def get_object_state(public_id: int, request_user: UserModel):
+def get_object_state(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -565,7 +565,7 @@ def get_object_state(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.type.clean')
-def get_unstructured_objects(public_id: int, request_user: UserModel):
+def get_unstructured_objects(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for a multi resources which are not formatted according the type structure.
     Args:
@@ -613,7 +613,7 @@ def get_unstructured_objects(public_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.edit')
 @objects_blueprint.validate(CmdbObject.SCHEMA)
-def update_object(public_id: int, data: dict, request_user: UserModel):
+def update_object(public_id: int, data: dict, request_user: CmdbUser):
     """TODO: document"""
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -753,7 +753,7 @@ def update_object(public_id: int, data: dict, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
-def update_object_state(public_id: int, request_user: UserModel):
+def update_object_state(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -838,7 +838,7 @@ def update_object_state(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.type.clean')
-def update_unstructured_objects(public_id: int, request_user: UserModel):
+def update_unstructured_objects(public_id: int, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route for a multi resources which will be formatted based on the CmdbType
     Args:
@@ -942,13 +942,13 @@ def update_unstructured_objects(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
-def delete_object(public_id: int, request_user: UserModel):
+def delete_object(public_id: int, request_user: CmdbUser):
     """
     Deletes an object and logs the deletion
 
     Params:
         public_id (int): Public ID of the object which should be deleted
-        request_user (UserModel): The user requesting the deletion of the obeject
+        request_user (CmdbUser): The user requesting the deletion of the obeject
     Returns:
         Response: Acknowledgment of database 
     """
@@ -1052,7 +1052,7 @@ def delete_object(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
-def delete_object_with_child_locations(public_id: int, request_user: UserModel):
+def delete_object_with_child_locations(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -1120,14 +1120,14 @@ def delete_object_with_child_locations(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
-def delete_object_with_child_objects(public_id: int, request_user: UserModel):
+def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
     """
     Deletes an object and all objects which are child objects of it in the location tree.
     The corresponding locations of each object are also deleted
 
     Args:
         public_id (int): public_id of the object which should be deleted with its children
-        request_user (UserModel): User requesting this operation
+        request_user (CmdbUser): User requesting this operation
 
     Returns:
         (int): Success of this operation
@@ -1208,7 +1208,7 @@ def delete_object_with_child_objects(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
-def delete_many_objects(public_ids, request_user: UserModel):
+def delete_many_objects(public_ids, request_user: CmdbUser):
     """TODO: document"""
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
@@ -1334,7 +1334,7 @@ def _fetch_only_active_objs() -> bool:
     return False
 
 
-def delete_object_links(public_id: int, request_user: UserModel) -> None:
+def delete_object_links(public_id: int, request_user: CmdbUser) -> None:
     """
     Deletes all object links where this public_id is set
 
@@ -1353,14 +1353,14 @@ def delete_object_links(public_id: int, request_user: UserModel) -> None:
         object_links_manager.delete({'public_id':link.public_id})
 
 
-def check_config_item_limit_reached(request_user: UserModel) -> bool:
+def check_config_item_limit_reached(request_user: CmdbUser) -> bool:
     """TODO: document"""
     objects_count = get_objects_count(request_user)
 
     return objects_count >= request_user.config_items_limit
 
 
-def get_objects_count(request_user: UserModel) -> int:
+def get_objects_count(request_user: CmdbUser) -> int:
     """TODO: document"""
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 

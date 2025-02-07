@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,7 @@ from cmdb.manager import (
 )
 
 from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class BaseAuthenticationProvider:
         self.config = config or self.PROVIDER_CONFIG_CLASS(**self.PROVIDER_CONFIG_CLASS.DEFAULT_CONFIG_VALUES)
 
 
-    def authenticate(self, user_name: str, password: str) -> UserModel:
+    def authenticate(self, user_name: str, password: str) -> CmdbUser:
         """TODO: document"""
         raise NotImplementedError
 

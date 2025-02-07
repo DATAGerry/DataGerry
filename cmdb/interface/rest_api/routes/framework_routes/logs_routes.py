@@ -21,7 +21,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import LogsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.log_action_enum import  LogAction
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -43,7 +43,7 @@ logs_blueprint = APIBlueprint('logs', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.view')
-def get_log(public_id: int, request_user: UserModel):
+def get_log(public_id: int, request_user: CmdbUser):
     """
     Retrives a single log from the database
 
@@ -69,7 +69,7 @@ def get_log(public_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.view')
 @logs_blueprint.parse_collection_parameters()
-def get_logs_with_existing_objects(params: CollectionParameters, request_user: UserModel):
+def get_logs_with_existing_objects(params: CollectionParameters, request_user: CmdbUser):
     """
     Retrieves all logs of objects which still exist
 
@@ -104,7 +104,7 @@ def get_logs_with_existing_objects(params: CollectionParameters, request_user: U
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.view')
 @logs_blueprint.parse_collection_parameters()
-def get_logs_with_deleted_objects(params: CollectionParameters, request_user: UserModel):
+def get_logs_with_deleted_objects(params: CollectionParameters, request_user: CmdbUser):
     """
     Retrieves all logs of objects which are deleted
 
@@ -139,7 +139,7 @@ def get_logs_with_deleted_objects(params: CollectionParameters, request_user: Us
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.view')
 @logs_blueprint.parse_collection_parameters()
-def get_object_delete_logs(params: CollectionParameters, request_user: UserModel):
+def get_object_delete_logs(params: CollectionParameters, request_user: CmdbUser):
     """
     Retrives all logs of objects being deleted
 
@@ -177,7 +177,7 @@ def get_object_delete_logs(params: CollectionParameters, request_user: UserModel
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.view')
 @logs_blueprint.parse_collection_parameters()
-def get_logs_by_object(object_id: int, params: CollectionParameters, request_user: UserModel):
+def get_logs_by_object(object_id: int, params: CollectionParameters, request_user: CmdbUser):
     """
     Retrieves logs for an object with the given public_id
 
@@ -216,7 +216,7 @@ def get_logs_by_object(object_id: int, params: CollectionParameters, request_use
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.view')
-def get_corresponding_object_logs(public_id: int, request_user: UserModel):
+def get_corresponding_object_logs(public_id: int, request_user: CmdbUser):
     """
     Get the corresponding log
 
@@ -256,7 +256,7 @@ def get_corresponding_object_logs(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @logs_blueprint.protect(auth=True, right='base.framework.log.delete')
-def delete_log(public_id: int, request_user: UserModel):
+def delete_log(public_id: int, request_user: CmdbUser):
     """
     Deletes a single log with the given public_id
 

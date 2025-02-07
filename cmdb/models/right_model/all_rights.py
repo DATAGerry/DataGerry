@@ -127,7 +127,7 @@ IMPORT_RIGHTS = (
 
 
 USER_MANAGEMENT_RIGHTS = (
-    UserManagementRight(GLOBAL_RIGHT_IDENTIFIER, description='UserModel management'),
+    UserManagementRight(GLOBAL_RIGHT_IDENTIFIER, description='CmdbUser management'),
     (
         UserRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage users'),
         (

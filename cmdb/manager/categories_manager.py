@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
 from cmdb.models.category_model import CmdbCategory, CategoryTree
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
 
 from cmdb.framework.results import IterationResult
@@ -54,14 +54,14 @@ LOGGER = logging.getLogger(__name__)
 class CategoriesManager(BaseManager):
     """
     The CategoriesManager handles the interaction between the CmdbCategories-API and the database
-    Extends: BaseManager
+    `Extends`: BaseManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database:str = None):
         """
-        Set the database connection and the queue for sending events
+        Set the database connection for the CategoriesManager
 
         Args:
-            `dbm` (MongoDatabaseManager): Active database managers instance
+            `dbm` (MongoDatabaseManager): Database interaction manager
             `database` (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
         if database:
@@ -115,11 +115,9 @@ class CategoriesManager(BaseManager):
             category = CmdbCategory.to_json(category)
 
         try:
-            ack = self.insert(category)
+            return self.insert(category)
         except ManagerInsertError as err:
             raise CategoriesManagerInsertError(err) from err
-
-        return ack
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -144,14 +142,14 @@ class CategoriesManager(BaseManager):
 
     def iterate(self,
                 builder_params: BuilderParameters,
-                user: UserModel = None,
+                user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbCategory]:
         """
         Retrieves multiple CmdbCategories
 
         Args:
             `builder_params` (BuilderParameters): Filter for which CmdbCategories should be retrieved
-            `user` (UserModel, optional): CmdbUser requestion this operation. Defaults to None
+            `user` (CmdbUser, optional): CmdbUser requestion this operation. Defaults to None
             `permission` (AccessControlPermission, optional): Required permission for the operation. Defaults to None
 
         Raises:

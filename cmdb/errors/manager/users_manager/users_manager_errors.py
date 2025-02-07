@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,47 +18,69 @@ This module contains the classes of all UsersManager errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class UserManagerError(Exception):
+class UsersManagerError(Exception):
     """
-    Base UsersManager error
+    Raised to catch all UsersManager related errors
     """
     def __init__(self, message: str):
-        self.message = message
+        """
+        Raised to catch all UsersManager related errors
+        """
         super().__init__(message)
 
 # ----------------------------------------------- UsersManager Errors ------------------------------------------------ #
 
-class UserManagerGetError(UserManagerError):
+class UsersManagerGetError(UsersManagerError):
     """
-    Raised when UsersManager could not retrieve an user
-    """
-    def __init__(self, err: str):
-        self.message = f"User could not be retrieved. Error: {err}"
-        super().__init__(self.message)
-
-
-class UserManagerInsertError(UserManagerError):
-    """
-    Raised when UsersManager could not create an user
+    Raised when UsersManager could not retrieve a CmdbUser
     """
     def __init__(self, err: str):
-        self.message = f"User could not be created. Error: {err}"
-        super().__init__(self.message)
+        """
+        Raised when UsersManager could not retrieve a CmdbUser
+        """
+        super().__init__(f"UsersManagerGetError: {err}")
 
 
-class UserManagerUpdateError(UserManagerError):
+class UsersManagerInsertError(UsersManagerError):
     """
-    Raised when UsersManager could not update an user
-    """
-    def __init__(self, err: str):
-        self.message = f"User could not be updated. Error: {err}"
-        super().__init__(self.message)
-
-
-class UserManagerDeleteError(UserManagerError):
-    """
-    Raised when UsersManager could not delete an user
+    Raised when UsersManager could not create a CmdbUser
     """
     def __init__(self, err: str):
-        self.message = f"User could not be deleted. Error: {err}"
-        super().__init__(self.message)
+        """
+        Raised when UsersManager could not create a CmdbUser
+        """
+        super().__init__(f"UsersManagerInsertError: {err}")
+
+
+#TODO: ERROR-FIX (not used)
+class UsersManagerUpdateError(UsersManagerError):
+    """
+    Raised when UsersManager could not update a CmdbUser
+    """
+    def __init__(self, err: str):
+        """
+        Raised when UsersManager could not update a CmdbUser
+        """
+        super().__init__(f"UsersManagerUpdateError: {err}")
+
+
+class UsersManagerDeleteError(UsersManagerError):
+    """
+    Raised when UsersManager could not delete a CmdbUser
+    """
+    def __init__(self, err: str):
+        """
+        Raised when UsersManager could not delete a CmdbUser
+        """
+        super().__init__(f"UsersManagerDeleteError: {err}")
+
+
+class UsersManagerIterationError(UsersManagerError):
+    """
+    Raised when UsersManager could not iterate CmdbUsers
+    """
+    def __init__(self, err: str):
+        """
+        Raised when UsersManager could not iterate CmdbUsers
+        """
+        super().__init__(f"UsersManagerIterationError: {err}")

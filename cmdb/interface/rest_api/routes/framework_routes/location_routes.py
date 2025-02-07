@@ -25,7 +25,7 @@ from cmdb.manager import (
     ObjectsManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.location_model.location_node import LocationNode
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.framework.rendering.render_list import RenderList
@@ -58,13 +58,13 @@ location_blueprint = APIBlueprint('locations', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
-def create_location(params: dict, request_user: UserModel):
+def create_location(params: dict, request_user: CmdbUser):
     """
     Creates a location in the database
 
     Args:
         params (dict): location parameters
-        request_user (UserModel): User requesting the creation of a location
+        request_user (CmdbUser): User requesting the creation of a location
 
     Returns:
         int: public_id of the created location
@@ -120,13 +120,13 @@ def create_location(params: dict, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_all_locations(params: CollectionParameters, request_user: UserModel):
+def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all locations based on the params
 
     Args:
         params (CollectionParameters): params for locations request
-        request_user (UserModel): User requesting the data
+        request_user (CmdbUser): User requesting the data
 
     Returns:
         (Response): All locations considering the params
@@ -157,13 +157,13 @@ def get_all_locations(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_locations_tree(params: CollectionParameters, request_user: UserModel):
+def get_locations_tree(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all locations as a location tree
 
     Args:
         params (CollectionParameters): params for location tree (excluding root location)
-        request_user (UserModel): User requesting the data
+        request_user (CmdbUser): User requesting the data
 
     Returns:
         list: locations as a tree
@@ -213,13 +213,13 @@ def get_locations_tree(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_location(public_id: int, request_user: UserModel):
+def get_location(public_id: int, request_user: CmdbUser):
     """
     Returns the selected location for a given public_id
     
     Args:
         public_id (int): public_id of location
-        request_user (UserModel): User which is requesting the data
+        request_user (CmdbUser): User which is requesting the data
     """
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
 
@@ -238,13 +238,13 @@ def get_location(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_location_for_object(object_id: int, request_user: UserModel):
+def get_location_for_object(object_id: int, request_user: CmdbUser):
     """
     Returns the selected location for a given object_id
     
     Args:
         object_id (int): object_id of object 
-        request_user (UserModel): User which is requesting the data
+        request_user (CmdbUser): User which is requesting the data
     """
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
 
@@ -263,13 +263,13 @@ def get_location_for_object(object_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_parent(object_id: int, request_user: UserModel):
+def get_parent(object_id: int, request_user: CmdbUser):
     """
     Returns the parent location for a given object_id
     
     Args:
         object_id (int): object_id of object 
-        request_user (UserModel): User which is requesting the data
+        request_user (CmdbUser): User which is requesting the data
     """
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
 
@@ -294,13 +294,13 @@ def get_parent(object_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_children(object_id: int, request_user: UserModel):
+def get_children(object_id: int, request_user: CmdbUser):
     """
     Get all children of next level for a given object_id
     
     Args:
         object_id (int): object_id of object 
-        request_user (UserModel): User which is requesting the data
+        request_user (CmdbUser): User which is requesting the data
     
     Returns:
         (Response): All children of next level for the given object_id
@@ -331,13 +331,13 @@ def get_children(object_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 @location_blueprint.parse_request_parameters()
-def update_location_for_object(params: dict, request_user: UserModel):
+def update_location_for_object(params: dict, request_user: CmdbUser):
     """
     Updates a location
 
     Args:
         params (dict): location parameters
-        request_user (UserModel): User requesting the update
+        request_user (CmdbUser): User requesting the update
     Returns:
         UpdateSingleResponse: with acknowledged from database
     """
@@ -381,12 +381,12 @@ def update_location_for_object(params: dict, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
-def delete_location_for_object(object_id: int, request_user: UserModel):
+def delete_location_for_object(object_id: int, request_user: CmdbUser):
     """
     Deletes a location where the object_id is assigned 
 
     Args:
-        request_user (UserModel): user making the request
+        request_user (CmdbUser): user making the request
     Returns:
         bool: Confirmation for deletion
     """

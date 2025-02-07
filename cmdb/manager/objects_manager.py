@@ -29,7 +29,7 @@ from cmdb.manager import BaseManager
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.models.type_model import CmdbType
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.acl.helpers import verify_access
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
@@ -71,7 +71,7 @@ class ObjectsManager(BaseManager):
 
     def insert_object(self,
                       data: dict,
-                      user: UserModel = None,
+                      user: CmdbUser = None,
                       permission: AccessControlPermission = None) -> int:
         """
         Insert new Object
@@ -119,7 +119,7 @@ class ObjectsManager(BaseManager):
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def get_object(self, public_id: int,
-            user: UserModel = None,
+            user: CmdbUser = None,
             permission: AccessControlPermission = None) -> CmdbObject:
         """
         Get a single object by its id
@@ -153,7 +153,7 @@ class ObjectsManager(BaseManager):
 
     def iterate(self,
                 builder_params: BuilderParameters,
-                user: UserModel = None,
+                user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbObject]:
         """
         TODO: document
@@ -173,7 +173,7 @@ class ObjectsManager(BaseManager):
     def get_objects_by(self,
                        sort='public_id',
                        direction=-1,
-                       user: UserModel = None,
+                       user: CmdbUser = None,
                        permission: AccessControlPermission = None,
                        **requirements):
         """TODO: document"""
@@ -200,7 +200,7 @@ class ObjectsManager(BaseManager):
     def group_objects_by_value(self,
                                value: str,
                                match=None,
-                               user: UserModel = None,
+                               user: CmdbUser = None,
                                permission: AccessControlPermission = None):
         """This method does not actually
            performs the find() operation
@@ -210,7 +210,7 @@ class ObjectsManager(BaseManager):
            Args:
                value (str): grouped by value
                match (dict): stage filters the documents to only pass documents.
-               user (UserModel): request user
+               user (CmdbUser): request user
                permission (AccessControlPermission):  ACL operations
            Returns:
                returns the objects grouped by value of the documents
@@ -400,7 +400,7 @@ class ObjectsManager(BaseManager):
                    skip: int,
                    sort: str,
                    order: int,
-                   user: UserModel = None,
+                   user: CmdbUser = None,
                    permission: AccessControlPermission = None) -> IterationResult[CmdbObject]:
         """TODO: document"""
         query = []
@@ -446,7 +446,7 @@ class ObjectsManager(BaseManager):
     def update_object(self,
                       public_id: int,
                       data: Union[CmdbObject, dict],
-                      user: UserModel = None,
+                      user: CmdbUser = None,
                       permission: AccessControlPermission = None):
         """
         Update a existing type in the system.
@@ -502,7 +502,7 @@ class ObjectsManager(BaseManager):
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete_object(self, public_id: int, user: UserModel, permission: AccessControlPermission = None):
+    def delete_object(self, public_id: int, user: CmdbUser, permission: AccessControlPermission = None):
         """TODO: document"""
         try:
             type_id = self.get_object(public_id).type_id

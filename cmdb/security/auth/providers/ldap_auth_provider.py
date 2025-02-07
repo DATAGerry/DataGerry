@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -25,13 +25,13 @@ from cmdb.manager import (
     SecurityManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.auth.base_authentication_provider import BaseAuthenticationProvider
 from cmdb.security.auth.providers.ldap_auth_config import LdapAuthenticationProviderConfig
 
 from cmdb.errors.provider import GroupMappingError, AuthenticationError
 from cmdb.errors.manager import ManagerGetError, ManagerUpdateError
-from cmdb.errors.manager.users_manager import UserManagerGetError, UserManagerInsertError
+from cmdb.errors.manager.users_manager import UsersManagerGetError, UsersManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
         return user_group
 
 
-    def authenticate(self, user_name: str, password: str) -> UserModel:
+    def authenticate(self, user_name: str, password: str) -> CmdbUser:
         """TODO: document"""
         #TODO: REFACTOR-FIX
         try:
@@ -127,18 +127,18 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                 raise AuthenticationError(str(err)) from err
 
         try:
-            user_instance: UserModel = self.users_manager.get_user_by({'user_name': user_name})
+            user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
             if (user_instance.group_id != user_group_id) and group_mapping_active:
                 user_instance.group_id = user_group_id
 
                 try:
                     self.users_manager.update_user(user_instance.public_id, user_instance)
-                    user_instance: UserModel = self.users_manager.get_user_by({'user_name': user_name})
+                    user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
                 except ManagerUpdateError as err:
                     raise AuthenticationError(str(err)) from err
         except ManagerGetError as err:
             #TODO: ERROR-FIX
-            LOGGER.warning('[LdapAuthenticationProvider] UserModel exists on LDAP but not in database: %s', err)
+            LOGGER.warning('[LdapAuthenticationProvider] CmdbUser exists on LDAP but not in database: %s', err)
             LOGGER.debug('[LdapAuthenticationProvider] Try creating user: %s', user_name)
             try:
                 new_user_data = {}
@@ -156,16 +156,16 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
             try:
                 user_id = self.users_manager.insert_user(new_user_data)
-            except UserManagerInsertError as error:
+            except UsersManagerInsertError as error:
                 #TODO: ERROR-FIX
-                LOGGER.debug('[authenticate] UserManagerInsertError: %s', error.message)
+                LOGGER.debug('[authenticate] UsersManagerInsertError: %s', error)
                 raise AuthenticationError(str(error)) from error
 
             try:
-                user_instance: UserModel = self.users_manager.get_user(user_id)
-            except UserManagerGetError as error:
+                user_instance = self.users_manager.get_user(user_id)
+            except UsersManagerGetError as error:
                 #TODO: ERROR-FIX
-                LOGGER.debug('[authenticate] ManagerGetError: %s', error.message)
+                LOGGER.debug('[authenticate] ManagerGetError: %s', error)
                 raise AuthenticationError(str(error)) from error
 
         return user_instance

@@ -23,10 +23,10 @@ from cmdb.manager import UsersManager
 
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
 from cmdb.interface.route_utils import user_has_right, parse_authorization_header
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.token.validator import TokenValidator
 
-from cmdb.errors.manager.users_manager import UserManagerGetError
+from cmdb.errors.manager.users_manager import UsersManagerGetError
 from cmdb.errors.security import TokenValidationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -57,7 +57,7 @@ class APIBlueprint(Blueprint):
                     if not user_has_right(right, request_user):
                         if excepted:
                             if request_user:
-                                user_dict = UserModel.to_dict(request_user)
+                                user_dict = CmdbUser.to_dict(request_user)
 
                                 for exe_key, exe_value in excepted.items():
                                     try:
@@ -89,7 +89,7 @@ class APIBlueprint(Blueprint):
                                         database = decrypted_token['DATAGERRY']['value']['user']['database']
                                         users_manager = UsersManager(current_app.database_manager, database)
 
-                                    user_dict: dict = UserModel.to_dict(users_manager.get_user(user_id))
+                                    user_dict: dict = CmdbUser.to_dict(users_manager.get_user(user_id))
 
 
                                     for exe_key, exe_value in excepted.items():
@@ -103,7 +103,7 @@ class APIBlueprint(Blueprint):
 
                                         if user_dict[exe_key] == route_parameter:
                                             return f(*args, **kwargs)
-                                except UserManagerGetError:
+                                except UsersManagerGetError:
                                     return abort(403, "Could not retrieve user!")
 
                         return abort(403, f'User has not the required right {right}')
@@ -127,7 +127,9 @@ class APIBlueprint(Blueprint):
                 try:
                     validation_result = validator.validate(data)
                 except Exception as err:
-                    return abort(400, str(err))
+                    LOGGER.debug("Schema '%s' validation failed", schema)
+                    LOGGER.debug("Schema Exception: %s", str(err))
+                    return abort(400, f"Schema '{schema}' validation failed")
 
                 if not validation_result:
                     return abort(400, {'validation_error': validator.errors})

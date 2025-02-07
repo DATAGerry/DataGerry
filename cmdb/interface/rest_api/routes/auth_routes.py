@@ -28,7 +28,7 @@ from cmdb.manager import (
     UsersManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.auth.auth_settings import AuthSettingsDAO
 from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.token.generator import TokenGenerator
@@ -45,7 +45,7 @@ from cmdb.interface.route_utils import (
 )
 from cmdb.interface.rest_api.responses import DefaultResponse, LoginResponse
 
-from cmdb.errors.manager.users_manager import UserManagerInsertError, UserManagerGetError
+from cmdb.errors.manager.users_manager import UsersManagerInsertError, UsersManagerGetError
 from cmdb.errors.provider import AuthenticationProviderNotActivated, AuthenticationProviderNotFoundError
 from cmdb.errors.security.security_errors import (
     AuthSettingsInitError,
@@ -145,11 +145,11 @@ def post_login():
     except RequestError as err:
         LOGGER.error("[post_login] RequestError: %s", err)
         return abort(500, "Login failed due a malformed request!")
-    except UserManagerGetError as err:
-        LOGGER.error("[post_login] UserManagerGetError: %s", err)
+    except UsersManagerGetError as err:
+        LOGGER.error("[post_login] UsersManagerGetError: %s", err)
         return abort(500, "Could not login because user can't be retrieved from database!")
-    except UserManagerInsertError as err:
-        LOGGER.error("[post_login] UserManagerInsertError: %s", err)
+    except UsersManagerInsertError as err:
+        LOGGER.error("[post_login] UsersManagerInsertError: %s", err)
         return abort(500, "Could not login because user can't be inserted in database!")
     except Exception as err: #pylint: disable=broad-exception-caught
         LOGGER.error("[post_login] Exception: %s, Type: %s", err, type(err))
@@ -190,7 +190,7 @@ def post_login():
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.view')
-def get_auth_settings(request_user: UserModel):
+def get_auth_settings(request_user: CmdbUser):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
@@ -206,7 +206,7 @@ def get_auth_settings(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.view')
-def get_installed_providers(request_user: UserModel):
+def get_installed_providers(request_user: CmdbUser):
     """TODO: document"""
     provider_names: list[dict] = []
 
@@ -228,7 +228,7 @@ def get_installed_providers(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.view')
-def get_provider_config(provider_class: str, request_user: UserModel):
+def get_provider_config(provider_class: str, request_user: CmdbUser):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
@@ -251,7 +251,7 @@ def get_provider_config(provider_class: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.edit')
-def update_auth_settings(request_user: UserModel):
+def update_auth_settings(request_user: CmdbUser):
     """TODO: document"""
     new_auth_settings_values = request.get_json()
 
@@ -280,7 +280,7 @@ def update_auth_settings(request_user: UserModel):
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 
 def generate_token_with_params(
-        login_user: UserModel,
+        login_user: CmdbUser,
         database_manager: MongoDatabaseManager,
         cloud_mode: bool = False
     ) -> Tuple[bytes, int, int]:

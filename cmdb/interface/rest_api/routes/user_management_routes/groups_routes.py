@@ -26,7 +26,7 @@ from cmdb.manager import (
 
 from cmdb.framework.results import IterationResult
 from cmdb.models.group_model.group_delete_mode_enum import GroupDeleteMode
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.group_model.group import UserGroupModel
 from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights
 from cmdb.interface.blueprints import APIBlueprint
@@ -54,7 +54,7 @@ groups_blueprint = APIBlueprint('groups', __name__)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.add')
 @groups_blueprint.validate(UserGroupModel.SCHEMA)
-def insert_group(data: dict, request_user: UserModel):
+def insert_group(data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route for insert a single group resource.
 
@@ -91,7 +91,7 @@ def insert_group(data: dict, request_user: UserModel):
 @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
 @groups_blueprint.parse_collection_parameters()
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_groups(params: CollectionParameters, request_user: UserModel):
+def get_groups(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting a iterable collection of resources.
 
@@ -132,7 +132,7 @@ def get_groups(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
-def get_group(public_id: int, request_user: UserModel):
+def get_group(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for a single group resource.
 
@@ -167,7 +167,7 @@ def get_group(public_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.edit')
 @groups_blueprint.validate(UserGroupModel.SCHEMA)
-def update_group(public_id: int, data: dict, request_user: UserModel):
+def update_group(public_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route for update a single group resource.
 
@@ -209,7 +209,7 @@ def update_group(public_id: int, data: dict, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.delete')
 @groups_blueprint.parse_parameters(GroupDeletionParameters)
-def delete_group(public_id: int, params: GroupDeletionParameters, request_user: UserModel):
+def delete_group(public_id: int, params: GroupDeletionParameters, request_user: CmdbUser):
     """
     HTTP `DELETE` route for delete a single group resource.
 
@@ -233,7 +233,7 @@ def delete_group(public_id: int, params: GroupDeletionParameters, request_user: 
 
     # Check of action is set
     if params.action:
-        users_in_group: list[UserModel] = users_manager.get_many_users({'group_id': public_id})
+        users_in_group: list[CmdbUser] = users_manager.get_many_users({'group_id': public_id})
 
         if len(users_in_group) > 0:
             if params.action == GroupDeleteMode.MOVE.value:

@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,7 @@ from cmdb.security.token.validator import TokenValidator
 from cmdb.security.token.generator import TokenGenerator
 from cmdb.models.group_model.group import UserGroupModel
 from cmdb.models.location_model.cmdb_location import CmdbLocation
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.user_management_constants import (
@@ -56,7 +56,7 @@ from cmdb.errors.security import (
     RequestTimeoutError,
     RequestError,
 )
-from cmdb.errors.manager.users_manager import UserManagerInsertError, UserManagerGetError
+from cmdb.errors.manager.users_manager import UsersManagerInsertError, UsersManagerGetError
 from cmdb.errors.database import SetDatabaseError
 from cmdb.errors.database.database_errors import DatabaseNotExists
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -70,7 +70,7 @@ SERVICE_PORTAL_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-it
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def user_has_right(required_right: str, request_user: UserModel = None) -> bool:
+def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
     """Check if a user has a specific right"""
     # Check right for cloud api routes
     if request_user:
@@ -196,7 +196,6 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
 def __get_x_api_key():
     """TODO: document"""
     x_api_key = request.headers.get('x-api-key', None)
-    # LOGGER.debug("[__get_x_api_key] Key recieved: %s", x_api_key)
     return x_api_key
 
 
@@ -275,7 +274,7 @@ def right_required(required_right: str):
             groups_manager = GroupsManager(current_app.database_manager)
 
             try:
-                current_user: UserModel = kwargs['request_user']
+                current_user: CmdbUser = kwargs['request_user']
             except KeyError:
                 return abort(400, 'No request user was provided')
             try:
@@ -393,7 +392,7 @@ def parse_authorization_header(header):
 
 # ------------------------------------------------------ HELPER ------------------------------------------------------ #
 
-def validate_right_cloud_api(required_right: str, request_user: UserModel) -> bool:
+def validate_right_cloud_api(required_right: str, request_user: CmdbUser) -> bool:
     """TODO: document"""
     with current_app.app_context():
         groups_manager = GroupsManager(current_app.database_manager, request_user.database)
@@ -412,7 +411,7 @@ def validate_right_cloud_api(required_right: str, request_user: UserModel) -> bo
 
 
 # TODO: UNUSED-FIX
-def validate_password(user_name: str, password: str, database: str = None) -> Union[UserModel, None]:
+def validate_password(user_name: str, password: str, database: str = None) -> Union[CmdbUser, None]:
     """TODO: document"""
     if database:
         users_manager = UsersManager(current_app.database_manager, database)
@@ -430,7 +429,7 @@ def validate_password(user_name: str, password: str, database: str = None) -> Un
                                 users_manager=users_manager)
 
     try:
-        # Returns the UserModel
+        # Returns the CmdbUser
         return auth_module.login(user_name, password)
     except Exception:
         return None
@@ -480,7 +479,8 @@ def check_db_exists(db_name: dict):
 
 
 def init_db_routine(db_name: str):
-    """Creates a database with the given name and all corresponding collections
+    """
+    Creates a database with the given name and all corresponding collections
 
     Args:
         db_name (str): Name of the database
@@ -529,7 +529,7 @@ def set_admin_user(user_data: dict, subscription: dict):
         admin_user_from_db = users_manager.get_user_by({'email': user_data['email']})
 
         if not admin_user_from_db:
-            admin_user = UserModel(
+            admin_user = CmdbUser(
                 public_id = users_manager.get_next_public_id(),
                 user_name = user_data['user_name'],
                 email = user_data['email'],
@@ -550,13 +550,13 @@ def set_admin_user(user_data: dict, subscription: dict):
 
             users_manager.update_user(admin_user_from_db.get_public_id(), admin_user_from_db)
 
-    except UserManagerGetError as err:
-        raise UserManagerGetError(str(err)) from err
-    except UserManagerInsertError as err:
-        raise UserManagerInsertError(str(err)) from err
+    except UsersManagerGetError as err:
+        raise UsersManagerGetError(err) from err
+    except UsersManagerInsertError as err:
+        raise UsersManagerInsertError(str(err)) from err
     except Exception as err:
         LOGGER.debug("[set_admin_user] Exception: %s, Type: %s", err, type(err))
-        raise UserManagerInsertError(str(err)) from err
+        raise UsersManagerInsertError(str(err)) from err
 
 
 def retrive_user(user_data: dict, database: str):

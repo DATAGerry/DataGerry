@@ -17,7 +17,7 @@
 import logging
 from werkzeug.wrappers import Response
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.rest_api.responses.base_api_response import BaseAPIResponse
 from cmdb.interface.rest_api.responses.helpers.operation_type_enum import OperationType
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -31,12 +31,12 @@ class LoginResponse(BaseAPIResponse):
     """
     Basic login instance for returning a login data
     """
-    def __init__(self, user: UserModel, token: bytes, token_issued_at: int, token_expire: int):
+    def __init__(self, user: CmdbUser, token: bytes, token_issued_at: int, token_expire: int):
         """
         Constructor of `LoginResponse`
 
         Args:
-            user (UserModel): Instance of the selected user
+            user (CmdbUser): Instance of the selected user
             token (bytes): A valid JW Token
             token_issued_at: The timestamp when the token was issued
             token_expire: The timestamp when the token expires
@@ -64,7 +64,7 @@ class LoginResponse(BaseAPIResponse):
     def export(self) -> dict:
         """TODO: document"""
         return {
-            'user': UserModel.to_dict(self.user),
+            'user': CmdbUser.to_dict(self.user),
             'token': self.token.decode('UTF-8'),
             'token_issued_at': self.token_issued_at,
             'token_expire': self.token_expire

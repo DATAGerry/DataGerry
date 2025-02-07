@@ -17,6 +17,7 @@
 This module provides all errors for the ObjectLinksManager
 """
 from .object_links_manager_errors import (
+    ObjectLinksManagerError,
     ObjectLinksManagerInsertError,
     ObjectLinksManagerGetError,
     ObjectLinksManagerGetObjectError,
@@ -27,6 +28,7 @@ from .object_links_manager_errors import (
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'ObjectLinksManagerError',
     'ObjectLinksManagerInsertError',
     'ObjectLinksManagerGetError',
     'ObjectLinksManagerGetObjectError',

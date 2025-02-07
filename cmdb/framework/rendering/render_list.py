@@ -20,7 +20,7 @@ from typing import Union
 from cmdb.manager import ObjectsManager
 
 from cmdb.models.object_model.cmdb_object import CmdbObject
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.framework.rendering.render_result import RenderResult
 from cmdb.framework.rendering.cmdb_render import CmdbRender
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -34,7 +34,7 @@ class RenderList:
     """TODO: document"""
     def __init__(self,
                  object_list: list[CmdbObject],
-                 request_user: UserModel,
+                 request_user: CmdbUser,
                  ref_render=False,
                  objects_manager: ObjectsManager = None):
         """TODO: document"""

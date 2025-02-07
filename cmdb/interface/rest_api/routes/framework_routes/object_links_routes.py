@@ -16,12 +16,13 @@
 """Definition of all routes for object links"""
 import logging
 from flask import abort, request
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import ObjectLinksManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_link_model.link import CmdbObjectLink
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -49,34 +50,35 @@ LOGGER = logging.getLogger(__name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @links_blueprint.protect(auth=True, right='base.framework.object.add')
-def create_object_link(request_user: UserModel):
+def create_object_link(request_user: CmdbUser):
     """
-    API Endpoint to create a new CmdbObjectLink in the database
+    HTTP `POST` route to create a new CmdbObjectLink in the database
 
     Args:
-        request_user (UserModel): CmdbUser requesting this operation
+        `request_user` (CmdbUser): User requesting this operation
 
     Returns:
-        InsertSingleResponse: Object containing the created public_id of the new object link
+        `InsertSingleResponse`: Object containing the created public_id of the new CmdbObjectLink
     """
-    object_link_creation_data: dict = request.json
-
     try:
-        primary_id = object_link_creation_data['primary']
-        secondary_id = object_link_creation_data['secondary']
-    except KeyError:
-        return abort(400, "The 'primary' or 'secondary' key does not exist in the request data!")
+        object_link_creation_data: dict = request.json
 
-    object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
-                                                                           request_user)
+        try:
+            primary_id = object_link_creation_data['primary']
+            secondary_id = object_link_creation_data['secondary']
+        except KeyError:
+            return abort(400, "The 'primary' or 'secondary' key does not exist in the request data!")
 
-    # Confirm that this exact link does not exist
-    object_link_exists = object_links_manager.check_link_exists(object_link_creation_data)
+        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+                                                                               request_user)
 
-    if object_link_exists:
-        return abort(400, f"The link between {primary_id} and {secondary_id} already exists!")
+        # Confirm that this exact link does not exist
+        object_link_exists = object_links_manager.check_link_exists(object_link_creation_data)
 
-    try:
+        if object_link_exists:
+            return abort(400, f"The link between {primary_id} and {secondary_id} already exists!")
+
+
         result_id = object_links_manager.insert_object_link(object_link_creation_data)
 
         inserted_object_link = object_links_manager.get_link(result_id)
@@ -84,15 +86,17 @@ def create_object_link(request_user: UserModel):
         api_response = InsertSingleResponse(CmdbObjectLink.to_json(inserted_object_link), result_id)
 
         return api_response.make_response()
+    except HTTPException as http_err:
+        raise http_err
     except ObjectLinksManagerInsertError as err:
-        LOGGER.error("[create_object_link] %s", err.message)
+        LOGGER.error("[create_object_link] %s", err, exc_info=True)
         return abort(400, "Could not create the ObjectLink in the database!")
     except ObjectLinksManagerGetObjectError as err:
-        LOGGER.error("[create_object_link] %s", err.message)
+        LOGGER.error("[create_object_link] %s", err, exc_info=True)
         return abort(400, "Could not retrieve an object which should be linked!")
     except Exception as err:
-        LOGGER.error("[create_object_link] Exception: %s", err)
-        return abort(500, "An unexpected error occured!")
+        LOGGER.error("[create_object_link] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -101,21 +105,21 @@ def create_object_link(request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @links_blueprint.protect(auth=True, right='base.framework.object.view')
 @links_blueprint.parse_collection_parameters()
-def get_links(params: CollectionParameters, request_user: UserModel):
+def get_links(params: CollectionParameters, request_user: CmdbUser):
     """
-    API Endpoint to retrieve all CmdbObjectLinks regarding the given 'params'
+    HTTP `GET`/`HEAD` route to retrieve multiple CmdbObjectLinks regarding the given 'params'
 
     Args:
-        params (CollectionParameters): Filter for the CmdbObjectLinks
-        request_user (UserModel): CmdbUser making the request
+        `params` (CollectionParameters): Filter for the CmdbObjectLinks
+        `request_user` (CmdbUser): User making the request
 
     Returns:
-        GetMultiResponse: Retrived CmdbObjectLinks based on the given 'params'
+        `GetMultiResponse`: Retrived CmdbObjectLinks based on the given 'params'
     """
-    object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
-                                                                           request_user)
-
     try:
+        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+                                                                               request_user)
+
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
         iteration_result: IterationResult[CmdbObjectLink] = object_links_manager.iterate(builder_params)
 
@@ -129,10 +133,10 @@ def get_links(params: CollectionParameters, request_user: UserModel):
 
         return api_response.make_response()
     except ObjectLinksManagerIterationError as err:
-        LOGGER.error("[get_links] %s", err.message)
+        LOGGER.error("[get_links] %s", err, exc_info=True)
         return abort(400, "Could not iterate CmdbObjectLinks!")
     except Exception as err:
-        LOGGER.error("[get_links] Exception: %s", err)
+        LOGGER.error("[get_links] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "An unexpected error occured!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -141,31 +145,32 @@ def get_links(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @links_blueprint.protect(auth=True, right='base.framework.object.delete')
-def delete_link(public_id: int, request_user: UserModel):
+def delete_link(public_id: int, request_user: CmdbUser):
     """
-    Deletes a CmdbObjectLink with the given public_id
+    HTTP `DELETE` route to delete a CmdbObjectLink with the given public_id
 
     Args:
-        public_id (int): public_id of the CmdbObjectLink
-        request_user (UserModel): User requesting this operation
-    Returns:
-        DeleteSingleResponse: CmdbObjectLink instance which was deleted
-    """
-    object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
-                                                                           request_user)
+        `public_id` (int): public_id of the CmdbObjectLink
+        `request_user` (CmdbUser): User requesting this operation
 
+    Returns:
+        `DeleteSingleResponse`: CmdbObjectLink instance which was deleted
+    """
     try:
+        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+                                                                               request_user)
+
         deleted_link = object_links_manager.delete_object_link(public_id)
 
         api_response = DeleteSingleResponse(raw=deleted_link)
 
         return api_response.make_response()
     except ObjectLinksManagerDeleteError as err:
-        LOGGER.error("[delete_link] %s", err.message)
+        LOGGER.error("[delete_link] %s", err, exc_info=True)
         return abort(400, f"Could not delete the ObjectLink with public_id: {public_id}!")
     except ObjectLinksManagerGetError as err:
-        LOGGER.error("[delete_link] %s", err.message)
+        LOGGER.error("[delete_link] %s", err, exc_info=True)
         return abort(404, "Could not retrieve the ObjectLink which should be deleted!")
     except Exception as err:
-        LOGGER.error("[delete_link] Exception: %s", err)
+        LOGGER.error("[delete_link] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "An unexpected error occured!")

@@ -19,7 +19,7 @@ from typing import Union
 
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.security.acl.builder import AccessControlQueryBuilder
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.log_action_enum import LogAction
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 
@@ -47,7 +47,7 @@ class BaseQueryBuilder(Builder):
 
     def build(self,
               builder_params: BuilderParameters,
-              user: UserModel = None,
+              user: CmdbUser = None,
               permission: AccessControlPermission = None,
               object_builder_mode: bool = False) -> list[dict]:
         """
@@ -96,7 +96,7 @@ class BaseQueryBuilder(Builder):
 
     def count(self,
               criteria: Union[dict, list[dict]],
-              user: UserModel = None,
+              user: CmdbUser = None,
               permission: AccessControlPermission = None) -> list[dict]:
         """
         Count the number of documents
