@@ -20,7 +20,7 @@ import pytest
 
 from cmdb.manager import RightsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.group_model.group import UserGroupModel
 from cmdb.models.right_model.all_rights import __all__ as rights
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -50,7 +50,7 @@ def fixture_none_access_group():
 def fixture_full_access_user(full_access_group: UserGroupModel):
     "TODO: document"
     registration_time = datetime.now()
-    return UserModel(public_id=1,
+    return CmdbUser(public_id=1,
                      user_name='full-access-user',
                      active=True,
                      group_id=full_access_group.public_id,
@@ -61,7 +61,7 @@ def fixture_full_access_user(full_access_group: UserGroupModel):
 def fixture_none_access_user(none_access_group: UserGroupModel):
     "TODO: document"
     registration_time = datetime.now()
-    return UserModel(public_id=2,
+    return CmdbUser(public_id=2,
                      user_name='none-access-user',
                      active=True,
                      group_id=none_access_group.public_id,

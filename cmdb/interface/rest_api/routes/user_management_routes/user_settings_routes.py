@@ -21,7 +21,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import UsersSettingsManager
 
 from cmdb.models.settings_model.user_setting import UserSettingModel
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
@@ -46,13 +46,13 @@ user_settings_blueprint = APIBlueprint('user_settings', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @user_settings_blueprint.validate(UserSettingModel.SCHEMA)
-def insert_setting(user_id: int, data: dict, request_user: UserModel):
+def insert_setting(user_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route for insert a single user setting resource.
 
     Args:
         user_id (int): Public ID of the user.
-        data (UserModel.SCHEMA): Insert data of a new user.
+        data (CmdbUser.SCHEMA): Insert data of a new user.
 
     Raises:
         ManagerGetError: If the inserted user could not be found after inserting.
@@ -84,7 +84,7 @@ def insert_setting(user_id: int, data: dict, request_user: UserModel):
 @user_settings_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_user_settings(user_id: int, request_user: UserModel):
+def get_user_settings(user_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting a complete collection of resources.
 
@@ -116,7 +116,7 @@ def get_user_settings(user_id: int, request_user: UserModel):
 @user_settings_blueprint.route('/<string:resource>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_user_setting(user_id: int, resource: str, request_user: UserModel):
+def get_user_setting(user_id: int, resource: str, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for a single user setting resource.
 
@@ -152,14 +152,14 @@ def get_user_setting(user_id: int, resource: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @user_settings_blueprint.validate(UserSettingModel.SCHEMA)
-def update_setting(user_id: int, resource: str, data: dict, request_user: UserModel):
+def update_setting(user_id: int, resource: str, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route for update a single user setting resource.
 
     Args:
         user_id (int): Public ID of the user.
         resource (str): Identifier/Name of the user setting.
-        data (UserModel.SCHEMA): New setting data to update.
+        data (CmdbUser.SCHEMA): New setting data to update.
 
     Raises:
         ManagerGetError: When the setting with the `identifier` was not found.
@@ -200,7 +200,7 @@ def update_setting(user_id: int, resource: str, data: dict, request_user: UserMo
 @user_settings_blueprint.route('/<string:resource>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def delete_setting(user_id: int, resource: str, request_user: UserModel):
+def delete_setting(user_id: int, resource: str, request_user: CmdbUser):
     """
     HTTP `DELETE` route for delete a single user setting resource.
 

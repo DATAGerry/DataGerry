@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,7 @@ from cmdb.manager import (
     SecurityManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.auth.base_authentication_provider import BaseAuthenticationProvider
 from cmdb.security.auth.auth_settings import AuthSettingsDAO
 from cmdb.security.auth.providers.ldap_auth_provider import LdapAuthenticationProvider
@@ -191,7 +191,7 @@ class AuthModule:
             return None
 
 
-    def login(self, user_name: str, password: str) -> UserModel:
+    def login(self, user_name: str, password: str) -> CmdbUser:
         """
         Performs a login try with given username and password
         If the user is not found, iterate over all installed and activated providers
@@ -200,7 +200,7 @@ class AuthModule:
             password: Password
 
         Returns:
-            UserModel: instance if user was found and password was correct
+            CmdbUser: instance if user was found and password was correct
         """
         try:
             if current_app.cloud_mode:

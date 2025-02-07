@@ -28,7 +28,7 @@ from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse, GetMultiResponse
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
 from cmdb.framework.results import IterationResult
 
@@ -48,13 +48,13 @@ webhook_event_blueprint = APIBlueprint('webhook_events', __name__)
 @webhook_event_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_webhook_event(public_id: int, request_user: UserModel):
+def get_webhook_event(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbWebhookEvent with the given public_id
     
     Args:
         public_id (int): public_id of CmdbWebhookEvent which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbWebhookEvent
+        request_user (CmdbUser): User which is requesting the CmdbWebhookEvent
     """
     webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT_MANAGER,
                                                                                request_user)
@@ -75,7 +75,7 @@ def get_webhook_event(public_id: int, request_user: UserModel):
 @webhook_event_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_webhook_events(params: CollectionParameters, request_user: UserModel):
+def get_webhook_events(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbWebhookEvents based on the params
 
@@ -110,13 +110,13 @@ def get_webhook_events(params: CollectionParameters, request_user: UserModel):
 @webhook_event_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def delete_webhook_event(public_id: int, request_user: UserModel):
+def delete_webhook_event(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbWebhookEvent with the given public_id
     
     Args:
         public_id (int): public_id of CmdbWebhookEvent which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbWebhookEvent
+        request_user (CmdbUser): User which is requesting the CmdbWebhookEvent
     """
     webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT_MANAGER,
                                                                                request_user)

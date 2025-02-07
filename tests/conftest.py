@@ -1,6 +1,6 @@
 
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,7 @@ from cmdb.manager import (
 
 from cmdb.security.key.generator import KeyGenerator
 from cmdb.models.user_management_constants import __FIXED_GROUPS__
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.database import DatabaseNotExists
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -87,7 +87,7 @@ def preset_database(database_manager: MongoDatabaseManager, database_name: str):
     admin_name = 'admin'
     admin_pass = 'admin'
 
-    admin_user = UserModel(
+    admin_user = CmdbUser(
         public_id=1,
         user_name=admin_name,
         active=True,

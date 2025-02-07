@@ -35,11 +35,11 @@ from cmdb.models.type_model import (
     TypeReferenceSection,
     TypeMultiDataSection,
 )
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.manager import ManagerGetError
 from cmdb.errors.manager.objects_manager import ObjectManagerGetError
-from cmdb.errors.manager.users_manager import UserManagerGetError
+from cmdb.errors.manager.users_manager import UsersManagerGetError
 from cmdb.errors.type import TypeReferenceLineFillError, FieldNotFoundError, FieldInitError
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.render import ObjectInstanceError, TypeInstanceError, InstanceRenderError
@@ -58,14 +58,14 @@ class CmdbRender:
 
     def __init__(self, object_instance: CmdbObject,
                  type_instance: CmdbType,
-                 render_user: UserModel,
+                 render_user: CmdbUser,
                  ref_render=False,
                  dbm: MongoDatabaseManager = None):
         """TODO: document"""
         self.dbm = dbm
         self.object_instance: CmdbObject = object_instance
         self.type_instance: CmdbType = type_instance
-        self.render_user: UserModel = render_user
+        self.render_user: CmdbUser = render_user
 
         if dbm:
             self.objects_manager = ObjectsManager(self.dbm)
@@ -166,13 +166,13 @@ class CmdbRender:
     def __generate_object_information(self, render_result: RenderResult) -> RenderResult:
         try:
             author_name = self.users_manager.get_user(self.object_instance.author_id).get_display_name()
-        except UserManagerGetError:
+        except UsersManagerGetError:
             author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
 
         if self.object_instance.editor_id:
             try:
                 editor_name = self.users_manager.get_user(self.object_instance.editor_id).get_display_name()
-            except UserManagerGetError:
+            except UsersManagerGetError:
                 editor_name = None
         else:
             editor_name = None
@@ -194,7 +194,7 @@ class CmdbRender:
     def __generate_type_information(self, render_result: RenderResult) -> RenderResult:
         try:
             author_name = self.users_manager.get_user(self.type_instance.author_id).get_display_name()
-        except UserManagerGetError:
+        except UsersManagerGetError:
             #TODO: ERROR-FIX
             author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
 

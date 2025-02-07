@@ -20,7 +20,7 @@ from cmdb.manager.query_builder import PipelineBuilder
 #TODO: IMPORT-FIX (SearchReferencesPipelineBuilder)
 from cmdb.manager.query_builder.search_references_pipeline_builder import SearchReferencesPipelineBuilder
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.security.acl.builder import AccessControlQueryBuilder
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -42,7 +42,7 @@ class QuickSearchPipelineBuilder(PipelineBuilder):
         super().__init__(pipeline=pipeline)
 
 
-    def build(self, search_term, user: UserModel = None, permission: AccessControlPermission = None,
+    def build(self, search_term, user: CmdbUser = None, permission: AccessControlPermission = None,
               active_flag: bool = False) -> list[dict]:
         """Build a pipeline query out of search search term"""
 

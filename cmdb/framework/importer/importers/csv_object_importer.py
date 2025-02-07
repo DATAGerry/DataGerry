@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 
 from cmdb.manager import ObjectsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser
 from cmdb.framework.importer.content_types import CSVContent
@@ -47,7 +47,7 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
                  config: CsvObjectImporterConfig = None,
                  parser: JsonObjectParser = None,
                  objects_manager: ObjectsManager = None,
-                 request_user: UserModel = None):
+                 request_user: CmdbUser = None):
         super().__init__(
                     file=file,
                     file_type=self.FILE_TYPE,

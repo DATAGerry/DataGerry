@@ -23,7 +23,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import ObjectsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.framework.rendering.render_list import RenderList
 from cmdb.framework.rendering.render_result import RenderResult
@@ -53,7 +53,7 @@ class  BaseExportWriter:
     def from_database(
             self,
             dbm: MongoDatabaseManager,
-            user: UserModel,
+            user: CmdbUser,
             permission: AccessControlPermission
         ):
         """Get all objects from the collection"""

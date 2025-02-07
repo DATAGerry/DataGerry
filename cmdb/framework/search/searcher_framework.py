@@ -19,7 +19,7 @@ import logging
 from cmdb.manager.query_builder.search_pipeline_builder import SearchPipelineBuilder #TODO: IMPORT-FIX
 from cmdb.manager import ObjectsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.models.type_model import CmdbType
 from cmdb.framework.rendering.render_list import RenderList
@@ -44,14 +44,14 @@ class SearcherFramework:
 
 
     def aggregate(self, pipeline: list[dict],
-                  request_user: UserModel = None,
+                  request_user: CmdbUser = None,
                   limit: int = DEFAULT_LIMIT,
                   skip: int = 0, **kwargs) -> SearchResult[RenderResult]:
         """
         Use mongodb aggregation system with pipeline queries
         Args:
             pipeline (list[dict]): list of requirement pipes
-            request_user (UserModel): user who started this search
+            request_user (CmdbUser): User who started this search
             permission (AccessControlPermission) : Permission enum for possible ACL operations..
             limit (int): max number of documents to return
             skip (int): number of documents to be skipped
@@ -130,7 +130,7 @@ class SearcherFramework:
         return search_result
 
 
-    def search(self, query: dict, request_user: UserModel = None, limit: int = DEFAULT_LIMIT,
+    def search(self, query: dict, request_user: CmdbUser = None, limit: int = DEFAULT_LIMIT,
                skip: int = 0) -> SearchResult[RenderResult]:
         """Uses mongodb find query system"""
         raise NotImplementedError()

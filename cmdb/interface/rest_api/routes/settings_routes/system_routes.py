@@ -28,7 +28,7 @@ from cmdb.interface.route_utils import right_required, insert_request_user, veri
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import NestedBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ system_blueprint = NestedBlueprint(settings_blueprint, url_prefix='/system')
 @system_blueprint.route('/', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_datagerry_information(request_user: UserModel):
+def get_datagerry_information(request_user: CmdbUser):
     """TODO: document"""
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
@@ -68,7 +68,7 @@ def get_datagerry_information(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
-def get_config_information(request_user: UserModel):
+def get_config_information(request_user: CmdbUser):
     """TODO: document"""
     ssc = SystemConfigReader()
 

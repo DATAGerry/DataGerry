@@ -32,7 +32,7 @@ from cmdb.manager import (
 )
 
 from cmdb.models.type_model import CmdbType
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.models.reports_model.mds_mode_enum import MdsMode
 from cmdb.interface.blueprints import APIBlueprint
@@ -62,7 +62,7 @@ reports_blueprint = APIBlueprint('reports', __name__)
 @reports_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def create_report(params: dict, request_user: UserModel):
+def create_report(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbReport in the database
 
@@ -105,13 +105,13 @@ def create_report(params: dict, request_user: UserModel):
 @reports_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_report(public_id: int, request_user: UserModel):
+def get_report(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbReport with the given public_id
     
     Args:
         public_id (int): public_id of CmdbReport which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbReport
+        request_user (CmdbUser): User which is requesting the CmdbReport
     """
     reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
 
@@ -131,7 +131,7 @@ def get_report(public_id: int, request_user: UserModel):
 @reports_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_reports(params: CollectionParameters, request_user: UserModel):
+def get_reports(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbReports based on the params
 
@@ -164,7 +164,7 @@ def get_reports(params: CollectionParameters, request_user: UserModel):
 @reports_blueprint.route('/<int:public_id>/count_reports_of_type', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-def count_reports_of_type(public_id: int, request_user: UserModel):
+def count_reports_of_type(public_id: int, request_user: CmdbUser):
     """
     Return the number of reports in der database with the given public_id of Type
     Args:
@@ -188,7 +188,7 @@ def count_reports_of_type(public_id: int, request_user: UserModel):
 @reports_blueprint.route('/<int:public_id>/run', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def run_report_query(public_id: int, request_user: UserModel):
+def run_report_query(public_id: int, request_user: CmdbUser):
     """
     Returns the result of the query of the report
 
@@ -233,7 +233,7 @@ def run_report_query(public_id: int, request_user: UserModel):
 @reports_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def update_report(params: dict, request_user: UserModel):
+def update_report(params: dict, request_user: CmdbUser):
     """
     Updates a CmdbReport
 
@@ -289,13 +289,13 @@ def update_report(params: dict, request_user: UserModel):
 @reports_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def delete_report(public_id: int, request_user: UserModel):
+def delete_report(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbReport with the given public_id
     
     Args:
         public_id (int): public_id of CmdbReport which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbReport
+        request_user (CmdbUser): User which is requesting the CmdbReport
     """
     reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
 

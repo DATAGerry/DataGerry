@@ -21,7 +21,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.cmdb_meta_log import CmdbMetaLog
 from cmdb.models.log_model.log_action_enum import LogAction
 from cmdb.models.log_model.cmdb_log import CmdbLog
@@ -91,13 +91,13 @@ class LogsManager(BaseManager):
 
     def iterate(self,
                 builder_params: BuilderParameters,
-                user: UserModel = None,
+                user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbMetaLog]:
         """
         Performs an aggregation on the database
         Args:
             builder_params (BuilderParameters): Contains input to identify the target of action
-            user (UserModel, optional): User requesting this action
+            user (CmdbUser, optional): User requesting this action
             permission (AccessControlPermission, optional): Permission which should be checked for the user
         Raises:
             ManagerIterationError: Raised when something goes wrong during the aggregate part

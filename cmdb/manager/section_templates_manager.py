@@ -25,7 +25,7 @@ from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Re
 from cmdb.manager.objects_manager import ObjectsManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
 from cmdb.manager import BaseManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import (
     CmdbType,
     TypeFieldSection,
@@ -99,14 +99,14 @@ class SectionTemplatesManager(BaseManager):
 
     def iterate(self,
                 builder_params: BuilderParameters,
-                user: UserModel = None,
+                user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbSectionTemplate]:
         """
         Performs an aggregation on the database
 
         Args:
             builder_params (BuilderParameters): Contains input to identify the target of action
-            user (UserModel, optional): User requesting this action
+            user (CmdbUser, optional): User requesting this action
             permission (AccessControlPermission, optional): Permission which should be checked for the user
         Raises:
             ManagerIterationError: Raised when something goes wrong during the aggregate part

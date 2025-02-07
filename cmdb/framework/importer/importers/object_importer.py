@@ -21,7 +21,7 @@ from flask import current_app
 from cmdb.manager import ObjectsManager
 from cmdb.manager.query_builder import BuilderParameters
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.framework.results import IterationResult
 from cmdb.framework.importer.importers.base_importer import BaseImporter
@@ -53,7 +53,7 @@ class ObjectImporter(BaseImporter):
                  config: ObjectImporterConfig = None,
                  parser: BaseObjectParser = None,
                  objects_manager: ObjectsManager = None,
-                 request_user: UserModel = None):
+                 request_user: CmdbUser = None):
         """
         Basic importer super class for object imports
         Normally should be started by start_import
@@ -208,14 +208,14 @@ class ObjectImporter(BaseImporter):
         raise NotImplementedError
 
 
-    def check_config_item_limit_reached(self, request_user: UserModel, objects_manager: ObjectsManager) -> bool:
+    def check_config_item_limit_reached(self, request_user: CmdbUser, objects_manager: ObjectsManager) -> bool:
         """TODO: document"""
         objects_count = self.get_objects_count(request_user, objects_manager)
 
         return objects_count >= request_user.config_items_limit
 
 
-    def get_objects_count(self, request_user: UserModel, objects_manager: ObjectsManager) -> int:
+    def get_objects_count(self, request_user: CmdbUser, objects_manager: ObjectsManager) -> int:
         """TODO: document"""
 
         builder_params = BuilderParameters({})

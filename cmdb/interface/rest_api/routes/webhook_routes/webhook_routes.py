@@ -24,7 +24,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import WebhooksManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.webhook_model.cmdb_webhook_model import CmdbWebhook
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -53,7 +53,7 @@ webhook_blueprint = APIBlueprint('webhooks', __name__)
 @webhook_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def create_webhook(params: dict, request_user: UserModel):
+def create_webhook(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbWebhook in the database
 
@@ -86,13 +86,13 @@ def create_webhook(params: dict, request_user: UserModel):
 @webhook_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_webhook(public_id: int, request_user: UserModel):
+def get_webhook(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbWebhook with the given public_id
     
     Args:
         public_id (int): public_id of CmdbWebhook which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbWebhook
+        request_user (CmdbUser): User which is requesting the CmdbWebhook
     """
     webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
 
@@ -112,7 +112,7 @@ def get_webhook(public_id: int, request_user: UserModel):
 @webhook_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_webhooks(params: CollectionParameters, request_user: UserModel):
+def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbWebhooks based on the params
 
@@ -147,7 +147,7 @@ def get_webhooks(params: CollectionParameters, request_user: UserModel):
 @webhook_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def update_webhook(params: dict, request_user: UserModel):
+def update_webhook(params: dict, request_user: CmdbUser):
     """
     Updates a CmdbWebhook
 
@@ -195,13 +195,13 @@ def update_webhook(params: dict, request_user: UserModel):
 @webhook_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def delete_webhook(public_id: int, request_user: UserModel):
+def delete_webhook(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbWebhook with the given public_id
     
     Args:
         public_id (int): public_id of CmdbWebhook which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbWebhook
+        request_user (CmdbUser): User which is requesting the CmdbWebhook
     """
     webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
 

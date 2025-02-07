@@ -27,7 +27,7 @@ from cmdb.manager import (
     ReportsManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.object_model.cmdb_object import CmdbObject
@@ -65,7 +65,7 @@ types_blueprint = APIBlueprint('types', __name__)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.add')
 @types_blueprint.validate(CmdbType.SCHEMA)
-def insert_type(data: dict, request_user: UserModel):
+def insert_type(data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route for insert a single type resource
 
@@ -113,7 +113,7 @@ def insert_type(data: dict, request_user: UserModel):
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.view')
 @types_blueprint.parse_parameters(TypeIterationParameters)
-def get_types(params: TypeIterationParameters, request_user: UserModel):
+def get_types(params: TypeIterationParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting a iterable collection of resources.
 
@@ -169,7 +169,7 @@ def get_types(params: TypeIterationParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @types_blueprint.protect(auth=True, right='base.framework.type.view')
-def get_type(public_id: int, request_user: UserModel):
+def get_type(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for a single type resource.
 
@@ -197,7 +197,7 @@ def get_type(public_id: int, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.read')
-def count_objects_of_type(public_id: int, request_user: UserModel):
+def count_objects_of_type(public_id: int, request_user: CmdbUser):
     """
     Return the number of objects in der database with the given public_id as type_id
     Args:
@@ -224,7 +224,7 @@ def count_objects_of_type(public_id: int, request_user: UserModel):
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.edit')
 @types_blueprint.validate(CmdbType.SCHEMA)
-def update_type(public_id: int, data: dict, request_user: UserModel):
+def update_type(public_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route for update a single type resource.
 
@@ -298,7 +298,7 @@ def update_type(public_id: int, data: dict, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.delete')
-def delete_type(public_id: int, request_user: UserModel):
+def delete_type(public_id: int, request_user: CmdbUser):
     """
     HTTP `DELETE` route for delete a single type resource.
 

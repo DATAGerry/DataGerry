@@ -22,7 +22,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
@@ -77,7 +77,7 @@ class LocationsManager(BaseManager):
 
     def iterate(self,
                 builder_params: BuilderParameters,
-                user: UserModel = None,
+                user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbLocation]:
         """
         TODO: document

@@ -24,7 +24,7 @@ from cmdb.manager import (
     CategoriesManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import RootBlueprint
@@ -44,7 +44,7 @@ special_blueprint = RootBlueprint('special_rest', __name__, url_prefix='/special
 @special_blueprint.route('/intro', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
-def get_intro_starter(request_user: UserModel):
+def get_intro_starter(request_user: CmdbUser):
     """
     Creates steps for intro and checks if there are any objects, categories or types in the DB
 
@@ -76,7 +76,7 @@ def get_intro_starter(request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @special_blueprint.parse_assistant_parameters()
 @insert_request_user
-def create_initial_profiles(data: str, request_user: UserModel):
+def create_initial_profiles(data: str, request_user: CmdbUser):
     """
     Creates all profiles selected in the assistant
 

@@ -24,7 +24,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import SectionTemplatesManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -53,7 +53,7 @@ section_template_blueprint = APIBlueprint('section_templates', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.add')
-def create_section_template(params: dict, request_user: UserModel):
+def create_section_template(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbSectionTemplate in the database
 
@@ -93,7 +93,7 @@ def create_section_template(params: dict, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
-def get_all_section_templates(params: CollectionParameters, request_user: UserModel):
+def get_all_section_templates(params: CollectionParameters, request_user: CmdbUser):
     """Returns all CmdbSectionTemplates based on the params
 
     Args:
@@ -130,13 +130,13 @@ def get_all_section_templates(params: CollectionParameters, request_user: UserMo
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
-def get_section_template(public_id: int, request_user: UserModel):
+def get_section_template(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbSectionTemplate with the given public_id
     
     Args:
         public_id (int): public_id of CmdbSectionTemplate which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbSectionTemplate
+        request_user (CmdbUser): User which is requesting the CmdbSectionTemplate
     """
     template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
                                                                             request_user)
@@ -159,7 +159,7 @@ def get_section_template(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
-def get_global_section_template_count(public_id: int, request_user: UserModel):
+def get_global_section_template_count(public_id: int, request_user: CmdbUser):
     """
     Retrives the count of types and objects using this global CmdbSectionTemplate
 
@@ -194,7 +194,7 @@ def get_global_section_template_count(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.edit')
-def update_section_template(params: dict, request_user: UserModel):
+def update_section_template(params: dict, request_user: CmdbUser):
     """
     Updates a CmdbSectionTemplate
 
@@ -247,7 +247,7 @@ def update_section_template(params: dict, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.delete')
-def delete_section_template(public_id: int, request_user: UserModel):
+def delete_section_template(public_id: int, request_user: CmdbUser):
     """TODO: document"""
     template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
                                                                             request_user)

@@ -40,7 +40,7 @@ from cmdb.manager import (
     WebhooksEventManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -54,12 +54,12 @@ class ManagerProvider:
     """
 
     @classmethod
-    def get_manager(cls, manager_type: ManagerType, request_user: UserModel):
+    def get_manager(cls, manager_type: ManagerType, request_user: CmdbUser):
         """Retrieves a manager based on the provided ManagerType and 'cloud_mode' app flag
 
         Args:
             manager_type (ManagerType): Enum of possible Managers
-            request_user (UserModel): The user which is making the API call
+            request_user (CmdbUser): The user which is making the API call
 
         Returns:
             Manager: Returns the manager of the provided ManagerType
@@ -112,14 +112,14 @@ class ManagerProvider:
 
 
     @staticmethod
-    def __get_manager_args(request_user: UserModel):
+    def __get_manager_args(request_user: CmdbUser):
         """
         Returns the appropriate arguments for the manager class based on the provided
         ManagerType and 'cloud_mode' flag.
 
         Args:
-            manager_type (ManagerType): Enum of possible Managers
-            request_user (UserModel): The user which is making the API call
+            request_user (CmdbUser): The user which is making the API call
+
         Returns:
             tuple: Arguments for the manager class initialization
         """

@@ -17,12 +17,9 @@
 import logging
 
 from cmdb.manager.query_builder import PipelineBuilder, SearchReferencesPipelineBuilder
-from cmdb.manager import (
-    ObjectsManager,
-    CategoriesManager,
-)
+from cmdb.manager import ObjectsManager, CategoriesManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.framework.search.search_param import SearchParam
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.security.acl.builder import AccessControlQueryBuilder
@@ -79,7 +76,8 @@ class SearchPipelineBuilder(PipelineBuilder):
 
     def build(self, params: list[SearchParam],
               objects_manager: ObjectsManager = None,
-              user: UserModel = None, permission: AccessControlPermission = None,
+              user: CmdbUser = None,
+              permission: AccessControlPermission = None,
               active_flag: bool = False) -> list[dict]:
         """Build a pipeline query out of frontend params"""
         # clear pipeline

@@ -22,7 +22,7 @@ from flask import abort, request, Response
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import MediaFilesManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.route_utils import (
     insert_request_user,
     right_required,
@@ -64,7 +64,7 @@ media_file_blueprint = APIBlueprint('media_file_blueprint', __name__, url_prefix
 @insert_request_user
 @media_file_blueprint.protect(auth=True, right='base.framework.object.view')
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_file_list(params: CollectionParameters, request_user: UserModel):
+def get_file_list(params: CollectionParameters, request_user: CmdbUser):
     """
     Get all objects in database
 
@@ -94,7 +94,7 @@ def get_file_list(params: CollectionParameters, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.framework.object.edit')
-def add_new_file(request_user: UserModel):
+def add_new_file(request_user: CmdbUser):
     """
     This method saves a file to the specified section of the document for storing workflow data.
     Any existing value that matches filename and the metadata is deleted. Before saving a value.
@@ -121,7 +121,7 @@ def add_new_file(request_user: UserModel):
         MediaFileManagerInsertError: If something went wrong during insert
 
     Args:
-        request_user (UserModel): the instance of the started user
+        request_user (CmdbUser): the instance of the started user
 
     Returns:
         New MediaFile.
@@ -164,7 +164,7 @@ def add_new_file(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.framework.object.edit')
-def update_file(request_user: UserModel):
+def update_file(request_user: CmdbUser):
     """
     This method updates a file to the specified section in the document.
     Any existing value that matches the file name and metadata is taken into account.
@@ -230,7 +230,7 @@ def update_file(request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @media_file_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_file(filename: str, request_user: UserModel):
+def get_file(filename: str, request_user: CmdbUser):
     """
     This method fetch a file to the specified section of the document.
     Any existing value that matches the file name and metadata will be considered.
@@ -267,7 +267,7 @@ def get_file(filename: str, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @media_file_blueprint.protect(auth=True, right='base.framework.object.view')
-def download_file(filename: str, request_user: UserModel):
+def download_file(filename: str, request_user: CmdbUser):
     """
     This method download a file to the specified section of the document.
     Any existing value that matches the file name and metadata will be considered.
@@ -305,7 +305,7 @@ def download_file(filename: str, request_user: UserModel):
 @media_file_blueprint.route('<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @media_file_blueprint.protect(auth=True, right='base.framework.object.edit')
-def delete_file(public_id: int, request_user: UserModel):
+def delete_file(public_id: int, request_user: CmdbUser):
     """
     This method deletes a file in the specified section of the document for storing workflow data.
     Any existing value that matches the file name and metadata is deleted. Before saving a value.

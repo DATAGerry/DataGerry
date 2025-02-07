@@ -28,7 +28,7 @@ from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse, GetMultiResponse, UpdateSingleResponse
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.framework.results import IterationResult
@@ -54,7 +54,7 @@ report_categories_blueprint = APIBlueprint('report_categories', __name__)
 @report_categories_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def create_report_category(params: dict, request_user: UserModel):
+def create_report_category(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbReportCategory in the database
 
@@ -87,13 +87,13 @@ def create_report_category(params: dict, request_user: UserModel):
 @report_categories_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_report_category(public_id: int, request_user: UserModel):
+def get_report_category(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbReportCategory with the given public_id
     
     Args:
         public_id (int): public_id of CmdbReportCategory which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbReportCategory
+        request_user (CmdbUser): User which is requesting the CmdbReportCategory
     """
     report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
                                                                             ManagerType.REPORT_CATEGORIES_MANAGER,
@@ -116,7 +116,7 @@ def get_report_category(public_id: int, request_user: UserModel):
 @report_categories_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_report_categories(params: CollectionParameters, request_user: UserModel):
+def get_report_categories(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbReportCategories based on the params
 
@@ -153,7 +153,7 @@ def get_report_categories(params: CollectionParameters, request_user: UserModel)
 @report_categories_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def update_report_category(params: dict, request_user: UserModel):
+def update_report_category(params: dict, request_user: CmdbUser):
     """
     Updates a CmdbReportCategory
 
@@ -198,13 +198,13 @@ def update_report_category(params: dict, request_user: UserModel):
 @report_categories_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def delete_report_category(public_id: int, request_user: UserModel):
+def delete_report_category(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbReportCategory with the given public_id
     
     Args:
         public_id (int): public_id of CmdbReportCategory which should be retrieved
-        request_user (UserModel): User which is requesting the CmdbReportCategory
+        request_user (CmdbUser): User which is requesting the CmdbReportCategory
     """
     report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
                                                                             ManagerType.REPORT_CATEGORIES_MANAGER,

@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@ In addition, the rights management, group administration and access rights are d
 """
 from cmdb.manager import RightsManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.group_model.group import UserGroupModel
 from cmdb.models.settings_model.user_setting import UserSettingModel
 from cmdb.models.right_model.base_right import BaseRight
@@ -29,7 +29,7 @@ from cmdb.models.right_model.all_rights import __all__ as rights
 rights_manager = RightsManager(rights)
 
 __COLLECTIONS__: list = [
-    UserModel,
+    CmdbUser,
     UserSettingModel,
     UserGroupModel
 ]

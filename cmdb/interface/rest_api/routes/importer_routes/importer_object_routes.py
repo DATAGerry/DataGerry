@@ -28,7 +28,7 @@ from cmdb.manager import (
     LogsManager,
 )
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.log_action_enum import LogAction
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 from cmdb.framework.rendering.cmdb_render import CmdbRender
@@ -178,7 +178,7 @@ def parse_objects():
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 @right_required('base.import.object.*')
-def import_objects(request_user: UserModel):
+def import_objects(request_user: CmdbUser):
     """TODO: document"""
     # Check if file exists
     if not request.files:

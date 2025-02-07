@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,7 @@ from cmdb.manager import (
 )
 
 from cmdb.startup_routines.setup_status_enum import SetupStatus
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.utils.system_config_reader import SystemConfigReader
 from cmdb.updater.updater_module import UpdaterModule
 from cmdb.updater.updater_settings import UpdateSettings
@@ -38,7 +38,7 @@ from cmdb.models.user_management_constants import (
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
 from cmdb.errors.database import ServerTimeoutError, DatabaseNotExists, DatabaseAlreadyExists
-from cmdb.errors.manager.users_manager import UserManagerInsertError
+from cmdb.errors.manager.users_manager import UsersManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -107,7 +107,7 @@ class SetupRoutine:
                 ) from err
 
             # create user management
-            LOGGER.info('SETUP ROUTINE: UserModel management')
+            LOGGER.info('SETUP ROUTINE: CmdbUser management')
             try:
                 if self.dbm.count('management.groups') < 2:
                     self.__create_user_management()
@@ -148,7 +148,7 @@ class SetupRoutine:
         users_manager = UsersManager(self.dbm)
 
         try:
-            admin_user: UserModel = users_manager.get_user(1)
+            admin_user: CmdbUser = users_manager.get_user(1)
             LOGGER.warning('KEY ROUTINE: Admin user detected')
             LOGGER.info('KEY ROUTINE: Enter new password for user: %s', admin_user.user_name)
 
@@ -161,7 +161,7 @@ class SetupRoutine:
         except Exception as err:
             #TODO: ERROR-FIX
             LOGGER.info('KEY ROUTINE: Password update for user failed: %s', err)
-            raise UserManagerInsertError(err) from err
+            raise UsersManagerInsertError(err) from err
 
 
         LOGGER.info('KEY ROUTINE: FINISHED')
@@ -181,7 +181,7 @@ class SetupRoutine:
         admin_name = 'admin'
         admin_pass = 'admin'
 
-        admin_user = UserModel(
+        admin_user = CmdbUser(
             public_id=1,
             user_name=admin_name,
             active=True,

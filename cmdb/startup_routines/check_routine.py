@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -30,7 +30,7 @@ from cmdb.manager import (
 
 from cmdb.startup_routines.check_status_enum import CheckStatus
 from cmdb.updater.updater_module import UpdaterModule
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
@@ -167,7 +167,7 @@ class CheckRoutine:
         # setting the initial user to admin/admin as default
         admin_name = 'admin'
         admin_pass = 'admin'
-        admin_user = UserModel(
+        admin_user = CmdbUser(
             public_id=1,
             user_name=admin_name,
             active=True,

@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@ import logging
 from cmdb.security.acl.control import AccessControlList
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.models.type_model import CmdbType
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.security import AccessDeniedError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -28,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def has_access_control(model: CmdbType, user: UserModel, permission: AccessControlPermission) -> bool:
+def has_access_control(model: CmdbType, user: CmdbUser, permission: AccessControlPermission) -> bool:
     """Check if a user has access to object/objects for a given permission"""
     acl: AccessControlList = model.acl
 
@@ -38,7 +38,7 @@ def has_access_control(model: CmdbType, user: UserModel, permission: AccessContr
     return True
 
 
-def verify_access(model: CmdbType, user: UserModel = None, permission: AccessControlPermission = None):
+def verify_access(model: CmdbType, user: CmdbUser = None, permission: AccessControlPermission = None):
     """Validate if a user has access to objects of this type."""
     if not user or not permission:
         return

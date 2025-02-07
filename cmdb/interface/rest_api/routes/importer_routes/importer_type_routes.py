@@ -23,7 +23,7 @@ from flask import request, abort
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import TypesManager
 
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
 from cmdb.interface.rest_api.routes.importer_routes.import_routes import importer_blueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -41,7 +41,7 @@ LOGGER = logging.getLogger(__name__)
 @importer_type_blueprint.route('/create/', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def add_type(request_user: UserModel):
+def add_type(request_user: CmdbUser):
     """TODO: document"""
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
@@ -70,7 +70,7 @@ def add_type(request_user: UserModel):
 
 @importer_type_blueprint.route('/update/', methods=['POST'])
 @insert_request_user
-def update_type(request_user: UserModel):
+def update_type(request_user: CmdbUser):
     """TODO: document"""
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 

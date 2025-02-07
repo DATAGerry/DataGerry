@@ -17,10 +17,11 @@
 from datetime import datetime, timezone
 from dateutil import parser
 
+from cmdb.class_schema.cmdb_user_schema import get_cmdb_user_schema
 from cmdb.models.cmdb_dao import CmdbDAO
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class UserModel(CmdbDAO):
+class CmdbUser(CmdbDAO):
     """TODO: document"""
     COLLECTION = 'management.users'
     MODEL = 'User'
@@ -37,87 +38,7 @@ class UserModel(CmdbDAO):
     DEFAULT_API_LEVEL = 0
     DEFAULT_CONFIG_ITEMS_LIMIT = 1000
 
-    SCHEMA: dict = {
-        'public_id': {
-            'type': 'integer'
-        },
-        'user_name': {
-            'type': 'string',
-            'required': True,
-        },
-        'active': {
-            'type': 'boolean',
-            'default': True,
-            'required': False
-        },
-        'group_id': {
-            'type': 'integer',
-            'default': DEFAULT_GROUP,
-            'required': True
-        },
-        'registration_time': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'authenticator': {
-            'type': 'string',
-            'nullable': True,
-            'default': DEFAULT_AUTHENTICATOR,
-            'required': False
-        },
-        'password': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'first_name': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'last_name': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'email': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'image': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'database': {
-            'type': 'string',
-            'nullable': True,
-            'empty': True,
-            'required': False
-        },
-        'api_level': {
-            'type': 'integer',
-            'nullable': True,
-            'empty': True,
-            'default': DEFAULT_API_LEVEL,
-            'required': False
-        },
-        'config_items_limit': {
-            'type': 'integer',
-            'nullable': True,
-            'empty': True,
-            'default': DEFAULT_CONFIG_ITEMS_LIMIT,
-            'required': False
-        }
-    }
+    SCHEMA: dict = get_cmdb_user_schema()
 
     __slots__ = 'public_id', 'user_name', 'active', 'group_id', 'registration_time', 'password', \
                 'image', 'first_name', 'last_name', 'database', 'email', 'authenticator', 'api_level', \
@@ -142,8 +63,8 @@ class UserModel(CmdbDAO):
         self.user_name: str = user_name
         self.active: bool = active
 
-        self.group_id: int = group_id or UserModel.DEFAULT_GROUP
-        self.authenticator: str = authenticator or UserModel.DEFAULT_AUTHENTICATOR
+        self.group_id: int = group_id or CmdbUser.DEFAULT_GROUP
+        self.authenticator: str = authenticator or CmdbUser.DEFAULT_AUTHENTICATOR
         self.registration_time: datetime = registration_time or datetime.now(timezone.utc)
 
         self.database = database
@@ -181,7 +102,7 @@ class UserModel(CmdbDAO):
 
 
     @classmethod
-    def from_data(cls, data: dict) -> "UserModel":
+    def from_data(cls, data: dict) -> "CmdbUser":
         """TODO: document"""
         reg_date = data.get('registration_time', None)
 
@@ -207,13 +128,13 @@ class UserModel(CmdbDAO):
 
 
     @classmethod
-    def to_data(cls, instance: "UserModel") -> dict:
+    def to_data(cls, instance: "CmdbUser") -> dict:
         """TODO: document"""
         return cls.to_dict(instance)
 
 
     @classmethod
-    def to_dict(cls, instance: "UserModel") -> dict:
+    def to_dict(cls, instance: "CmdbUser") -> dict:
         """TODO: document"""
         return {
             'public_id': instance.public_id,

@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,11 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""
+Implementation of all API routes for CmdbUsers
+"""
 import json
 import logging
 from datetime import datetime, timezone
 from flask import abort, request, current_app
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -27,7 +30,7 @@ from cmdb.manager import (
 )
 
 from cmdb.framework.results import IterationResult
-from cmdb.models.user_model.user import UserModel
+from cmdb.models.user_model import CmdbUser
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
@@ -40,14 +43,13 @@ from cmdb.interface.rest_api.responses import (
     GetSingleResponse,
 )
 
-from cmdb.errors.manager import (
-    ManagerGetError,
-    ManagerInsertError,
-    ManagerUpdateError,
-    ManagerDeleteError,
-    ManagerIterationError,
+from cmdb.errors.manager.users_manager import (
+    UsersManagerGetError,
+    UsersManagerInsertError,
+    UsersManagerIterationError,
+    UsersManagerUpdateError,
+    UsersManagerDeleteError,
 )
-from cmdb.errors.manager.users_manager import UserManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -60,24 +62,22 @@ users_blueprint = APIBlueprint('users', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 @users_blueprint.protect(auth=True, right='base.user-management.user.add')
-@users_blueprint.validate(UserModel.SCHEMA)
-def insert_user(data: dict, request_user: UserModel):
+@users_blueprint.validate(CmdbUser.SCHEMA)
+def insert_user(data: dict, request_user: CmdbUser):
     """
-    HTTP `POST` route to insert a user into the database
+    HTTP `POST` route to insert a CmdbUser into the database
 
     Args:
-        data (UserModel.SCHEMA): Insert data of a new user
-    Raises:
-        ManagerGetError: If the inserted user could not be found after inserting
-        ManagerInsertError: If something went wrong during insertion
-    Returns:
-        InsertSingleResponse: Insert response with the new user and the corresponding public_id
-    """
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-    security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY_MANAGER, request_user)
+        `data` (CmdbUser.SCHEMA): Data of a new CmdbUser
 
+    Returns:
+        `InsertSingleResponse`: Insert response with the new CmdbUser and the corresponding public_id
+    """
     #TODO: REFATOR-FIX
     try:
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY_MANAGER, request_user)
+
         user_password = data['password']
         data['password'] = security_manager.generate_hmac(data['password'])
         data['registration_time'] = datetime.now(timezone.utc)
@@ -87,7 +87,7 @@ def insert_user(data: dict, request_user: UserModel):
                 # Confirm database is available from the request
                 data['database'] = request_user.database
         except KeyError:
-            return abort(400, "The database could not be retrieved!")
+            return abort(400, "The database of the user could not be retrieved!")
 
         try:
             if current_app.cloud_mode:
@@ -97,20 +97,20 @@ def insert_user(data: dict, request_user: UserModel):
                 if not user_email:
                     raise KeyError
         except KeyError:
-            LOGGER.debug("[insert_user] No email was provided!")
+            LOGGER.error("[insert_user] No email was provided!")
             return abort(400, "The email is mandatory to create a new user!")
 
-        # Check if email is already exists
+        # Check if email already exists
         try:
             if current_app.cloud_mode:
                 user_with_given_email = users_manager.get_user_by({'email': user_email})
 
                 if user_with_given_email:
                     return abort(400, "The email is already in use!")
-        except ManagerGetError:
+        except UsersManagerGetError:
             pass
 
-        if current_app.cloud_mode:
+        if current_app.cloud_mode and current_app.local_mode:
             # Open file and check if user exists
             with open('etc/test_users.json', 'r', encoding='utf-8') as users_file:
                 users_data = json.load(users_file)
@@ -133,17 +133,21 @@ def insert_user(data: dict, request_user: UserModel):
 
         #Confirm that user is created
         user = users_manager.get_user(result_id)
-    except ManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[insert_user] ManagerGetError: %s", err.message)
-        return abort(404, "An error occured when creating the user!")
-    except ManagerInsertError as err:
-        LOGGER.debug("[insert_user] ManagerInsertError: %s", err.message)
+
+        api_response = InsertSingleResponse(CmdbUser.to_dict(user), result_id)
+
+        return api_response.make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except UsersManagerInsertError as err:
+        LOGGER.error("[insert_user] %s", err, exc_info=True)
         return abort(400, "Could not create the user in database!")
-
-    api_response = InsertSingleResponse(UserModel.to_dict(user), result_id)
-
-    return api_response.make_response()
+    except UsersManagerGetError as err:
+        LOGGER.error("[insert_user] %s", err, exc_info=True)
+        return abort(500, "Could not retrieve the created user from the database!")
+    except Exception as err:
+        LOGGER.error("[insert_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -152,80 +156,71 @@ def insert_user(data: dict, request_user: UserModel):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @users_blueprint.protect(auth=True, right='base.user-management.user.view')
 @users_blueprint.parse_collection_parameters()
-def get_users(params: CollectionParameters, request_user: UserModel):
+def get_users(params: CollectionParameters, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for getting a iterable collection of resources.
+    HTTP `GET`/`HEAD` route for retrieving multiple CmdbUsers with a filter
 
     Args:
-        params (CollectionParameters): Passed parameters over the http query string
+        `params` (CollectionParameters): Passed parameters over the http query string
+
     Returns:
-        GetMultiResponse: Which includes a IterationResult of the UserModel.
-    Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
-    Raises:
-        ManagerIterationError: If the collection could not be iterated.
-        ManagerGetError: If the collection/resources could not be found.
+        `GetMultiResponse`: The CmdbUsers matching the given filter
     """
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-
-    builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
-
     try:
-        iteration_result: IterationResult[UserModel] = users_manager.iterate(builder_params)
-        users = [UserModel.to_dict(user) for user in iteration_result.results]
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+
+        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
+
+        iteration_result: IterationResult[CmdbUser] = users_manager.iterate(builder_params)
+        users = [CmdbUser.to_dict(user) for user in iteration_result.results]
 
         api_response = GetMultiResponse(users,
                                         total=iteration_result.total,
                                         params=params,
                                         url=request.url,
                                         body=request.method == 'HEAD')
-    except ManagerIterationError:
-        #TODO: ERROR-FIX
-        return abort(400, "Could not retrieve users")
-    except ManagerGetError:
-        #TODO: ERROR-FIX (is it used?)
-        return abort(400, "Could not retrieve users")
-    except Exception as err:
-        LOGGER.error("[get_users] Exception: %s. Type: %s", err, type(err))
-        return abort(500, "Internal Server Error!")
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except UsersManagerIterationError as err:
+        LOGGER.error("[get_users] %s", err, exc_info=True)
+        return abort(400, "Could not iterate the requested users!")
+    except Exception as err:
+        LOGGER.error("[get_users] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
+
 
 
 @users_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @users_blueprint.protect(auth=True, right='base.user-management.user.view', excepted={'public_id': 'public_id'})
-def get_user(public_id: int, request_user: UserModel):
+def get_user(public_id: int, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for a single user resource.
+    HTTP `GET`/`HEAD` route for a single CmdbUser
 
     Args:
-        public_id (int): Public ID user.
-
-    Raises:
-        ManagerGetError: When the selected user does not exists.
-
-    Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
+        `public_id` (int): public_id of the requested CmdbUser
 
     Returns:
-        GetSingleResponse: Which includes the json data of a UserModel.
+        `GetSingleResponse`: Raw data of the requested CmdbUser
     """
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-
     try:
-        user: UserModel = users_manager.get_user(public_id)
-    except UserManagerGetError:
-        #TODO: MESSAGE-FIX
-        return abort(404, "Could not retrieve user")
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+
+        user: CmdbUser = users_manager.get_user(public_id)
+
+        api_response = GetSingleResponse(CmdbUser.to_dict(user), body=request.method == 'HEAD')
+
+        return api_response.make_response()
+    except UsersManagerGetError as err:
+        LOGGER.error("[get_user] %s", err, exc_info=True)
+        return abort(404, f"Could not retrieve the user with public_id: {public_id}")
     except Exception as err:
-        LOGGER.error("[get_user] Exception: %s. Type: %s", err, type(err))
-        return abort(500, "Internal Server Error!")
+        LOGGER.error("[get_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
-    api_response = GetSingleResponse(UserModel.to_dict(user), body=request.method == 'HEAD')
 
-    return api_response.make_response()
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -233,75 +228,72 @@ def get_user(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 @users_blueprint.protect(auth=True, right='base.user-management.user.edit', excepted={'public_id': 'public_id'})
-@users_blueprint.validate(UserModel.SCHEMA)
-def update_user(public_id: int, data: dict, request_user: UserModel):
+@users_blueprint.validate(CmdbUser.SCHEMA)
+def update_user(public_id: int, data: dict, request_user: CmdbUser):
     """
-    HTTP `PUT`/`PATCH` route for update a single user resource.
+    HTTP `PUT`/`PATCH` route to update a single CmdbUser
 
     Args:
-        public_id (int): Public ID of the updatable user.
-        data (UserModel.SCHEMA): New user data to update.
-    Raises:
-        ManagerGetError: When the user with the `public_id` was not found.
-        ManagerUpdateError: When something went wrong during the update.
-    Returns:
-        UpdateSingleResponse: With update result of the new updated user.
-    """
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        `public_id` (int): public_id of the CmdbUser which should be updated
+        `data` (CmdbUser.SCHEMA): New values for the CmdbUser
 
+    Returns:
+        `UpdateSingleResponse`: The updated raw data of the CmdbUser
+    """
     try:
-        user = UserModel.from_data(data=data)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+
+        user = CmdbUser.from_data(data=data)
         users_manager.update_user(public_id, user)
 
-        api_response = UpdateSingleResponse(UserModel.to_dict(user))
-    except ManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
-    except ManagerUpdateError as err:
-        LOGGER.debug("[update_user] ManagerUpdateError: %s", err.message)
-        return abort(400, f"User with piblic_id: {public_id} could not be updated!")
+        api_response = UpdateSingleResponse(CmdbUser.to_dict(user))
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except UsersManagerUpdateError as err:
+        LOGGER.error("[update_user] %s", err, exc_info=True)
+        return abort(400, f"Could not update the user with public_id: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[update_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @users_blueprint.route('/<int:public_id>/password', methods=['PATCH'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 @users_blueprint.protect(auth=True, right='base.user-management.user.edit', excepted={'public_id': 'public_id'})
-def change_user_password(public_id: int, request_user: UserModel):
+def change_user_password(public_id: int, request_user: CmdbUser):
     """
-    HTTP `PATCH` route for updating a single user password.
+    HTTP `PATCH` route for changing the password of a CmdbUser
 
     Args:
-        public_id (int): Public ID of the user.
-    Raises:
-        ManagerGetError: When the user with the `public_id` was not found.
-        ManagerUpdateError: When something went wrong during the updated.
+        `public_id` (int): public_id of the CmdbUser
+
     Returns:
-        UpdateSingleResponse: User with new password
+        `UpdateSingleResponse`:  The CmdbUser with new password
     """
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-    security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY_MANAGER, request_user)
-
     try:
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY_MANAGER, request_user)
+
         user = users_manager.get_user(public_id)
-    except UserManagerGetError:
-        #TODO: MESSAGE-FIX
-        return abort(404)
 
-    try:
         password = security_manager.generate_hmac(request.json.get('password'))
         user.password = password
         users_manager.update_user(public_id, user)
-        api_response = UpdateSingleResponse(UserModel.to_dict(user))
-    except ManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
-    except ManagerUpdateError as err:
-        LOGGER.debug("[change_user_password] ManagerUpdateError: %s", err.message)
-        return abort(400, f"Password for user with public_id: {public_id} could not be changed!")
 
-    return api_response.make_response()
+        api_response = UpdateSingleResponse(CmdbUser.to_dict(user))
+
+        return api_response.make_response()
+    except UsersManagerGetError as err:
+        LOGGER.error("[change_user_password] %s", err, exc_info=True)
+        return abort(404, f"Could not retrieve the user with public_id: {public_id}")
+    except UsersManagerUpdateError as err:
+        LOGGER.error("[update_user] %s", err, exc_info=True)
+        return abort(400, f"Could not change the password for user with public_id: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[update_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -309,30 +301,30 @@ def change_user_password(public_id: int, request_user: UserModel):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 @users_blueprint.protect(auth=True, right='base.user-management.user.delete')
-def delete_user(public_id: int, request_user: UserModel):
+def delete_user(public_id: int, request_user: CmdbUser):
     """
-    HTTP `DELETE` route for delete a single user resource.
+    HTTP `DELETE` route to delete a single CmdbUser
 
     Args:
-        public_id (int): Public ID of the user.
-    Raises:
-        ManagerGetError: When the user with the `public_id` was not found.
-        ManagerDeleteError: When something went wrong during the deletion.
+        `public_id` (int): public_id of the CmdbUser
+
     Returns:
-        DeleteSingleResponse: Delete result with the deleted user as data.
+        `DeleteSingleResponse`: Raw data of the deleted CmdbUser
     """
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-
     try:
-        deleted_group = users_manager.delete_user(public_id)
-        api_response = DeleteSingleResponse(raw=UserModel.to_dict(deleted_group))
-    except ManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_user] ManagerGetError: %s", err.message)
-        return abort(404, f"Could not delete user with ID: {public_id} !")
-    except ManagerDeleteError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_user] ManagerDeleteError: %s", err.message)
-        return abort(404, f"Could not delete user with ID: {public_id} !")
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
 
-    return api_response.make_response()
+        deleted_group = users_manager.delete_user(public_id)
+
+        api_response = DeleteSingleResponse(raw=CmdbUser.to_dict(deleted_group))
+
+        return api_response.make_response()
+    except UsersManagerDeleteError as err:
+        LOGGER.error("[delete_user] %s", err, exc_info=True)
+        return abort(400, f"Could not delete user with ID: {public_id} !")
+    except UsersManagerGetError as err:
+        LOGGER.error("[delete_user] %s", err, exc_info=True)
+        return abort(404, f"Could not retrieve the user with ID: {public_id}")
+    except Exception as err:
+        LOGGER.error("[delete_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
