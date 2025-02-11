@@ -20,7 +20,7 @@ In addition, the rights management, group administration and access rights are d
 from cmdb.manager import RightsManager
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.group_model.group import UserGroupModel
+from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.settings_model.user_setting import UserSettingModel
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.all_rights import __all__ as rights
@@ -31,7 +31,7 @@ rights_manager = RightsManager(rights)
 __COLLECTIONS__: list = [
     CmdbUser,
     UserSettingModel,
-    UserGroupModel
+    CmdbUserGroup,
 ]
 
 __ADMIN_GROUP_RIGHTS__: list[BaseRight] = [
@@ -48,7 +48,7 @@ __USER_GROUP_RIGHTS__: list[BaseRight] = [
     rights_manager.get_right('base.docapi.template.view')
 ]
 
-__FIXED_GROUPS__: list[UserGroupModel] = [
-    UserGroupModel(public_id=1, name='admin', label='Administrator', rights=__ADMIN_GROUP_RIGHTS__),
-    UserGroupModel(public_id=2, name='user', label='User', rights=__USER_GROUP_RIGHTS__)
+__FIXED_GROUPS__: list[CmdbUserGroup] = [
+    CmdbUserGroup(public_id=1, name='admin', label='Administrator', rights=__ADMIN_GROUP_RIGHTS__),
+    CmdbUserGroup(public_id=2, name='user', label='User', rights=__USER_GROUP_RIGHTS__)
 ]

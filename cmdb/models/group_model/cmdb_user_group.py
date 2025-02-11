@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -25,8 +25,10 @@ from cmdb.errors.security import RightNotFoundError
 
 LOGGER = logging.getLogger(__name__)
 
-
-class UserGroupModel(CmdbDAO):
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                 CmdbUserGroup - CLASS                                                #
+# -------------------------------------------------------------------------------------------------------------------- #
+class CmdbUserGroup(CmdbDAO):
     """TODO: document"""
     COLLECTION = 'management.groups'
     MODEL = 'Group'
@@ -64,7 +66,7 @@ class UserGroupModel(CmdbDAO):
 
 
     @classmethod
-    def from_data(cls, data: dict, rights: list[BaseRight] = None) -> "UserGroupModel":
+    def from_data(cls, data: dict, rights: list[BaseRight] = None) -> "CmdbUserGroup":
         """TODO: document"""
         if rights:
             rights = [right for right in rights if right['name'] in data.get('rights', [])]
@@ -80,7 +82,7 @@ class UserGroupModel(CmdbDAO):
 
 
     @classmethod
-    def to_dict(cls, instance: "UserGroupModel") -> dict:
+    def to_dict(cls, instance: "CmdbUserGroup") -> dict:
         """TODO: document"""
         return {
             'public_id': instance.public_id,
@@ -91,7 +93,7 @@ class UserGroupModel(CmdbDAO):
 
 
     @classmethod
-    def to_data(cls, instance: "UserGroupModel") -> dict:
+    def to_data(cls, instance: "CmdbUserGroup") -> dict:
         """TODO: document"""
         return {
             'public_id': instance.public_id,

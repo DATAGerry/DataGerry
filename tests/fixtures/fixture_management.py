@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@ import pytest
 from cmdb.manager import RightsManager
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.group_model.group import UserGroupModel
+from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.right_model.all_rights import __all__ as rights
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -37,17 +37,17 @@ def fixture_rights_manager():
 @pytest.fixture(scope="session", name="full_access_group")
 def fixture_full_access_group(rights_manager: RightsManager):
     "TODO: document"
-    return UserGroupModel(public_id=1, name='full', label='Full', rights=[rights_manager.get_right('base.*')])
+    return CmdbUserGroup(public_id=1, name='full', label='Full', rights=[rights_manager.get_right('base.*')])
 
 
 @pytest.fixture(scope="session", name="none_access_group")
 def fixture_none_access_group():
     """TODO: document"""
-    return UserGroupModel(public_id=2, name='none', label='None')
+    return CmdbUserGroup(public_id=2, name='none', label='None')
 
 
 @pytest.fixture(scope="session", name="full_access_user")
-def fixture_full_access_user(full_access_group: UserGroupModel):
+def fixture_full_access_user(full_access_group: CmdbUserGroup):
     "TODO: document"
     registration_time = datetime.now()
     return CmdbUser(public_id=1,
@@ -58,7 +58,7 @@ def fixture_full_access_user(full_access_group: UserGroupModel):
 
 
 @pytest.fixture(scope="session", name="none_access_user")
-def fixture_none_access_user(none_access_group: UserGroupModel):
+def fixture_none_access_user(none_access_group: CmdbUserGroup):
     "TODO: document"
     registration_time = datetime.now()
     return CmdbUser(public_id=2,

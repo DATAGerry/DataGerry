@@ -335,14 +335,19 @@ class BaseManager:
     #TODO: ERROR-FIX (keyword before argument)
     def update(self, criteria: dict, data: dict, add_to_set: bool = True, *args, **kwargs):
         """
-        Calls MongoDB update operation
+        Updates a document in the database
+
         Args:
-            criteria (dict): Filter to match dictionary
-            data: Update data (normally a dict)
+            `criteria` (dict): Filter for which documents should match
+            `data`: New values for the document
+
+        Raises:
+            `ManagerUpdateError`: When the update operation failed
 
         Returns:
-            UpdateResult
+            `UpdateResult`: The pymongo UpdateResult
         """
+        #TODO: DOCUMENTATION-FIX (finish the function description)
         try:
             return self.dbm.update(self.collection, criteria, data, add_to_set, *args, **kwargs)
         except Exception as err:

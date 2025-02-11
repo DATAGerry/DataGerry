@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,7 @@
 """TODO: document"""
 import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -25,22 +26,34 @@ from cmdb.manager import (
 )
 
 from cmdb.framework.results import IterationResult
-from cmdb.models.group_model.group_delete_mode_enum import GroupDeleteMode
+from cmdb.models.group_model import CmdbUserGroup, GroupDeleteMode
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.group_model.group import UserGroupModel
 from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses.response_parameters.group_parameters import GroupDeletionParameters
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.interface.rest_api.responses import DeleteSingleResponse,\
-                                              UpdateSingleResponse,\
-                                              InsertSingleResponse,\
-                                              GetMultiResponse,\
-                                              GetSingleResponse
+from cmdb.interface.rest_api.responses import (
+    DeleteSingleResponse,
+    UpdateSingleResponse,
+    InsertSingleResponse,
+    GetMultiResponse,
+    GetSingleResponse,
+)
 
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerUpdateError, ManagerDeleteError
+from cmdb.errors.manager.groups_manager import (
+    GroupsManagerDeleteError,
+    GroupsManagerGetError,
+    GroupsManagerInsertError,
+    GroupsManagerIterationError,
+    GroupsManagerUpdateError,
+)
+from cmdb.manager.users_manager import (
+    UsersManagerGetError,
+    UsersManagerUpdateError,
+    UsersManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -53,112 +66,106 @@ groups_blueprint = APIBlueprint('groups', __name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.add')
-@groups_blueprint.validate(UserGroupModel.SCHEMA)
-def insert_group(data: dict, request_user: CmdbUser):
+@groups_blueprint.validate(CmdbUserGroup.SCHEMA)
+def insert_user_group(data: dict, request_user: CmdbUser):
     """
-    HTTP `POST` route for insert a single group resource.
+    HTTP `POST` to insert a single CmdbUserGroup
 
     Args:
-        data (UserGroupModel.SCHEMA): Insert data of a new group.
-
-    Raises:
-        ManagerGetError: If the inserted group could not be found after inserting.
-        ManagerInsertError: If something went wrong during insertion.
+        `data` (CmdbUserGroup.SCHEMA): Data of the new CmdbUserGroup
 
     Returns:
-        InsertSingleResponse: Insert response with the new group and its public_id.
+        `InsertSingleResponse`: The public_id and the newly created CmdbUserGroup
     """
-    groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
-
     try:
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+
         result_id = groups_manager.insert_group(data)
         group = groups_manager.get_group(result_id)
-    except ManagerInsertError as err:
-        LOGGER.debug("[insert_group] ManagerInsertError: %s", err.message)
-        return abort(400, "The group could not be created !")
-    except ManagerGetError as err:
-        LOGGER.debug("[insert_group] ManagerGetError: %s", err.message)
-        return abort(404, "The created group could not be retrieved from database!")
 
-    api_response = InsertSingleResponse(result_id=result_id, raw=UserGroupModel.to_dict(group))
+        api_response = InsertSingleResponse(result_id=result_id, raw=CmdbUserGroup.to_dict(group))
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except GroupsManagerInsertError as err:
+        LOGGER.error("[insert_user_group] %s", err, exc_info=True)
+        return abort(400, "Could not insert the new user group in the database!")
+    except GroupsManagerGetError as err:
+        LOGGER.error("[insert_user_group] %s", err, exc_info=True)
+        return abort(400, "Could not retrieve the created user group from the database!")
+    except Exception as err:
+        LOGGER.error("[insert_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
 @groups_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
 @groups_blueprint.parse_collection_parameters()
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_groups(params: CollectionParameters, request_user: CmdbUser):
+def get_user_groups(params: CollectionParameters, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for getting a iterable collection of resources.
+    HTTP `GET`/`HEAD` route for getting multiple CmdbUserGroups
 
     Args:
-        params (CollectionParameters): Passed parameters over the http query string
+        `params` (CollectionParameters): Filter for requested CmdbUserGroups
 
     Returns:
-        GetMultiResponse: Which includes a IterationResult of the UserGroupModel.
-
-    Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
-
-    Raises:
-        ManagerGetError: If the collection/resources could not be found.
+        `GetMultiResponse`: All the CmdbUserGroups matching the CollectionParameters
     """
-    groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
-
-    builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
-
     try:
-        iteration_result: IterationResult[UserGroupModel] = groups_manager.iterate(builder_params)
-        groups = [UserGroupModel.to_dict(group) for group in iteration_result.results]
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
 
-        api_response = GetMultiResponse(groups, total=iteration_result.total, params=params,
-                                        url=request.url, body=request.method == 'HEAD')
-    except ManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
-    except Exception:
-        #TODO: ERROR-FIX
-        return abort(400)
+        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
+        iteration_result: IterationResult[CmdbUserGroup] = groups_manager.iterate(builder_params)
+        groups = [CmdbUserGroup.to_dict(group) for group in iteration_result.results]
 
-    return api_response.make_response()
+        api_response = GetMultiResponse(groups,
+                                        total=iteration_result.total,
+                                        params=params,
+                                        url=request.url,
+                                        body=request.method == 'HEAD')
+
+        return api_response.make_response()
+    except GroupsManagerIterationError as err:
+        LOGGER.error("[get_user_groups] %s", err, exc_info=True)
+        return abort(400, "Could not iterate the user groups!")
+    except Exception as err:
+        LOGGER.error("[get_user_groups] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @groups_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
-def get_group(public_id: int, request_user: CmdbUser):
+def get_user_group(public_id: int, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for a single group resource.
+    HTTP `GET`/`HEAD` route to retrieve a single CmdbUserGroup
 
     Args:
-        public_id (int): Public ID of the group.
-
-    Raises:
-        ManagerGetError: When the selected group does not exists.
-
-    Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
+        `public_id` (int): public_id of the requested CmdbUserGroup
 
     Returns:
-        GetSingleResponse: Which includes the json data of a UserGroupModel.
+        `GetSingleResponse`: The requested CmdbUserGroup
     """
-    groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
-
     try:
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+
         group = groups_manager.get_group(public_id)
-    except ManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
 
-    api_response = GetSingleResponse(UserGroupModel.to_dict(group), body=request.method == 'HEAD')
+        api_response = GetSingleResponse(CmdbUserGroup.to_dict(group), body=request.method == 'HEAD')
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except GroupsManagerGetError as err:
+        LOGGER.error("[get_user_group] %s", err, exc_info=True)
+        return abort(400, "Could not retrieve the user group!")
+    except Exception as err:
+        LOGGER.error("[get_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -166,41 +173,37 @@ def get_group(public_id: int, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.edit')
-@groups_blueprint.validate(UserGroupModel.SCHEMA)
-def update_group(public_id: int, data: dict, request_user: CmdbUser):
+@groups_blueprint.validate(CmdbUserGroup.SCHEMA)
+def update_user_group(public_id: int, data: dict, request_user: CmdbUser):
     """
-    HTTP `PUT`/`PATCH` route for update a single group resource.
+    HTTP `PUT`/`PATCH` route fto update a single CmdbUserGroup
 
     Args:
-        public_id (int): Public ID of the updatable group.
-        data (UserGroupModel.SCHEMA): New group data to update.
-
-    Raises:
-        ManagerGetError: When the group with the `public_id` was not found
-        ManagerUpdateError: When something went wrong during the update
+        `public_id` (int): public_id of the CmdbUserGroup which should be updated
+        `data` (CmdbUserGroup.SCHEMA): New version for the CmdbUserGroup
 
     Returns:
-        UpdateSingleResponse: With update result of the new updated group
+        `UpdateSingleResponse`: The new version of the CmdbUserGroup
     """
-    groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
-
     try:
-        group = UserGroupModel.from_data(data=data, rights=flat_rights_tree(rights))
-        group_dict = UserGroupModel.to_dict(group)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+
+        group = CmdbUserGroup.from_data(data=data, rights=flat_rights_tree(rights))
+        group_dict = CmdbUserGroup.to_dict(group)
         group_dict['rights'] = [right.get('name') for right in group_dict.get('rights', [])]
 
         #TODO: ERROR-FIX (Add try/except block)
         groups_manager.update_group(public_id, group_dict)
 
         api_response = UpdateSingleResponse(group_dict)
-    except ManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
-    except ManagerUpdateError as err:
-        LOGGER.debug("[update_group] ManagerUpdateError: %s", err.message)
-        return abort(400, "Group could not be updated!")
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except GroupsManagerUpdateError as err:
+        LOGGER.error("[update_user_group] %s", err, exc_info=True)
+        return abort(400, f"User group with public_id:{public_id} could not be updated!")
+    except Exception as err:
+        LOGGER.error("[update_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -209,63 +212,61 @@ def update_group(public_id: int, data: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.delete')
 @groups_blueprint.parse_parameters(GroupDeletionParameters)
-def delete_group(public_id: int, params: GroupDeletionParameters, request_user: CmdbUser):
+def delete_user_group(public_id: int, params: GroupDeletionParameters, request_user: CmdbUser):
     """
-    HTTP `DELETE` route for delete a single group resource.
+    HTTP `DELETE` route to delete a single CmdbUserGroup
 
     Args:
-        public_id (int): Public ID of the user.
-        params (GroupDeletionParameters): Optional action parameters for handling users when the group \
-                                          is going to be deleted.
-
-    Notes:
-        Based on the params attribute. Users can be moved or deleted.
-
-    Raises:
-        ManagerGetError: When the group with the `public_id` was not found
-        ManagerDeleteError: When something went wrong during the deletion
+        `public_id` (int): public_id of the CmdbUserGroup
+        `params` (GroupDeletionParameters): Optional action parameters for handling users when the group is deleted
 
     Returns:
-        DeleteSingleResponse: Delete result with the deleted group as data
+        `DeleteSingleResponse`: The deleted CmdbUserGroup
     """
-    groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
-    users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-
-    # Check of action is set
-    if params.action:
-        users_in_group: list[CmdbUser] = users_manager.get_many_users({'group_id': public_id})
-
-        if len(users_in_group) > 0:
-            if params.action == GroupDeleteMode.MOVE.value:
-                if params.group_id:
-                    for user in users_in_group:
-                        user.group_id = int(params.group_id)
-
-                        try:
-                            users_manager.update_user(user.public_id, user)
-                        except ManagerUpdateError as err:
-                            return abort(400,
-                                         f'Could not move user: {user.public_id} to group: {params.group_id} | '
-                                         f'Error: {err}')
-
-            if params.action == GroupDeleteMode.DELETE.value:
-                for user in users_in_group:
-                    try:
-                        users_manager.delete_user(user.public_id)
-                    except ManagerDeleteError as err:
-                        LOGGER.debug("[delete_group] ManagerDeleteError_ %s", err.message)
-                        return abort(400, f'Could not delete user with ID: {user.public_id} !')
-
     try:
-        deleted_group = groups_manager.delete_group(public_id)
-        api_response = DeleteSingleResponse(raw=UserGroupModel.to_dict(deleted_group))
-    except ManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_group] ManagerGetError: %s", err.message)
-        return abort(404)
-    except ManagerDeleteError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_group] ManagerDeleteError: %s", err.message)
-        return abort(404)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
 
-    return api_response.make_response()
+
+        # Check if action is set
+        #TODO: REFACTOR-FIX (give the user handling an own function)
+        if params.action:
+            users_in_group: list[CmdbUser] = users_manager.get_many_users({'group_id': public_id})
+
+            if len(users_in_group) > 0:
+                if params.action == GroupDeleteMode.MOVE.value:
+                    if params.group_id:
+                        for user in users_in_group:
+                            user.group_id = int(params.group_id)
+
+                            try:
+                                users_manager.update_user(user.public_id, user)
+                            except UsersManagerUpdateError as err:
+                                LOGGER.error("[delete_user_group]  %s", err)
+                                return abort(400, f"Could not move user: {user.public_id} to \
+                                                    group: {params.group_id}")
+
+                if params.action == GroupDeleteMode.DELETE.value:
+                    for user in users_in_group:
+                        try:
+                            users_manager.delete_user(user.public_id)
+                        except UsersManagerDeleteError as err:
+                            LOGGER.error("[delete_user_group]  %s", err)
+                            return abort(400, f'Could not delete user with ID: {user.public_id} !')
+
+        deleted_group = groups_manager.delete_group(public_id)
+
+        api_response = DeleteSingleResponse(raw=CmdbUserGroup.to_dict(deleted_group))
+
+        return api_response.make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except UsersManagerGetError as err:
+        LOGGER.error("[delete_user_group] %s", err, exc_info=True)
+        return abort(400, "Could not retrieve users which are in the user group!")
+    except GroupsManagerDeleteError as err:
+        LOGGER.error("[delete_user_group] %s", err, exc_info=True)
+        return abort(400, "Could not delete the user group!")
+    except Exception as err:
+        LOGGER.error("[update_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
