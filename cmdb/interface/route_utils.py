@@ -37,7 +37,7 @@ from cmdb.interface.rest_api.auth_method_enum import AuthMethod
 from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.token.validator import TokenValidator
 from cmdb.security.token.generator import TokenGenerator
-from cmdb.models.group_model.group import UserGroupModel
+from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
@@ -59,6 +59,7 @@ from cmdb.errors.security import (
 from cmdb.errors.manager.users_manager import UsersManagerInsertError, UsersManagerGetError
 from cmdb.errors.database import SetDatabaseError
 from cmdb.errors.database.database_errors import DatabaseNotExists
+from cmdb.errors.manager.groups_manager import GroupsManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -271,9 +272,9 @@ def right_required(required_right: str):
     def _page_right(func):
         @functools.wraps(func)
         def _decorate(*args, **kwargs):
-            groups_manager = GroupsManager(current_app.database_manager)
-
             try:
+                groups_manager = GroupsManager(current_app.database_manager)
+
                 current_user: CmdbUser = kwargs['request_user']
             except KeyError:
                 return abort(400, 'No request user was provided')
@@ -281,13 +282,15 @@ def right_required(required_right: str):
                 if current_app.cloud_mode:
                     groups_manager = GroupsManager(current_app.database_manager, current_user.database)
 
-                group: UserGroupModel = groups_manager.get_group(current_user.group_id)
+                group: CmdbUserGroup = groups_manager.get_group(current_user.group_id)
                 has_right = group.has_right(required_right)
 
                 if not has_right and not group.has_extended_right(required_right):
-                    return abort(403, 'Request user does not have the right for this action')
-            except ManagerGetError:
-                return abort(404, 'Group or right does not exist!')
+                    return abort(403, 'Request user does not have the right for this action!')
+            except GroupsManagerGetError:
+                return abort(404, "Group or right does not exist!")
+            except Exception:
+                return abort(403, "Could not verify authorisation with the provided data!")
 
             return func(*args, **kwargs)
 

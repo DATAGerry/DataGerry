@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """TODO: document"""
-from cmdb.models.group_model.group_delete_mode_enum import GroupDeleteMode
+from cmdb.models.group_model import GroupDeleteMode
 from cmdb.interface.rest_api.responses.response_parameters.api_parameters import APIParameters
 # -------------------------------------------------------------------------------------------------------------------- #
 

@@ -14,23 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains Setup Error Classes
+This module provides all errors for the GroupsManager
 """
+from .groups_manager_errors import (
+    GroupsManagerError,
+    GroupsManagerInsertError,
+    GroupsManagerGetError,
+    GroupsManagerIterationError,
+    GroupsManagerUpdateError,
+    GroupsManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class SetupError(Exception):
-    """
-    Base Setup Error
-    """
-    def __init__(self, message: str):
-        super().__init__(message)
-
-# --------------------------------------------------- SETUP ERRORS --------------------------------------------------- #
-
-class CollectionInitError(SetupError):
-    """
-    Raised when Datagerry could not initialise the database collection
-    """
-    def __init__(self, err: str):
-        self.message = f"CollectionInitError: {err}"
-        super().__init__(self.message)
+__all__ = [
+    'GroupsManagerError',
+    'GroupsManagerInsertError',
+    'GroupsManagerGetError',
+    'GroupsManagerIterationError',
+    'GroupsManagerUpdateError',
+    'GroupsManagerDeleteError',
+]
