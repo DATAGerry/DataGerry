@@ -110,7 +110,7 @@ def get_categories(params: CollectionParameters, request_user: CmdbUser):
         `request_user` (CmdbUser): User requesting this data
 
     Returns:
-        GetMultiResponse: All the CmdbCategories matching the CollectionParameters
+        `GetMultiResponse`: All the CmdbCategories matching the CollectionParameters
     """
     try:
         categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,

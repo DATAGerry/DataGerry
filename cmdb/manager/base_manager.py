@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -82,18 +82,20 @@ class BaseManager:
     def iterate_query(self,
                       builder_params: BuilderParameters,
                       user: CmdbUser = None,
-                      permission: AccessControlPermission = None):
+                      permission: AccessControlPermission = None) -> tuple[list, int]:
         """
         Performs an aggregation on the database
+
         Args:
-            builder_params (BuilderParameters): Contains input to identify the target of action
-            user (CmdbUser, optional): User requesting this action
-            permission (AccessControlPermission, optional): Permission which should be checked for the user
+            `builder_params` (BuilderParameters): Contains input to identify the target of action
+            `user` (CmdbUser, optional): User requesting this action
+            `permission` (AccessControlPermission, optional): Permission which should be checked for the user
+
         Raises:
-            ManagerIterationError: Raised when something goes wrong during the aggregate part
-            ManagerIterationError: Raised when something goes wrong during the building of the IterationResult
+            `ManagerIterationError`: Raised when something goes wrong during the aggregation
+
         Returns:
-            IterationResult[CmdbObject]: Result which matches the Builderparameters
+            `tuple[list, int]`: Result which matches the builder_params and the number of results
         """
         try:
             query: list[dict] = self.query_builder.build(builder_params, user, permission)
@@ -107,7 +109,6 @@ class BaseManager:
                 total = next(total_cursor)['total']
 
             return aggregation_result , total
-        #TODO: ERROR-FIX
         except Exception as err:
             raise ManagerIterationError(err) from err
 
@@ -241,27 +242,36 @@ class BaseManager:
     def get_many(self,
                  sort: str = 'public_id',
                  direction: int = -1,
-                 limit=0,
+                 limit: int=0,
                  **requirements: dict) -> list[dict]:
-        """Get all documents from the database which have the passing requirements
+        """
+        Get all documents from the database filtered by the requirements
 
         Args:
-            sort (str): sort by given key - default public_id
-            **requirements (dict): dictionary of key value pairs
+            `sort` (str): sort by given key  (Default 'public_id')
+            `direction` (int): Ascending = 1, Descending = -1 - (Default: -1)
+            `limit` (int): Limits the amount of results, 0 equals no limit (Default: 0)
+            `**requirements` (dict): dictionary of key value pairs as filter
+
+        Raises:
+            `ManagerGetError` : When retrieving the documents fails
 
         Returns:
-            list: list of all documents
+            `list[dict]`: list of all documents
         """
-        requirements_filter = {}
-        formatted_sort = [(sort, direction)]
+        try:
+            requirements_filter = {}
+            formatted_sort = [(sort, direction)]
 
-        for k, req in requirements.items():
-            requirements_filter.update({k: req})
+            for k, req in requirements.items():
+                requirements_filter.update({k: req})
 
-        return self.dbm.find_all(collection=self.collection,
-                                 limit=limit,
-                                 filter=requirements_filter,
-                                 sort=formatted_sort)
+            return self.dbm.find_all(collection=self.collection,
+                                    limit=limit,
+                                    filter=requirements_filter,
+                                    sort=formatted_sort)
+        except Exception as err:
+            raise ManagerGetError(err) from err
 
 
     def aggregate(self, *args, **kwargs):
@@ -295,14 +305,16 @@ class BaseManager:
         Retrieves next public_id for the collection
 
         Returns:
-            int: New highest public_id of the collection
+            `int`: New highest public_id of the collection
         """
+        # TODO: ERROR-FIX (create and catch error for this operation)
         return self.dbm.get_next_public_id(self.collection)
 
 
     def count_documents(self, collection: str, *args, **kwargs):
         """
-        Calls mongodb count operation
+        Counts the number of documents in a collection
+
         Args:
             collection: Name of the collection
 
