@@ -18,6 +18,7 @@ import logging
 from typing import Tuple
 from datetime import datetime, timezone
 from flask import request, current_app, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -133,6 +134,8 @@ def post_login():
 
             return login_response.make_response()
 
+    except HTTPException as http_err:
+        raise http_err
     except NoAccessTokenError as err:
         LOGGER.error("[post_login] NoAccessTokenError: %s", err)
         return abort(500, "No access token found!")

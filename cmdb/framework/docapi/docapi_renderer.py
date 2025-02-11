@@ -26,6 +26,7 @@ from cmdb.framework.docapi.pdf_document_type import PdfDocumentType
 
 class DocApiRenderer:
     """TODO: document"""
+    #TODO: INIT-FIX (refactor the initalisation)
     def __init__(self, objects_manager: ObjectsManager, docapi_manager: DocapiTemplatesManager):
         self.docapi_manager = docapi_manager
         self.objects_manager = objects_manager

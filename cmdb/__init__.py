@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@ __title__ = 'DATAGERRY'
 __version__ = '2.2.0'
 __author__ = 'becon GmbH'
 __license__ = 'AGPLv3'
-__copyright__ = 'Copyright 2024 becon GmbH'
+__copyright__ = 'Copyright 2025 becon GmbH'
 __runtime__ = time.time()
 __MODE__ = 'INFO'
 __CLOUD_MODE__ = False
