@@ -45,23 +45,30 @@ export class ObjectViewComponent implements OnInit, OnDestroy {
     constructor(public objectService: ObjectService, private activateRoute: ActivatedRoute, private changesRef: ChangeDetectorRef,
         private toastService: ToastService
     ) {
-        this.activateRoute.data.subscribe((data: Data) => {
-            this.objectViewSubject.next(data.object as RenderResult);
+        this.activateRoute.data
+        .subscribe({
+            next: (data: Data) => {
+                    this.objectViewSubject.next(data.object as RenderResult);
         },
-            (e) => {
-                this.toastService.error(e?.error?.message);
-            });
+        error: (e) => {
+            this.toastService.error(e?.error?.message);
+        }}
+        
+        );
     }
 
 
     public ngOnInit(): void {
         this.objectViewSubject.asObservable().pipe(takeUntil(this.unsubscribe))
-            .subscribe((result) => {
-                this.renderResult = result;
-            },
-                (e) => {
+            .subscribe({
+                next: (result) => {
+                    this.renderResult = result;
+                },
+                error: (e) => {
                     this.toastService.error(e?.error?.message);
-                });
+                }
+            }
+            );
     }
 
     ngAfterViewInit(): void {

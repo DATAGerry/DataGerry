@@ -130,36 +130,43 @@ export class LocationComponent extends RenderFieldComponent implements OnInit, O
     private getChildren(){
         if(this.currentObjectID){
             this.locationService.getChildren(this.currentObjectID).pipe(takeUntil(this.unsubscribe))
-            .subscribe((children: RenderResult[]) => {
-                if(children.length > 0){
+            .subscribe({
+                next: (children: RenderResult[]) => {
+                            if(children.length > 0){
                     this.hasChildren = true;
                 } 
             },
-            (error) => {
+            error: (error) => {
                 if (error.status != 404) {
                     console.error("Error:", error);
                 }
-            });
+            }
+            
+            }
+        );
         }
     }
 
 
-    private getParent(){
-        if(this.currentObjectID){
+    private getParent() {
+        if (this.currentObjectID) {
             this.locationService.getParent(this.currentObjectID).pipe(takeUntil(this.unsubscribe))
-            .subscribe((locationObject: RenderResult) => {
-                if(locationObject){
-                    this.objectLocation = locationObject;
-                    var public_id = this.objectLocation['public_id'];
-                    this.parentFormGroup.patchValue({'dg_location': public_id});
-                    this.setLocationExists('true');
+                .subscribe({
+                    next: (locationObject: RenderResult) => {
+                        if (locationObject) {
+                            this.objectLocation = locationObject;
+                            var public_id = this.objectLocation['public_id'];
+                            this.parentFormGroup.patchValue({ 'dg_location': public_id });
+                            this.setLocationExists('true');
+                        }
+                    },
+                    error: (error) => {
+                        if (error.status != 404) {
+                            console.error("Error:", error);
+                        }
+                    }
                 }
-            },
-            (error) => {
-                if (error.status != 404) {
-                    console.error("Error:", error);
-                }
-            });
+                );
         }
     }
 

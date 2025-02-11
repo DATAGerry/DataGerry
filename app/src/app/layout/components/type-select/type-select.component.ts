@@ -209,12 +209,14 @@ export class TypeSelectComponent<T = CmdbType> implements OnInit, OnDestroy {
   private loadTypesFromApi(): void {
     this.loading = true;
     this.typeService.getTypes(TypeSelectComponent.getApiParameters(this.currentPage))
-      .pipe(takeUntil(this.subscriber)).subscribe(
-      (apiResponse: APIGetMultiResponse<CmdbType>) => {
+      .pipe(takeUntil(this.subscriber))
+      .subscribe({
+        next: (apiResponse: APIGetMultiResponse<CmdbType>) => {    
         this.types = [...this.types, ...apiResponse.results as Array<CmdbType>];
         this.totalTypes = apiResponse.total;
         this.maxPages = apiResponse.pager.total_pages;
-      }, (error) => this.toast.error(error)
+      }, 
+      error: (error) => this.toast.error(error?.error?.message)}
     ).add(() => this.loading = false);
   }
 

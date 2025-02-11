@@ -133,20 +133,23 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
             });
 
             let ack = null;
-            this.objectService.postObject(newObjectInstance).pipe(finalize(() => this.loaderService.hide())).subscribe(newObjectID => {
-                ack = newObjectID;
+            this.objectService.postObject(newObjectInstance).pipe(finalize(() => this.loaderService.hide()))
+                .subscribe({
+                    next: (newObjectID) => {
+                        ack = newObjectID;
 
-                if (this.newLocationParentID > 0) {
-                    this.createNewObjectLocation(ack);
-                }
-            },
-                (e) => {
-                    this.toastService.error(e?.error?.message)
-                },
-                () => {
-                    this.router.navigate(['/framework/object/view/' + ack]);
-                    this.sidebarService.updateTypeCounter(this.renderResult.type_information.type_id);
-                    this.toastService.success(`Object ${this.objectID} was successfully copied into ${ack}!`);
+                        if (this.newLocationParentID > 0) {
+                            this.createNewObjectLocation(ack);
+                        }
+                    },
+                    error: (e) => {
+                        this.toastService.error(e?.error?.message);
+                    },
+                    complete: () => {
+                        this.router.navigate(['/framework/object/view/' + ack]);
+                        this.sidebarService.updateTypeCounter(this.renderResult.type_information.type_id);
+                        this.toastService.success(`Object ${this.objectID} was successfully copied into ${ack}!`);
+                    }
                 });
         }
     }
@@ -171,13 +174,16 @@ export class ObjectCopyComponent implements OnInit, OnDestroy {
             "type_id": this.typeInstance.public_id
         }
 
-        this.locationService.postLocation(params).subscribe((res: APIUpdateMultiResponse) => {
-            this.locationService.locationTreeName = "";
-        },
-            error => {
-                this.toastService.error(error?.error?.message);
+        this.locationService.postLocation(params)
+            .subscribe({
+                next: (res: APIUpdateMultiResponse) => {
+                    this.locationService.locationTreeName = "";
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
             }
-        );
+            );
     }
 
     /* ------------------------------------------------- HELPER SECTION ------------------------------------------------- */

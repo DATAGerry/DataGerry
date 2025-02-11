@@ -41,7 +41,7 @@ export interface GlobalTemplateCounts {
 }
 
 @Component({
-    selector:'cmdb-section-template',
+    selector: 'cmdb-section-template',
     templateUrl: './section-template.component.html',
     styleUrls: ['./section-template.component.scss']
 })
@@ -52,13 +52,13 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
     private modalRef: NgbModalRef;
     public isLoading$ = this.loaderService.isLoading$;
 
-/* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
+    /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
         private sectionTemplateService: SectionTemplateService,
         private modalService: NgbModal,
         private toastService: ToastService,
-        private loaderService: LoaderService){
+        private loaderService: LoaderService) {
 
     }
 
@@ -74,51 +74,56 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
         }
     }
 
-/* -------------------------------------------------- API FUNCTIONS ------------------------------------------------- */
+    /* -------------------------------------------------- API FUNCTIONS ------------------------------------------------- */
 
     /**
      * Retrieves all section templates from database
      */
-    getAllSectionTemplates(){
+    getAllSectionTemplates() {
         this.loaderService.show();
         this.sectionTemplateService.getSectionTemplates().pipe(takeUntil(this.unsubscribe), finalize(() => this.loaderService.hide()))
-        .subscribe((apiResponse: APIGetMultiResponse<CmdbSectionTemplate>) => {
-            this.sectionTemplates = apiResponse.results;
-        },
-        apiResponse => this.toastService.error(apiResponse.error)
+        .subscribe({
+            next: (apiResponse: APIGetMultiResponse<CmdbSectionTemplate>) => {
+                        this.sectionTemplates = apiResponse.results;
+            },
+            error: (error) => this.toastService.error(error?.error?.message)}
         );
     }
 
-/* ------------------------------------------------- MODAL HANDLING ------------------------------------------------- */
+    /* ------------------------------------------------- MODAL HANDLING ------------------------------------------------- */
 
     /**
      * Displays a modal view for user to confirm deletion of section template
      * @param sectionTemplate instance of section template which should be deleted
      */
-    showDeleteModal(sectionTemplate: CmdbSectionTemplate){
+    showDeleteModal(sectionTemplate: CmdbSectionTemplate) {
         this.loaderService.show();
 
         this.sectionTemplateService.getGlobalSectionTemplateCount(sectionTemplate.public_id).pipe(finalize(() => this.loaderService.hide()))
-        .subscribe((response: GlobalTemplateCounts) => {
-            let counts: GlobalTemplateCounts = response
+            .subscribe({
+                next: (response: GlobalTemplateCounts) => {
+                    let counts: GlobalTemplateCounts = response
 
-            this.modalRef = this.modalService.open(SectionTemplateDeleteModalComponent, { size: 'lg' });
-            this.modalRef.componentInstance.sectionTemplate = sectionTemplate;
-            this.modalRef.componentInstance.templateCounts = counts;
-    
-            this.modalRef.result.then((sectionTemplateID: number) => {
-                //Delete the section template
-                if(sectionTemplateID > 0){
-                    this.loaderService.show();
-                    this.sectionTemplateService.deleteSectionTemplate(sectionTemplateID).pipe(finalize(() => this.loaderService.hide())).subscribe((res: any) => {
-                        this.toastService.success("Section Template with ID " + sectionTemplateID  + " deleted!");
-                        this.getAllSectionTemplates();
-                    },
-                    res => this.toastService.error(res.error)
-                    );
+                    this.modalRef = this.modalService.open(SectionTemplateDeleteModalComponent, { size: 'lg' });
+                    this.modalRef.componentInstance.sectionTemplate = sectionTemplate;
+                    this.modalRef.componentInstance.templateCounts = counts;
+
+                    this.modalRef.result.then((sectionTemplateID: number) => {
+                        //Delete the section template
+                        if (sectionTemplateID > 0) {
+                            this.loaderService.show();
+                            this.sectionTemplateService.deleteSectionTemplate(sectionTemplateID).pipe(finalize(() => this.loaderService.hide()))
+                                .subscribe({
+                                    next: (res: any) => {
+                                        this.toastService.success("Section Template with ID " + sectionTemplateID + " deleted!");
+                                        this.getAllSectionTemplates();
+                                    },
+                                    error: (error) => this.toastService.error(error?.error?.message)
+                                });
+                        }
+                    });
                 }
             });
-        });
     }
 
 
@@ -128,13 +133,13 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * 
      * @param sectionTemplate instance of section template which should be transformed
      */
-    showTransformModal(sectionTemplate: CmdbSectionTemplate){
+    showTransformModal(sectionTemplate: CmdbSectionTemplate) {
         this.modalRef = this.modalService.open(SectionTemplateTransformModalComponent, { size: 'lg' });
         this.modalRef.componentInstance.sectionTemplate = sectionTemplate;
 
         this.modalRef.result.then((sectionTemplateID: number) => {
             //Delete the section template
-            if(sectionTemplateID > 0){
+            if (sectionTemplateID > 0) {
                 let params = {
                     'name': sectionTemplate.name,
                     'label': sectionTemplate.label,
@@ -147,13 +152,16 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
 
                 this.loaderService.show();
 
-                this.sectionTemplateService.updateSectionTemplate(params).pipe(finalize(() => this.loaderService.hide())).subscribe((res: APIUpdateSingleResponse) => {
-                    this.toastService.success(`Section Template with ID: ${sectionTemplate.public_id} transformed 
+                this.sectionTemplateService.updateSectionTemplate(params).pipe(finalize(() => this.loaderService.hide()))
+                    .subscribe({
+                        next: (res: APIUpdateSingleResponse) => {
+                            this.toastService.success(`Section Template with ID: ${sectionTemplate.public_id} transformed 
                                             to a Global Section Template!`);
-                    this.getAllSectionTemplates();
-                },
-                res => this.toastService.error(res.error)
-                );
+                            this.getAllSectionTemplates();
+                        },
+                        error: (error) => this.toastService.error(error?.error?.message)
+                    }
+                    );
             }
         });
     }
@@ -164,12 +172,12 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * 
      * @param sectionTemplate instance of section template which should be cloned
      */
-    public showCloneModal(sectionTemplate: CmdbSectionTemplate){
+    public showCloneModal(sectionTemplate: CmdbSectionTemplate) {
         this.modalRef = this.modalService.open(SectionTemplateCloneModalComponent, { size: 'lg' });
         this.modalRef.componentInstance.sectionTemplate = sectionTemplate;
 
         this.modalRef.result.then((values: any) => {
-            if(values){
+            if (values) {
 
                 const updatedFields: Field[] = this.setNewFieldIDs(sectionTemplate.fields);
 
@@ -206,12 +214,12 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * 
      * @param sectionTemplate The section template which should be previewed
      */
-    public showTemplatePreview(sectionTemplate: CmdbSectionTemplate){
+    public showTemplatePreview(sectionTemplate: CmdbSectionTemplate) {
         const previewModal = this.modalService.open(PreviewModalComponent, { scrollable: true });
         previewModal.componentInstance.sections = [sectionTemplate];
     }
 
-/* ------------------------------------------------ HELPER FUNCTIONS ------------------------------------------------ */
+    /* ------------------------------------------------ HELPER FUNCTIONS ------------------------------------------------ */
 
     /**
      * Creates new IDs for fields
@@ -219,8 +227,8 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * @param fields Fields which require new IDs
      * @returns The given fields with new IDs
      */
-    private setNewFieldIDs(fields: Field[]){
-        for(let field of fields){
+    private setNewFieldIDs(fields: Field[]) {
+        for (let field of fields) {
             field.name = this.generateFieldName(field.type);
         }
 
@@ -233,12 +241,12 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * @param sectionTemplate The template for which the label should be calculated
      * @returns (string): Type name for the given section template
      */
-    public getTemplateTypeLabel(sectionTemplate: CmdbSectionTemplate): string{
-        if(sectionTemplate.predefined){
+    public getTemplateTypeLabel(sectionTemplate: CmdbSectionTemplate): string {
+        if (sectionTemplate.predefined) {
             return "Predefined";
         }
 
-        if(sectionTemplate.is_global){
+        if (sectionTemplate.is_global) {
             return "Global";
         }
 
@@ -250,7 +258,7 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * Generates a new name for a field
      * @param fieldType Type of the field
      */
-    private generateFieldName(fieldType: string){
+    private generateFieldName(fieldType: string) {
         return `${fieldType}-${uuidv4()}`
     }
 
@@ -260,8 +268,8 @@ export class SectionTemplateComponent implements OnInit, OnDestroy {
      * 
      * @returns unique name for section templates
      */
-    public generateSectionTemplateName(isGlobal:boolean = false){
-        if(isGlobal){
+    public generateSectionTemplateName(isGlobal: boolean = false) {
+        if (isGlobal) {
             return `dg_gst-${uuidv4()}`;
         }
 

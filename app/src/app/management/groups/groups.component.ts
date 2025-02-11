@@ -193,16 +193,20 @@ export class GroupsComponent implements OnInit, OnDestroy {
    */
   private loadGroupsFromApi(): void {
     this.loading = true;
-    this.groupService.getGroups(this.params).pipe(takeUntil(this.subscriber)).subscribe((response: APIGetMultiResponse<Group>) => {
-      this.groups = response.results as Array<Group>;
-      this.totalGroups = response.total;
-      this.groupAPIResponse = response;
-      this.loading = false;
-    }
-      ,
-      (error) => {
-        this.toastSerive.error(error?.error?.message);
-      });
+    this.groupService.getGroups(this.params).pipe(takeUntil(this.subscriber))
+      .subscribe({
+        next: (response: APIGetMultiResponse<Group>) => {
+          this.groups = response.results as Array<Group>;
+          this.totalGroups = response.total;
+          this.groupAPIResponse = response;
+          this.loading = false;
+        }
+        ,
+        error: (error) => {
+          this.toastSerive.error(error?.error?.message);
+        }
+      }
+      );
   }
 
   /**

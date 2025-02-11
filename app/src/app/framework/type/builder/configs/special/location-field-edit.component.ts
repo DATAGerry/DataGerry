@@ -107,13 +107,13 @@ export class LocationFieldEditComponent extends ConfigEditBaseComponent implemen
 
     public triggerAPICall() {
         this.typeService.getType(this.currentTypeID).pipe(takeUntil(this.subscriber))
-            .subscribe(
-                (apiResponse: CmdbType) => {
+            .subscribe({
+                next: (apiResponse: CmdbType) => {
                     this.selectable_as_parent = apiResponse.selectable_as_parent;
                     this.cd.markForCheck();
                 },
-                (err) => this.toast.error(err)
-            );
+                error: (error) => this.toast.error(error?.error?.message)
+            });
     }
 
     /* ---------------------------------------------------- FUNCTIONS --------------------------------------------------- */

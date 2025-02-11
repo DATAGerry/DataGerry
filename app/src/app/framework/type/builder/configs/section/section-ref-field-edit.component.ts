@@ -176,11 +176,14 @@ export class SectionRefFieldEditComponent extends ConfigEditBaseComponent implem
     private loadPresetType(publicID: number): void {
         this.loading = true;
         this.typeService.getType(publicID).pipe(takeUntil(this.subscriber))
-            .subscribe((apiResponse: CmdbType) => {
-                this.typeSections = apiResponse.render_meta.sections;
-                this.selectedSection = this.typeSections.find(s => s.name === this.data.reference.section_name);
-            }, error =>
-                this.toast.error(error.error.message, { headerName: 'Field error: ' + this.nameControl.value }))
+            .subscribe({
+                next: (apiResponse: CmdbType) => {
+                    this.typeSections = apiResponse.render_meta.sections;
+                    this.selectedSection = this.typeSections.find(s => s.name === this.data.reference.section_name);
+                },
+                error: (error) =>
+                    this.toast.error(error.error.message, { headerName: 'Field error: ' + this.nameControl.value })
+            })
             .add(() => this.loading = false);
     }
 

@@ -58,7 +58,8 @@ export class ObjectLinksTablePartnerCellComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.partnerIDObservable.pipe(takeUntil(this.subscriber)).subscribe((id: number) => {
-      this.objectService.getObject(id).pipe(takeUntil(this.subscriber)).subscribe((result: RenderResult | CmdbObject) => {
+      this.objectService.getObject(id).pipe(takeUntil(this.subscriber))
+      .subscribe((result: RenderResult | CmdbObject) => {
           this.partnerObject = result;
         },
         () => this.errorLoading = true);

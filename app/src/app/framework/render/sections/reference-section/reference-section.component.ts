@@ -50,11 +50,15 @@ export class ReferenceSectionComponent extends BaseSectionComponent implements O
   public loadRefType(): void {
     if (this.mode === CmdbMode.View) {
       this.typeService.getType(this.section.reference.type_id).pipe(takeUntil(this.subscriber))
-         .subscribe((apiResponse: CmdbType) => {
-           this.referencedType = apiResponse;
-         }, error => {
-           this.toast.error(error.error.message, {headerName: 'Error when setting the reference'});
-         });
+        .subscribe({
+          next: (apiResponse: CmdbType) => {
+            this.referencedType = apiResponse;
+          },
+          error: (error) => {
+            this.toast.error(error.error.message, { headerName: 'Error when setting the reference' });
+          }
+        }
+        );
     }
   }
 

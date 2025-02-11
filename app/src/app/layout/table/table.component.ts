@@ -228,23 +228,27 @@ export class TableComponent<T> implements OnInit, OnDestroy {
 
 
     public ngOnInit(): void {
-        this.configChangeObservable.pipe(takeUntil(this.subscriber)).subscribe(() => {
-            this.tableState = {
-                name: '',
-                page: this.page,
-                pageSize: this.pageSize,
-                sort: this.sort,
-                visibleColumns: this.columns.filter(c => !c.hidden).map(c => c.name)
-            } as TableState;
+        this.configChangeObservable.pipe(takeUntil(this.subscriber))
+            .subscribe({
+                next: () => {
+                    this.tableState = {
+                        name: '',
+                        page: this.page,
+                        pageSize: this.pageSize,
+                        sort: this.sort,
+                        visibleColumns: this.columns.filter(c => !c.hidden).map(c => c.name)
+                    } as TableState;
 
-            if (this.stateEnabled) {
-                this.tableService.setCurrentTableState(this.router.url, this.id, this.tableState);
-                this.stateChange.emit(this.tableState);
+                    if (this.stateEnabled) {
+                        this.tableService.setCurrentTableState(this.router.url, this.id, this.tableState);
+                        this.stateChange.emit(this.tableState);
+                    }
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
             }
-        },
-            (error) => {
-                this.toastService.error(error?.error?.message);
-            });
+            );
 
         if (isDevMode()) {
             this.pageSizeChange.asObservable().pipe(takeUntil(this.subscriber)).subscribe((size: number) => {
