@@ -40,25 +40,27 @@ export class PropertiesComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.systemService.getConfigInformation().pipe(takeUntil(this.subscriber)).subscribe(config => {
-        this.config = {
-          path: config.path,
-          properties: []
-        };
-        for (const section of config.properties) {
-          for (const prop of section[1]) {
-            this.config.properties.push({
-              section: section[0],
-              key: prop[0],
-              value: prop[1]
-            });
+    this.systemService.getConfigInformation()
+      .pipe(takeUntil(this.subscriber))
+      .subscribe({
+        next: (config) => {
+          this.config = {
+            path: config.path,
+            properties: []
+          };
+          for (const section of config.properties) {
+            for (const prop of section[1]) {
+              this.config.properties.push({
+                section: section[0],
+                key: prop[0],
+                value: prop[1]
+              });
+            }
           }
+        },
+        error: (error) => {
+          this.toast.error(error);
         }
-      },
-      (error) => {
-        this.toast.error(error);
-      },
-      () => {
       });
   }
 

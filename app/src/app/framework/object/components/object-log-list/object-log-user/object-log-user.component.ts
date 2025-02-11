@@ -38,12 +38,17 @@ export class ObjectLogUserComponent implements OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.userID !== undefined && changes.userID.isFirstChange()) {
-      this.userService.getUser(this.userID).subscribe((possibleUser: User) => {
-        this.logUser = possibleUser;
-        this.userExists = true;
-      }, () => {
-        this.userExists = false;
-      });
+      this.userService.getUser(this.userID)
+        .subscribe({
+          next: (possibleUser: User) => {
+            this.logUser = possibleUser;
+            this.userExists = true;
+          },
+          error: () => {
+            this.userExists = false;
+          }
+        }
+        );
     }
   }
 

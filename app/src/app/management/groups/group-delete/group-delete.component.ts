@@ -64,14 +64,17 @@ export class GroupDeleteComponent implements OnDestroy {
       const action = this.deleteForm.get('deleteGroupAction').value;
       const groupID = this.deleteForm.get('deleteGroupOption').value;
       this.groupService.deleteGroup(this.group.public_id, action, groupID).
-          pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(() => {
-        this.toast.success(`Group ${this.group.label} was deleted`);
-        this.router.navigate(['/', 'management', 'groups']);
-      },
-        (error) => {
-          this.toast.error(error?.error?.message);
+        pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
+        .subscribe({
+          next: () => {
+            this.toast.success(`Group ${this.group.label} was deleted`);
+            this.router.navigate(['/', 'management', 'groups']);
+          },
+          error: (error) => {
+            this.toast.error(error?.error?.message);
+          }
         }
-      );
+        );
     }
   }
 

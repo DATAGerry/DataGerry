@@ -176,8 +176,9 @@ export class CreateReportComponent implements OnInit, OnDestroy {
      */
     private loadReportData(id: number): void {
         this.loaderService.show();
-        this.reportService.getReportById(id).pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide())).subscribe(
-            (report) => {
+        this.reportService.getReportById(id).pipe(takeUntil(this.unsubscribe$), finalize(() => this.loaderService.hide()))
+        .subscribe({
+            next: (report) => {        
                 this.createReportForm.patchValue({
                     name: report.name,
                     category: report.report_category_id,
@@ -193,9 +194,9 @@ export class CreateReportComponent implements OnInit, OnDestroy {
                 this.conditions = report.conditions;
                 this.filterBuilderReady = true; // Ensure FilterBuilderComponent renders with conditions
             },
-            (error) => {
-                this.toast.error('Error loading report data');
-            }
+            error: (error) => {
+                this.toast.error(error?.error?.message);
+            }}            
         );
     }
 

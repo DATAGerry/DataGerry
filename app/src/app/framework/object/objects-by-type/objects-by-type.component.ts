@@ -1014,14 +1014,19 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
 
 
     public onObjectDelete(publicID: number) {
-        this.objectService.deleteObject(publicID).pipe(takeUntil(this.subscriber)).subscribe(() => {
-            this.toastService.success(`Object ${publicID} was deleted successfully`);
-            this.sidebarService.updateTypeCounter(this.type.public_id);
-            this.loadObjects();
-        },
-            (error) => {
-                this.toastService.error(`Error while deleting object ${publicID} | Error: ${error}`);
-            });
+        this.objectService.deleteObject(publicID).pipe(takeUntil(this.subscriber))
+            .subscribe({
+                next: () => {
+                    this.toastService.success(`Object ${publicID} was deleted successfully`);
+                    this.sidebarService.updateTypeCounter(this.type.public_id);
+                    this.loadObjects();
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
+            }
+
+            );
     }
 
 
@@ -1051,24 +1056,30 @@ export class ObjectsByTypeComponent implements OnInit, OnDestroy {
     public onObjectDeleteWithLocations(objectID: number) {
         this.loaderService.show();
         this.objectService.deleteObjectWithLocations(objectID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
-            .subscribe(() => {
-                this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
-                this.loadObjects();
-            },
-                (error) => {
-                    this.toastService.error(`Error while deleting object ${objectID} | Error: ${error}`);
-                });
+            .subscribe({
+                next: () => {
+                    this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
+                    this.loadObjects();
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
+            }
+            );
     }
 
     public onObjectDeleteWithObjects(objectID: number) {
         this.loaderService.show();
         this.objectService.deleteObjectWithChildren(objectID).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
-            .subscribe(() => {
-                this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
-                this.loadObjects();
-            },
-                (error) => {
-                    this.toastService.error(`Error while deleting object ${objectID} | Error: ${error}`);
-                });
+            .subscribe({
+                next: () => {
+                    this.toastService.success(`Object ${objectID} and child locations were deleted successfully`);
+                    this.loadObjects();
+                },
+                error: (error) => {
+                    this.toastService.error(error?.error?.message);
+                }
+            }
+            );
     }
 }

@@ -154,21 +154,23 @@ export class LogObjectSettingsComponent {
             this.cleanupProgress += step;
         }
         forkJoin(deleteObserves)
-            .subscribe(() => {
-                this.cleanupInProgress = false;
-            }, error => console.error(
-                error
-            ), () => {
-                switch (reloadList) {
-                    case 'active':
-                        this.reloadActiveLogs = true;
-                        break;
-                    case 'deactive':
-                        this.reloadDeActiveLogs = true;
-                        break;
-                    case 'delete':
-                        this.reloadDeleteLogs = true;
-                        break;
+            .subscribe({
+                next: () => {
+                    this.cleanupInProgress = false;
+                },
+                error: (error) => console.error(error),
+                complete: () => {
+                    switch (reloadList) {
+                        case 'active':
+                            this.reloadActiveLogs = true;
+                            break;
+                        case 'deactive':
+                            this.reloadDeActiveLogs = true;
+                            break;
+                        case 'delete':
+                            this.reloadDeleteLogs = true;
+                            break;
+                    }
                 }
             });
 

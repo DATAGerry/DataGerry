@@ -52,14 +52,17 @@ export class GroupAddComponent implements OnDestroy {
   public save(group: Group) {
     if (this.valid) {
       this.loaderService.show();
-      this.groupService.postGroup(group).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe((g: Group) => {
-        this.toastService.success(`Group ${g.label} was added!`);
-        this.router.navigate(['/', 'management', 'groups']);
-      },
-        (error) => {
-          this.toastService.error(error?.error?.message);
+      this.groupService.postGroup(group).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide()))
+        .subscribe({
+          next: (g: Group) => {
+            this.toastService.success(`Group ${g.label} was added!`);
+            this.router.navigate(['/', 'management', 'groups']);
+          },
+          error: (error) => {
+            this.toastService.error(error?.error?.message);
+          }
         }
-      );
+        );
     }
   }
 

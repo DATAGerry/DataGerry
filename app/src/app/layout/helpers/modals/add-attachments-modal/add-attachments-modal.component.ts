@@ -113,10 +113,11 @@ export class AddAttachmentsModalComponent implements OnInit, OnDestroy {
   private checkFileExist(value) {
     return new Promise((resolve) => {
       this.fileService.getFileElement(value, this.metadata).pipe(
-        takeUntil(this.unSubscribe)).subscribe(
-          () => resolve(true),
-          () => resolve(false)
-        );
+        takeUntil(this.unSubscribe))
+        .subscribe({
+          next: () => resolve(true),
+          error: () => resolve(false)
+        });
     });
   }
 
@@ -143,9 +144,14 @@ export class AddAttachmentsModalComponent implements OnInit, OnDestroy {
     file.inProcess = true;
     this.inProcess = true;
     this.attachments = [file].concat(this.attachments);
-    this.fileService.postFile(file, this.metadata).subscribe(() => {
-      this.getFiles(this.defaultApiParameter);
-    }, (err) => console.log(err));
+    this.fileService.postFile(file, this.metadata)
+      .subscribe({
+        next: () => {
+          this.getFiles(this.defaultApiParameter);
+        },
+        error: (err) => console.log(err)
+      }
+      );
   }
 
   private replaceFileModal(filename: string) {

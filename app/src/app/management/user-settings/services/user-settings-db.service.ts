@@ -118,20 +118,21 @@ export class UserSettingsDBService<T = UserSetting, P = UserSettingPayload> impl
      */
     public async syncSettings() {
         try {
-        this.userSettingsService.getUserSettings()
-            .subscribe(async (userSettings: Array<UserSetting<P>>) => {
-                this.dbService.clear(this.storeName).subscribe(() => {});
+            this.userSettingsService.getUserSettings()
+                .subscribe({
+                    next: async (userSettings: Array<UserSetting<P>>) => {
+                        this.dbService.clear(this.storeName).subscribe(() => { });
 
-                for (const setting of userSettings) {
-                    this.dbService.add(this.storeName, setting).subscribe();
-                }
-            },
-            error => console.error(`Error while loading user settings: ${ error }`));
+                        for (const setting of userSettings) {
+                            this.dbService.add(this.storeName, setting).subscribe();
+                        }
+                    },
+                    error: (error) => console.error(`Error while loading user settings: ${error}`)
+                });
         } catch (e) {
-            console.error(`Error while init user settings: ${ e }`);
+            console.error(`Error while init user settings: ${e}`);
         }
-    }
-
+    }    
 
     /**
      * Clear the settings database

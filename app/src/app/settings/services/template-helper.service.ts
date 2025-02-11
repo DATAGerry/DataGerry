@@ -44,8 +44,9 @@ export class TemplateHelperService implements OnDestroy {
       label: 'Public ID',
       templatedata: (prefix ? '{{fields' + prefix + '[\'id\']}}' : '{{id}}')
     }) as TemplateHelpdataElement);
-    await this.typeService.getType(typeId).subscribe(async cmdbTypeObj => {
-
+    await this.typeService.getType(typeId).subscribe({
+      next: async (cmdbTypeObj) => {
+    
       const multiDataSectionFieldsSet = new Set(
         cmdbTypeObj.render_meta.sections
           .filter(section => section.type === "multi-data-section")
@@ -127,9 +128,10 @@ export class TemplateHelperService implements OnDestroy {
         }
       }
     },
-      (error) => {
-        console.error(error);
-      });
+    error: (error) => {
+      console.error(error);
+  }}
+    );
     return templateHelperData;
   }
 

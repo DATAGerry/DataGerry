@@ -198,12 +198,14 @@ export class SectionTemplateBuilderComponent implements OnInit {
             'public_id': this.initialSection.public_id
         }
 
-        this.sectionTemplateService.updateSectionTemplate(params).subscribe((res: APIUpdateSingleResponse) => {
-            this.toastService.success("Section Template updated!");
+        this.sectionTemplateService.updateSectionTemplate(params)
+        .subscribe({
+            next: (res: APIUpdateSingleResponse) => {
+                    this.toastService.success("Section Template updated!");
             this.router.navigate(['/framework/section_templates']);
         },
-            res => this.toastService.error(res.error)
-        );
+        error: (error) => this.toastService.error(error?.error?.message)}
+    );
     }
 
 
@@ -213,12 +215,13 @@ export class SectionTemplateBuilderComponent implements OnInit {
      * @param publicID publicID of section template which should be edited
      */
     private getSectionTemplate(publicID: number) {
-        this.sectionTemplateService.getSectionTemplate(publicID).subscribe((response: CmdbSectionTemplate) => {
-            this.initialSection = response;
+        this.sectionTemplateService.getSectionTemplate(publicID)
+        .subscribe({
+            next: (response: CmdbSectionTemplate) => {                    this.initialSection = response;
             this.formGroup.controls.isGlobal.setValue(this.initialSection.is_global);
         },
-            apiResponse => this.toastService.error(apiResponse.error)
-        );
+        error: (error) => this.toastService.error(error?.error?.message)}
+    );
     }
 
     /* ------------------------------------------------- EVENT HANDLERS ------------------------------------------------- */

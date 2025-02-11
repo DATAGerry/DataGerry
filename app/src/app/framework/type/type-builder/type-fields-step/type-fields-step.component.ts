@@ -99,13 +99,14 @@ export class TypeFieldsStepComponent extends TypeBuilderStepComponent implements
     }
 
 
-    private getAllSectionTemplates(){
-        this.sectionTemplateService.getSectionTemplates().pipe(takeUntil(this.unsubscribe))
-        .subscribe((apiResponse: APIGetMultiResponse<CmdbSectionTemplate>) => {
-            this.sectionTemplates = apiResponse.results.filter((template) => template.is_global == false);
-            this.globalSectionTemplates = apiResponse.results.filter((template) => template.is_global == true);
+  private getAllSectionTemplates() {
+    this.sectionTemplateService.getSectionTemplates().pipe(takeUntil(this.unsubscribe))
+      .subscribe({
+        next: (apiResponse: APIGetMultiResponse<CmdbSectionTemplate>) => {
+          this.sectionTemplates = apiResponse.results.filter((template) => template.is_global == false);
+          this.globalSectionTemplates = apiResponse.results.filter((template) => template.is_global == true);
         },
-        apiResponse => this.toastService.error(apiResponse.error)
-        );
-    }
+        error: (error) => this.toastService.error(error?.error?.message)
+      });
+  }
 }
