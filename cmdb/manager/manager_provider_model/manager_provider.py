@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""This class provides the different managers for the API routes"""
+"""
+This class provides the different managers for the API routes
+"""
 import logging
 from flask import current_app
 
@@ -31,6 +33,7 @@ from cmdb.manager import (
     LocationsManager,
     SectionTemplatesManager,
     ObjectLinksManager,
+    RelationsManager,
     SecurityManager,
     SettingsReaderManager,
     SettingsWriterManager,
@@ -106,6 +109,7 @@ class ManagerProvider:
             ManagerType.REPORTS_MANAGER: ReportsManager,
             ManagerType.WEBHOOKS_MANAGER: WebhooksManager,
             ManagerType.WEBHOOKS_EVENT_MANAGER: WebhooksEventManager,
+            ManagerType.RELATIONS_MANAGER: RelationsManager,
         }
 
         return manager_classes.get(manager_type)

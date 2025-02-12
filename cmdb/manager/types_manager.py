@@ -27,10 +27,7 @@ from cmdb.database.utils import object_hook
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
 
-from cmdb.models.type_model import (
-    CmdbType,
-    TypeFieldSection,
-)
+from cmdb.models.type_model import CmdbType, TypeFieldSection
 from cmdb.models.object_model.cmdb_object import CmdbObject
 
 from cmdb.framework.results import IterationResult, ListResult
@@ -52,9 +49,8 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class TypesManager(BaseManager):
     """
-    Manager for the type module. Manages the CRUD functions of the types and the iteration over the collection.
-    Extends: BaseManager
-    Depends: ObjectsManager
+    Manages the CRUD functions of CmdbTypes
+    `Extends`: BaseManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
         if database:

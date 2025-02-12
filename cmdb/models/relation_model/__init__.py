@@ -13,3 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+from .cmdb_relation import CmdbRelation
+# -------------------------------------------------------------------------------------------------------------------- #
+
+__all__ = [
+    'CmdbRelation',
+]
