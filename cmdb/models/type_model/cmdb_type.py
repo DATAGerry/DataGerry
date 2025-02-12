@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Represents a type in DATAGERRY
+Represents a CmdbType in DataGerry
 """
 import logging
 from datetime import datetime, timezone
@@ -40,15 +40,15 @@ LOGGER = logging.getLogger(__name__)
 #pylint: disable=too-many-instance-attributes
 class CmdbType(CmdbDAO):
     """
-    Model class of the framework type
-    Extends: CmdbDAO
+    Model for CmdbType in DataGerry
+    `Extends`: CmdbDAO
     
     Attributes:
-        COLLECTION (str):    Name of the database collection.
-        MODEL (Model):              Name of the DAO.
-        DEFAULT_VERSION (str):      The default "starting" version number.
-        SCHEMA (dict):              The validation schema for this DAO.
-        INDEX_KEYS (list):          List of index keys for the database.
+        COLLECTION (str): Name of the database collection
+        MODEL (Model): Name of the DAO
+        DEFAULT_VERSION (str): The default "starting" version number
+        SCHEMA (dict): The validation schema for this DAO
+        INDEX_KEYS (list): sList of index keys for the database
     """
 
     COLLECTION = "framework.types"
@@ -79,24 +79,25 @@ class CmdbType(CmdbDAO):
                  description: str = None,
                  acl: AccessControlList = None):
         try:
-            self.name: str = name
-            self.label: str = label or self.name.title()
-            self.description: str = description
-            self.version: str = version or CmdbType.DEFAULT_VERSION
-            self.selectable_as_parent: bool = selectable_as_parent
-            self.global_template_ids: list = global_template_ids or []
-            self.active: bool = active
-            self.author_id: int = author_id
-            self.creation_time: datetime = creation_time or datetime.now(timezone.utc)
-            self.editor_id: int = editor_id
-            self.last_edit_time: datetime = last_edit_time
-            self.render_meta: TypeRenderMeta = render_meta
-            self.fields: list = fields or []
-            self.acl: AccessControlList = acl
+            self.name = name
+            self.label = label or self.name.title()
+            self.description = description
+            self.version = version or CmdbType.DEFAULT_VERSION
+            self.selectable_as_parent = selectable_as_parent
+            self.global_template_ids = global_template_ids or []
+            self.active = active
+            self.author_id = author_id
+            self.creation_time = creation_time or datetime.now(timezone.utc)
+            self.editor_id = editor_id
+            self.last_edit_time = last_edit_time
+            self.render_meta = render_meta
+            self.fields = fields or []
+            self.acl = acl
 
             super().__init__(public_id=public_id)
         except Exception as err:
             LOGGER.debug("[__init__] Exception: %s, Type: %s", err, type(err))
+            #TODO: ERROR-FIX (proper error required)
             raise Exception(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #

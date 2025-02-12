@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Module of basic importers"""
+"""
+Module of basic importers
+"""
 from datetime import datetime, timezone
 import logging
 from flask import current_app
@@ -34,9 +36,11 @@ from cmdb.framework.importer.responses.object_parser_response import ObjectParse
 from cmdb.interface.route_utils import sync_config_items
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.manager.objects_manager import ObjectManagerDeleteError,\
-                                               ObjectManagerInsertError,\
-                                               ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import (
+    ObjectManagerDeleteError,
+    ObjectManagerInsertError,
+    ObjectManagerGetError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

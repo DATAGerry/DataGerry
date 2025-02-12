@@ -125,7 +125,6 @@ def get_cmdb_type_schema() -> dict:
                         'required': False,
                     },
                     "default": {
-                        'type': 'integer',
                         'nullable': True,
                         'empty': True
                     },
