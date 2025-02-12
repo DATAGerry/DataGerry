@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Error handling routines for all HTTP based errors.
+"""
+Error handling routines for all HTTP based errors.
 
 These are executed automatically during an abort().
 If an HTTP status code is not implemented, the respective Flask handler is used.
@@ -26,16 +27,18 @@ Notes:
 import logging
 from typing import Optional
 from flask import request, jsonify
-from werkzeug.exceptions import HTTPException,\
-                                NotFound,\
-                                BadRequest,\
-                                Unauthorized,\
-                                Forbidden,\
-                                MethodNotAllowed,\
-                                NotAcceptable,\
-                                Gone,\
-                                InternalServerError,\
-                                ServiceUnavailable
+from werkzeug.exceptions import (
+    HTTPException,
+    NotFound,
+    BadRequest,
+    Unauthorized,
+    Forbidden,
+    MethodNotAllowed,
+    NotAcceptable,
+    Gone,
+    InternalServerError,
+    ServiceUnavailable,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
