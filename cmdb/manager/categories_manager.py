@@ -249,7 +249,7 @@ class CategoriesManager(BaseManager):
             `CategoriesManagerDeleteError`: When the delete operation fails
 
         Returns:
-            `bool`: Status if deletion  was successful
+            `bool`: True if deletion was successful
         """
         try:
             return self.delete({'public_id':public_id})

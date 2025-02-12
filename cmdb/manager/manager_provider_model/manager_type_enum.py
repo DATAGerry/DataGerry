@@ -38,3 +38,4 @@ class ManagerType(Enum):
     REPORTS_MANAGER = 'ReportsManager'
     WEBHOOKS_MANAGER = 'WebhooksManager'
     WEBHOOKS_EVENT_MANAGER = 'WebhooksEventManager'
+    RELATIONS_MANAGER = 'RelationsManager'
