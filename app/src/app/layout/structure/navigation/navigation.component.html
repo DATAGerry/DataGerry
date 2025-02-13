@@ -129,6 +129,14 @@
                   >
                     <i class="fas fa-hammer"></i> Section Templates
                   </a>
+
+                  <a
+                  class="dropdown-item"
+                  *permissionLink="'base.framework.relation.view'"
+                  [routerLink]="['/']"
+                >
+                  <i class="fas fa-exchange-alt"></i> Relations
+                </a>
                 </div>
               </li>
               <p class="hover-trigger">Framework</p>
