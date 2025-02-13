@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,9 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
-TODO: document
-"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import re
 import logging
 import json
@@ -331,7 +330,7 @@ DATETIME_PATTERN = r"datetime\.datetime\((.*?)\)"
 # Replace matches with actual datetime objects
 def replace_datetime(match):
     """TODO: document"""
-    # Extract arguments from the match (e.g., "2024, 11, 26, 0, 0")
+    # Extract arguments from the match (e.g., "2025, 11, 26, 0, 0")
     args = match.group(1)
     # Convert arguments into a Python datetime object
 

@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -213,14 +213,14 @@ def update_category(public_id: int, data: dict, request_user: CmdbUser):
         categories_manager.update_category(public_id, category)
 
         api_response = UpdateSingleResponse(result=data)
+
+        return api_response.make_response()
     except CategoriesManagerUpdateError as err:
         LOGGER.error("[update_category] %s", err, exc_info=True)
         return abort(400, "Could not update the category!")
     except Exception as err:
         LOGGER.error("[update_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
-
-    return api_response.make_response()
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
