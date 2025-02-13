@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,8 @@ from cmdb.models.cmdb_dao import CmdbDAO
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class CmdbUser(CmdbDAO):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     COLLECTION = 'management.users'
     MODEL = 'User'
     INDEX_KEYS = [

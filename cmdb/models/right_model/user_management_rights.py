@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,13 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class UserManagementRight(BaseRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.SECURE
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{BaseRight.PREFIX}.user-management'
@@ -29,7 +31,8 @@ class UserManagementRight(BaseRight):
 
 
 class UserRight(UserManagementRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.SECURE
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{UserManagementRight.PREFIX}.user'
@@ -39,7 +42,8 @@ class UserRight(UserManagementRight):
 
 
 class GroupRight(UserManagementRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.SECURE
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{UserManagementRight.PREFIX}.group'

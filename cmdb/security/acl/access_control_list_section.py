@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from typing import TypeVar, Set, Generic
 
 from cmdb.security.acl.access_control_section_dict import AccessControlSectionDict
@@ -34,7 +35,8 @@ class AccessControlListSection(Generic[T]):
 
     @property
     def includes(self) -> AccessControlSectionDict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._includes
 
 
@@ -55,22 +57,26 @@ class AccessControlListSection(Generic[T]):
 
 
     def grant_access(self, key: T, permission: AccessControlPermission):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.includes[key].add(permission)
 
 
     def revoke_access(self, key: T, permission: AccessControlPermission):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.includes[key].remove(permission)
 
 
     @classmethod
     def from_data(cls, data: dict) -> "AccessControlListSection[T]":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError
 
 
     @classmethod
     def to_json(cls, section: "AccessControlListSection[T]") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError

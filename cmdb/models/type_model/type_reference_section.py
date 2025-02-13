@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,11 @@ class TypeReferenceSection(TypeSection):
     Extends: TypeSection
     """
 
-    def __init__(self, type: str, name: str, label: str = None, reference: TypeReferenceSectionEntry = None,
+    def __init__(self,
+                 type: str,
+                 name: str,
+                 label: str = None,
+                 reference: TypeReferenceSectionEntry = None,
                  fields: list = None):
         self.reference = reference or {}
         self.fields = fields or []

@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from json import dumps
 from pymongo import IndexModel
@@ -81,7 +82,8 @@ class UserSettingModel:
 
     @classmethod
     def get_index_keys(cls):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return [IndexModel(**index) for index in cls.INDEX_KEYS]
 
 

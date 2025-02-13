@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from cmdb.models.right_model.levels_enum import Levels
 from cmdb.models.right_model.constants import GLOBAL_RIGHT_IDENTIFIER, LEVEL_TO_NAME
@@ -27,7 +28,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                   BaseRight - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseRight:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.NOTSET
     MAX_LEVEL = Levels.CRITICAL
 
@@ -45,12 +47,14 @@ class BaseRight:
 
 
     def get_prefix(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.PREFIX.rsplit('.', maxsplit=1)[-1]
 
 
     def get_label(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.label or f'{self.get_prefix()}.{self.name.split(".")[-1]}'
 
 
@@ -60,13 +64,15 @@ class BaseRight:
 
     @classmethod
     def get_levels(cls):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return LEVEL_TO_NAME
 
 
     @property
     def level(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._level
 
 
@@ -86,7 +92,8 @@ class BaseRight:
 
     @classmethod
     def to_dict(cls, instance: "BaseRight") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'level': instance.level,
             'name': instance.name,

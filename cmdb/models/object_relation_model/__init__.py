@@ -14,20 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """document"""
-#TODO: DOCUMENT-FIX
-from enum import unique, Enum, auto
+# TODO: DOCUMENT-FIX
+from .cmdb_object_relation import CmdbObjectRelation
 # -------------------------------------------------------------------------------------------------------------------- #
 
-@unique
-class AccessControlPermission(Enum):
-    """Permission enum for possible ACL operations."""
-
-    def _generate_next_value_(self, start, count, last_values):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self
-
-    CREATE = auto()
-    READ = auto()
-    UPDATE = auto()
-    DELETE = auto()
+__all__ = [
+    'CmdbObjectRelation',
+]

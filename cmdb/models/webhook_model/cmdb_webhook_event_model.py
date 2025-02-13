@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -30,8 +30,6 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbWebhookEvent(CmdbDAO):
     """
-    TODO: document
-
     Attributes:
         COLLECTION (str):    Name of the database collection
         MODEL (Model):              Name of the DAO
@@ -39,6 +37,8 @@ class CmdbWebhookEvent(CmdbDAO):
         SCHEMA (dict):              The validation schema for this DAO
         INDEX_KEYS (list):          List of index keys for the database
     """
+    #TODO: DOCUMENT-FIX
+
     COLLECTION = 'framework.webhookEvents'
     MODEL = 'Webhook_Event'
     DEFAULT_VERSION: str = '1.0.0'
