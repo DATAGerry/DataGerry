@@ -231,8 +231,8 @@ class AuthModule:
                 raise AuthenticationProviderNotActivated('External providers are deactivated')
 
             return provider_instance.authenticate(user_name, password)
-
-        except ManagerGetError as err:
+        #TODO: ERROR-FIX
+        except Exception as err:
             # get installed providers
             provider_list = self.providers
 
@@ -257,4 +257,4 @@ class AuthModule:
                     LOGGER.debug("User found by provider but could not be inserted or found %s",error.message)
                     continue
 
-            raise AuthenticationError('Unknown user could not login.') from err
+            raise AuthenticationError('Could not login.') from err

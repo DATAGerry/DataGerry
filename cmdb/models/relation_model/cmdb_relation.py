@@ -40,13 +40,6 @@ class CmdbRelation(CmdbDAO):
     MODEL = 'Relation'
     SCHEMA: dict = get_cmdb_relation_schema()
 
-    INDEX_KEYS = [{
-        'keys': [('public_id', CmdbDAO.DAO_ASCENDING)],
-        'name': 'public_id',
-        'unique': True
-    }]
-
-
     #pylint: disable=too-many-arguments
     #pylint: disable=too-many-locals
     def __init__(self,

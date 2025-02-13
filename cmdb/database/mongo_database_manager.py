@@ -565,7 +565,8 @@ class MongoDatabaseManager:
                 highest_id = self.find_one_by(collection=collection, sort=formatted_sort)
 
                 highest = int(highest_id['public_id'])
-            except NoDocumentFound:
+                # TODO: ERROR-FIX
+            except Exception:
                 return 0
 
             return highest
@@ -697,9 +698,9 @@ class MongoDatabaseManager:
 
         if create:
             ## check if counter is created in db, else create one
-            counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
-
-            if not counter:
+            try:
+                counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
+            except GetCollectionError:
                 self.__init_public_id_counter(collection)
 
             status = self.insert(collection, self.get_root_location_data())

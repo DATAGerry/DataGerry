@@ -34,6 +34,7 @@ from cmdb.models.log_model.cmdb_log import CmdbLog
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 from cmdb.models.webhook_model.cmdb_webhook_model import CmdbWebhook
 from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
+from cmdb.models.relation_model import CmdbRelation
 # -------------------------------------------------------------------------------------------------------------------- #
 
 CmdbLog.register_log_type(CmdbObjectLog.__name__, CmdbObjectLog)
@@ -51,4 +52,5 @@ __COLLECTIONS__ = [
     CmdbReport,
     CmdbWebhook,
     CmdbWebhookEvent,
+    CmdbRelation,
 ]
