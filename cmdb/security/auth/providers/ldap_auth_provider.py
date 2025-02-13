@@ -136,7 +136,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                     user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
                 except ManagerUpdateError as err:
                     raise AuthenticationError(str(err)) from err
-        except ManagerGetError as err:
+        except Exception as err:
             #TODO: ERROR-FIX
             LOGGER.warning('[LdapAuthenticationProvider] CmdbUser exists on LDAP but not in database: %s', err)
             LOGGER.debug('[LdapAuthenticationProvider] Try creating user: %s', user_name)
@@ -147,7 +147,6 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                 new_user_data['group_id'] = int(user_group_id)
                 new_user_data['registration_time'] = datetime.now(timezone.utc)
                 new_user_data['authenticator'] = LdapAuthenticationProvider.get_name()
-
             except Exception as error:
                 #TODO: ERROR-FIX
                 LOGGER.debug('[LdapAuthenticationProvider] %s',error)

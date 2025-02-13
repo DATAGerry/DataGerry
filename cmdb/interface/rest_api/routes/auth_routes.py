@@ -101,6 +101,7 @@ def post_login():
                     init_db_routine(user_database)
 
                 set_admin_user(user_data, user_data['subscriptions'][0])
+
             # In this case the user selected a subscription in the frontend
             elif request_subscription:
                 # LOGGER.debug(f"[post_login] subscription from frontend: {request_subscription}")
@@ -119,8 +120,8 @@ def post_login():
                 LOGGER.error("[post_login] Error: Invalid data. No subscriptions!")
                 return abort(401, "Invalid data. Could not login!")
 
-
             user = retrive_user(user_data, user_database)
+
             # User does not exist
             if not user:
                 LOGGER.error("Could not retrieve User from database!")

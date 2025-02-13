@@ -481,12 +481,12 @@ def check_db_exists(db_name: dict):
     return current_app.database_manager.check_database_exists(db_name)
 
 
-def init_db_routine(db_name: str):
+def init_db_routine(db_name: str) -> None:
     """
     Creates a database with the given name and all corresponding collections
 
     Args:
-        db_name (str): Name of the database
+        `db_name` (str): Name of the database
     """
     new_db = current_app.database_manager.create_database(db_name)
     current_app.database_manager.connector.set_database(new_db.name)
@@ -512,7 +512,7 @@ def init_db_routine(db_name: str):
 
     # Generate the root location
     current_app.database_manager.set_root_location(CmdbLocation.COLLECTION, create=True)
-    LOGGER.info("Root Location created!")
+    LOGGER.info("Created 'Root'-Location!")
 
     # Generate predefined section templates
     current_app.database_manager.init_predefined_templates(CmdbSectionTemplate.COLLECTION)
@@ -529,7 +529,12 @@ def set_admin_user(user_data: dict, subscription: dict):
         scm = SecurityManager(current_app.database_manager)
 
     try:
-        admin_user_from_db = users_manager.get_user_by({'email': user_data['email']})
+        admin_user_from_db = None
+
+        try:
+            admin_user_from_db = users_manager.get_user_by({'email': user_data['email']})
+        except UsersManagerGetError:
+            pass
 
         if not admin_user_from_db:
             admin_user = CmdbUser(
@@ -569,8 +574,7 @@ def retrive_user(user_data: dict, database: str):
 
     try:
         return users_manager.get_user_by({'email': user_data['email']})
-    except Exception:
-        #TODO: ERROR-FIX
+    except UsersManagerGetError:
         return None
 
 
