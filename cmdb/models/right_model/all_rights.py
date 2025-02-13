@@ -28,6 +28,7 @@ from cmdb.models.right_model.framework_rights import (
     LogRight,
     SectionTemplateRight,
     WebhookRight,
+    RelationRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -100,7 +101,16 @@ FRAMEWORK_RIGHTS = (
             LogRight('reload', Levels.SECURE, description='Reload logs'),
             LogRight('delete', Levels.DANGER, description='Delete logs')
         )
-    )
+    ),
+    (
+        RelationRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage relations'),
+        (
+            RelationRight('view', description='View relations'),
+            RelationRight('add', description='Add relations'),
+            RelationRight('edit', Levels.PROTECTED, description='Edit relations'),
+            RelationRight('delete', Levels.DANGER, description='Delete relations'),
+        )
+    ),
 )
 
 

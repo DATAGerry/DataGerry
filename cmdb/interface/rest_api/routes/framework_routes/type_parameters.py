@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from json import loads
 
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
@@ -22,7 +23,8 @@ from cmdb.utils.helpers import str_to_bool
 # -------------------------------------------------------------------------------------------------------------------- #
 #TODO: CLASS-FIX (move this to cmdb.interface.rest_api.responses.response_parameters)
 class TypeIterationParameters(CollectionParameters):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, query_string: str, active: bool = True, **kwargs):
         self.active = active
         super().__init__(query_string=query_string, **kwargs)

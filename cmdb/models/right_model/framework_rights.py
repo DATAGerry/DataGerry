@@ -13,13 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class FrameworkRight(BaseRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PERMISSION
     PREFIX = f'{BaseRight.PREFIX}.framework'
 
@@ -28,7 +30,8 @@ class FrameworkRight(BaseRight):
 
 
 class ObjectRight(FrameworkRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PERMISSION
     MAX_LEVEL = Levels.SECURE
     PREFIX = f'{FrameworkRight.PREFIX}.object'
@@ -38,7 +41,8 @@ class ObjectRight(FrameworkRight):
 
 
 class SectionTemplateRight(FrameworkRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PERMISSION
     MAX_LEVEL = Levels.SECURE
     PREFIX = f'{FrameworkRight.PREFIX}.sectionTemplate'
@@ -48,7 +52,8 @@ class SectionTemplateRight(FrameworkRight):
 
 
 class TypeRight(FrameworkRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.CRITICAL
     PREFIX = f'{FrameworkRight.PREFIX}.type'
@@ -58,7 +63,8 @@ class TypeRight(FrameworkRight):
 
 
 class CategoryRight(FrameworkRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.SECURE
     PREFIX = f'{FrameworkRight.PREFIX}.category'
@@ -68,7 +74,8 @@ class CategoryRight(FrameworkRight):
 
 
 class LogRight(FrameworkRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.log'
@@ -78,10 +85,22 @@ class LogRight(FrameworkRight):
 
 
 class WebhookRight(FrameworkRight):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.webhook'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)
+
+
+class RelationRight(FrameworkRight):
+    """document"""
+    #TODO: DOCUMENT-FIX
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{FrameworkRight.PREFIX}.relation'
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)

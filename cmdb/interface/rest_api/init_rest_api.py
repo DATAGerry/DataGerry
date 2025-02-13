@@ -96,6 +96,7 @@ def register_blueprints(app: BaseCmdbApp):
     from cmdb.interface.rest_api.routes.report_routes.report_routes import reports_blueprint
     from cmdb.interface.rest_api.routes.webhook_routes.webhook_routes import webhook_blueprint
     from cmdb.interface.rest_api.routes.webhook_routes.webhook_event_routes import webhook_event_blueprint
+    from cmdb.interface.rest_api.routes.relation_routes.relations_routes import relations_blueprint
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(setup_blueprint, url_prefix='/setup')
@@ -125,6 +126,7 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(reports_blueprint, url_prefix='/reports')
     app.register_blueprint(webhook_blueprint, url_prefix='/webhooks')
     app.register_blueprint(webhook_event_blueprint, url_prefix='/webhook_events')
+    app.register_blueprint(relations_blueprint, url_prefix='/relations')
 
     if cmdb.__MODE__ == 'DEBUG':
         from cmdb.interface.rest_api.routes.debug_routes import debug_blueprint
