@@ -301,9 +301,6 @@ export class AuthService<T = any> implements ApiServicePrefix {
 
     /* ------------------------------------------------- HELPER SECTION ------------------------------------------------- */
 
-    private delay(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 
 
     private getHttpOptions() {

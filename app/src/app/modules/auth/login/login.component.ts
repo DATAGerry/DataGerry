@@ -194,6 +194,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         .pipe(first())
                         .subscribe(() => {
                             this.router?.navigate(['/']);
+                            this.authenticationService.showIntro();
                         });
                 },
                 error: (err) => {
