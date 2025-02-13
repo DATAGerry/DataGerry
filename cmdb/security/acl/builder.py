@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder # TODO: IMPORT-FIX
 from cmdb.security.acl.permission import AccessControlPermission
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -26,7 +27,8 @@ class LookedAccessControlQueryBuilder(PipelineBuilder):
 
 
     def build(self, group_id: int, permission: AccessControlPermission, *args, **kwargs) -> list[dict]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.clear()
         self.add_pipe(self._lookup_types())
         self.add_pipe(self._unwind_types())

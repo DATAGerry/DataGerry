@@ -1,0 +1,133 @@
+# DATAGERRY - OpenSource Enterprise CMDB
+# Copyright (C) 2025 becon GmbH
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+Represents a CmdbObjectRelation in DataGerry
+"""
+import logging
+from datetime import datetime, timezone
+from dateutil.parser import parse
+
+from cmdb.class_schema.cmdb_object_relation_schema import get_cmdb_object_relation_schema
+from cmdb.models.cmdb_dao import CmdbDAO
+# -------------------------------------------------------------------------------------------------------------------- #
+
+LOGGER = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                 CmdbRelation - CLASS                                                 #
+# -------------------------------------------------------------------------------------------------------------------- #
+#pylint: disable=too-many-instance-attributes
+class CmdbObjectRelation(CmdbDAO):
+    """
+    Model for CmdbObjectRelation in DataGerry
+    `Extends`: CmdbDAO
+    """
+    COLLECTION = "framework.objectRelations"
+    MODEL = 'ObjectRelation'
+    SCHEMA: dict = get_cmdb_object_relation_schema()
+
+    #pylint: disable=too-many-arguments
+    #pylint: disable=too-many-locals
+    def __init__(self,
+                 public_id: int,
+                 relation_id: int,
+                 relation_parent_id: int,
+                 relation_child_id: int,
+                 author_id: int,
+                 creation_time: datetime = None,
+                 last_edit_time: datetime = None,
+                 field_values: list[dict] = None):
+        """
+        Initialises a CmdbObjectRelation
+
+        Args:
+            public_id (int): public_id of CmdbObjectRelation
+            relation_id (int): public_id of the CmdbRelation
+            relation_parent_id (int): public_id of the parent CmdbObject
+            relation_child_id (int): public_id of the child CmdbObject
+            author_id (int): public_id of the CmdbUser who created the CmdbObjectRelation then the last one editing it
+            creation_time (datetime, optional): When the CmdbObjectRelation was created. Defaults to None.
+            last_edit_time (datetime, optional): When the CmdbObjectRelation was last time edited. Defaults to None.
+            field_values (list[dict], optional): All field values for this CmdbObjectRelation. Defaults to None.
+        """
+        self.relation_id = relation_id
+        self.relation_parent_id = relation_parent_id
+        self.relation_child_id = relation_child_id
+        self.author_id = author_id
+        self.creation_time = creation_time or datetime.now(timezone.utc)
+        self.last_edit_time = last_edit_time
+        self.field_values = field_values
+
+        super().__init__(public_id=public_id)
+
+# -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
+
+    @classmethod
+    def from_data(cls, data: dict) -> "CmdbObjectRelation":
+        """
+        Initialises a CmdbObjectRelation from a dict
+
+        Args:
+            data (dict): Data with which the CmdbObjectRelation should be initialised
+
+        Returns:
+            CmdbObjectRelation: CmdbObjectRelation with the given data
+        """
+        creation_time = data.get('creation_time', None)
+
+        if creation_time and isinstance(creation_time, str):
+            creation_time = parse(creation_time, fuzzy=True)
+
+        last_edit_time = data.get('last_edit_time', None)
+
+        if last_edit_time and isinstance(last_edit_time, str):
+            last_edit_time = parse(last_edit_time, fuzzy=True)
+
+        return cls(
+            public_id = data.get('public_id'),
+            relation_id = data.get('relation_id'),
+            relation_parent_id = data.get('relation_parent_id'),
+            relation_child_id = data.get('relation_child_id'),
+            author_id = data.get('author_id'),
+            creation_time = creation_time,
+            last_edit_time = last_edit_time,
+            field_values = data.get('field_values', None) or [],
+        )
+
+
+    @classmethod
+    def to_json(cls, instance: "CmdbObjectRelation") -> dict:
+        """
+        Converts a CmdbObjectRelation into a json compatible dict
+
+        Args:
+            instance (CmdbObjectRelation): The CmdbObjectRelation which should be converted
+
+        Returns:
+            dict: Json dict of the CmdbObjectRelation values
+        """
+        return {
+            'public_id': instance.get_public_id(),
+            'relation_id': instance.relation_id,
+            'relation_parent_id': instance.relation_parent_id,
+            'relation_child_id': instance.relation_child_id,
+            'author_id': instance.author_id,
+            'creation_time': instance.creation_time,
+            'last_edit_time': instance.last_edit_time,
+            'field_values': instance.field_values,
+        }

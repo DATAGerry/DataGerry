@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from typing import TypeVar
 
 from cmdb.security.acl.permission import AccessControlPermission
@@ -36,7 +37,8 @@ class AccessControlList:
 
     @classmethod
     def from_data(cls, data: dict) -> "AccessControlList":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls(
             activated=data.get('activated', False),
             groups=GroupACL.from_data(data.get('groups', {}))
@@ -45,7 +47,8 @@ class AccessControlList:
 
     @classmethod
     def to_json(cls, acl: "AccessControlList") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'activated': acl.activated,
             'groups': GroupACL.to_json(acl.groups)
@@ -53,7 +56,8 @@ class AccessControlList:
 
 
     def grant_access(self, key: T, permission: AccessControlPermission, section: str = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if section == 'groups':
             self.groups.grant_access(key, permission)
         else:
@@ -61,7 +65,8 @@ class AccessControlList:
 
 
     def revoke_access(self, key: T, permission: AccessControlPermission, section: str = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if section == 'groups':
             self.groups.grant_access(key, permission)
         else:

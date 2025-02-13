@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -140,6 +140,7 @@ class CmdbType(CmdbDAO):
                 acl = AccessControlList.from_data(data.get('acl', {}))
             )
         except Exception as err:
+            #TODO: ERROR-FIX (specific required)
             LOGGER.debug("[from_data] Exception: %s, Type: %s", err, type(err))
             raise Exception(err) from err
 
@@ -166,6 +167,7 @@ class CmdbType(CmdbDAO):
                 'acl': AccessControlList.to_json(instance.acl)
             }
         except Exception as err:
+            #TODO: ERROR-FIX (specific required)
             LOGGER.debug("[to_json] Exception: %s, Type: %s", err, type(err))
             raise Exception(err) from err
 

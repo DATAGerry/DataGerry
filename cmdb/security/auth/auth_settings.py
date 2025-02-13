@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.security.token import DEFAULT_TOKEN_LIFETIME
 
 from cmdb.errors.security.security_errors import AuthSettingsInitError
@@ -30,7 +31,8 @@ class AuthSettingsDAO:
                  providers: list[dict] = None,
                  enable_external: bool = None,
                  token_lifetime: int = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             self._id: str = _id or AuthSettingsDAO.__DOCUMENT_IDENTIFIER
             self.providers: list[dict] = providers or []

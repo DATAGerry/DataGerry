@@ -58,7 +58,7 @@ def get_cmdb_relation_schema() -> dict:
             'required': False
         },
         'description': { # General description of the Relation
-            'type': 'integer',
+            'type': 'string',
             'nullable': True,
             'required': False
         },

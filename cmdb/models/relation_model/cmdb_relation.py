@@ -33,7 +33,7 @@ LOGGER = logging.getLogger(__name__)
 #pylint: disable=too-many-instance-attributes
 class CmdbRelation(CmdbDAO):
     """
-    Model for CmdbType in DataGerry
+    Model for CmdbRelation in DataGerry
     `Extends`: CmdbDAO
     """
     COLLECTION = "framework.relations"
