@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.framework.importer.parser.csv_object_parser import CsvObjectParser
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser
 from cmdb.framework.importer.importers.csv_object_importer import CsvObjectImporter
@@ -41,7 +42,8 @@ __OBJECT_PARSER__ = {
 
 
 def load_importer_class(importer_type: str, importer_name: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     __importer = {
         'object': __OBJECT_IMPORTER__
@@ -59,7 +61,8 @@ def load_importer_class(importer_type: str, importer_name: str):
 
 
 def load_importer_config_class(importer_type: str, importer_name: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     __importer_config = {
         'object': __OBJECT_IMPORTER_CONFIG__
@@ -74,7 +77,8 @@ def load_importer_config_class(importer_type: str, importer_name: str):
 
 
 def load_parser_class(parser_type: str, parser_name: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     __parser = {
             'object': __OBJECT_PARSER__

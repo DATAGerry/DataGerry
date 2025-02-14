@@ -13,13 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import io
 from xhtml2pdf import pisa
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class PdfDocumentType:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     FILE_EXTENSION = "pdf"
     ICON = "file-pdf"
     LABEL = "PDF"
@@ -28,7 +30,8 @@ class PdfDocumentType:
         pass
 
     def create_doc(self, input_data):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         output = io.BytesIO()
         # create PDF
         pisa.CreatePDF(input_data, dest=output, encoding='utf8')

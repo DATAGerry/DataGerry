@@ -13,12 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class BaseExporterFormat:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     FILE_EXTENSION = None
     LABEL = None
     MULTITYPE_SUPPORT = False
@@ -32,12 +34,14 @@ class BaseExporterFormat:
 
 
     def export(self, data, *args):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
 
 
     @staticmethod
     def summary_renderer(obj, field, view: str = 'native') -> str:
-        """TODO: ducoment"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         # Export only the shown fields chosen by the user
         if view.upper() == ExporterConfigType.RENDER.name and field.get('type') == 'ref':
             summary_line = f'{obj.type_information["type_label"]} #{obj.type_information["type_id"]}  '

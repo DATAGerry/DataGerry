@@ -13,13 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class BaseExporterConfig:
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, config_type: ExporterConfigType):
         """
         Args:

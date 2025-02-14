@@ -13,12 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.framework.importer.configs.base_importer_config import BaseImporterConfig
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ObjectImporterConfig(BaseImporterConfig):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def __init__(self, type_id: int, mapping: list = None, start_element: int = 0, max_elements: int = 0,
                  overwrite_public: bool = True, *args, **kwargs):
@@ -30,5 +32,6 @@ class ObjectImporterConfig(BaseImporterConfig):
 
 
     def get_type_id(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.type_id

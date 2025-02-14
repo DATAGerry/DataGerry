@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.framework.importer.content_types import XLSXContent
@@ -26,7 +27,8 @@ LOGGER = logging.getLogger(__name__)
 #                                           ExcelObjectImporterConfig - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ExcelObjectImporterConfig(ObjectImporterConfig, XLSXContent):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MANUALLY_MAPPING = True
 
     def __init__(self, type_id: int, mapping: list = None, start_element: int = 0, max_elements: int = 0,
