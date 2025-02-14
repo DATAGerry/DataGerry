@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from Crypto import Random
 from Crypto.PublicKey import RSA
@@ -29,13 +30,15 @@ LOGGER = logging.getLogger(__name__)
 #                                                 KeyGenerator - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class KeyGenerator:
-    """TODO: document"""
+    """document"""
+    #TODO: document
     def __init__(self, dbm: MongoDatabaseManager):
         self.settings_writer = SettingsWriterManager(dbm)
 
 
     def generate_rsa_keypair(self):
-        """TODO: document"""
+        """document"""
+        #TODO: document
         key = RSA.generate(2048)
         private_key = key.export_key()
         public_key = key.publickey().export_key()
@@ -52,7 +55,8 @@ class KeyGenerator:
 
 
     def generate_symmetric_aes_key(self):
-        """TODO: document"""
+        """document"""
+        #TODO: document
         symmetric_aes_key = Random.get_random_bytes(32)
         # LOGGER.error(f"symmetric_aes_key: {symmetric_aes_key}")
 

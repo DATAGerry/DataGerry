@@ -40,3 +40,4 @@ class ManagerType(Enum):
     WEBHOOKS_MANAGER = 'WebhooksManager'
     WEBHOOKS_EVENT_MANAGER = 'WebhooksEventManager'
     RELATIONS_MANAGER = 'RelationsManager'
+    OBJECT_RELATIONS_MANAGER = 'ObjectRelationsManager'

@@ -98,7 +98,8 @@ class MongoDBQueryBuilder:
             raise MongoQueryBuilderBuildRulesetError(str(err)) from err
 
     def __build_rule(self, field_name: str, operator: str, value: Union[int, str, list[str]] = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             target_field = 'fields'
             target_value = value

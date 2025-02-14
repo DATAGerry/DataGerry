@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from datetime import datetime, timedelta, timezone
 from authlib.jose import jwt
@@ -33,7 +34,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                TokenGenerator - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class TokenGenerator:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     DEFAULT_CLAIMS = {
         'iss': {
             'essential': True,
@@ -58,13 +60,15 @@ class TokenGenerator:
 
 
     def get_expire_time(self) -> datetime:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         expire_time = int(self.auth_module.settings.get_token_lifetime(DEFAULT_TOKEN_LIFETIME))
         return datetime.now(timezone.utc) + timedelta(minutes=expire_time)
 
 
     def generate_token(self, payload: dict, optional_claims: dict = None) -> bytes:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         optional_claims = optional_claims or {}
 
         token_claims = {

@@ -14,9 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains all tests for the DataGerry backend
+This module provides all errors for the ObjectRelationsManager
 """
-import cmdb
+from .object_relations_manager_errors import (
+    ObjectRelationsManagerError,
+    ObjectRelationsManagerInsertError,
+    ObjectRelationsManagerGetError,
+    ObjectRelationsManagerUpdateError,
+    ObjectRelationsManagerDeleteError,
+    ObjectRelationsManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-cmdb.__MODE__ = 'TESTING'
+__all__ = [
+    'ObjectRelationsManagerError',
+    'ObjectRelationsManagerInsertError',
+    'ObjectRelationsManagerGetError',
+    'ObjectRelationsManagerUpdateError',
+    'ObjectRelationsManagerDeleteError',
+    'ObjectRelationsManagerIterationError',
+]

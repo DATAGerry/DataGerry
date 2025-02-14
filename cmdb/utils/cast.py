@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,10 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: ducoment"""
+"""document"""
+#TODO: DOCUMENT-FIX
 
 def boolify(s):
-    """TODO: ducoment"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     if s in ('True', 'true'):
         return True
 
@@ -27,7 +29,8 @@ def boolify(s):
 
 
 def noneify(s):
-    """TODO: ducoment"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     if s in ('None', 'null'):
         return None
 
@@ -35,7 +38,8 @@ def noneify(s):
 
 
 def auto_cast(val):
-    """TODO: ducoment"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     for caster in (boolify, int, noneify, float, str):
         try:
             return caster(val)

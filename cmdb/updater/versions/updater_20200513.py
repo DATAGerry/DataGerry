@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.updater.updater import Updater
@@ -24,7 +25,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Update20200513(Updater):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def creation_date(self):
         return '20200513'
@@ -35,7 +37,8 @@ class Update20200513(Updater):
 
 
     def start_update(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         collection = CmdbType.COLLECTION
         all_types: list[dict] = []
 
