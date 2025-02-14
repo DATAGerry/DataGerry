@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.framework.docapi.docapi_template.docapi_template_base import TemplateManagementBase
 from cmdb.framework.docapi.docapi_template.docapi_template_type_enum import DocapiTemplateType
 from cmdb.models.cmdb_dao import CmdbDAO
@@ -69,7 +70,8 @@ class DocapiTemplate(TemplateManagementBase):
 
     @classmethod
     def from_data(cls, data: dict) -> "DocapiTemplate":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls(
             public_id=data.get('public_id'),
             name=data.get('name'),
@@ -86,7 +88,8 @@ class DocapiTemplate(TemplateManagementBase):
 
     @classmethod
     def to_json(cls, instance: "DocapiTemplate") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'public_id': instance.public_id,
             'name': instance.name,
@@ -169,16 +172,14 @@ class DocapiTemplate(TemplateManagementBase):
 
 
     def get_author_id(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.author_id
 
 
     def get_template_data(self):
-        """
-        Get data of this template
-        Returns:
-            str:
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.template_data
 
 

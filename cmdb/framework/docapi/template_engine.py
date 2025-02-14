@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 import jinja2
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -24,10 +25,12 @@ LOGGER = logging.getLogger(__name__)
 #                                                TemplateEngine - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class TemplateEngine:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def render_template_string(self, template_string, template_data):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         environment = jinja2.Environment(undefined=jinja2.ChainableUndefined)
         template = environment.from_string(template_string)
 

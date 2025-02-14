@@ -138,7 +138,7 @@ def get_relations(params: CollectionParameters, request_user: CmdbUser):
 @relations_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-@relations_blueprint.protect(auth=True, right='base.framework.relatino.view')
+@relations_blueprint.protect(auth=True, right='base.framework.relation.view')
 def get_relation(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbRelation

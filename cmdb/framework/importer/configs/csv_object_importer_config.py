@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.framework.importer.content_types import CSVContent
@@ -26,7 +27,8 @@ LOGGER = logging.getLogger(__name__)
 #                                            CsvObjectImporterConfig - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectImporterConfig(ObjectImporterConfig, CSVContent):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     MANUALLY_MAPPING = True
 

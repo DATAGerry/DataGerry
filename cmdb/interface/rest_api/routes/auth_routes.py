@@ -71,8 +71,8 @@ def post_login():
     if not login_data:
         return abort(400, 'No valid JSON data was provided')
 
-    request_user_name = login_data['user_name']
-    request_password = login_data['password']
+    request_user_name: str = login_data['user_name']
+    request_password: str = login_data['password']
     request_subscription = None
 
     if 'subscription' in login_data:
@@ -83,6 +83,7 @@ def post_login():
 
     try:
         if current_app.cloud_mode:
+            request_user_name = request_user_name.lower()
             user_data = check_user_in_service_portal(request_user_name, request_password)
             # LOGGER.debug(f"[post_login] user_data: {user_data}")
 

@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from pymongo import IndexModel
@@ -25,7 +26,8 @@ LOGGER = logging.getLogger(__name__)
 #                                            TemplateManagementBase - CLASS                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
 class TemplateManagementBase:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     ASCENDING = 1
     DESCENDING = -1
     COLLECTION = 'docapi.*'
@@ -46,7 +48,8 @@ class TemplateManagementBase:
 
     @classmethod
     def get_index_keys(cls):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         index_list = []
         for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS:
             index_list.append(IndexModel(**index))
@@ -55,5 +58,6 @@ class TemplateManagementBase:
 
 
     def to_database(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__dict__

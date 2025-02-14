@@ -13,12 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.framework.importer.mapper.mapping import Mapping
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class BaseImporterConfig:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     DEFAULT_MAPPING: Mapping = Mapping()
     MANUALLY_MAPPING: bool = True
@@ -30,5 +32,6 @@ class BaseImporterConfig:
 
 
     def get_mapping(self) -> Mapping:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.mapping

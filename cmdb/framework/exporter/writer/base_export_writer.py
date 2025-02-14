@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 import datetime
 import time
@@ -36,7 +37,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class  BaseExportWriter:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def __init__(self, export_format: BaseExporterFormat, export_config: ExporterConfig):
         """init of FileExporter
@@ -74,7 +76,8 @@ class  BaseExportWriter:
 
 
     def export(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
 
         conf_option = self.export_config.options
         timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d-%H_%M_%S')

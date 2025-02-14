@@ -63,12 +63,18 @@ def get_cmdb_relation_schema() -> dict:
             'required': False
         },
         'parent_type_ids': { # public_ids of allowed parent CmdbTypes
-            'type': 'dict',
+            'type': 'list',
             'required': True,
+            'schema': {
+                'type': 'integer'
+            }
         },
         'child_type_ids': { # public_ids of allowed child CmdbTypes
-            'type': 'dict',
-            'required': True
+            'type': 'list',
+            'required': True,
+            'schema': {
+                'type': 'integer'
+            }
         },
         'sections': { # all sections of the CmdbRelation
             'type': 'list',
