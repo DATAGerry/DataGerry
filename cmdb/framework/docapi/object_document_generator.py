@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.manager import ObjectsManager
@@ -28,7 +29,8 @@ LOGGER = logging.getLogger(__name__)
 #                                            ObjectDocumentGenerator - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ObjectDocumentGenerator:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     # default CSS to make the document styling in TinyMCE look like the styling in the PDF
     default_css = """
         img {
@@ -48,7 +50,8 @@ class ObjectDocumentGenerator:
 
 
     def generate_doc(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         # render template data
         template_data = ObjectTemplateData(self.__cmdb_object,
                                            self.objects_manager).get_template_data()

@@ -979,12 +979,15 @@ def delete_object(public_id: int, request_user: CmdbUser):
         #an object can not be deleted if it has a location AND the location is a parent for other locations
         try:
             current_location = locations_manager.get_location_for_object(public_id)
-            child_location = locations_manager.get_one_by({'parent': current_location.public_id})
+            child_location = None
+
+            if current_location:
+                child_location = locations_manager.get_one_by({'parent': current_location.public_id})
 
             if child_location and len(child_location) > 0:
                 return abort(405, "The location of this object has child locations!")
-        except ManagerGetError:
-            pass
+        except Exception as err:
+            LOGGER.error("Uncaught Exception: %s. Type: %s", err, type(err))
 
     except ObjectManagerGetError as err:
         LOGGER.debug("[delete_object] ObjectManagerGetError: %s", err.message)

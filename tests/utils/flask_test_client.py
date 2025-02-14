@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from flask.testing import FlaskClient
 
@@ -24,14 +25,15 @@ LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 class RestAPITestSuite:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     COLLECTION: str = NotImplemented
     ROUTE_URL: str = NotImplemented
 
 
 class RestAPITestClient(FlaskClient):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, *args, **kwargs):
         self.database_manager = kwargs.pop('database_manager')
         self._token_generator = TokenGenerator(self.database_manager)
@@ -52,7 +54,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def inject_auth(self, kwargs: dict) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if kwargs.get('unauthorized', None):
             kwargs['environ_overrides'] = {
                 'HTTP_AUTHORIZATION': ''
@@ -65,11 +68,13 @@ class RestAPITestClient(FlaskClient):
             kwargs['environ_overrides'] = {
                 'HTTP_AUTHORIZATION': f'Bearer {token}'
             }
+
         return kwargs
 
 
     def get(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'GET'
         if not kw.get('content_type', None):
             kw['content_type'] = 'application/json'
@@ -79,7 +84,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def patch(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'PATCH'
 
         if not kw.get('content_type', None):
@@ -91,7 +97,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def post(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'POST'
 
         if not kw.get('content_type', None):
@@ -103,7 +110,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def head(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'HEAD'
 
         if not kw.get('content_type', None):
@@ -115,7 +123,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def put(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'PUT'
 
         if not kw.get('content_type', None):
@@ -127,7 +136,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def delete(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'DELETE'
 
         if not kw.get('content_type', None):
@@ -139,7 +149,8 @@ class RestAPITestClient(FlaskClient):
 
 
     def options(self, *args, **kw):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kw['method'] = 'OPTIONS'
 
         if not kw.get('content_type', None):

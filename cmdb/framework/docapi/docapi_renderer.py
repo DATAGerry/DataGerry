@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.manager import (
     ObjectsManager,
     DocapiTemplatesManager,
@@ -25,7 +26,8 @@ from cmdb.framework.docapi.pdf_document_type import PdfDocumentType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class DocApiRenderer:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     #TODO: INIT-FIX (refactor the initalisation)
     def __init__(self, objects_manager: ObjectsManager, docapi_manager: DocapiTemplatesManager):
         self.docapi_manager = docapi_manager
@@ -33,7 +35,8 @@ class DocApiRenderer:
 
 
     def render_object_template(self, doctpl_id: int, object_id: int):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         template = self.docapi_manager.get_template(doctpl_id)
         cmdb_object = self.objects_manager.get_object(object_id)
         type_instance = self.objects_manager.get_object_type(cmdb_object.get_type_id())

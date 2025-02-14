@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.models.category_model import CmdbCategory
@@ -27,20 +28,24 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Update20200512(Updater):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def creation_date(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return '20200512'
 
 
     def description(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return 'Restructure category system'
 
 
     def start_update(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         collection = CmdbCategory.COLLECTION
         new_categories: list[CmdbCategory] = []
         raw_categories_old_structure: list[dict] = self.dbm.find_all(collection=collection,

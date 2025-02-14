@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import os
 import re
 
@@ -24,7 +25,6 @@ class SystemEnvironmentReader(SystemReader):
     """
     Settings reader loads settings from environment variables
     """
-
     def __init__(self):
         # get all environment variables and store them in config dict
         self.__config = {}
@@ -46,20 +46,24 @@ class SystemEnvironmentReader(SystemReader):
 
 
     def get_value(self, name, section):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__config[section][name]
 
 
     def get_sections(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__config.keys()
 
 
     def get_all_values_from_section(self, section):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__config[section]
 
 
     def setup(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError

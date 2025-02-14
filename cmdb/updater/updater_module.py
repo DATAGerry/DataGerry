@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.manager import SettingsReaderManager
@@ -58,7 +59,8 @@ class UpdaterModule:
 
     @staticmethod
     def get_last_version() -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         arr_versions = sorted(UpdaterModule.__UPDATER_VERSIONS_POOL__)
 
         return {

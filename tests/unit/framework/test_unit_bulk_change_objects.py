@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import copy
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -35,7 +36,8 @@ from cmdb.security.acl.group_acl import GroupACL
 
 @fixture(scope='module', name="example_type")
 def fixture_example_type():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return CmdbType(
         public_id=1, name='test', label='Test', author_id=1, creation_time=datetime.now(),
         active=True, version=None, description='Test type',
@@ -61,7 +63,8 @@ def fixture_example_type():
 
 @fixture(scope='module', name="example_object")
 def fixture_example_object():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return CmdbObject(
         public_id=1, type_id=1, status=True, creation_time=datetime.now(timezone.utc),
         author_id=1, active=True, fields=[{
@@ -96,7 +99,8 @@ def fixture_change_object() -> dict:
 
 @fixture(scope='module', name="collection")
 def fixture_collection(connector, database_name):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     client: MongoClient = connector.client
     collection: Collection = client.get_database(database_name).get_collection(CmdbType.COLLECTION)
     return collection
@@ -104,7 +108,8 @@ def fixture_collection(connector, database_name):
 
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     collection.insert_one(document=CmdbType.to_json(example_type))
 
     def drop_collection():
@@ -113,7 +118,8 @@ def setup(request, collection, example_type):
     request.addfinalizer(drop_collection)
 
 class TestBulkChangeFrameworkObjects:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     OBJECT_COLLECTION: str = CmdbObject.COLLECTION
     ROUTE_URL: str = '/objects'
 
@@ -134,7 +140,8 @@ class TestBulkChangeFrameworkObjects:
         assert len(rest_api.get(f'{self.ROUTE_URL}/').get_json()['results']) == 3
 
     def test_bulk_change_object_field_value(self, rest_api, change_object, full_access_user):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         expectations = rest_api.get(f'{self.ROUTE_URL}/').get_json()['results']
         params = {'objectIDs': [1, 2, 3]}
 
@@ -161,7 +168,8 @@ class TestBulkChangeFrameworkObjects:
 
 
     def test_bulk_change_object_active_state(self, rest_api, change_object, full_access_user):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         expectations = rest_api.get(f'{self.ROUTE_URL}/').get_json()['results']
         params = {'objectIDs': [1, 2, 3]}
 

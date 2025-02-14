@@ -22,9 +22,8 @@ from flask import current_app
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
 from cmdb.manager import (
     CategoriesManager,
-    ObjectsManager,
-    LogsManager,
     DocapiTemplatesManager,
+    LogsManager,
     UsersManager,
     UsersSettingsManager,
     GroupsManager,
@@ -32,7 +31,9 @@ from cmdb.manager import (
     TypesManager,
     LocationsManager,
     SectionTemplatesManager,
+    ObjectsManager,
     ObjectLinksManager,
+    ObjectRelationsManager,
     RelationsManager,
     SecurityManager,
     SettingsReaderManager,
@@ -110,6 +111,7 @@ class ManagerProvider:
             ManagerType.WEBHOOKS_MANAGER: WebhooksManager,
             ManagerType.WEBHOOKS_EVENT_MANAGER: WebhooksEventManager,
             ManagerType.RELATIONS_MANAGER: RelationsManager,
+            ManagerType.OBJECT_RELATIONS_MANAGER: ObjectRelationsManager,
         }
 
         return manager_classes.get(manager_type)

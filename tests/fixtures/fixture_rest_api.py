@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 import pytest
 from cmdb.interface.cmdb_app import BaseCmdbApp
@@ -27,7 +28,8 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 @pytest.fixture(scope="session")
 def rest_api(database_manager, full_access_user):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     api = create_rest_api(database_manager)
     api.test_client_class = RestAPITestClient
 
@@ -37,7 +39,8 @@ def rest_api(database_manager, full_access_user):
 
 @pytest.fixture(scope="session", autouse=True)
 def app_context():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     current_app = BaseCmdbApp(__name__)
     with current_app.app_context():
         yield

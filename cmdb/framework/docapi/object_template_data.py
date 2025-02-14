@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.manager import ObjectsManager
@@ -30,8 +31,8 @@ LOGGER = logging.getLogger(__name__)
 #                                              ObjectTemplateData - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ObjectTemplateData(AbstractTemplateData):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, cmdb_object, objects_manager: ObjectsManager):
         super().__init__()
         self.objects_manager = objects_manager

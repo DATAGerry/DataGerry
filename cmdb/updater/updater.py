@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from abc import abstractmethod
 
@@ -39,8 +40,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                    Updater - CLASS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 class Updater(BaseManager):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self):
         scr = SystemConfigReader()
         self.dbm = MongoDatabaseManager(**scr.get_all_values_from_section('Database'))
@@ -72,12 +73,14 @@ class Updater(BaseManager):
 
     @abstractmethod
     def start_update(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return NotImplementedError
 
 
     def increase_updater_version(self, value: int):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         settings_reader = SettingsReaderManager(self.dbm)
         settings_writer = SettingsWriterManager(self.dbm)
         updater_settings_values = settings_reader.get_all_values_from_section('updater')
@@ -87,5 +90,6 @@ class Updater(BaseManager):
 
 
     def error(self, msg):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise UpdaterException(msg)

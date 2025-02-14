@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -23,11 +24,13 @@ LOGGER = logging.getLogger(__name__)
 #                                             AbstractTemplateData - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class AbstractTemplateData:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self):
         self._template_data = {}
 
 
     def get_template_data(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._template_data

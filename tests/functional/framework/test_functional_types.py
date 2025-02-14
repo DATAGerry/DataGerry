@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from json import dumps
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -34,7 +35,8 @@ from cmdb.security.acl.group_acl import GroupACL
 
 @fixture(scope='module')
 def example_type():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return CmdbType(
         public_id=1,
         name='test',
@@ -72,7 +74,8 @@ def example_type():
 
 @fixture(scope='module')
 def collection(connector, database_name):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     from pymongo.mongo_client import MongoClient
     from pymongo.collection import Collection
     mongo_client: MongoClient = connector.client
@@ -82,7 +85,8 @@ def collection(connector, database_name):
 
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     collection.insert_one(document=CmdbType.to_json(example_type))
 
     def drop_collection():
@@ -92,14 +96,16 @@ def setup(request, collection, example_type):
 
 
 class TestFrameworkTypes(RestAPITestSuite):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     importorskip('cmdb.framework')
 
     COLLECTION: str = CmdbType.COLLECTION
     ROUTE_URL: str = '/types'
 
     def test_get_types(self, rest_api, full_access_user, none_access_user):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         # Route callable
         default_response = rest_api.get(f'{self.ROUTE_URL}/')
         assert default_response.status_code == HTTPStatus.OK
@@ -142,7 +148,8 @@ class TestFrameworkTypes(RestAPITestSuite):
 
 
     def test_get_type(self, rest_api, example_type, full_access_user, none_access_user):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         # Route callable
         default_response = rest_api.get(f'{self.ROUTE_URL}/{example_type.public_id}')
         assert default_response.status_code == HTTPStatus.OK
@@ -172,7 +179,8 @@ class TestFrameworkTypes(RestAPITestSuite):
 
 
     def test_insert_type(self, rest_api, example_type, full_access_user, none_access_user):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         example_type.public_id = 2
         example_type.name = 'test2'
 

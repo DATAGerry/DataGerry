@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides all refactored Managers of DataGerry (refactoring still in process)
+"""
 from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.categories_manager import CategoriesManager
 from cmdb.manager.docapi_templates_manager import DocapiTemplatesManager
@@ -24,6 +25,7 @@ from cmdb.manager.logs_manager import LogsManager
 from cmdb.manager.media_files_manager import MediaFilesManager
 from cmdb.manager.object_links_manager import ObjectLinksManager
 from cmdb.manager.objects_manager import ObjectsManager
+from cmdb.manager.object_relations_manager import ObjectRelationsManager
 from cmdb.manager.relations_manager import RelationsManager
 from cmdb.manager.report_categories_manager import ReportCategoriesManager
 from cmdb.manager.reports_manager import ReportsManager
@@ -49,6 +51,7 @@ __all__ = [
     'MediaFilesManager',
     'ObjectLinksManager',
     'ObjectsManager',
+    'ObjectRelationsManager',
     'RelationsManager',
     'ReportCategoriesManager',
     'ReportsManager',

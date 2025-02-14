@@ -576,7 +576,8 @@ class MongoDatabaseManager:
 
 
     def get_next_public_id(self, collection: str) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             found_counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
             new_id = found_counter['counter'] + 1

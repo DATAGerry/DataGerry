@@ -1,5 +1,5 @@
 # DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2024 becon GmbH
+# Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from pymongo.errors import CollectionInvalid
 
@@ -42,7 +43,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 UpdateRoutine - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class UpdateRoutine:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, dbm: MongoDatabaseManager):
         self.status = UpateStatus.NOT
         # check if settings are loaded
@@ -59,12 +61,14 @@ class UpdateRoutine:
 
 
     def get_updater_status(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.status
 
 
     def __check_database(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         LOGGER.info('SETUP ROUTINE: Checking database connection')
         #TODO: REFACTOR-FIX
         try:
@@ -77,12 +81,14 @@ class UpdateRoutine:
 
 
     def __is_database_empty(self) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return not self.dbm.connector.database.list_collection_names()
 
 
     def start_update(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         LOGGER.info('UPDATE ROUTINE: Update database collection')
         self.status = UpateStatus.RUNNING
 
@@ -112,7 +118,8 @@ class UpdateRoutine:
 
 
     def update_database_collection(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             detected_database = self.dbm.connector.database
 
@@ -141,7 +148,8 @@ class UpdateRoutine:
 
 
     def update_db_version(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         # update version updater settings
         try:
             updater_settings_values = UpdaterModule.__DEFAULT_SETTINGS__
