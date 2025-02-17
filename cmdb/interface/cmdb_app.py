@@ -25,10 +25,12 @@ from cmdb.database import MongoDatabaseManager
 
 LOGGER = logging.getLogger(__name__)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                  BaseCmdbApp - CLASS                                                 #
+# -------------------------------------------------------------------------------------------------------------------- #
 class BaseCmdbApp(Flask):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, import_name: str, database_manager: MongoDatabaseManager = None):
         #TODO: REFACTOR-FIX (replace self.database_manager with self.dbm)
         self.database_manager: MongoDatabaseManager = database_manager

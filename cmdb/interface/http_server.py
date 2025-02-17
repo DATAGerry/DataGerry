@@ -73,5 +73,6 @@ class HTTPServer(BaseApplication):
 
     @staticmethod
     def number_of_workers() -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return (multiprocessing.cpu_count() * 2) + 1

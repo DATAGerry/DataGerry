@@ -31,7 +31,8 @@ LOGGER = logging.getLogger(__name__)
 #                                               ExcelObjectParser - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ExcelObjectParser(BaseObjectParser, XLSXContent):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     DEFAULT_CONFIG = {
         'sheet_name': 'Sheet1',
         'header': True

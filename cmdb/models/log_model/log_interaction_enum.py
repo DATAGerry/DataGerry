@@ -13,22 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-# TODO: DOCUMENT-FIX
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.framework.exporter.config.base_exporter_config import BaseExporterConfig
-from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
+"""
+Defines available actions for Logs
+"""
+from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ExporterConfig(BaseExporterConfig):
-    """document"""
-    # TODO: DOCUMENT-FIX
-    def __init__(self, parameters: CollectionParameters, options: dict = None):
-        """
-        Args:
-            parameters: Rest API class for parameters passed by a http request on a collection route
-            options: dict of optional parameters for given route function.
-        """
-        self.parameters = parameters
-        self.options = options or None
-        super().__init__(config_type=ExporterConfigType.NATIVE)
+class LogInteraction(str, Enum):
+    """
+    Available Log interactions (currently used only by CmdbObjectRelationLog)
+    """
+    CREATE = "CREATE"
+    EDIT = "EDIT"
+    DELETE = "DELETE"

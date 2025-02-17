@@ -29,8 +29,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                    Mapping - CLASS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 class Mapping(Iterable):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, entries: list[MapEntry] = None):
         self.__entries: list[MapEntry] = entries or []
 
@@ -43,7 +43,8 @@ class Mapping(Iterable):
 
     @classmethod
     def generate_mapping_from_list(cls, map_list: list[dict]):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         maps = Mapping()
         for mapper in map_list:
             maps.add_entry(MapEntry(**mapper))
@@ -51,12 +52,14 @@ class Mapping(Iterable):
 
 
     def get_entries(self) -> list[MapEntry]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__entries
 
 
     def get_entries_with_option(self, query: dict) -> list[MapEntry]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         founded_entries: list[MapEntry] = []
         for entry in self:
             if entry.has_option(query):
@@ -65,15 +68,18 @@ class Mapping(Iterable):
 
 
     def add_entry(self, entry: MapEntry):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.__entries.append(entry)
 
 
     def add_entries(self, entries: list[MapEntry]):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.__entries = self.__entries + entries
 
 
     def remove_entry(self, entry: MapEntry):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.__entries.remove(entry)

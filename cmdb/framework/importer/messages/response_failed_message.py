@@ -41,7 +41,8 @@ class ResponseFailedMessage:
 
 
     def to_dict(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'status': self.status,
             'public_id': self.public_id,

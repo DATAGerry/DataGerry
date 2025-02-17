@@ -25,8 +25,8 @@ LOGGER = logging.getLogger(__name__)
 #                                             DispatcherMiddleware - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class DispatcherMiddleware:
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, app, mounts=None):
         self.app = app
         self.mounts = mounts or {}

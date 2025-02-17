@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import os
 import base64
 import functools
@@ -157,11 +158,11 @@ def insert_request_user(func):
 
 
 def verify_api_access(*, required_api_level: ApiLevel = None):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            """TODO: document"""
             if not current_app.cloud_mode:
                 return func(*args, **kwargs)
 
@@ -195,13 +196,15 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
 
 
 def __get_x_api_key():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     x_api_key = request.headers.get('x-api-key', None)
     return x_api_key
 
 
 def __get_request_api_user():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         value = _wsgi_decoding_dance(request.headers['Authorization'])
 
@@ -228,7 +231,8 @@ def __get_request_api_user():
 
 
 def __get_request_auth_method():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         auth_header = request.headers.get('Authorization')
 
@@ -246,7 +250,8 @@ def __get_request_auth_method():
 
 
 def __check_api_level(user_instance: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     # Only validate in cloud mode
     if not current_app.cloud_mode:
         return True
@@ -396,7 +401,8 @@ def parse_authorization_header(header):
 # ------------------------------------------------------ HELPER ------------------------------------------------------ #
 
 def validate_right_cloud_api(required_right: str, request_user: CmdbUser) -> bool:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     with current_app.app_context():
         groups_manager = GroupsManager(current_app.database_manager, request_user.database)
 
@@ -415,7 +421,8 @@ def validate_right_cloud_api(required_right: str, request_user: CmdbUser) -> boo
 
 # TODO: UNUSED-FIX
 def validate_password(user_name: str, password: str, database: str = None) -> Union[CmdbUser, None]:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     if database:
         users_manager = UsersManager(current_app.database_manager, database)
         security_manager = SecurityManager(current_app.database_manager, database)
@@ -630,7 +637,8 @@ def validate_subscrption_user(email: str, password: str, x_api_key: str = None) 
 
 
 def sync_config_items(email: str, database: str, config_item_count: int) -> bool:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     # Just do this in cloud mode
     if current_app.local_mode:

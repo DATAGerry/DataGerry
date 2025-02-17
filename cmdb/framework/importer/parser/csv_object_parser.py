@@ -32,7 +32,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                CsvObjectParser - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectParser(BaseObjectParser, CSVContent):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     BYTE_ORDER_MARK = '\ufeff'
     BAD_DELIMITERS = ['\r', '\n', '"', BYTE_ORDER_MARK]

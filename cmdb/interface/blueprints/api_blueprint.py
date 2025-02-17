@@ -118,7 +118,8 @@ class APIBlueprint(Blueprint):
 
     @classmethod
     def validate(cls, schema=None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         validator = Validator(schema, purge_unknown=True)
 
         def _validate(f):
@@ -172,11 +173,11 @@ class APIBlueprint(Blueprint):
 
     @classmethod
     def parse_request_parameters(cls, **optional):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         def _parse(f):
             @wraps(f)
             def _decorate(*args, **kwargs):
-                """TODO: document"""
                 try:
                     request_args = request.args.to_dict()
                 except Exception as error:

@@ -19,7 +19,8 @@ from bson import objectid
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class FileMetadata:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(
             self,
             author_id,
@@ -39,31 +40,31 @@ class FileMetadata:
 
 
     def get_ref_to(self) -> objectid:
-        """TODO: document"""
-        if self.reference is None:
-            return None
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.reference
 
 
     def get_ref_to_type(self) -> str:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if self.reference_type is None:
             return ""
         return self.reference_type
 
 
     def get_mime_type(self) -> str:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if self.mime_type is None:
             return "application/json"
         return self.mime_type
 
 
     def get_permission(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         #  The action of officially allowing someone to do a particular thing
-        if self.permission is None:
-            return None
         return self.permission
 
 

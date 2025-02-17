@@ -26,7 +26,8 @@ LOGGER = logging.getLogger(__name__)
 #                                            CsvObjectParserResponse - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectParserResponse(ObjectParserResponse):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def __init__(self, count: int, entries: list, entry_length: int, header: dict = None):
         self.entry_length: int = entry_length
@@ -35,10 +36,12 @@ class CsvObjectParserResponse(ObjectParserResponse):
 
 
     def get_entry_length(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.entry_length
 
 
     def get_header_list(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.header

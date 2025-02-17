@@ -26,7 +26,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                  BaseParser - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseParser:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     DEFAULT_CONFIG = {}
 
     def __new__(cls, *args, **kwargs):
@@ -39,10 +40,12 @@ class BaseParser:
 
 
     def get_config(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.parser_config
 
 
     def parse(self, file) -> BaseParserResponse:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError

@@ -25,7 +25,7 @@ LOGGER = logging.getLogger(__name__)
 #                                                RegexConverter - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RegexConverter(BaseConverter):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, url_map):
         super().__init__(url_map)

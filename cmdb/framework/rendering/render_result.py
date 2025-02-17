@@ -25,8 +25,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 RenderResult - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RenderResult:
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self):
         self.current_render_time = datetime.now(timezone.utc)
         self.object_information: dict = {}
@@ -40,10 +40,12 @@ class RenderResult:
 
 
     def get_object_information(self, idx):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.object_information[idx]
 
 
     def get_type_information(self, idx):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.type_information[idx]

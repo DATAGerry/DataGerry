@@ -27,7 +27,8 @@ LOGGER = logging.getLogger(__name__)
 #                                               BaseObjectParser - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseObjectParser(BaseParser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     DEFAULT_CONFIG = {}
 

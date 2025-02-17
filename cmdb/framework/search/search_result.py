@@ -126,7 +126,8 @@ class SearchResult(Generic[R]):
 
 
     def to_json(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'limit': self.limit,
             'skip': self.skip,
