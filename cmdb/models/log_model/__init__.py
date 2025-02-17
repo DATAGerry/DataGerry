@@ -13,3 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+from .log_interaction_enum import LogInteraction
+from .cmdb_object_relation_log import CmdbObjectRelationLog
+# -------------------------------------------------------------------------------------------------------------------- #
+
+__all__ = [
+    'LogInteraction',
+    'CmdbObjectRelationLog',
+]

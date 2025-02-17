@@ -33,6 +33,7 @@ class NestedBlueprint:
 
 
     def route(self, rule, **options):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         rule = self.prefix + rule
         return self.blueprint.route(rule, **options)

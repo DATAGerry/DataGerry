@@ -39,8 +39,8 @@ LOGGER = logging.getLogger(__name__)
 #                                              ExcelObjectImporter - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ExcelObjectImporter(ObjectImporter, XLSXContent):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self,
                  file=None,
                  config: ExcelObjectImporterConfig = None,

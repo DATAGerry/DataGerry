@@ -26,5 +26,6 @@ class BaseParserResponse:
 
 
     def output(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError

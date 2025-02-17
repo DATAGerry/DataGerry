@@ -20,8 +20,8 @@ from typing import Any
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class MapEntry:
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, name: Any, value: str, **options):
         self.name: Any = name
         self.value: Any = value
@@ -29,20 +29,24 @@ class MapEntry:
 
 
     def get_name(self) -> Any:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.name
 
 
     def get_value(self) -> Any:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.value
 
 
     def has_option(self, option: dict) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return option.items() <= self.get_option().items()
 
 
     def get_option(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.option

@@ -26,7 +26,7 @@ LOGGER = logging.getLogger(__name__)
 #                                           JsonObjectParserResponse - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class JsonObjectParserResponse(ObjectParserResponse):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, count: int, entries: list):
         super().__init__(count=count, entries=entries)

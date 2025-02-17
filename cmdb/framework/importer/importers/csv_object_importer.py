@@ -41,8 +41,8 @@ LOGGER = logging.getLogger(__name__)
 #                                               CsvObjectImporter - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectImporter(ObjectImporter, CSVContent):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self,
                  file=None,
                  config: CsvObjectImporterConfig = None,
@@ -60,7 +60,8 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
 
 
     def generate_object(self, entry: dict, *args, **kwargs) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             possible_fields: list[dict] = kwargs['fields']
         except (KeyError, IndexError, ValueError) as err:

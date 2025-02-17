@@ -213,15 +213,16 @@ class ObjectImporter(BaseImporter):
 
 
     def check_config_item_limit_reached(self, request_user: CmdbUser, objects_manager: ObjectsManager) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         objects_count = self.get_objects_count(request_user, objects_manager)
 
         return objects_count >= request_user.config_items_limit
 
 
     def get_objects_count(self, request_user: CmdbUser, objects_manager: ObjectsManager) -> int:
-        """TODO: document"""
-
+        """document"""
+        #TODO: DOCUMENT-FIX
         builder_params = BuilderParameters({})
         iteration_result: IterationResult[CmdbObject] = objects_manager.iterate(builder_params,
                                                                                 request_user,

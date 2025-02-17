@@ -101,7 +101,8 @@ class JsonObjectImporter(ObjectImporter, JSONContent):
 
 
     def start_import(self) -> ImporterObjectResponse:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         parsed_response: JsonObjectParserResponse = self.parser.parse(self.file)
         type_instance_fields: list = self.objects_manager.get_object_type(self.config.get_type_id()).get_fields()
 

@@ -41,7 +41,8 @@ class RootBlueprint(Blueprint):
 
     @classmethod
     def parse_assistant_parameters(cls, **optional):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         def _parse(f):
             @wraps(f)
             def _decorate(*args, **kwargs):

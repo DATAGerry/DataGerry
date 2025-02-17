@@ -25,7 +25,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 BaseMediaFile - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseMediaFile:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     ASCENDING = 1
     DESCENDING = -1
     COLLECTION = 'media.*'
@@ -37,16 +38,17 @@ class BaseMediaFile:
     REQUIRED_INIT_KEYS = []
     INDEX_KEYS = []
 
+
     def __init__(self, **kwargs):
         self.public_id = None
         for key, value in kwargs.items():
             setattr(self, key, value)
 
 
-
     @classmethod
     def get_index_keys(cls):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         index_list = []
 
         for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS:

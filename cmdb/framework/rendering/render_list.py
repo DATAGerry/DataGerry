@@ -32,13 +32,15 @@ LOGGER = logging.getLogger(__name__)
 #                                                  RenderList - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RenderList:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self,
                  object_list: list[CmdbObject],
                  request_user: CmdbUser,
                  ref_render=False,
                  objects_manager: ObjectsManager = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.object_list: list[CmdbObject] = object_list
         self.request_user = request_user
         self.ref_render = ref_render
@@ -46,7 +48,8 @@ class RenderList:
 
 
     def render_result_list(self, raw: bool = False) -> list[Union[RenderResult, dict]]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         preparation_objects: list[RenderResult] = []
 
         for passed_object in self.object_list:

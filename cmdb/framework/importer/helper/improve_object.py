@@ -25,8 +25,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 ImproveObject - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ImproveObject:
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, entry: dict, property_entries, field_entries, possible_fields):
         """
         Basic improve super class for object imports

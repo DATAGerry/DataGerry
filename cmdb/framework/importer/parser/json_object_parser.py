@@ -29,7 +29,8 @@ LOGGER = logging.getLogger(__name__)
 #                                               JsonObjectParser - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class JsonObjectParser(BaseObjectParser, JSONContent):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     DEFAULT_CONFIG = {
         'indent': 2,

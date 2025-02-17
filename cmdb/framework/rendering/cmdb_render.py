@@ -52,7 +52,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                  CmdbRender - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbRender:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     AUTHOR_ANONYMOUS_NAME = 'unknown'
 
@@ -61,7 +62,8 @@ class CmdbRender:
                  render_user: CmdbUser,
                  ref_render=False,
                  dbm: MongoDatabaseManager = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.dbm = dbm
         self.object_instance: CmdbObject = object_instance
         self.type_instance: CmdbType = type_instance
@@ -120,17 +122,20 @@ class CmdbRender:
 
 
     def result(self, level: int = 3) -> RenderResult:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._generate_result(level)
 
 
     def get_mds_reference(self, field_value: int) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__merge_references({"value": field_value})
 
 
     def is_ref_field(self, field_name):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         type_fields = self.type_instance.fields
 
         for field in type_fields:
