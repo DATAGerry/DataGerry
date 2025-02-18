@@ -172,12 +172,14 @@ class TypesManager(BaseManager):
 
 
     def count_types(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.count_documents(CmdbType.COLLECTION)
 
 
     def get_all_types(self) -> list[CmdbType]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             raw_types: list[dict] = self.get_many()
         except Exception as err:
@@ -190,7 +192,8 @@ class TypesManager(BaseManager):
 
 
     def get_types_by(self, sort='public_id', **requirements):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             return [CmdbType.from_data(data) for data in self.get_many(sort=sort, **requirements)]
         except Exception as err:
@@ -252,7 +255,8 @@ class TypesManager(BaseManager):
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
     def fields_diff(self, initial_fields: list, new_fields: list,  check_added: bool = False) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if check_added:
             # check which fields were added
             return [field_name for field_name in new_fields if field_name not in initial_fields]
@@ -262,7 +266,8 @@ class TypesManager(BaseManager):
 
 
     def create_mds_field_entries(self, fields_to_add: list, data_set) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             for field_name in fields_to_add:
 
@@ -280,7 +285,8 @@ class TypesManager(BaseManager):
 
 
     def delete_mds_field_entries(self, fields_to_delete: list, data_set: list) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         to_delete = []
 
         try:
@@ -307,7 +313,8 @@ class TypesManager(BaseManager):
         return data_set
 
     def get_objects_for_type(self, target_type_id: int) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         all_type_objects = self.get_many_from_other_collection(CmdbObject.COLLECTION, type_id=target_type_id)
 
         found_objects = []
@@ -319,7 +326,8 @@ class TypesManager(BaseManager):
 
 
     def update_multi_data_fields(self, target_type: CmdbType, added_fields: dict, deleted_fields: dict):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         all_type_objects = self.get_objects_for_type(target_type.public_id)
 
         # update the multi-data-sections
@@ -347,7 +355,8 @@ class TypesManager(BaseManager):
 
 
     def handle_mutli_data_sections(self, target_type: CmdbType, updated_data: dict):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         added_fields: dict = {}
         deleted_fields: dict = {}
 

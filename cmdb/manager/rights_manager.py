@@ -30,7 +30,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 RightsManager - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RightsManager(BaseManager):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, right_tree):
         self.rights = RightsManager.flat_tree(right_tree)
 
@@ -39,7 +40,8 @@ class RightsManager(BaseManager):
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def iterate_rights(self, limit: int, skip: int, sort: str, order: int) -> IterationResult[BaseRight]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             sorted_rights = sorted(self.rights, key=lambda right: right[sort], reverse=order == -1)
 

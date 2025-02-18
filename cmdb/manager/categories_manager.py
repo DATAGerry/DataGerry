@@ -165,13 +165,13 @@ class CategoriesManager(BaseManager):
             # TODO: ERROR-FIX (catch IterationResult exceptions)
             iteration_result: IterationResult[CmdbCategory] = IterationResult(aggregation_result, total)
             iteration_result.convert_to(CmdbCategory)
+
+            return iteration_result
         except ManagerIterationError as err:
             raise CategoriesManagerIterationError(err) from err
         except Exception as err:
             # TODO: ERROR-FIX (catch IterationResult exceptions)
             raise CategoriesManagerIterationError(err) from err
-
-        return iteration_result
 
 
     def get_categories_by(self, sort='public_id', **requirements: dict) -> list[CmdbCategory]:

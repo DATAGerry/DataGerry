@@ -42,7 +42,8 @@ exporter_blueprint = APIBlueprint('exporter', __name__)
 @exporter_blueprint.route('/extensions', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_export_file_types():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     #TODO: ERROR-FIX (try-catch block)
     return DefaultResponse(SupportedExporterExtension().convert_to()).make_response()
 
@@ -53,7 +54,8 @@ def get_export_file_types():
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @exporter_blueprint.protect(auth=True, right='base.framework.object.view')
 def export_objects(params: CollectionParameters, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         _config = ExporterConfig(parameters=params, options=params.optional)
         _class = 'ZipExportFormat' if params.optional.get('zip', False) in ['true'] \

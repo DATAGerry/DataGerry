@@ -28,7 +28,8 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 #TODO: BASECLASS-FIX (make the base class 'BaseManager')
 class SettingsWriterManager:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     COLLECTION = 'settings.conf'
 
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):

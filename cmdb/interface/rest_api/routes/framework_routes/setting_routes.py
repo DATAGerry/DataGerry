@@ -44,7 +44,8 @@ with current_app.app_context():
 @insert_request_user
 @right_required('base.system.view')
 def get_settings_from_section(section: str, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
 
@@ -64,7 +65,8 @@ def get_settings_from_section(section: str, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
 def get_value_from_section(section: str, name: str, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
 

@@ -28,7 +28,7 @@ class ObjectRelationsManagerError(Exception):
         """
         super().__init__(message)
 
-# ---------------------------------------- ObjectRelationsManagerError errors ---------------------------------------- #
+# ------------------------------------------- ObjectRelationsManager errors ------------------------------------------ #
 
 class ObjectRelationsManagerInsertError(ObjectRelationsManagerError):
     """

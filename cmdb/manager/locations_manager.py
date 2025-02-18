@@ -79,9 +79,8 @@ class LocationsManager(BaseManager):
                 builder_params: BuilderParameters,
                 user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbLocation]:
-        """
-        TODO: document
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 

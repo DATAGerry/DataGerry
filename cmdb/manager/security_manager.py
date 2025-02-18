@@ -30,8 +30,6 @@ from flask import current_app
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.settings_writer_manager import SettingsWriterManager #TODO: CYCLIC-IMPORT-FIX
 from cmdb.manager.settings_reader_manager import SettingsReaderManager #TODO: CYCLIC-IMPORT-FIX
-
-from cmdb.errors.database import NoDocumentFound
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -40,7 +38,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                SecurityManager - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SecurityManager:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     DEFAULT_BLOCK_SIZE = 32
     DEFAULT_ALG = 'HS512'
     DEFAULT_EXPIRES = int(10)
@@ -55,7 +54,8 @@ class SecurityManager:
 
 
     def generate_hmac(self, data):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         generated_hash = hmac.new(
             self.get_symmetric_aes_key(),
             bytes(data + self.salt, 'utf-8'),
@@ -84,7 +84,8 @@ class SecurityManager:
 
 
     def decrypt_aes(self, enc):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
         cipher = AES.new(self.get_symmetric_aes_key(), AES.MODE_CBC, iv)
@@ -104,12 +105,14 @@ class SecurityManager:
 
 
     def generate_symmetric_aes_key(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.settings_writer.write('security', {'symmetric_aes_key': Random.get_random_bytes(32)})
 
 
     def get_symmetric_aes_key(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         with current_app.app_context():
             if current_app.cloud_mode:
                 if current_app.local_mode:
@@ -134,5 +137,6 @@ class SecurityManager:
 
     @staticmethod
     def encode_object_base_64(data: object):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return base64.b64encode(dumps(data).encode('utf-8')).decode("utf-8")

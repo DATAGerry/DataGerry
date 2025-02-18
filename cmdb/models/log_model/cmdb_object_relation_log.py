@@ -18,6 +18,7 @@ Implementation of CmdbObjectRelationLog
 """
 import logging
 from datetime import datetime, timezone
+from dateutil.parser import parse
 
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.log_model import LogInteraction
@@ -75,3 +76,57 @@ class CmdbObjectRelationLog(CmdbDAO):
         self.changes = changes
 
         super().__init__(public_id=public_id)
+
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
+
+    @classmethod
+    def from_data(cls, data: dict) -> "CmdbObjectRelationLog":
+        """
+        Generates a CmdbObjectRelationLog instance from a dict
+
+        Args:
+            data (dict): Data with which the CmdbObjectRelationLog should be instantiated
+
+        Returns:
+            CmdbObjectRelationLog: CmdbObjectRelationLog instance with given data
+        """
+        creation_time = data.get('creation_time', None)
+
+        if creation_time and isinstance(creation_time, str):
+            creation_time = parse(creation_time, fuzzy=True)
+
+        return cls(
+            public_id = data.get('public_id'),
+            object_relation_id = data.get('object_relation_id'),
+            object_relation_parent_id = data.get('object_relation_parent_id'),
+            object_relation_child_id = data.get('object_relation_child_id'),
+            creation_time = creation_time,
+            action = data.get('action'),
+            author_id = data.get('author_id'),
+            author_name = data.get('author_name'),
+            changes = data.get('changes', None),
+        )
+
+
+    @classmethod
+    def to_json(cls, instance: "CmdbObjectRelationLog") -> dict:
+        """
+        Converts a CmdbObjectRelationLog into a json compatible dict
+
+        Args:
+            instance (CmdbObjectRelationLog): The CmdbObjectRelationLog which should be converted
+
+        Returns:
+            dict: Json dict of the CmdbObjectRelationLog values
+        """
+        return {
+            'public_id': instance.get_public_id(),
+            'object_relation_id': instance.object_relation_id,
+            'object_relation_parent_id': instance.object_relation_parent_id,
+            'object_relation_child_id': instance.object_relation_child_id,
+            'creation_time': instance.creation_time,
+            'action': instance.action,
+            'author_id': instance.author_id,
+            'author_name': instance.author_name,
+            'changes': instance.changes,
+        }

@@ -46,7 +46,8 @@ class APIPager:
 
 
     def to_dict(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'page': self.page,
             'page_size': self.page_size,

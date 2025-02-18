@@ -37,7 +37,8 @@ from cmdb.interface.rest_api.responses.error_handlers import internal_server_err
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def create_rest_api(database_manager: MongoDatabaseManager):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     app = BaseCmdbApp(__name__, database_manager=database_manager)
     app.url_map.strict_slashes = True
 
@@ -63,12 +64,14 @@ def create_rest_api(database_manager: MongoDatabaseManager):
 
 
 def register_converters(app: BaseCmdbApp):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     app.url_map.converters['regex'] = RegexConverter
 
 
 def register_blueprints(app: BaseCmdbApp):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     from cmdb.interface.rest_api.routes.auth_routes import auth_blueprint
     from cmdb.interface.rest_api.routes.system_routes.setup_routes import setup_blueprint
     from cmdb.interface.rest_api.routes.settings_routes.date_routes import date_blueprint

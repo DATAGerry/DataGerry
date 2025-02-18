@@ -45,7 +45,8 @@ type_export_blueprint = RootBlueprint('type_export_rest', __name__, url_prefix='
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def export_type(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
     try:
@@ -78,7 +79,8 @@ def export_type(request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def export_type_by_ids(public_ids, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
     try:

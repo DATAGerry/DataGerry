@@ -29,9 +29,11 @@ LOGGER = logging.getLogger(__name__)
 #                                                DefaultResponse - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class DefaultResponse(BaseAPIResponse):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, value: Any):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.value = value
         super().__init__(OperationType.GET)
 

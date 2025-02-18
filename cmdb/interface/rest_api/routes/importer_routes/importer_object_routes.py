@@ -77,8 +77,10 @@ importer_object_blueprint = NestedBlueprint(importer_blueprint, url_prefix='/obj
 @importer_object_blueprint.route('/importer', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_importer():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     importer_response = []
+
     for importer in __OBJECT_IMPORTER__:
         importer_response.append({
             'name': __OBJECT_IMPORTER__.get(importer).FILE_TYPE,
@@ -96,7 +98,8 @@ def get_importer():
 @importer_object_blueprint.route('/importer/config<string:importer_type>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_default_importer_config(importer_type):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         importer: ObjectImporterConfig = __OBJECT_IMPORTER_CONFIG__[importer_type]
     except IndexError:
@@ -112,7 +115,8 @@ def get_default_importer_config(importer_type):
 @importer_object_blueprint.route('/parser', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_parser():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     parser = list(__OBJECT_PARSER__)
 
     api_response = DefaultResponse(parser)
@@ -125,7 +129,8 @@ def get_parser():
 @importer_object_blueprint.route('/parser/default/<string:parser_type>/', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_default_parser_config(parser_type: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         parser: BaseObjectParser = __OBJECT_PARSER__[parser_type]
     except IndexError:
@@ -141,7 +146,8 @@ def get_default_parser_config(parser_type: str):
 @importer_object_blueprint.route('/parse', methods=['POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def parse_objects():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     # TODO: check if request user has the permission 'base.import.object.*'
     # Check if file exists
     try:
@@ -180,7 +186,8 @@ def parse_objects():
 @insert_request_user
 @right_required('base.import.object.*')
 def import_objects(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     # Check if file exists
     if not request.files:
         return abort(400, 'No import file was provided')

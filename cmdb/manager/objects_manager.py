@@ -155,9 +155,8 @@ class ObjectsManager(BaseManager):
                 builder_params: BuilderParameters,
                 user: CmdbUser = None,
                 permission: AccessControlPermission = None) -> IterationResult[CmdbObject]:
-        """
-        TODO: document
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
@@ -176,7 +175,8 @@ class ObjectsManager(BaseManager):
                        user: CmdbUser = None,
                        permission: AccessControlPermission = None,
                        **requirements):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         ack = []
 
         objects = self.get_many(sort=sort, direction=direction, **requirements)
@@ -305,7 +305,8 @@ class ObjectsManager(BaseManager):
 
 
     def aggregate_objects(self, pipeline: list[dict], **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             return self.aggregate(pipeline=pipeline, **kwargs)
         except Exception as error:
@@ -313,7 +314,8 @@ class ObjectsManager(BaseManager):
 
 
     def get_mds_references_for_object(self, referenced_object: CmdbObject, query_filter: Union[dict, list]):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         object_type_id = referenced_object.type_id
 
         query = []
@@ -402,7 +404,8 @@ class ObjectsManager(BaseManager):
                    order: int,
                    user: CmdbUser = None,
                    permission: AccessControlPermission = None) -> IterationResult[CmdbObject]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         query = []
 
         #TODO: ERROR-FIX (it is only one of these)
@@ -503,7 +506,8 @@ class ObjectsManager(BaseManager):
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
     def delete_object(self, public_id: int, user: CmdbUser, permission: AccessControlPermission = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             type_id = self.get_object(public_id).type_id
         except ObjectManagerGetError as err:
@@ -568,7 +572,8 @@ class ObjectsManager(BaseManager):
                                 skip: int,
                                 sort: str,
                                 order: int):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             referenced_ids = []
 
@@ -616,7 +621,8 @@ class ObjectsManager(BaseManager):
 
 
     def __is_ref_field(self, field_name: str, ref_object: dict) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         ref_type = self.get_object_type(ref_object["type_id"])
 
         for field in ref_type.fields:

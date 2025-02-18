@@ -95,7 +95,8 @@ class CmdbObjectLog(CmdbMetaLog):
                  changes: list = None,
                  comment: str = None,
                  render_state=None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.object_id = object_id
         self.version = version
         self.user_id = user_id

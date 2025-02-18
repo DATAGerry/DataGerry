@@ -57,6 +57,7 @@ from cmdb.errors.security.security_errors import (
     RequestError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
+
 LOGGER = logging.getLogger(__name__)
 
 auth_blueprint = APIBlueprint('auth', __name__)
@@ -65,7 +66,8 @@ auth_blueprint = APIBlueprint('auth', __name__)
 
 @auth_blueprint.route('/login', methods=['POST'])
 def post_login():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     login_data = request.json
 
     if not login_data:
@@ -197,7 +199,8 @@ def post_login():
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.view')
 def get_auth_settings(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
 
@@ -213,7 +216,8 @@ def get_auth_settings(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.view')
 def get_installed_providers(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     provider_names: list[dict] = []
 
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
@@ -235,7 +239,8 @@ def get_installed_providers(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.view')
 def get_provider_config(provider_class: str, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
 
@@ -258,7 +263,8 @@ def get_provider_config(provider_class: str, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @auth_blueprint.protect(auth=True, right='base.system.edit')
 def update_auth_settings(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     new_auth_settings_values = request.get_json()
 
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
@@ -288,9 +294,9 @@ def update_auth_settings(request_user: CmdbUser):
 def generate_token_with_params(
         login_user: CmdbUser,
         database_manager: MongoDatabaseManager,
-        cloud_mode: bool = False
-    ) -> Tuple[bytes, int, int]:
-    """TODO: document"""
+        cloud_mode: bool = False) -> Tuple[bytes, int, int]:
+    """document"""
+    #TODO: DOCUMENT-FIX
     tg = TokenGenerator(database_manager)
 
     user_data = {'public_id': login_user.get_public_id()}
