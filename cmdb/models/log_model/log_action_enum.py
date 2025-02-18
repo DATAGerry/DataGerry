@@ -19,7 +19,8 @@ from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class LogAction(Enum):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     CREATE = 0
     EDIT = 1
     ACTIVE_CHANGE = 2

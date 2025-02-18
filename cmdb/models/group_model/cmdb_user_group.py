@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
@@ -29,7 +30,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CmdbUserGroup - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbUserGroup(CmdbDAO):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     COLLECTION = 'management.groups'
     MODEL = 'Group'
     INDEX_KEYS = [
@@ -67,7 +69,8 @@ class CmdbUserGroup(CmdbDAO):
 
     @classmethod
     def from_data(cls, data: dict, rights: list[BaseRight] = None) -> "CmdbUserGroup":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if rights:
             rights = [right for right in rights if right['name'] in data.get('rights', [])]
         else:
@@ -83,7 +86,8 @@ class CmdbUserGroup(CmdbDAO):
 
     @classmethod
     def to_dict(cls, instance: "CmdbUserGroup") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'public_id': instance.public_id,
             'name': instance.name,
@@ -94,7 +98,8 @@ class CmdbUserGroup(CmdbDAO):
 
     @classmethod
     def to_data(cls, instance: "CmdbUserGroup") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'public_id': instance.public_id,
             'name': instance.name,
@@ -104,17 +109,20 @@ class CmdbUserGroup(CmdbDAO):
 
 
     def set_rights(self, rights: list):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.rights = rights
 
 
     def get_rights(self) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.rights
 
 
     def get_right(self, name) -> str:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             return next(right for right in self.rights if right.name == name)
         except Exception as err:
@@ -122,7 +130,8 @@ class CmdbUserGroup(CmdbDAO):
 
 
     def has_right(self, right_name) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             self.get_right(right_name)
         except RightNotFoundError:
@@ -132,7 +141,8 @@ class CmdbUserGroup(CmdbDAO):
 
 
     def has_extended_right(self, right_name: str) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         parent_right_name: str = right_name.rsplit(".", 1)[0]
         if self.has_right(f'{parent_right_name}.{GLOBAL_RIGHT_IDENTIFIER}'):
             return True

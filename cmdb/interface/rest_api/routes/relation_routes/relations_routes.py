@@ -235,7 +235,7 @@ def delete_relation(public_id: int, request_user: CmdbUser):
         return abort(400, f"Could not delete the relation with the ID:{public_id}")
     except RelationsManagerGetError as err:
         LOGGER.error("[delete_relation] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve a relation from the database!")
+        return abort(404, "Could not retrieve the relation from the database!")
     except Exception as err:
         LOGGER.error("[delete_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")

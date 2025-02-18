@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from datetime import datetime
 import pytest
@@ -30,25 +31,29 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 @pytest.fixture(scope="session", name="rights_manager")
 def fixture_rights_manager():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return RightsManager(rights)
 
 
 @pytest.fixture(scope="session", name="full_access_group")
 def fixture_full_access_group(rights_manager: RightsManager):
-    "TODO: document"
+    """document"""
+    #TODO: DOCUMENT-FIX
     return CmdbUserGroup(public_id=1, name='full', label='Full', rights=[rights_manager.get_right('base.*')])
 
 
 @pytest.fixture(scope="session", name="none_access_group")
 def fixture_none_access_group():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return CmdbUserGroup(public_id=2, name='none', label='None')
 
 
 @pytest.fixture(scope="session", name="full_access_user")
 def fixture_full_access_user(full_access_group: CmdbUserGroup):
-    "TODO: document"
+    """document"""
+    #TODO: DOCUMENT-FIX
     registration_time = datetime.now()
     return CmdbUser(public_id=1,
                      user_name='full-access-user',
@@ -59,7 +64,8 @@ def fixture_full_access_user(full_access_group: CmdbUserGroup):
 
 @pytest.fixture(scope="session", name="none_access_user")
 def fixture_none_access_user(none_access_group: CmdbUserGroup):
-    "TODO: document"
+    """document"""
+    #TODO: DOCUMENT-FIX
     registration_time = datetime.now()
     return CmdbUser(public_id=2,
                      user_name='none-access-user',

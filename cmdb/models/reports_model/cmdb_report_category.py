@@ -28,16 +28,8 @@ LOGGER = logging.getLogger(__name__)
 #                                              CmdbReportCategory - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbReportCategory(CmdbDAO):
-    """
-    TODO: document
-
-    Attributes:
-        COLLECTION (str):    Name of the database collection
-        MODEL (Model):              Name of the DAO
-        DEFAULT_VERSION (str):      The default "starting" version number
-        SCHEMA (dict):              The validation schema for this DAO
-        INDEX_KEYS (list):          List of index keys for the database
-    """
+    """document"""
+    #TODO: DOCUMENT-FIX
     COLLECTION = 'framework.reportCategories'
     MODEL = 'Report_Category'
     DEFAULT_VERSION: str = '1.0.0'
@@ -60,7 +52,8 @@ class CmdbReportCategory(CmdbDAO):
 # ---------------------------------------------------- CONSTRUCTOR --------------------------------------------------- #
 
     def __init__(self, name: str, predefined: bool = False, **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.name = name
         self.predefined = predefined
         super().__init__(**kwargs)
@@ -69,9 +62,8 @@ class CmdbReportCategory(CmdbDAO):
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbReportCategory":
-        """
-        TODO: document
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls(
             public_id = data.get('public_id'),
             name = data.get('name'),
@@ -81,9 +73,8 @@ class CmdbReportCategory(CmdbDAO):
 
     @classmethod
     def to_json(cls, instance: "CmdbReportCategory") -> dict:
-        """
-        TODO: document
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'public_id': instance.get_public_id(),
             'name': instance.name,
@@ -93,9 +84,8 @@ class CmdbReportCategory(CmdbDAO):
 
     @classmethod
     def to_data(cls, instance: "CmdbReportCategory") -> dict:
-        """
-        TODO: document
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'public_id': instance['public_id'],
             'name': instance['name'],

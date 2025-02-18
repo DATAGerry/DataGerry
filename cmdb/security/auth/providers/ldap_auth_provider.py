@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 import re
 from datetime import datetime, timezone
@@ -40,7 +41,8 @@ LOGGER = logging.getLogger(__name__)
 #                                          LdapAuthenticationProvider - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class LdapAuthenticationProvider(BaseAuthenticationProvider):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     PASSWORD_ABLE: bool = False
     EXTERNAL_PROVIDER: bool = True
     PROVIDER_CONFIG_CLASS = LdapAuthenticationProviderConfig
@@ -63,7 +65,8 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def connect(self) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.__ldap_connection.bind()
 
 
@@ -87,7 +90,8 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def authenticate(self, user_name: str, password: str) -> CmdbUser:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         #TODO: REFACTOR-FIX
         try:
             ldap_connection_status = self.connect()
@@ -171,5 +175,6 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def is_active(self) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.config.active

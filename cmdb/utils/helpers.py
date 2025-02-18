@@ -70,7 +70,8 @@ def get_module_classes(module_name):
 
 
 def str_to_bool(s):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     if s in ('True', 'true'):
         return True
 

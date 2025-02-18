@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 
 from cmdb.manager import (
@@ -51,12 +52,14 @@ class BaseAuthenticationProvider:
 
 
     def authenticate(self, user_name: str, password: str) -> CmdbUser:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError
 
 
     def get_config(self) -> BaseAuthProviderConfig:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.config
 
 
@@ -68,5 +71,6 @@ class BaseAuthenticationProvider:
 
     @classmethod
     def get_name(cls):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls.__qualname__

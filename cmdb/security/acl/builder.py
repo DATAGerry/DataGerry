@@ -74,6 +74,8 @@ class AccessControlQueryBuilder(PipelineBuilder):
 
 
     def build(self, group_id: int, permission: AccessControlPermission, *args, **kwargs) -> list[dict]:
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.clear()
         self.add_pipe(self._lookup_types())
         self.add_pipe(self._unwind_types())
@@ -82,7 +84,8 @@ class AccessControlQueryBuilder(PipelineBuilder):
 
 
     def _lookup_types(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             '$lookup': {
                 'from': 'framework.types',

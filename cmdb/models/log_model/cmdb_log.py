@@ -26,7 +26,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                    CmdbLog - CLASS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbLog:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     REGISTERED_LOG_TYPE = {}
     DEFAULT_LOG_TYPE = CmdbObjectLog
 
@@ -45,13 +46,15 @@ class CmdbLog:
 
     @classmethod
     def register_log_type(cls, log_name, log_class):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         cls.REGISTERED_LOG_TYPE[log_name] = log_class
 
 
     @classmethod
     def from_data(cls, data: dict, *args, **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls.__get_log_class(**data).from_data(data, *args, **kwargs)
 
 

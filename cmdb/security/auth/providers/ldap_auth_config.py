@@ -28,7 +28,8 @@ LOGGER = logging.getLogger(__name__)
 #                                       LdapAuthenticationProviderConfig - CLASS                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 class LdapAuthenticationProviderConfig(BaseAuthProviderConfig):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     DEFAULT_CONFIG_VALUES = {
         'active': False,

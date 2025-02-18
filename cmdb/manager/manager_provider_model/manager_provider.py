@@ -34,6 +34,7 @@ from cmdb.manager import (
     ObjectsManager,
     ObjectLinksManager,
     ObjectRelationsManager,
+    ObjectRelationLogsManager,
     RelationsManager,
     SecurityManager,
     SettingsReaderManager,
@@ -112,6 +113,7 @@ class ManagerProvider:
             ManagerType.WEBHOOKS_EVENT_MANAGER: WebhooksEventManager,
             ManagerType.RELATIONS_MANAGER: RelationsManager,
             ManagerType.OBJECT_RELATIONS_MANAGER: ObjectRelationsManager,
+            ManagerType.OBJECT_RELATION_LOGS_MANAGER: ObjectRelationLogsManager,
         }
 
         return manager_classes.get(manager_type)

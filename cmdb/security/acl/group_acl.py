@@ -50,13 +50,15 @@ class GroupACL(AccessControlListSection[int]):
 
     @classmethod
     def from_data(cls, data: dict) -> "GroupACL":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls(data.get('includes', set()))
 
 
     @classmethod
     def to_json(cls, section: "AccessControlListSection[T]") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'includes': {str(k): v for k, v in section.includes.items()}
         }

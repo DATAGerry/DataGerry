@@ -31,6 +31,7 @@ from cmdb.models.right_model.framework_rights import (
     WebhookRight,
     RelationRight,
     ObjectRelationRight,
+    ObjectRelationLogRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -120,6 +121,13 @@ FRAMEWORK_RIGHTS = (
             ObjectRelationRight('add', description='Add object relations'),
             ObjectRelationRight('edit', Levels.PROTECTED, description='Edit object relations'),
             ObjectRelationRight('delete', Levels.DANGER, description='Delete object relations'),
+        )
+    ),
+    (
+        ObjectRelationLogRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage object relation logs'),
+        (
+            ObjectRelationLogRight('view', description='View object relation logs'),
+            ObjectRelationLogRight('delete', Levels.DANGER, description='Delete object relation logs'),
         )
     ),
 )

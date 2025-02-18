@@ -24,7 +24,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CategoryMeta - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CategoryMeta:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, icon: str = '', order: int = None):
         self.icon = icon
         self.order = order
