@@ -65,7 +65,8 @@ class SettingsReaderManager(SystemReader):
 
 
     def get_section(self, section_name: str) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         query_filter = {'_id': section_name}
         return self.dbm.find_one_by(collection=SettingsReaderManager.COLLECTION, filter=query_filter)
 
@@ -102,5 +103,6 @@ class SettingsReaderManager(SystemReader):
 
 
     def get_all(self) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.dbm.find_all(collection=SettingsReaderManager.COLLECTION)

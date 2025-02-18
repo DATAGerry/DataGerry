@@ -84,7 +84,8 @@ objects_blueprint = APIBlueprint('objects', __name__)
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.add')
 def insert_object(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     add_data_dump = json.dumps(request.json)
 
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -210,7 +211,8 @@ def insert_object(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object(public_id, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:
@@ -320,7 +322,8 @@ def get_objects(params: CollectionParameters, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_native_object(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:
@@ -345,7 +348,8 @@ def get_native_object(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def group_objects_by_type_id(value: str, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:
@@ -381,7 +385,8 @@ def group_objects_by_type_id(value: str, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object_mds_reference(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:
@@ -425,7 +430,8 @@ def get_object_mds_reference(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object_mds_references(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     summary_lines = {}
@@ -473,7 +479,8 @@ def get_object_mds_references(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_object_references(public_id: int, params: CollectionParameters, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     view = params.optional.get('view', 'native')
@@ -539,7 +546,8 @@ def get_object_references(public_id: int, params: CollectionParameters, request_
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
 def get_object_state(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:
@@ -614,7 +622,8 @@ def get_unstructured_objects(public_id: int, request_user: CmdbUser):
 @objects_blueprint.protect(auth=True, right='base.framework.object.edit')
 @objects_blueprint.validate(CmdbObject.SCHEMA)
 def update_object(public_id: int, data: dict, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
     webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
@@ -754,7 +763,8 @@ def update_object(public_id: int, data: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.activation')
 def update_object_state(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
     webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
@@ -1056,7 +1066,8 @@ def delete_object(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_object_with_child_locations(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
@@ -1212,7 +1223,8 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_many_objects(public_ids, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
     locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
@@ -1357,14 +1369,16 @@ def delete_object_links(public_id: int, request_user: CmdbUser) -> None:
 
 
 def check_config_item_limit_reached(request_user: CmdbUser) -> bool:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_count = get_objects_count(request_user)
 
     return objects_count >= request_user.config_items_limit
 
 
 def get_objects_count(request_user: CmdbUser) -> int:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     builder_params = BuilderParameters({})

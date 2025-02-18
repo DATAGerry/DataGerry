@@ -41,7 +41,8 @@ LOGGER = logging.getLogger(__name__)
 #                                               MediaFilesManager - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class MediaFilesManager(BaseManager):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
         if database:
             dbm.connector.set_database(database)
@@ -74,12 +75,14 @@ class MediaFilesManager(BaseManager):
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def get_new_media_file_id(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.get_next_public_id()
 
 
     def get_file(self, metadata: dict, blob: bool = False) -> GridOut:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             result = self.fs.get_last_version(**metadata)
         except NoFile:
@@ -91,7 +94,8 @@ class MediaFilesManager(BaseManager):
 
 
     def get_many_media_files(self, metadata, **params: dict):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             results = []
             records_total = self.fs.find(filter=metadata).retrieved
@@ -120,7 +124,8 @@ class MediaFilesManager(BaseManager):
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
     def update_file(self, data):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             data['uploadDate'] = datetime.now(timezone.utc)
             self.update(criteria={'public_id':data['public_id']}, data=data)

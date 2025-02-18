@@ -135,7 +135,8 @@ class ReportsManager(BaseManager):
 
 
     def count_reports(self, criteria: dict = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             if criteria:
                 report_count = self.count_documents(self.collection, filter=criteria)

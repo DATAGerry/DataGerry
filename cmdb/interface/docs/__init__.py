@@ -27,7 +27,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 def create_docs_server():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     app = BaseCmdbApp(__name__)
 
     if cmdb.__MODE__ == 'DEBUG':

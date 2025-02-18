@@ -27,12 +27,14 @@ app_pages = Blueprint("app_pages", __name__, static_folder="datagerry-app", stat
 
 @app_pages.route('/')
 def default_page():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return app_pages.send_static_file("index.html")
 
 
 @app_pages.errorhandler(404)
 def redirect_index(error):
-    """TODO: document"""
-    LOGGER.debug("[redirect_index] Error: %s", error)
+    """document"""
+    #TODO: DOCUMENT-FIX
+    LOGGER.error("[redirect_index] Error: %s", error)
     return app_pages.send_static_file("index.html")

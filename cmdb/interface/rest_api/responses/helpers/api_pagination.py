@@ -126,7 +126,8 @@ class APIPagination:
 
 
     def to_dict(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'current': self.current,
             'first': self.first,

@@ -217,7 +217,8 @@ class BaseManager:
 
 
     def find(self, *args, criteria=None, **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             return self.dbm.find(self.collection, filter=criteria, *args, **kwargs)
         except Exception as err:

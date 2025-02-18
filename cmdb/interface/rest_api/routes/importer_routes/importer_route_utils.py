@@ -38,7 +38,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_file_in_request(file_name: str, request_files) -> FileStorage:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     if file_name not in request_files:
         LOGGER.error('File with name: %s was not provided', file_name)
         return abort(400)
@@ -47,7 +48,8 @@ def get_file_in_request(file_name: str, request_files) -> FileStorage:
 
 
 def get_element_from_data_request(element, _request: Request) -> Union[dict, None]:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         return json.loads(_request.form.to_dict()[element])
     except (KeyError, Exception):
@@ -55,7 +57,8 @@ def get_element_from_data_request(element, _request: Request) -> Union[dict, Non
 
 
 def generate_parsed_output(request_file, file_format, parser_config):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     # Load parser class
     parser_class = load_parser_class('object', file_format)

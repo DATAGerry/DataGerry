@@ -14,17 +14,21 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Blueprint for documentation routes
+This module provides all errors for the ObjectRelationLogsManager
 """
-from cmdb.interface.blueprints import RootBlueprint
+from .object_relation_logs_manager_errors import (
+    ObjectRelationLogsManagerError,
+    ObjectRelationLogsManagerInsertError,
+    ObjectRelationLogsManagerGetError,
+    ObjectRelationLogsManagerDeleteError,
+    ObjectRelationLogsManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-doc_pages = RootBlueprint("doc_pages", __name__, static_folder="static", static_url_path="")
-
-# -------------------------------------------------------------------------------------------------------------------- #
-
-@doc_pages.route("/")
-def default_page():
-    """document"""
-    #TODO: DOCUMENT-FIX
-    return doc_pages.send_static_file("index.html")
+__all__ = [
+    'ObjectRelationLogsManagerError',
+    'ObjectRelationLogsManagerInsertError',
+    'ObjectRelationLogsManagerGetError',
+    'ObjectRelationLogsManagerDeleteError',
+    'ObjectRelationLogsManagerIterationError',
+]

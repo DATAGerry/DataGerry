@@ -46,7 +46,8 @@ search_blueprint = APIBlueprint('search_rest', __name__, url_prefix='/search')
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @search_blueprint.protect(auth=True)
 def quick_search_result_counter(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     search_term = request.args.get('searchValue', SearcherFramework.DEFAULT_REGEX, str)
@@ -73,7 +74,8 @@ def quick_search_result_counter(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 def search_framework(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
     try:

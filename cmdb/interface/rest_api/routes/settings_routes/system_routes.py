@@ -42,7 +42,8 @@ system_blueprint = NestedBlueprint(settings_blueprint, url_prefix='/system')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_datagerry_information(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                                request_user)
 
@@ -70,7 +71,8 @@ def get_datagerry_information(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
 def get_config_information(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     ssc = SystemConfigReader()
 
     config_dict = {
@@ -100,7 +102,8 @@ def get_config_information(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
 def get_system_information():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     system_infos = {
         'platform': sys.platform,
         'python_interpreter': {

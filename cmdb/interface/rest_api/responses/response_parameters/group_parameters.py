@@ -13,14 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from cmdb.models.group_model import GroupDeleteMode
 from cmdb.interface.rest_api.responses.response_parameters.api_parameters import APIParameters
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class GroupDeletionParameters(APIParameters):
-    """TODO: document"""
-
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, query_string: str, action: GroupDeleteMode = None, group_id: int = None, **kwargs):
         """
         Constructor of the GroupDeletionParameters.
@@ -38,13 +39,15 @@ class GroupDeletionParameters(APIParameters):
 
     @classmethod
     def from_http(cls, query_string: str, **optional) -> "GroupDeletionParameters":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls(query_string, **optional)
 
 
     @classmethod
     def to_dict(cls, parameters: "GroupDeletionParameters") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'action': parameters.action,
             'group_id': parameters.group_id,

@@ -248,7 +248,8 @@ def update_section_template(params: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.delete')
 def delete_section_template(public_id: int, request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
                                                                             request_user)
 

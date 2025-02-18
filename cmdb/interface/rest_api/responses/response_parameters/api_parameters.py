@@ -35,7 +35,8 @@ class APIParameters:
 
     @classmethod
     def from_http(cls, query_string: str, **optional) -> "APIParameters":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if 'projection' in optional:
             optional['projection'] = loads(optional['projection'])
         return cls(query_string, **optional)

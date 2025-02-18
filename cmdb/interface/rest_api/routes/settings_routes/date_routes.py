@@ -42,7 +42,8 @@ LOGGER = logging.getLogger(__name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_date_settings(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
                                                                         request_user)
 
@@ -66,7 +67,8 @@ def get_date_settings(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @date_blueprint.protect(auth=True, right='base.system.edit')
 def update_date_settings(request_user: CmdbUser):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     new_auth_settings_values = request.get_json()
 
     settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,

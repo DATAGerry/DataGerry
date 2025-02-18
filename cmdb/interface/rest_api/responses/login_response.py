@@ -63,7 +63,8 @@ class LoginResponse(BaseAPIResponse):
 
 
     def export(self) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'user': CmdbUser.to_dict(self.user),
             'token': self.token.decode('UTF-8'),

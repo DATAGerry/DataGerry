@@ -37,7 +37,8 @@ with current_app.app_context():
 @debug_blueprint.route('/indexes/<string:collection>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_index(collection: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return DefaultResponse(dbm.get_index_info(collection)).make_response()
 
 
@@ -45,12 +46,14 @@ def get_index(collection: str):
 @debug_blueprint.route('/error/<int:status_code>', methods=['GET', 'POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def trigger_error_handler(status_code: int):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return abort(status_code)
 
 
 @debug_blueprint.route('/error/<int:status_code>/<string:description>/', methods=['GET', 'POST'])
 @debug_blueprint.route('/error/<int:status_code>/<string:description>', methods=['GET', 'POST'])
 def trigger_error_handler_with_description(status_code: int, description: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     return abort(status_code, description=description)

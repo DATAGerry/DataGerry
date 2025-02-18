@@ -28,7 +28,8 @@ from cmdb.interface.net_app.app_routes import app_pages, redirect_index
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def create_app():
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     app = BaseCmdbApp(__name__)
     CORS(app)
 

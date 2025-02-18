@@ -105,13 +105,13 @@ class CmdbType(CmdbDAO):
     @classmethod
     def from_data(cls, data: dict) -> "CmdbType":
         """
-        Generates a CmdbType object from a dict
+        Generates a CmdbType instance from a dict
 
         Args:
             data (dict): Data with which the CmdbType should be instantiated
 
         Returns:
-            CmdbType: CmdbType class with given data
+            CmdbType: CmdbType instance with given data
         """
         try:
             creation_time = data.get('creation_time', None)
@@ -147,7 +147,9 @@ class CmdbType(CmdbDAO):
 
     @classmethod
     def to_json(cls, instance: "CmdbType") -> dict:
-        """Convert a type instance to json conform data"""
+        """
+        Convert a CmdbType instance to json conform data
+        """
         try:
             return {
                 'public_id': instance.get_public_id(),
