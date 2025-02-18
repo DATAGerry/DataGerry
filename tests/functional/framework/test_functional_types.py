@@ -223,7 +223,6 @@ class TestFrameworkTypes(RestAPITestSuite):
 
 
     # def test_update_type(self, rest_api, example_type, full_access_user, none_access_user):
-    #     """TODO: document"""
     #     example_type.name = 'updated'
 
     #     # Test default route
@@ -256,7 +255,6 @@ class TestFrameworkTypes(RestAPITestSuite):
     #     example_type.name = 'test'
 
     # def test_delete_type(self, rest_api, example_type, full_access_user, none_access_user):
-    #     """TODO: document"""
         # Test default route
         # rest_api.post(f'{self.ROUTE_URL}/', json=CmdbType.to_json(example_type))
 

@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from flask import current_app
 
@@ -36,7 +37,8 @@ LOGGER = logging.getLogger(__name__)
 #                                          LocalAuthenticationProvider - CLASS                                         #
 # -------------------------------------------------------------------------------------------------------------------- #
 class LocalAuthenticationProvider(BaseAuthenticationProvider):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     PROVIDER_CONFIG_CLASS = LocalAuthenticationProviderConfig
 
     def __init__(self,
@@ -49,7 +51,8 @@ class LocalAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def authenticate(self, user_name: str, password: str) -> CmdbUser:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             if current_app.cloud_mode:
                 user = self.users_manager.get_user_by({'email': user_name})

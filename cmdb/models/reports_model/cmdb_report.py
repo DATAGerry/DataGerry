@@ -29,16 +29,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                  CmdbReport - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbReport(CmdbDAO):
-    """
-    TODO: document
-
-    Attributes:
-        COLLECTION (str):    Name of the database collection
-        MODEL (Model):              Name of the DAO
-        DEFAULT_VERSION (str):      The default "starting" version number
-        SCHEMA (dict):              The validation schema for this DAO
-        INDEX_KEYS (list):          List of index keys for the database
-    """
+    """document"""
+    #TODO: DOCUMENT-FIX
     COLLECTION = 'framework.reports'
     MODEL = 'Report'
     DEFAULT_VERSION: str = '1.0.0'
@@ -101,7 +93,8 @@ class CmdbReport(CmdbDAO):
             predefined: bool = False,
             mds_mode: str = MdsMode.ROWS,
             **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             self.report_category_id = report_category_id
             self.name = name
@@ -119,12 +112,14 @@ class CmdbReport(CmdbDAO):
 
 
     def get_selected_fields(self) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.selected_fields
 
 
     def remove_field_occurences(self, field_name: str):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             # Remove field from selected fields
             if field_name in self.selected_fields:
@@ -138,7 +133,8 @@ class CmdbReport(CmdbDAO):
 
 
     def clear_rules_of_field(self, conditions: dict, field_name: str):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         new_conditions = {}
         new_conditions['condition'] = conditions['condition']
         new_rules = []

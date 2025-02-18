@@ -40,12 +40,14 @@ class CmdbObjectLink(CmdbDAO):
 
 
     def get_primary(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.primary
 
 
     def get_secondary(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.secondary
 
 

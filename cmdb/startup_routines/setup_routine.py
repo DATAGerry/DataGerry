@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from datetime import datetime, timezone
 
@@ -47,7 +48,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 SetupRoutine - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SetupRoutine:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self, dbm: MongoDatabaseManager):
         self.status = SetupStatus.NOT
         # check if settings are loaded
@@ -64,12 +66,14 @@ class SetupRoutine:
 
 
     def get_setup_status(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.status
 
 
     def setup(self) -> SetupStatus:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         LOGGER.info('SETUP ROUTINE: STARTED...')
         self.status = SetupStatus.RUNNING
 
@@ -135,7 +139,8 @@ class SetupRoutine:
 
 
     def init_keys(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         kg = KeyGenerator(self.dbm)
         LOGGER.info('KEY ROUTINE: Generate RSA keypair')
         kg.generate_rsa_keypair()
@@ -168,7 +173,8 @@ class SetupRoutine:
 
 
     def __create_user_management(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         LOGGER.info("SETUP ROUTINE: CREATE USER MANAGEMENT")
         scm = SecurityManager(self.dbm)
         groups_manager = GroupsManager(self.dbm)
@@ -196,7 +202,8 @@ class SetupRoutine:
 
 
     def __check_database(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         LOGGER.info('SETUP ROUTINE: Checking database connection')
 
         try:
@@ -213,7 +220,8 @@ class SetupRoutine:
 
 
     def __init_database(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         database_name = self.setup_system_config_reader.get_value('database_name', 'Database')
         LOGGER.info('SETUP ROUTINE: initialize database %s', database_name)
 

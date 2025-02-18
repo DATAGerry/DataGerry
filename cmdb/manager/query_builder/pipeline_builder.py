@@ -50,7 +50,8 @@ class PipelineBuilder(Builder):
 
     @property
     def pipeline(self) -> list[dict]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._pipeline
 
 
@@ -70,5 +71,6 @@ class PipelineBuilder(Builder):
 
 
     def build(self, *args, **kwargs) -> list[dict]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError

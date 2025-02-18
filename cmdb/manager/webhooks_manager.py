@@ -147,7 +147,8 @@ class WebhooksManager(BaseManager):
                            object_before: dict = None,
                            object_after: dict = None,
                            changes: dict = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         builder_params = BuilderParameters({})
         webhooks: IterationResult[CmdbWebhook] = self.iterate(builder_params).results
 
@@ -184,7 +185,8 @@ class WebhooksManager(BaseManager):
                       object_before: dict,
                       object_after:dict,
                       changes: dict = None) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         payload = {}
 
         payload['event_time'] = datetime.now(timezone.utc)

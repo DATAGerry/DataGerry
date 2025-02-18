@@ -41,19 +41,22 @@ class Versioning:
 
     @property
     def major(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._major
 
 
     @property
     def minor(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._minor
 
 
     @property
     def patch(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._patch
 
 
@@ -82,19 +85,22 @@ class Versioning:
 
 
     def update_major(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.major += 1
         return self.major
 
 
     def update_minor(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.minor += 1
         return self.minor
 
 
     def update_patch(self) -> int:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.patch += 1
         return self.patch
 

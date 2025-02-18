@@ -34,7 +34,8 @@ LOGGER = logging.getLogger(__name__)
 #                                               BaseQueryBuilder - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseQueryBuilder(Builder):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     def __init__(self):
         self.query: list[dict] = []
         super().__init__()

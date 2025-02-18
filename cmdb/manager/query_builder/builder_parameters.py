@@ -19,7 +19,8 @@ from typing import Union
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class BuilderParameters:
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def __init__(self,
                  criteria: Union[dict, list[dict]],
@@ -27,7 +28,8 @@ class BuilderParameters:
                  skip: int = 0,
                  sort: str = 'public_id',
                  order: int = 1):
-
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.criteria = criteria
         #TODO: raise exception if limit is smaller than 0
         self.limit = limit

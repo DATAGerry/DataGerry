@@ -28,11 +28,13 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CategoryTree - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CategoryTree:
-    """Base tree holder"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     MODEL = 'CategoryTree'
 
     def __init__(self, categories: list[CmdbCategory], types: list[CmdbType] = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self._categories: list[CmdbCategory] = categories
         self._types: list[CmdbType] = types
         self._tree: list[CategoryNode] = sorted(self.__create_tree(self._categories, types=self._types),

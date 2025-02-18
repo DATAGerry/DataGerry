@@ -68,7 +68,8 @@ class CheckRoutine:
 
 
     def checker(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         LOGGER.info('STARTING Checks...')
         self.status = CheckStatus.FINISHED
 

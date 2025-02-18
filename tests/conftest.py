@@ -14,7 +14,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 import logging
 from datetime import datetime
 import pytest
@@ -67,7 +68,8 @@ pytest_plugins = [
 
 @pytest.fixture(scope="session", autouse=True)
 def preset_database(database_manager: MongoDatabaseManager, database_name: str):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
     try:
         database_manager.drop_database(database_name)
     except DatabaseNotExists:

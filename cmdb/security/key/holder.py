@@ -31,7 +31,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class KeyHolder:
     """document"""
-    #TODO: document
+    #TODO: DOCUMENT-FIX
     def __init__(self, dbm: MongoDatabaseManager):
         """
         Args:
@@ -43,7 +43,8 @@ class KeyHolder:
 
 
     def get_public_key(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if current_app.cloud_mode:
             # return current_app.asymmetric_key['public']
             if current_app.local_mode:
@@ -60,7 +61,8 @@ class KeyHolder:
 
 
     def get_private_key(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         if current_app.cloud_mode:
             # return current_app.asymmetric_key['private']
             if current_app.local_mode:

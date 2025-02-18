@@ -75,7 +75,8 @@ class ProcessManager:
 
 
     def get_loading_status(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._loaded
 
 

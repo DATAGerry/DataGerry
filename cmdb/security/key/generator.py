@@ -31,14 +31,14 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class KeyGenerator:
     """document"""
-    #TODO: document
+    #TODO: DOCUMENT-FIX
     def __init__(self, dbm: MongoDatabaseManager):
         self.settings_writer = SettingsWriterManager(dbm)
 
 
     def generate_rsa_keypair(self):
         """document"""
-        #TODO: document
+        #TODO: DOCUMENT-FIX
         key = RSA.generate(2048)
         private_key = key.export_key()
         public_key = key.publickey().export_key()
@@ -56,7 +56,7 @@ class KeyGenerator:
 
     def generate_symmetric_aes_key(self):
         """document"""
-        #TODO: document
+        #TODO: DOCUMENT-FIX
         symmetric_aes_key = Random.get_random_bytes(32)
         # LOGGER.error(f"symmetric_aes_key: {symmetric_aes_key}")
 

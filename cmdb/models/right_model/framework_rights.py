@@ -115,3 +115,14 @@ class ObjectRelationRight(FrameworkRight):
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
+
+
+class ObjectRelationLogRight(FrameworkRight):
+    """document"""
+    #TODO: DOCUMENT-FIX
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{FrameworkRight.PREFIX}.objectRelationLog'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)

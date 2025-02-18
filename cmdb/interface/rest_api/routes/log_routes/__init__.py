@@ -13,14 +13,3 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
-from enum import Enum
-# -------------------------------------------------------------------------------------------------------------------- #
-
-class GroupDeleteMode(Enum):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    NONE = None
-    MOVE = 'MOVE'
-    DELETE = 'DELETE'

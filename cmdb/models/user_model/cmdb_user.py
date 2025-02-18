@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""TODO: document"""
+"""document"""
+#TODO: DOCUMENT-FIX
 from datetime import datetime, timezone
 from dateutil import parser
 
@@ -104,7 +105,8 @@ class CmdbUser(CmdbDAO):
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbUser":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         reg_date = data.get('registration_time', None)
 
         if reg_date and isinstance(reg_date, str):
@@ -130,13 +132,15 @@ class CmdbUser(CmdbDAO):
 
     @classmethod
     def to_data(cls, instance: "CmdbUser") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return cls.to_dict(instance)
 
 
     @classmethod
     def to_dict(cls, instance: "CmdbUser") -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return {
             'public_id': instance.public_id,
             'user_name': instance.user_name,

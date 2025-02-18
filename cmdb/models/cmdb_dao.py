@@ -136,7 +136,8 @@ class CmdbDAO:
 
     @classmethod
     def get_index_keys(cls):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         index_list = []
 
         for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS:

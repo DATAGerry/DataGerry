@@ -33,7 +33,8 @@ class Builder:
 
 
     def clear(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         raise NotImplementedError()
 
 # -------------------------------------------------------------------------------------------------------------------- #

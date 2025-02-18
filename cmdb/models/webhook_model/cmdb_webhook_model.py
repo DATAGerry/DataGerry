@@ -79,7 +79,8 @@ class CmdbWebhook(CmdbDAO):
             event_types: list,
             active: bool,
             **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.name = name
         self.url = url
         self.event_types = event_types

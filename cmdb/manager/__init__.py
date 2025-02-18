@@ -26,6 +26,7 @@ from cmdb.manager.media_files_manager import MediaFilesManager
 from cmdb.manager.object_links_manager import ObjectLinksManager
 from cmdb.manager.objects_manager import ObjectsManager
 from cmdb.manager.object_relations_manager import ObjectRelationsManager
+from cmdb.manager.object_relation_logs_manager import ObjectRelationLogsManager
 from cmdb.manager.relations_manager import RelationsManager
 from cmdb.manager.report_categories_manager import ReportCategoriesManager
 from cmdb.manager.reports_manager import ReportsManager
@@ -52,6 +53,7 @@ __all__ = [
     'ObjectLinksManager',
     'ObjectsManager',
     'ObjectRelationsManager',
+    'ObjectRelationLogsManager',
     'RelationsManager',
     'ReportCategoriesManager',
     'ReportsManager',

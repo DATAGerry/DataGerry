@@ -31,7 +31,8 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CmdbCategory - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbCategory(CmdbDAO):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     COLLECTION = 'framework.categories'
     MODEL = 'Category'
@@ -52,7 +53,8 @@ class CmdbCategory(CmdbDAO):
                  meta: CategoryMeta = None,
                  parent: int = None,
                  types: Union[list[int], list[CmdbType]] = None):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.name: str = name
         self.label: str = label
         self.meta: CategoryMeta = meta

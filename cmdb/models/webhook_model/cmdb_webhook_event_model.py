@@ -102,7 +102,8 @@ class CmdbWebhookEvent(CmdbDAO):
             response_code: int,
             status: bool,
             **kwargs):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         self.event_time = event_time
         self.operation = operation
         self.webhook_id = webhook_id

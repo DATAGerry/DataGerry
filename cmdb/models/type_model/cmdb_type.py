@@ -209,17 +209,20 @@ class CmdbType(CmdbDAO):
 
 
     def get_nested_summaries(self):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return next((x['summaries'] for x in self.get_fields() if x['type'] == 'ref' and 'summaries' in x), [])
 
 
     def has_nested_prefix(self, nested_summaries):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return next((x['prefix'] for x in nested_summaries if x['type_id'] == self.public_id), False)
 
 
     def get_nested_summary_fields(self, nested_summaries) -> list[str]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         _fields = next((x['fields'] for x in nested_summaries if x['type_id'] == self.public_id), [])
         complete_field_list = []
         for field_name in _fields:
@@ -229,12 +232,14 @@ class CmdbType(CmdbDAO):
 
 
     def get_nested_summary_line(self, nested_summaries):
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return next((x['line'] for x in nested_summaries if x['type_id'] == self.public_id), None)
 
 
     def get_summary(self) -> TypeSummary:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         complete_field_list = []
         for field_name in self.render_meta.summary.fields:
             complete_field_list.append(self.get_field(field_name))
@@ -242,7 +247,8 @@ class CmdbType(CmdbDAO):
 
 
     def get_sections(self) -> list[TypeSection]:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self.render_meta.sections
 
 
@@ -291,7 +297,8 @@ class CmdbType(CmdbDAO):
 
 
     def get_fields_of_type_with_value(self, input_type: str, _filter: str, value) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         fields = [x for x in self.fields if
                   x['type'] == input_type and (value in x.get(_filter, None) if isinstance(x.get(_filter, None), list)
                                                else x.get(_filter, None) == value)]
@@ -302,7 +309,8 @@ class CmdbType(CmdbDAO):
 
 
     def get_field(self, name) -> dict:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         field = [x for x in self.fields if x['name'] == name]
         if field:
             try:
@@ -315,7 +323,8 @@ class CmdbType(CmdbDAO):
 
 
     def get_all_mds_fields(self) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         mds_fields = []
 
         for a_section in self.render_meta.sections:
@@ -327,7 +336,8 @@ class CmdbType(CmdbDAO):
 
 
     def get_all_fields_of_type(self, field_type: str) -> list:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         date_fields = []
 
         for a_field in self.fields:

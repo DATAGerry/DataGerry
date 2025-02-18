@@ -32,7 +32,8 @@ LOGGER = logging.getLogger(__name__)
 #                                          QuickSearchPipelineBuilder - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class QuickSearchPipelineBuilder(PipelineBuilder):
-    """TODO: document"""
+    """document"""
+    #TODO: DOCUMENT-FIX
 
     def __init__(self, pipeline: list[dict] = None):
         """Init constructor

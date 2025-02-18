@@ -51,7 +51,6 @@ class TestManagementUser:
 
 
     # def test_user_insert(self, rest_api):
-    #     """TODO: document"""
 
     #     test_user = {
     #         'public_id': 2,
@@ -67,7 +66,6 @@ class TestManagementUser:
 
 
     # def test_user_update(self, rest_api):
-    #     """TODO: document"""
     #     test_user = {
     #         'public_id': 2,
     #         'user_name': 'test',
@@ -81,7 +79,6 @@ class TestManagementUser:
 
 
     # def test_user_delete(self, rest_api):
-    #     """TODO: document"""
     #     insert_response: Response = rest_api.delete(f'{self.ROUTE_URL}/2')
     #     assert insert_response.content_type == 'application/json'
     #     assert insert_response.status_code == HTTPStatus.ACCEPTED

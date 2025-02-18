@@ -137,7 +137,8 @@ class CmdbObject(CmdbDAO):
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbObject":
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         creation_time = data.get('creation_time', None)
         last_edit_time = data.get('last_edit_time', None)
 
@@ -200,7 +201,8 @@ class CmdbObject(CmdbDAO):
 
 
     def has_field(self, name) -> bool:
-        """TODO: document"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         field = next(iter([x for x in self.fields if x.get('name') == name]), None)
         if field is None:
             return False
