@@ -139,7 +139,7 @@ class ReportsManager(BaseManager):
         #TODO: DOCUMENT-FIX
         try:
             if criteria:
-                report_count = self.count_documents(self.collection, filter=criteria)
+                report_count = self.count_documents(self.collection, criteria=criteria)
             else:
                 report_count = self.count_documents(self.collection)
         except ManagerGetError as err:

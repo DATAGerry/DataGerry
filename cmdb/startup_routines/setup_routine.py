@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module contains the implementation of the Setup routine for DataGerry
+"""
 import logging
 from datetime import datetime, timezone
 
@@ -38,7 +39,7 @@ from cmdb.models.user_management_constants import (
 )
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
-from cmdb.errors.database import ServerTimeoutError, DatabaseNotExists, DatabaseAlreadyExists
+from cmdb.errors.database import ServerTimeoutError, DatabaseNotFoundError, DatabaseAlreadyExistsError
 from cmdb.errors.manager.users_manager import UsersManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -48,8 +49,9 @@ LOGGER = logging.getLogger(__name__)
 #                                                 SetupRoutine - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SetupRoutine:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    This class manages the setup of DataGerry
+    """
     def __init__(self, dbm: MongoDatabaseManager):
         self.status = SetupStatus.NOT
         # check if settings are loaded
@@ -65,33 +67,46 @@ class SetupRoutine:
                     system config reader status: {system_config_reader_status}')
 
 
-    def get_setup_status(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_setup_status(self) -> SetupStatus:
+        """
+        Returns the SetupStatus of the SetuoRoutine
+
+        Returns:
+            SetupStatus: The current SetupStatus
+        """
         return self.status
 
 
     def setup(self) -> SetupStatus:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        LOGGER.info('SETUP ROUTINE: STARTED...')
+        """
+        Creates the database and the collections of DataGerry
+
+        Raises:
+            RuntimeError: When database not reachable
+            RuntimeError: When database already exists
+            RuntimeError: When database initialisation fails
+            RuntimeError: When rsa key pair could not be generated
+            RuntimeError: When user management initialisation failed
+            RuntimeError: When update module failed
+
+        Returns:
+            SetupStatus: The status of the setup process
+        """
+        LOGGER.info("[SETUP ROUTINE] STARTED...")
         self.status = SetupStatus.RUNNING
 
         # check database
         if not self.__check_database():
             self.status = SetupStatus.ERROR
-            raise RuntimeError(
-                'The database managers could not be initialized. Perhaps the database cannot be reached, \
-                or the database was already initialized.'
-            )
+            raise RuntimeError("The database could not be reached!")
 
         if self.__is_database_empty():
             # init database
             try:
                 self.__init_database()
-            except DatabaseAlreadyExists as err:
-                LOGGER.error("Could not init setup routine because Database already exists!")
-                raise RuntimeError(str(err)) from err
+            except DatabaseAlreadyExistsError as err:
+                LOGGER.error("Could not init setup routine because database already exists!")
+                raise RuntimeError(err) from err
             except Exception as err:
                 self.status = SetupStatus.ERROR
                 raise RuntimeError(
@@ -99,7 +114,7 @@ class SetupRoutine:
                 ) from err
 
             # generate keys
-            LOGGER.info('SETUP ROUTINE: Generate rsa key pair')
+            LOGGER.info("[SETUP ROUTINE] Generate rsa key pair")
 
             try:
                 self.init_keys()
@@ -111,11 +126,12 @@ class SetupRoutine:
                 ) from err
 
             # create user management
-            LOGGER.info('SETUP ROUTINE: CmdbUser management')
+            LOGGER.info("[SETUP ROUTINE] CmdbUser management")
             try:
                 if self.dbm.count('management.groups') < 2:
                     self.__create_user_management()
             except Exception as err:
+                LOGGER.error("[setup] Exception: %s. Type: %s", err, type(err))
                 self.status = SetupStatus.ERROR
                 raise RuntimeError(
                     f'Something went wrong during the generation of the user management. \n Error: {err}'
@@ -134,48 +150,54 @@ class SetupRoutine:
                 ) from err
 
         self.status = SetupStatus.FINISHED
-        LOGGER.info('SETUP ROUTINE: FINISHED!')
+        LOGGER.info("[SETUP ROUTINE] FINISHED!")
         return self.status
 
 
-    def init_keys(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def init_keys(self) -> None:
+        """
+        Creates RSA key pair, symmetric key and an admin user
+
+        Raises:
+            UsersManagerInsertError: When user could not be inserted
+        """
+        #TODO: REFACTOR-FIX
         kg = KeyGenerator(self.dbm)
-        LOGGER.info('KEY ROUTINE: Generate RSA keypair')
+        LOGGER.info("[KEY ROUTINE] Generate RSA keypair")
         kg.generate_rsa_keypair()
-        LOGGER.info('KEY ROUTINE: Generate aes key')
+        LOGGER.info("[KEY ROUTINE] Generate symmetric key")
         kg.generate_symmetric_aes_key()
 
         # return (enable when just want to create keys)
-        self.__check_database()
-        scm = SecurityManager(self.dbm)
-        users_manager = UsersManager(self.dbm)
+        # self.__check_database()
+        # scm = SecurityManager(self.dbm)
+        # users_manager = UsersManager(self.dbm)
 
-        try:
-            admin_user: CmdbUser = users_manager.get_user(1)
-            LOGGER.warning('KEY ROUTINE: Admin user detected')
-            LOGGER.info('KEY ROUTINE: Enter new password for user: %s', admin_user.user_name)
+        # try:
+        #     admin_user: CmdbUser = users_manager.get_user(1)
+        #     LOGGER.warning('[KEY ROUTINE] Admin user detected')
+        #     LOGGER.info('[KEY ROUTINE] Enter new password for user: %s', admin_user.user_name)
 
-            admin_pass = str(input('New admin password: '))
-            new_password = scm.generate_hmac(admin_pass)
-            admin_user.password = new_password
-            users_manager.update_user(admin_user.get_public_id(), admin_user)
+        #     admin_pass = str(input('New admin password: '))
+        #     new_password = scm.generate_hmac(admin_pass)
+        #     admin_user.password = new_password
+        #     users_manager.update_user(admin_user.get_public_id(), admin_user)
 
-            LOGGER.info('KEY ROUTINE: Password was updated for user: %s', admin_user.user_name)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            LOGGER.info('KEY ROUTINE: Password update for user failed: %s', err)
-            raise UsersManagerInsertError(err) from err
+        #     LOGGER.info('[KEY ROUTINE] Password was updated for user: %s', admin_user.user_name)
+        # except Exception as err:
+        #     #TODO: ERROR-FIX
+        #     LOGGER.info('[KEY ROUTINE] Password update for user failed: %s', err)
+        #     raise UsersManagerInsertError(err) from err
+
+        LOGGER.info('[KEY ROUTINE] FINISHED!')
 
 
-        LOGGER.info('KEY ROUTINE: FINISHED')
-
-
-    def __create_user_management(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        LOGGER.info("SETUP ROUTINE: CREATE USER MANAGEMENT")
+    def __create_user_management(self) -> None:
+        """
+        Creates the inital CmdbUserGroups and the Admin User
+        """
+        #TODO: REFACTOR-FIX
+        LOGGER.info("[SETUP ROUTINE] CREATE USER MANAGEMENT")
         scm = SecurityManager(self.dbm)
         groups_manager = GroupsManager(self.dbm)
         users_manager = UsersManager(self.dbm)
@@ -183,10 +205,11 @@ class SetupRoutine:
         for group in __FIXED_GROUPS__:
             groups_manager.insert_group(group)
 
+        LOGGER.info("[SETUP ROUTINE] Created Groups")
         # setting the initial user to admin/admin as default
         admin_name = 'admin'
         admin_pass = 'admin'
-
+        LOGGER.info("[SETUP ROUTINE] Pre create")
         admin_user = CmdbUser(
             public_id=1,
             user_name=admin_name,
@@ -196,40 +219,50 @@ class SetupRoutine:
             password=scm.generate_hmac(admin_pass),
         )
 
+        LOGGER.info("[SETUP ROUTINE] Pre create")
         users_manager.insert_user(admin_user)
-
-        return True
-
+        LOGGER.info("[SETUP ROUTINE] Post Admin create")
 
     def __check_database(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        LOGGER.info('SETUP ROUTINE: Checking database connection')
+        """
+        Checks the connection status of the database
 
+        Returns:
+            bool: True if connected, False if disconnected
+        """
+        #TODO: REFACTOR-FIX (duplicate in update_routine)
+        LOGGER.info("[SETUP ROUTINE] Checking database connection")
         try:
-            connection_test = self.dbm.connector.is_connected()
+            return self.dbm.connector.is_connected()
         except ServerTimeoutError:
-            connection_test = False
-        LOGGER.info('SETUP ROUTINE: Database connection status %s', connection_test)
-
-        return connection_test
+            LOGGER.info("[SETUP ROUTINE] Database connection check failed due to timeout")
+            return False
 
 
     def __is_database_empty(self) -> bool:
+        """
+        Checks if the database is empty of collections
+
+        Returns:
+            bool: True if database is empty, else False
+        """
+        #TODO: REFACTOR-FIX (duplicate in update_routine)
         return not self.dbm.connector.database.list_collection_names()
 
-
-    def __init_database(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def __init_database(self) -> None:
+        """
+        Drops the database and creates a new one then creates all framework and
+        User Management collections
+        """
+        #TODO: REFACTOR-FIX
         database_name = self.setup_system_config_reader.get_value('database_name', 'Database')
-        LOGGER.info('SETUP ROUTINE: initialize database %s', database_name)
+        LOGGER.info('[SETUP ROUTINE] Initialize database %s', database_name)
 
         # delete database
         try:
             self.dbm.drop_database(database_name)
-        except DatabaseNotExists as err:
-            LOGGER.debug("[__init_database] DatabaseNotExists: %s", err.message)
+        except DatabaseNotFoundError as err:
+            LOGGER.debug("[__init_database] DatabaseNotFoundError: %s", err)
 
         # create new database
         self.dbm.create_database(database_name)

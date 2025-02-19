@@ -22,11 +22,11 @@ class UsersManagerError(Exception):
     """
     Raised to catch all UsersManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all UsersManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
 # ----------------------------------------------- UsersManager Errors ------------------------------------------------ #
 

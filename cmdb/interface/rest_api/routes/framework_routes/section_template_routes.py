@@ -33,13 +33,15 @@ from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
 from cmdb.interface.rest_api.responses import UpdateSingleResponse, GetMultiResponse, DefaultResponse
 
-from cmdb.errors.manager import ManagerInsertError,\
-                                ManagerIterationError,\
-                                ManagerGetError,\
-                                ManagerUpdateError,\
-                                ManagerDeleteError,\
-                                DisallowedActionError
-from cmdb.errors.database import NoDocumentFound
+from cmdb.errors.database import NoDocumentFoundError
+from cmdb.errors.manager import (
+    ManagerInsertError,
+    ManagerIterationError,
+    ManagerGetError,
+    ManagerUpdateError,
+    ManagerDeleteError,
+    DisallowedActionError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -221,7 +223,7 @@ def update_section_template(params: dict, request_user: CmdbUser):
             # Apply changes to all types and objects using the template
             template_manager.handle_section_template_changes(params, current_template)
         else:
-            raise NoDocumentFound(template_manager.collection)
+            raise NoDocumentFoundError(template_manager.collection)
 
     except ManagerGetError as err:
         #TODO: ERROR-FIX
@@ -231,7 +233,7 @@ def update_section_template(params: dict, request_user: CmdbUser):
         #TODO: ERROR-FIX
         LOGGER.debug("[update_section_template] ManagerUpdateError: %s", err.message)
         return abort(400, f"Could not update SectionTemplate with ID: {params['public_id']}!")
-    except NoDocumentFound:
+    except NoDocumentFoundError:
         return abort(404, "Section template not found!")
     except Exception as err:
         LOGGER.error("[update_section_template] Exception: %s, Type: %s", err, type(err))

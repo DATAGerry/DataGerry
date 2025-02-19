@@ -92,8 +92,8 @@ class MongoDBQueryBuilder:
                 }
 
                 return possible_conditions[condition]
-            else:
-                return {"type_id": self.report_type.public_id}
+
+            return {"type_id": self.report_type.public_id}
         except Exception as err:
             raise MongoQueryBuilderBuildRulesetError(str(err)) from err
 

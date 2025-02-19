@@ -62,7 +62,7 @@ class TokenGenerator:
     def get_expire_time(self) -> datetime:
         """document"""
         #TODO: DOCUMENT-FIX
-        expire_time = int(self.auth_module.settings.get_token_lifetime(DEFAULT_TOKEN_LIFETIME))
+        expire_time = int(self.auth_module.settings.get_token_lifetime())
         return datetime.now(timezone.utc) + timedelta(minutes=expire_time)
 
 

@@ -34,7 +34,7 @@ from cmdb.startup_routines.update_routine import UpdateRoutine
 from cmdb.startup_routines.setup_routine import SetupRoutine
 from cmdb.startup_routines.setup_status_enum import SetupStatus
 from cmdb.startup_routines.check_status_enum import CheckStatus
-from cmdb.startup_routines.update_status_enum import UpateStatus
+from cmdb.startup_routines.update_status_enum import UpdateStatus
 from cmdb.utils.logger import get_logging_conf
 from cmdb.utils.system_config_reader import SystemConfigReader
 import cmdb.process_management.process_manager
@@ -66,6 +66,10 @@ def main(args: Namespace):
         __activate_local_mode(args)
         _init_config_reader(args.config_file)
 
+        if args.start:
+            _start_app()
+            LOGGER.info("DATAGERRY successfully started")
+
         if args.start and not args.cloud:
             try:
                 dbm: MongoDatabaseManager = _check_database()
@@ -86,9 +90,6 @@ def main(args: Namespace):
         if args.keys and not args.cloud:
             _start_key_routine(dbm)
 
-        if args.start:
-            _start_app()
-            LOGGER.info("DATAGERRY successfully started")
     except Exception as err:
         raise RuntimeError(err) from err
 
@@ -142,7 +143,7 @@ def _start_check_routines(dbm: MongoDatabaseManager):
             update_status = update_routine.get_updater_status()
             LOGGER.warning('The update did not go through as expected - Status %s', update_status)
 
-        if update_status == UpateStatus.FINISHED:
+        if update_status == UpdateStatus.FINISHED:
             check_status = CheckStatus.FINISHED
         else:
             sys.exit(1)
@@ -297,7 +298,7 @@ def _start_app():
 
     # start app
     app_status = app_manager.start_app()
-    LOGGER.info('Process manager started: %s',app_status)
+    LOGGER.info('Process manager started: %s', app_status)
 
 
 def _stop_app():

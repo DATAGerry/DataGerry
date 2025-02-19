@@ -17,7 +17,6 @@
 This mdule provides all Database classes
 """
 from .connection_status import ConnectionStatus
-from .counter import PublicIDCounter
 from .database_gridfs import DatabaseGridFS
 from .mongo_connector import MongoConnector
 from .mongo_database_manager import MongoDatabaseManager
@@ -26,7 +25,6 @@ from .mongo_query_builder import MongoDBQueryBuilder
 
 __all__ = [
     'ConnectionStatus',
-    'PublicIDCounter',
     'DatabaseGridFS',
     'MongoConnector',
     'MongoDatabaseManager',

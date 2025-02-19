@@ -31,6 +31,7 @@ from cmdb.manager import (
 from cmdb.startup_routines.check_status_enum import CheckStatus
 from cmdb.updater.updater_module import UpdaterModule
 from cmdb.models.user_model import CmdbUser
+from cmdb.models.location_model import validate_root_location
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
@@ -68,8 +69,9 @@ class CheckRoutine:
 
 
     def checker(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        This method checks if all collections are valid and if they have any updates which need to be applied
+        """
         LOGGER.info('STARTING Checks...')
         self.status = CheckStatus.FINISHED
 
@@ -122,7 +124,7 @@ class CheckRoutine:
                     root_location: CmdbLocation = self.dbm.find_one(collection.COLLECTION, 1)
 
                     if root_location:
-                        if self.dbm.validate_root_location(CmdbLocation.to_data(root_location)):
+                        if validate_root_location(CmdbLocation.to_data(root_location)):
                             LOGGER.info("CHECK: Root Location valid")
                         else:
                             LOGGER.info("CHECK: Root Location invalalid => Fixing the Issue!")

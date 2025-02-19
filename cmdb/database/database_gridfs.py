@@ -13,16 +13,28 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides the implementation of `DatabaseGridFS` class
+"""
 from gridfs import GridFS
 from pymongo.database import Database
 # -------------------------------------------------------------------------------------------------------------------- #
 
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                DatabaseGridFS - CLASS                                                #
+# -------------------------------------------------------------------------------------------------------------------- #
 class DatabaseGridFS(GridFS):
     """
-    Creation a GridFSBucket instance to use
+    DatabaseGridFS handles files that can exceed 16 MB
+
+    `Extends`: GridFS
     """
     def __init__(self, database: Database, collection_name: str):
+        """
+        Initializes the `DatabaseGridFS` with the specified database and collection
+
+        Args:
+            `database` (Database): The MongoDB database instance to connect to
+            `collection_name` (str): The name of the collection where files will be stored in GridFS
+        """
         super().__init__(database, collection_name)
-        self.message = f"Collection {collection_name} already exists"

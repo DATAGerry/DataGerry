@@ -22,7 +22,7 @@ from typing import Union
 from bson import json_util
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.database.utils import object_hook
+from cmdb.database.database_utils import object_hook
 
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager

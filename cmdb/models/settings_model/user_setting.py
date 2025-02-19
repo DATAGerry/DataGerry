@@ -19,7 +19,7 @@ import logging
 from json import dumps
 from pymongo import IndexModel
 
-from cmdb.database.utils import default
+from cmdb.database.database_utils import default
 
 from cmdb.models.settings_model.user_setting_type_enum import UserSettingType
 from cmdb.models.settings_model.user_setting_payload import UserSettingPayload

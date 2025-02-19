@@ -13,14 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module contains the UpdateStatus Enumeration
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class UpateStatus(Enum):
-    """document"""
-    #TODO: DOCUMENT-FIX
+class UpdateStatus(Enum):
+    """
+    The different states the update routine of DataGerry can have
+    """
     NOT = 0
     RUNNING = 1
     ERROR = 2

@@ -29,7 +29,7 @@ from cmdb.interface.route_utils import (
     verify_api_access,
 )
 
-from cmdb.errors.database.database_errors import DatabaseNotExists
+from cmdb.errors.database import DatabaseNotFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ def delete_subscription():
 
     try:
         delete_database(subscrption_database)
-    except DatabaseNotExists:
+    except DatabaseNotFoundError:
         return abort(400, f"The database with the name {subscrption_database} does not exist!")
     except Exception as err:
         LOGGER.error("[delete_subscription] Error: %s, Type: %s", err, type(err))

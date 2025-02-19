@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Manages database connection status
+This module contains the implementation of the ConnectionStatus
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -22,15 +22,27 @@ Manages database connection status
 #                                               ConnectionStatus - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ConnectionStatus:
-    """Class representing the status of connection to database"""
+    """
+    ConnectionStatus represents the status of the connection to the database
+    """
 
     def __init__(self, connected: bool, message: str = 'No message given'):
-        self.connected: bool = connected
-        self.message: str = message
+        """
+        Initialises the ConnectionStatus attributes
+
+        Args:
+            `connected` (bool): True if connected to database, else False
+            `message` (str, optional): Descriptive message of the connection status. Defaults to 'No message given'.
+        """
+        self.connected = connected
+        self.message = message
 
 
     def get_status(self) -> bool:
         """
-        Returns the connected status
+        Returns the current status of the database connection
+
+        Returns:
+            bool: True if connected to database, else False
         """
         return self.connected

@@ -13,14 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module contains the CheckStatus Enumeration
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class CheckStatus(Enum):
     """
-    Enumeration of the status options for checks
+    The different states the check routine of DataGerry can have while checking collections validity and availability
+    of updates 
     """
     NOT = 0
     RUNNING = 1

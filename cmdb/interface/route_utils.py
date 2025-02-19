@@ -57,9 +57,8 @@ from cmdb.errors.security import (
     RequestTimeoutError,
     RequestError,
 )
+from cmdb.errors.database import SetDatabaseError, DatabaseNotFoundError
 from cmdb.errors.manager.users_manager import UsersManagerInsertError, UsersManagerGetError
-from cmdb.errors.database import SetDatabaseError
-from cmdb.errors.database.database_errors import DatabaseNotExists
 from cmdb.errors.manager.groups_manager import GroupsManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -119,6 +118,7 @@ def insert_request_user(func):
     """
     @functools.wraps(func)
     def get_request_user(*args, **kwargs):
+        # LOGGER.debug("insert_request_user() called")
         with current_app.app_context():
             users_manager = UsersManager(current_app.database_manager)
         try:
@@ -163,6 +163,7 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            # LOGGER.debug("verify_api_access() called")
             if not current_app.cloud_mode:
                 return func(*args, **kwargs)
 
@@ -379,10 +380,10 @@ def parse_authorization_header(header):
 
                 return None
         except SetDatabaseError as err:
-            LOGGER.error("[parse_authorization_header] SetDatabaseError: %s", str(err))
+            LOGGER.error("[parse_authorization_header] SetDatabaseError: %s", err)
             return None
         except Exception as err:
-            LOGGER.error("[parse_authorization_header] Exception: %s", str(err))
+            LOGGER.error("[parse_authorization_header] Exception: %s", err)
             return None
 
     if auth_type in ("bearer", b"bearer"):
@@ -595,7 +596,7 @@ def delete_database(db_name: str):
             users_manager.dbm.drop_database(db_name)
     except Exception as err:
         LOGGER.debug("[delete_database] Exception: %s, Type:%s", err, type(err))
-        raise DatabaseNotExists(db_name) from err
+        raise DatabaseNotFoundError(db_name) from err
 
 
 def validate_subscrption_user(email: str, password: str, x_api_key: str = None) -> dict:

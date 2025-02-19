@@ -21,7 +21,7 @@ from flask import request, abort
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
-from cmdb.database.utils import default
+from cmdb.database.database_utils import default
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
     ObjectsManager,

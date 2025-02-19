@@ -100,7 +100,6 @@ class MediaFilesManager(BaseManager):
             results = []
             records_total = self.fs.find(filter=metadata).retrieved
 
-            #pymongo4.6 records_total = self.fs.find(filter=metadata).count()
             iterator: GridOutCursor = self.fs.find(filter=metadata, **params)
             for grid in iterator:
                 results.append(MediaFile.to_json(MediaFile(**grid._file)))

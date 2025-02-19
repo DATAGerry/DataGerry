@@ -19,7 +19,7 @@ import logging
 from json import dumps
 from typing import Any
 
-from cmdb.database.utils import default
+from cmdb.database.database_utils import default
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

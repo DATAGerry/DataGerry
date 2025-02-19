@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from bson import json_util
 from flask import abort, current_app, jsonify, request
 
-from cmdb.database.utils import default, object_hook
+from cmdb.database.database_utils import default, object_hook
 from cmdb.database import MongoDBQueryBuilder
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters

@@ -40,7 +40,7 @@ from cmdb.errors.manager import (
     ManagerDeleteError,
     DisallowedActionError,
 )
-from cmdb.errors.database import NoDocumentFound
+from cmdb.errors.database import NoDocumentFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -175,7 +175,7 @@ def update_report_category(params: dict, request_user: CmdbUser):
             report_categories_manager.update({'public_id': params['public_id']}, params)
             current_category = report_categories_manager.get_report_category(params['public_id'])
         else:
-            raise NoDocumentFound(report_categories_manager.collection)
+            raise NoDocumentFoundError(report_categories_manager.collection)
 
     except ManagerGetError as err:
         #TODO: ERROR-FIX
@@ -185,7 +185,7 @@ def update_report_category(params: dict, request_user: CmdbUser):
         #TODO: ERROR-FIX
         LOGGER.debug("[update_report_category] ManagerUpdateError: %s", err.message)
         return abort(400, f"Could not update CmdbReportCategory with ID: {params['public_id']}!")
-    except NoDocumentFound:
+    except NoDocumentFoundError:
         return abort(404, "Report Category not found!")
 
     api_response = UpdateSingleResponse(current_category.__dict__)

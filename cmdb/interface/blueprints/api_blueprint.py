@@ -183,7 +183,7 @@ class APIBlueprint(Blueprint):
                 except Exception as error:
                     return abort(400, str(error))
 
-                return f(request_args)
+                return f(params=request_args, *args, **kwargs)
 
             return _decorate
 
