@@ -13,14 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module contains the SetupStatus Enumeration
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class SetupStatus(Enum):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    The different states of the DataGerry setup routine
+    """
     NOT = 0
     RUNNING = 1
     ERROR = 2

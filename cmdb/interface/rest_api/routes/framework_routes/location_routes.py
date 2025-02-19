@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Definition of all routes for Locations"""
+"""
+Implementation of all API routes for CmdbLocations
+"""
 import logging
 from flask import request, current_app, abort
 
@@ -54,10 +56,10 @@ location_blueprint = APIBlueprint('locations', __name__)
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
 @location_blueprint.route('/', methods=['POST'])
-@location_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
+@location_blueprint.parse_request_parameters()
 def create_location(params: dict, request_user: CmdbUser):
     """
     Creates a location in the database
@@ -116,10 +118,10 @@ def create_location(params: dict, request_user: CmdbUser):
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
 @location_blueprint.route('/', methods=['GET', 'HEAD'])
-@location_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
+@location_blueprint.parse_collection_parameters()
 def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all locations based on the params
@@ -153,10 +155,10 @@ def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
 
 
 @location_blueprint.route('/tree', methods=['GET', 'HEAD'])
-@location_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
+@location_blueprint.parse_collection_parameters()
 def get_locations_tree(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all locations as a location tree
@@ -341,39 +343,45 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
     Returns:
         UpdateSingleResponse: with acknowledged from database
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-
-    location_update_params = {}
-
-    object_id = int(params['object_id'])
-    location_update_params['parent'] = int(params['parent'])
-
-    if params['name'] == '' or params['name'] is None:
-        current_object = objects_manager.get_object(object_id)
-
-        if current_app.cloud_mode:
-            current_app.database_manager.connector.set_database(request_user.database)
-
-        rendered_list = RenderList([current_object],
-                                   request_user,
-                                   True,
-                                   objects_manager).render_result_list(raw=True)
-
-        params['name'] = rendered_list[0]['summary_line']
-
-    location_update_params['name'] =  params['name'] if params['name'] not in ['', None]\
-                                                     else f"ObjectID: {location_update_params['object_id']}"
-
+    LOGGER.debug("update_location_for_object() called")
     try:
-        result = locations_manager.update({'object_id': object_id}, location_update_params)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+
+        location_update_params = {}
+
+        object_id = int(params['object_id'])
+        location_update_params['parent'] = int(params['parent'])
+
+        if params['name'] == '' or params['name'] is None:
+            current_object = objects_manager.get_object(object_id)
+
+            if current_app.cloud_mode:
+                current_app.database_manager.connector.set_database(request_user.database)
+
+            rendered_list = RenderList([current_object],
+                                    request_user,
+                                    True,
+                                    objects_manager).render_result_list(raw=True)
+
+            params['name'] = rendered_list[0]['summary_line']
+
+        location_update_params['name'] =  params['name'] if params['name'] not in ['', None]\
+                                                        else f"ObjectID: {location_update_params['object_id']}"
+
+        locations_manager.update({'object_id': object_id}, location_update_params)
+
+        api_response = UpdateSingleResponse(params)
+
+        return api_response.make_response()
     except ManagerUpdateError as err:
         LOGGER.debug("[update_location_for_object] ManagerUpdateError: %s", err.message)
         return abort(400, "Could not update the location!")
+    except Exception as err:
+        LOGGER.error("[update_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
-    api_response = UpdateSingleResponse(result)
 
-    return api_response.make_response()
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 

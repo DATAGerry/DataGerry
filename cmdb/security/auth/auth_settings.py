@@ -13,44 +13,60 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module caontains the implementation of the AuthSettingsDAO
+"""
 from cmdb.security.token import DEFAULT_TOKEN_LIFETIME
 
 from cmdb.errors.security.security_errors import AuthSettingsInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class AuthSettingsDAO:
-    """Authentication data access object"""
-
-    __DOCUMENT_IDENTIFIER = 'auth'
-    __DEFAULT_EXTERNAL_ENABLED = False
+    """
+    This class stores all required data for an authentification
+    """
+    #TODO: REFACTOR-FIX
+    #TODO: RENAME-FIX
 
     def __init__(self,
                  _id : str = None,
                  providers: list[dict] = None,
-                 enable_external: bool = None,
-                 token_lifetime: int = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
+                 enable_external: bool = False,
+                 token_lifetime: int = DEFAULT_TOKEN_LIFETIME):
+        """
+        Creates an instance of AuthSettingsDAO
+        
+        Args:
+            _id (str, optional): _description_. Defaults to None.
+            providers (list[dict], optional): _description_. Defaults to None.
+            enable_external (bool, optional): _description_. Defaults to False.
+            token_lifetime (int, optional): _description_. Defaults to None.
+
+        Raises:
+            AuthSettingsInitError: When the AuthSettingsDAO could not be initialised
+        """
         try:
-            self._id: str = _id or AuthSettingsDAO.__DOCUMENT_IDENTIFIER
-            self.providers: list[dict] = providers or []
-            self.token_lifetime: int = token_lifetime or DEFAULT_TOKEN_LIFETIME
-            self.enable_external: bool = enable_external or AuthSettingsDAO.__DEFAULT_EXTERNAL_ENABLED
+            self._id = _id or 'auth'
+            self.providers = providers or []
+            self.token_lifetime = token_lifetime
+            self.enable_external = enable_external
         except Exception as err:
             raise AuthSettingsInitError(str(err)) from err
 
 
     def get_id(self) -> str:
-        """Get the database document identifier"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         return self._id
 
 
-    def get_token_lifetime(self, default: int = DEFAULT_TOKEN_LIFETIME) -> int:
-        """Get the lifetime parameter for tokens"""
-        if not self.token_lifetime:
-            self.token_lifetime = default
+    def get_token_lifetime(self) -> int:
+        """
+        Returns the value of the token_lifetime property
+
+        Returns:
+            int: The token_lifetime of this AuthSettingsDAO 
+        """
         return self.token_lifetime
 
 

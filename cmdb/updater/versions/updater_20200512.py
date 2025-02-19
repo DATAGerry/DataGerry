@@ -96,4 +96,4 @@ class Update20200512(Updater):
 
     def __clear_up_types(self):
         """Removes the category_id field from type collection"""
-        self.dbm.unset_update_many(collection=CmdbType.COLLECTION, criteria={}, data='category_id')
+        self.dbm.unset_update_many(collection=CmdbType.COLLECTION, criteria={}, field='category_id')

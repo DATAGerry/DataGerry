@@ -142,7 +142,7 @@ class BaseManager:
         try:
             return self.dbm.find_one(collection, public_id)
         except DocumentGetError as err:
-            raise ManagerGetError(err.message) from err
+            raise ManagerGetError(err) from err
 
 
     def get_many_from_other_collection(self,
@@ -237,7 +237,7 @@ class BaseManager:
         try:
             return self.dbm.find_one_by(self.collection, criteria)
         except DocumentGetError as err:
-            raise ManagerGetError(err.message) from err
+            raise ManagerGetError(err) from err
 
 
     def get_many(self,

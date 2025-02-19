@@ -31,7 +31,7 @@ from cmdb.security.key.generator import KeyGenerator
 from cmdb.models.user_management_constants import __FIXED_GROUPS__
 from cmdb.models.user_model import CmdbUser
 
-from cmdb.errors.database import DatabaseNotExists
+# from cmdb.errors.database import DatabaseNotFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ def preset_database(database_manager: MongoDatabaseManager, database_name: str):
     #TODO: DOCUMENT-FIX
     try:
         database_manager.drop_database(database_name)
-    except DatabaseNotExists:
+    except Exception:
         pass
 
     kg = KeyGenerator(database_manager)

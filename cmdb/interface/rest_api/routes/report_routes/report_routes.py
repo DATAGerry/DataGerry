@@ -48,7 +48,7 @@ from cmdb.errors.manager import (
     ManagerUpdateError,
     ManagerDeleteError,
 )
-from cmdb.errors.database import NoDocumentFound
+from cmdb.errors.database import NoDocumentFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -263,7 +263,7 @@ def update_report(params: dict, request_user: CmdbUser):
             reports_manager.update({'public_id': params['public_id']}, params)
             current_report = reports_manager.get_report(params['public_id'])
         else:
-            raise NoDocumentFound(reports_manager.collection)
+            raise NoDocumentFoundError(reports_manager.collection)
 
     except ManagerGetError as err:
         #TODO: ERROR-FIX
@@ -273,7 +273,7 @@ def update_report(params: dict, request_user: CmdbUser):
         #TODO: ERROR-FIX
         LOGGER.debug("[update_report] ManagerUpdateError: %s", err.message)
         return abort(400, f"Could not update CmdbReport with ID: {params['public_id']}!")
-    except NoDocumentFound:
+    except NoDocumentFoundError:
         return abort(404, "Report not found!")
     except Exception as err:
         LOGGER.debug("[update_report] Exception: %s, Type: %s", err, type(err))

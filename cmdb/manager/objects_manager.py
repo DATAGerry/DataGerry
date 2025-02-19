@@ -22,7 +22,7 @@ from typing import Union
 from bson import Regex, json_util
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.database.utils import object_hook
+from cmdb.database.database_utils import object_hook
 from cmdb.manager.query_builder import Builder
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import BaseManager
@@ -285,7 +285,7 @@ class ObjectsManager(BaseManager):
         """
         try:
             if criteria:
-                object_count = self.count_documents(self.collection, filter=criteria)
+                object_count = self.count_documents(self.collection, criteria=criteria)
             else:
                 object_count = self.count_documents(self.collection)
         except ManagerGetError as err:

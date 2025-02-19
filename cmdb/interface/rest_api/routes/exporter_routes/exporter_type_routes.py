@@ -21,7 +21,7 @@ import time
 import logging
 from flask import abort, jsonify, Response
 
-from cmdb.database.utils import default
+from cmdb.database.database_utils import default
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import TypesManager
 

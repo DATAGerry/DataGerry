@@ -18,7 +18,7 @@
 import logging
 import json
 
-from cmdb.database.utils import default
+from cmdb.database.database_utils import default
 from cmdb.framework.exporter.format.base_exporter_format import BaseExporterFormat
 from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
 from cmdb.framework.rendering.render_result import RenderResult

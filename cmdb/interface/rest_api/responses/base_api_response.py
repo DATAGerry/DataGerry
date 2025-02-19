@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from flask import abort, make_response as flask_response
 from werkzeug.wrappers import Response
 
-from cmdb.database.utils import default
+from cmdb.database.database_utils import default
 from cmdb.interface.rest_api.responses.helpers.operation_type_enum import OperationType
 # -------------------------------------------------------------------------------------------------------------------- #
 

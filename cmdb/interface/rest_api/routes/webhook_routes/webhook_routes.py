@@ -39,7 +39,7 @@ from cmdb.errors.manager import (
     ManagerUpdateError,
     ManagerDeleteError,
 )
-from cmdb.errors.database import NoDocumentFound
+from cmdb.errors.database import NoDocumentFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -169,7 +169,7 @@ def update_webhook(params: dict, request_user: CmdbUser):
             webhooks_manager.update({'public_id': params['public_id']}, params)
             current_webhook = webhooks_manager.get_webhook(params['public_id'])
         else:
-            raise NoDocumentFound(webhooks_manager.collection)
+            raise NoDocumentFoundError(webhooks_manager.collection)
 
     except ManagerGetError as err:
         #TODO: ERROR-FIX
@@ -179,7 +179,7 @@ def update_webhook(params: dict, request_user: CmdbUser):
         #TODO: ERROR-FIX
         LOGGER.debug("[update_webhook] ManagerUpdateError: %s", err.message)
         return abort(400, f"Could not update CmdbWebhook with ID: {params['public_id']}!")
-    except NoDocumentFound:
+    except NoDocumentFoundError:
         return abort(404, "Webhook not found!")
     except Exception as err:
         LOGGER.debug("[update_webhook] Exception: %s, Type: %s", err, type(err))

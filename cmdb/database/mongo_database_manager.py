@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Database Management instance for MongoDB
+This module provides the MongoDatabaseManager
 """
 import logging
 from typing import Union, Any
@@ -23,38 +23,42 @@ from pymongo.database import Database
 from pymongo.errors import CollectionInvalid
 from pymongo import IndexModel
 from pymongo.collection import Collection
+from pymongo.cursor import Cursor
 from pymongo.results import DeleteResult, UpdateResult
 
-from cmdb.database import MongoConnector, PublicIDCounter
+from cmdb.database import MongoConnector
 
+from cmdb.models.location_model import get_root_location_data
 from cmdb.framework.section_templates.section_template_creator import SectionTemplateCreator
 
 from cmdb.errors.database import (
-    CollectionAlreadyExists,
+    CollectionAlreadyExistsError,
     CreateIndexesError,
-    DatabaseAlreadyExists,
-    DatabaseNotExists,
+    GetIndexesError,
+    DatabaseConnectionError,
+    DatabaseAlreadyExistsError,
+    DatabaseNotFoundError,
     DeleteCollectionError,
     DocumentDeleteError,
-    DocumentCreateError,
+    DocumentInsertError,
     DocumentUpdateError,
     DocumentGetError,
     DocumentAggregationError,
     GetCollectionError,
-    NoDocumentFound,
-
+    PublicIdCounterInitError,
 )
-
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
+
+PUBLIC_ID_COUNTER_COLLECTION = "datastorage.counter"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                             MongoDatabaseManager - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class MongoDatabaseManager:
     """
-    PyMongo (MongoDB) implementation of Database Manager
+    PyMongo (MongoDB) implementation of the Database Manager
     """
     def __init__(self, host: str, port: int, database_name: str, **kwargs):
         self.connector = MongoConnector(host, port, database_name, kwargs)
@@ -62,81 +66,109 @@ class MongoDatabaseManager:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Auto disconnect the database connection when the manager get destroyed
+        Ensures the database connection is closed when exiting a context
         """
         self.connector.disconnect()
 
 # ---------------------------------------------- BASE DATABSE OPERATIONS --------------------------------------------- #
 
-    def check_database_exists(self, name:str) -> bool:
-        """Checks if a database with the given name exists
+    def check_database_exists(self, name: str) -> bool:
+        """
+        Checks if a database with the given name exists
 
         Args:
             name (str): Name of the database which should be checked
 
-        Returns:
-            (bool): True if database with given name exists, else False
-        """
-        database_names = self.connector.client.list_database_names()
+        Raises:
+            DatabaseConnectionError: If connection to database could not be established
 
-        return name in database_names
+        Returns:
+            bool: True if database with given name exists, else False
+        """
+        try:
+            database_names = self.connector.client.list_database_names()
+
+            return name in database_names
+        except Exception as err:
+            raise DatabaseConnectionError(f"Failed to check if database '{name}' exists: {err}") from err
 
 
     def create_database(self, name: str) -> Database:
-        """Create a new empty database
+        """
+        Create a new empty database if it does not already exist
 
         Args:
-            name (str): Name of the new database.
+            name (str): Name of the new database
 
         Raises:
-            DatabaseAlreadyExists: If a database with this name already exists
+            DatabaseAlreadyExistsError: If a database with this name already exists
+            DatabaseConnectionError: If the database connection fails
 
         Returns:
-            Database: Instance of the new create database
+            Database: Instance of the newly created database
         """
-        if name in self.connector.client.list_database_names():
-            raise DatabaseAlreadyExists(name)
+        try:
+            if name in self.connector.client.list_database_names():
+                raise DatabaseAlreadyExistsError(f"Database '{name}' already exists.")
 
-        return self.connector.client[name]
+            return self.connector.client[name]
+        except DatabaseAlreadyExistsError as err:
+            raise err
+        except Exception as err:
+            raise DatabaseConnectionError(f"Failed to create database '{name}': {err}") from err
 
 
-    def drop_database(self, database: Union[str, Database]):
-        """Delete a existing database
+    def drop_database(self, database: Union[str, Database]) -> None:
+        """
+        Deletes an existing database
 
         Args:
-            database: name or instance of the database
+            database (str, Database): Name or instance of the database to be dropped
 
         Raises:
-            DatabaseNotExists: If the database does not exist
+            DatabaseNotFoundError: If the specified database does not exist
+            DatabaseConnectionError: If the database connection fails during the operation
         """
-        if isinstance(database, Database):
-            database = database.name
+        try:
+            if isinstance(database, Database):
+                database = database.name
 
-        if database not in self.connector.client.list_database_names():
-            raise DatabaseNotExists(database)
+            if database not in self.connector.client.list_database_names():
+                raise DatabaseNotFoundError(f"Database '{database}' not found.")
 
-        self.connector.client.drop_database(database)
+            self.connector.client.drop_database(database)
+        except DatabaseNotFoundError as err:
+            raise err
+        except Exception as err:
+            raise DatabaseConnectionError(f"Failed to drop database '{database}': {err}") from err
 
 
     def create_collection(self, collection_name: str) -> str:
         """
-        Creation empty MongoDB collection
+        Creation an empty MongoDB collection
 
         Args:
-            collection_name (str): name of collection
+            collection_name (str): Name of collection which should be created
+
+        Raises:
+            CollectionAlreadyExistsError: If the collection already exists
+            DatabaseConnectionError: If there is an issue with the database connection
 
         Returns:
-            (str): Collection name
+            str: The name of the created collection
         """
         try:
             all_collections = self.connector.database.list_collection_names()
 
             if collection_name not in all_collections:
                 self.connector.database.create_collection(collection_name)
-        except CollectionInvalid as err:
-            raise CollectionAlreadyExists(collection_name) from err
 
-        return collection_name
+            return collection_name
+        except Exception as err:
+            if isinstance(err, CollectionInvalid):
+                raise CollectionAlreadyExistsError(err) from err
+
+            raise DatabaseConnectionError(f"Failed to create collection '{collection_name}': {err}") from err
 
 
     def get_collection(self, name: str) -> Collection:
@@ -148,19 +180,22 @@ class MongoDatabaseManager:
 
         Raises:
             GetCollectionError: When the collection could not be retrieved
+
         Returns:
             (Collection): The requested collection
         """
         try:
-            return self.connector.database[name]
+            requested_collection = self.connector.database[name]
+
+            return requested_collection
         except Exception as err:
-            LOGGER.debug("[get_collection] Can't retrive collection: %s. Error: %s", name, err)
-            raise GetCollectionError(name, str(err)) from err
+            LOGGER.error("[get_collection] '%s' Exception: %s. Type: %s", name, err, type(err))
+            raise GetCollectionError(err) from err
 
 
     def delete_collection(self, collection: str) -> dict[str, Any]:
         """
-        Delete MongoDB collection
+        Delete an existing collection
 
         Args:
             collection (str): collection name
@@ -174,8 +209,7 @@ class MongoDatabaseManager:
         try:
             return self.connector.database.drop_collection(collection)
         except Exception as err:
-            LOGGER.debug("[delete_collection] Can't delete collection: %s. Error: %s", collection, err)
-            raise DeleteCollectionError(collection, str(err)) from err
+            raise DeleteCollectionError(f"Failed to delete collection '{collection}': {err}") from err
 
 
     def create_indexes(self, collection: str, indexes: list[IndexModel]) -> list[str]:
@@ -195,8 +229,7 @@ class MongoDatabaseManager:
         try:
             return self.get_collection(collection).create_indexes(indexes)
         except Exception as err:
-            LOGGER.debug("[create_indexes] Can't create indexes in: %s. Error: %s", collection, err)
-            raise CreateIndexesError(str(err)) from err
+            raise CreateIndexesError(f"Failed to create indexes for collection '{collection}': {err}") from err
 
 
     def get_index_info(self, collection: str) -> MutableMapping[str, Any]:
@@ -207,19 +240,26 @@ class MongoDatabaseManager:
             collection (str): name of collection
 
         Raises:
-            GetCollectionError: When the collection could not be retrieved
+            GetIndexesError: When the index information could not be retrieved
 
         Returns:
-            MutableMapping[str, Any]: index information of the collection
+            MutableMapping[str, Any]: Index information of the collection
         """
         try:
             return self.get_collection(collection).index_information()
-        except GetCollectionError as err:
-            raise GetCollectionError(collection, err) from err
+        except Exception as err:
+            raise GetIndexesError(
+                f"Failed to retrieve index information for collection '{collection}': {err}"
+            ) from err
 
 
-    def status(self):
-        """Check if connector has connection to MongoDB"""
+    def status(self) -> bool:
+        """
+        Check if connector has connection to MongoDB
+
+        Returns
+            bool: True is connected, else False
+        """
         return self.connector.is_connected()
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
@@ -234,7 +274,7 @@ class MongoDatabaseManager:
             skip_public (bool): Skip the public id creation and counter increment
 
         Raises:
-            DocumentCreateError: When a document could not be created
+            DocumentInsertError: When a document could not be created
         
         Returns:
             int: New public id of the document
@@ -247,178 +287,203 @@ class MongoDatabaseManager:
                 data['public_id'] = self.get_next_public_id(collection)
 
             self.get_collection(collection).insert_one(data)
-            self.update_public_id_counter(collection, data['public_id'])
+            self.update_public_id_counter(collection, data['public_id'], increment=True)
 
             return data['public_id']
         except Exception as err:
-            LOGGER.debug("[insert] Can't insert document. Error: %s", err)
-            raise DocumentCreateError(collection, str(err)) from err
+            raise DocumentInsertError(f"Failed to insert document into collection '{collection}': {err}") from err
 
 
-    def __init_public_id_counter(self, collection: str):
-        """TODO:document"""
-        docs_count = self.get_highest_id(collection)
+    def __init_public_id_counter(self, collection: str) -> int:
+        """
+        Initializes a public ID counter for the given collection
 
-        self.get_collection(PublicIDCounter.COLLECTION).insert_one({'_id': collection, 'counter': docs_count})
+        Args:
+            collection (str): Name of the collection for which the counter is initialised
 
-        return docs_count
+        Raises:
+            PublicIdCounterInitError: When the public_id counter could not be initialised
+
+        Returns:
+            int: The highest existing ID in the collection, which is set as the counter's initial value
+        """
+        try:
+            highest_id = self.get_highest_id(collection)
+
+            self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).insert_one(
+                {'_id': collection, 'counter': highest_id}
+            )
+
+            return highest_id
+        except Exception as err:
+            raise PublicIdCounterInitError(
+                f"Failed to initialize public ID counter for collection '{collection}': {err}"
+            ) from err
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
-    def update(self, collection: str, criteria: dict, data: dict, *args, add_to_set: bool = True, **kwargs):
+    def update(
+            self,
+            collection: str,
+            criteria: dict,
+            data: dict,
+            *args,
+            add_to_set: bool = True,
+            **kwargs) -> UpdateResult:
         """
-        Updates a document inside the given collection
+        Updates a document inside the specified collection
 
         Args:
-            collection (str): name of database collection
-            criteria (dict): Filter to match document
-            data: data to update
+            collection (str): The name of the database collection.
+            criteria (dict): The filter used to match the document to be updated
+            data (dict): The update data to apply
+            add_to_set (bool, optional): If True, wraps `data` in '$set' unless it already contains update operators. 
+                                         Defaults to True.
+            *args: Additional positional arguments for the update operation
+            **kwargs: Additional keyword arguments for the update operation
 
         Raises:
             DocumentUpdateError: When document could not be updated
 
         Returns:
-            UpdateResult
+            UpdateResult: The result of the update operation
         """
         try:
-            # formatted_data = {'$set': data} if add_to_set else data
-            # Only wrap in '$set' if `data` is not an update operator
-            if add_to_set and not any(k.startswith('$') for k in data):
-                formatted_data = {'$set': data}
-            else:
-                formatted_data = data
+            # Apply '$set' only if no update operators are present
+            update_data = {'$set': data} if add_to_set and not any(k.startswith('$') for k in data) else data
 
-            return self.get_collection(collection).update_one(criteria, formatted_data, *args, **kwargs)
+            result = self.get_collection(collection).update_one(criteria, update_data, *args, **kwargs)
+
+            return result
         except Exception as err:
-            LOGGER.debug("[update] Can't update document. Error: %s", err)
-            raise DocumentUpdateError(collection, str(err)) from err
+            LOGGER.error("[update] Exception: %s. Type: %s", err, type(err))
+            raise DocumentUpdateError(f"Failed to update document in '{collection}': {err}") from err
 
 
-    def unset_update_many(self, collection: str, criteria: dict, data: str, *args, **kwargs):
+    def unset_update_many(self, collection: str, criteria: dict, field: str, *args, **kwargs) -> UpdateResult:
         """
-        Updates documents inside database
+        Removes a field from multiple documents in the specified collection
 
         Args:
-            collection (str): name of database collection
-            criteria (dict): filter of document
-            data: data to delete
+            collection (str): The name of the database collection
+            criteria (dict): The filter used to match documents for updating
+            field (str): The field to remove from the matched documents
+            *args: Additional positional arguments for the update operation
+            **kwargs: Additional keyword arguments for the update operation
 
         Raises:
-            DocumentUpdateError: When update has failed
+            DocumentUpdateError: If the update operation fails
 
         Returns:
-            UpdateResult
+            UpdateResult: The result of the update operation
         """
         try:
-            formatted_data = {'$unset': {data: 1}}
+            update_data = {'$unset': {field: 1}}
 
-            return self.get_collection(collection).update_many(criteria, formatted_data, *args, **kwargs)
+            result = self.get_collection(collection).update_many(criteria, update_data, *args, **kwargs)
+
+            if result.modified_count == 0:
+                LOGGER.warning(
+                    "[unset_update_many] No documents matched criteria: %s in collection: %s", criteria, collection
+                )
+
+            return result
         except Exception as err:
-            LOGGER.debug("[unset_update_many] Can't update document. Error: %s", err)
-            raise DocumentUpdateError(collection, str(err)) from err
+            raise DocumentUpdateError(f"Failed to unset field '{field}' in '{collection}': {err}") from err
 
 
     def update_many(self, collection: str, criteria: dict, update: dict, add_to_set:bool = False) -> UpdateResult:
-        """update all documents that match the filter from a collection.
+        """
+        Updates multiple documents that match the filter in a collection
 
         Args:
             collection (str): Name of database collection
-            criteria (dict): Filter that matches the documents to update
+            criteria (dict): The filter used to match the documents for updating
             update (dict): The modifications to apply
-            add_to_set(bool): Add value to an array unless the value is already present
+            add_to_set(bool): If True, uses '$addToSet' to add values to an array without duplicates.
+                              If False, uses '$set' to update fields. Defaults to False.
+
+        Raises:
+            DocumentUpdateError: If the update operation fails
 
         Returns:
-            A boolean acknowledged as true if the operation ran with write
-            concern or false if write concern was disabled
+            UpdateResult: The result of the update operation
         """
         try:
-            formatted_data = {'$addToSet':update} if add_to_set else {'$set':update}
+            update_operator = "$addToSet" if add_to_set else "$set"
+            formatted_data = {update_operator: update}
 
-            return self.get_collection(collection).update_many(criteria, formatted_data)
+            result = self.get_collection(collection).update_many(criteria, formatted_data)
+
+            if result.modified_count == 0:
+                LOGGER.warning(
+                    "[update_many] No documents matched criteria: %s in collection: %s", criteria, collection
+                )
+
+            return result
         except Exception as err:
-            LOGGER.debug("[update_many] Can't update document. Error: %s", err)
-            raise DocumentUpdateError(collection, str(err)) from err
+            raise DocumentUpdateError(f"Failed to update documents in '{collection}': {err}") from err
 
 
-    def increment_public_id_counter(self, collection: str):
+    def update_public_id_counter(self, collection: str, value: int = None, increment: bool = False) -> None:
         """
-        Increments the public_id counter for the given collection
+        Updates or increments the public_id counter for the given collection
 
         Args:
-            collection (str): name of collection
+            collection (str): Name of the collection
+            value (int, optional): The new value to set for the counter. Ignored if `increment` is True.
+            increment (bool, optional): If True, increments the counter by 1. Defaults to False.
 
         Raises:
-            DocumentUpdateError: When counter could not be updated
-        """
-        working_collection = self.get_collection(PublicIDCounter.COLLECTION)
-
-        query = {
-            '_id': collection
-        }
-
-        counter_doc = working_collection.find_one(query)
-        counter_doc['counter'] = counter_doc['counter'] + 1
-        update_query = {'$set':{'counter':counter_doc['counter']}}
-
-        try:
-            self.get_collection(PublicIDCounter.COLLECTION).update_one(query, update_query)
-        except Exception as err:
-            LOGGER.debug("[increment_public_id_counter] Can't increment PublicID-Counter. Error: %s", err)
-            raise DocumentUpdateError(collection, str(err)) from err
-
-
-    def update_public_id_counter(self, collection: str, value: int):
-        """
-        Updates the public_id counter
-
-        Args:
-            collection (str): name of collection
-            value (int): new value for counter
-
-        Raises:
-            DocumentUpdateError: When public_id counter could not be updated
+            DocumentUpdateError: If the counter update operation fails or no valid operation is provided
         """
         try:
-            working_collection = self.get_collection(PublicIDCounter.COLLECTION)
+            working_collection = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION)
+            query = {'_id': collection}
 
-            query = {
-                '_id': collection
-            }
-
+            # Fetch the current counter document
             counter_doc = working_collection.find_one(query)
 
-            # init counter, if it was not found
-            if counter_doc is None:
+            if not counter_doc:
+                # If the counter document does not exist, initialize it
                 self.__init_public_id_counter(collection)
                 counter_doc = working_collection.find_one(query)
 
-            # update counter only, if value is higher than counter
-            if value > counter_doc['counter']:
+            if increment:
+                # If increment flag is True, increment by 1
+                update_query = {'$inc': {'counter': 1}}
+            elif value is not None and value > counter_doc['counter']:
+                # If a specific value is provided and it is greater than the current counter, update it
                 counter_doc['counter'] = value
+                update_query = {'$set': {'counter': counter_doc['counter']}}
+            else:
+                return
 
-                formatted_data = {'$set':counter_doc}
+            # Perform the update operation
+            result = working_collection.update_one(query, update_query)
 
-                self.get_collection(PublicIDCounter.COLLECTION).update_one(query, formatted_data)
+            if result.modified_count == 0:
+                raise DocumentUpdateError(f"Failed to update PublicID counter for '{collection}'.")
+
         except Exception as err:
-            LOGGER.debug("[update_public_id_counter] Can't increment PublicID-Counter. Error: %s", err)
-            raise DocumentUpdateError(collection, str(err)) from err
+            raise DocumentUpdateError(f"Failed to update PublicID counter for '{collection}': {err}") from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def find_all(self, collection, *args, **kwargs) -> list:
         """
-        Retrives documents from the given collection
+        Retrives documents from the specified collection
 
         Args:
-            collection (str): name of collection
-            *args: arguments for search operation
-            **kwargs: key arguments
+            collection (str): The name of the collection to search in
+            *args: Positional arguments for the search operation
+            **kwargs: Keyword arguments for filtering, sorting, etc
 
         Raises:
             DocumentGetError: When documents could not be retrieved
 
         Returns:
-            list: list of found documents
+            list: A list of retrieved documents
         """
         try:
             found_documents = self.find(collection, *args, **kwargs)
@@ -426,23 +491,24 @@ class MongoDatabaseManager:
             return list(found_documents)
         except Exception as err:
             LOGGER.debug("[find_all] Can't retrive documents. Error: %s", err)
-            raise DocumentGetError(collection, str(err)) from err
+            raise DocumentGetError(f"Failed to retrieve documents from '{collection}': {err}") from err
 
 
-    def find(self, collection: str, *args, **kwargs):
+    def find(self, collection: str, *args, **kwargs) -> Cursor:
         """
-        General find function
+        Retrieves documents from the specified collection with optional filters and projections
         
         Args:
-            collection (str): name of collection
-            *args: arguments for search operation
-            **kwargs: key arguments
+            collection (str): The name of the collection to search in.
+            *args: Positional arguments for the find operation (e.g., query filter).
+            **kwargs: Keyword arguments for filtering, sorting, limiting, etc.
+                    Automatically adds 'projection' to exclude _id if not provided
 
         Raises:
             DocumentGetError: When documents could not be retrieved
 
         Returns:
-            Cursor with results
+            Cursor: MongoDB Cursor object with the results of the query
         """
         try:
             if 'projection' not in kwargs:
@@ -450,8 +516,7 @@ class MongoDatabaseManager:
 
             return self.get_collection(collection).find(*args, **kwargs)
         except Exception as err:
-            LOGGER.debug("[find] Can't retrive documents. Error: %s", err)
-            raise DocumentGetError(collection, str(err)) from err
+            raise DocumentGetError(f"Failed to retrieve documents from collection '{collection}': {err}") from err
 
 
     def find_one_by(self, collection: str, *args, **kwargs) -> dict:
@@ -459,40 +524,41 @@ class MongoDatabaseManager:
         Find one specific document by special requirements
 
         Args:
-            collection (str): name of database collection
+            collection (str): Name of the database collection
+            *args: Positional arguments for the find operation (e.g., query filter)
+            **kwargs: Keyword arguments for filtering, sorting, limiting, etc
 
         Raises:
-            DocumentGetError: When documents could not be retrieved
+            DocumentGetError: If the retrieval fails due to an error
 
         Returns:
-            found document
+            dict: The found document or None if no document matches the criteria
         """
         try:
             cursor_result = self.find(collection, limit=1, *args, **kwargs)
 
-            for result in cursor_result.limit(-1):
-                return result
+            result = next(cursor_result, None)
 
+            return result  # Return None if no result is found
         except Exception as err:
-            raise DocumentGetError(collection, str(err)) from err
-
-        # No document was found
-        return None
+            raise DocumentGetError(f"Failed to retrieve document from collection '{collection}': {err}") from err
 
 
-    def find_one(self, collection: str, public_id: int, *args, **kwargs):
+    def find_one(self, collection: str, public_id: int, *args, **kwargs) -> dict:
         """
-        Retrieves a single document with the given public_id from the given collection 
+        Retrieves a single document with the given public_id from the specified collection
 
         Args:
-            collection (str): name of database collection
-            public_id (int): public_id of document
+            collection (str): Name of the database collection.
+            public_id (int): The public_id of the document to retrieve
+            *args: Additional arguments for the find operation
+            **kwargs: Additional keyword arguments for the find operation
 
         Raises:
-            DocumentGetError: When documents could not be retrieved
+            DocumentGetError: If there is an issue retrieving the document
 
         Returns:
-            document with given public_id
+            dict: The document with the given public_id, or None if not found
         """
         try:
             cursor_result = self.find(collection, {'public_id': public_id}, limit=1, *args, **kwargs)
@@ -500,262 +566,281 @@ class MongoDatabaseManager:
             for result in cursor_result.limit(-1):
                 return result
         except Exception as err:
-            LOGGER.debug("[find_one] Can't retrive document. Error: %s", err)
-            raise DocumentGetError(collection, str(err)) from err
+            raise DocumentGetError(
+                f"Failed to retrieve document with public_id {public_id} from collection '{collection}': {err}"
+            ) from err
 
 
-    # TODO: ERROR-FIX (keyword before argument)
-    def count(self, collection: str, filter: dict = None, *args, **kwargs):
+    def count(self, collection: str, *args, criteria: dict = None, **kwargs) -> int:
         """
-        Count documents based on filter parameters
+        Count documents based on criteria parameters
 
         Args:
-            collection (str): name of database collection
-            filter (dict): document count requirements
-            *args: arguments for search operation
-            **kwargs:
+            collection (str): Name of database collection
+            *args: Additional arguments for the count operation
+            criteria (dict): Document count requirements (default is empty criteria)
+            **kwargs: Additional keyword arguments for the count operation
 
         Returns:
-            returns the count of the documents
+            int: The count of the documents that match the criteria
         """
-        filter = filter or {}
+        # Ensure criteria is a dictionary (defaulting to empty if None is provided)
+        criteria = criteria or {}
 
-        return self.get_collection(collection).count_documents(filter=filter, *args, **kwargs)
+        try:
+            return self.get_collection(collection).count_documents(criteria, *args, **kwargs)
+        except Exception as err:
+            raise DocumentGetError(
+                f"Failed to count documents in collection '{collection}': {err}"
+            ) from err
 
 
-    def aggregate(self, collection: str, *args, **kwargs):
+    def aggregate(self, collection: str, *args, **kwargs) -> Cursor:
         """
-        Aggregation on mongodb.
+        Perform aggregation on MongoDB
 
         Args:
-            collection (str): name of database collection
-            *args: arguments for search operation
-            **kwargs: key arguments
+            collection (str): Name of the database collection
+            *args: Additional arguments for the aggregation pipeline
+            **kwargs: Additional keyword arguments for the aggregation operation (including allowDiskUse)
 
         Raises:
-            DocumentAggregationError: When the aggregate operation fails
+            DocumentAggregationError: If the aggregation operation fails
 
         Returns:
-            returns computed results
+            Cursor: The computed aggregation results as a cursor
         """
         try:
             return self.get_collection(collection).aggregate(*args, **kwargs, allowDiskUse=True)
         except Exception as err:
-            LOGGER.debug("[aggregate] Aggregation failed. Error: %s", err)
-            raise DocumentAggregationError(str(err)) from err
+            raise DocumentAggregationError(f"Aggregation operation failed: {err}") from err
 
 
     def get_highest_id(self, collection: str) -> int:
-        """wrapper function
-        calls get_document_with_highest_id() and returns the public_id
+        """
+        Wrapper function that calls get_document_with_highest_id() and returns the highest public_id
 
         Args:
-            collection (str): name of database collection
+            collection (str): Name of database collection
 
         Raises:
             DocumentGetError: When documents could not be retrieved
 
         Returns:
-            int: highest public id
+            int: Highest public id or 0 if no document is found
         """
         try:
-            try:
-                formatted_sort = [('public_id', -1)]
+            formatted_sort = [('public_id', -1)]
 
-                highest_id = self.find_one_by(collection=collection, sort=formatted_sort)
+            # Get the highest public_id document
+            highest_id_doc = self.find_one_by(collection=collection, sort=formatted_sort)
 
-                highest = int(highest_id['public_id'])
-                # TODO: ERROR-FIX
-            except Exception:
+            # If no document is found, return 0
+            if highest_id_doc is None:
                 return 0
 
-            return highest
+            return int(highest_id_doc['public_id'])
+
         except Exception as err:
-            LOGGER.debug("[get_highest_id] Can't retrive document. Error: %s", err)
-            raise DocumentGetError(collection, str(err)) from err
+            raise DocumentGetError(
+                f"Failed to retrieve the highest public_id from collection '{collection}': {err}"
+            ) from err
 
 
     def get_next_public_id(self, collection: str) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        try:
-            found_counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
-            new_id = found_counter['counter'] + 1
-        except (NoDocumentFound, Exception):
-            docs_count = self.__init_public_id_counter(collection)
-            new_id = docs_count + 1
-        finally:
-            self.increment_public_id_counter(collection)
+        """
+        Retrieves the next public_id for the specified collection
 
-        return new_id
+        Args:
+            collection (str): Name of the database collection
+
+        Raises:
+            DocumentGetError: If there was an error getting or updating the counter document
+
+        Returns:
+            int: The next available public_id for the collection
+        """
+        try:
+            found_counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
+
+            if found_counter:
+                new_id = found_counter['counter'] + 1
+            else:
+                docs_count = self.__init_public_id_counter(collection)
+                new_id = docs_count + 1
+
+            self.update_public_id_counter(collection)
+
+            return new_id
+        except Exception as err:
+            raise DocumentGetError(f"Error retrieving next public_id for collection '{collection}': {err}") from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
     def delete(self, collection: str, criteria: dict) -> DeleteResult:
-        """delete document inside database
+        """
+        Deletes a document from the specified collection based on the given criteria
 
         Args:
-            collection (str): name of database collection
-            filter (dict): filter query
+            collection (str): Name of the database collection
+            criteria (dict): Filter query to identify the document to delete
 
         Raises:
-            DocumentDeleteError: When documents could not be deleted
+            DocumentDeleteError: When the document could not be deleted
 
         Returns:
-            acknowledged
+            DeleteResult: Contains the result of the delete operation
         """
         try:
-            return self.get_collection(collection).delete_one(criteria)
+            result = self.get_collection(collection).delete_one(criteria)
+
+            return result
         except Exception as err:
-            LOGGER.debug("[delete] Can't delete document. Error: %s", err)
-            raise DocumentDeleteError(collection, str(err)) from err
+            raise DocumentDeleteError(f"Error deleting document from collection '{collection}': {err}") from err
 
 
     def delete_many(self, collection: str, **requirements: dict) -> DeleteResult:
         """
-        Removes all documents that match the filter from a collection
+        Removes all documents that match the filter from the collection
 
         Args:
-            collection (str): name of database collection
-            filter (dict): Specifies deletion criteria using query operators.
+            collection (str): Name of the database collection
+            requirements (dict): Specifies the deletion criteria using query operators
 
         Raises:
             DocumentDeleteError: When documents could not be deleted
 
         Returns:
-            A boolean acknowledged as true if the operation ran
-            with write concern or false if write concern was disabled
+            DeleteResult: The result of the delete operation, including the number of documents deleted
         """
         try:
-            requirements_filter = {}
-            for k, req in requirements.items():
-                requirements_filter.update({k: req})
-
-            return self.get_collection(collection).delete_many(requirements_filter)
+            return self.get_collection(collection).delete_many(requirements)
         except Exception as err:
-            LOGGER.debug("[delete_many] Can't delete documents. Error: %s", err)
-            raise DocumentDeleteError(collection, str(err)) from err
-
-# -------------------------------------------------------------------------------------------------------------------- #
-#                                                 CHECK ROUTINE SECTION                                                #
-# -------------------------------------------------------------------------------------------------------------------- #
+            raise DocumentDeleteError(f"Error deleting documents from collection '{collection}': {err}") from err
 
 # ---------------------------------------------- CmdbLocation - SECTION ---------------------------------------------- #
 
-    def get_root_location_data(self) -> dict:
+    #TODO: REFACTOR-FIX (Move to seperate file)
+    def set_root_location(self, collection: str, create: bool = False) -> UpdateResult:
         """
-        This class holds the correct root location data
-        
-        Returns:
-            (dict): Returns valid root location data
-        """
-        return {
-            "public_id":1,
-            "name":"Root",
-            "parent":0,
-            "object_id":0,
-            "type_id":0,
-            "type_label":"Root",
-            "type_icon":"fas fa-globe",
-            "type_selectable":True
-        }
-
-
-    def validate_root_location(self, tested_location: dict) -> bool:
-        """
-        Checks if a given location holds valid root location data
+        Set up the root location. If no counter for locations exists, it will be created
 
         Args:
-            tested_location (dict): location data which should be tested
-
-        Returns:
-            (bool): Returns boolean if the given dict has valid root location data
-        """
-        root_location = self.get_root_location_data()
-
-        for root_key, root_value in root_location.items():
-            if root_key not in tested_location.keys():
-                return False
-
-            # check if value is valid
-            if root_value != tested_location[root_key]:
-                return False
-
-        return True
-
-
-    def set_root_location(self, collection: str, create: bool = False):
-        """
-        Does the setup for root location. If no counter for locations exist, it will be created
-
-        Args:
-            collection (str): framework.locations
+            collection (str): The framework.locations collection
             create (bool): If true the root location will be created, else it will be updated
 
+        Raises:
+            DocumentUpdateError: If there is an error during the root location setup, including issues with the
+                                 database operation or creation of the public ID counter
+            
         Returns:
             status: status of location creation or update
         """
-        status:int = 0
+        try:
+            # If creation is requested, ensure the counter exists
+            if create:
+                # Check if the counter exists, if not initialize it
+                if not self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection}):
+                    self.__init_public_id_counter(collection)
 
-        if create:
-            ## check if counter is created in db, else create one
-            try:
-                counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
-            except GetCollectionError:
-                self.__init_public_id_counter(collection)
+                # Insert root location data
+                status = self.insert(collection, get_root_location_data())
 
-            status = self.insert(collection, self.get_root_location_data())
-        else:
-            status = self.update(collection,{'public_id':1},self.get_root_location_data())
+            else:
+                # Update the root location data
+                status = self.update(collection, {'public_id': 1}, get_root_location_data())
 
-        return status
+            return status
+
+        except Exception as err:
+            raise DocumentUpdateError(f"Error setting up root location for collection '{collection}': {err}") from err
 
 # ------------------------------------------- CmdbSectionTemplate - Section ------------------------------------------ #
 
-    def init_predefined_templates(self, collection: str):
+    #TODO: REFACTOR-FIX (Move to seperate file)
+    def init_predefined_templates(self, collection: str) -> None:
         """
-        Checks if all predefined templates are created, else create them
+        Checks if all predefined templates are created, else creates them.
+
+        Args:
+            collection (str): The name of the collection where templates are stored
+
+        Raises:
+            DocumentInsertError: If there is an error inserting predefined templates into the collection
+            DocumentGetError: If there is an error fetching data from the collection, such as when checking
+                              for existing templates or counters
         """
-        ## check if counter is created in db, else create one
-        counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
+        try:
+            counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
 
-        if not counter:
-            self.__init_public_id_counter(collection)
+            if not counter:
+                self.__init_public_id_counter(collection)
 
-        predefined_template_creator = SectionTemplateCreator()
-        predefined_templates: list[dict] = predefined_template_creator.get_predefined_templates()
+            predefined_template_creator = SectionTemplateCreator()
+            predefined_templates: list[dict] = predefined_template_creator.get_predefined_templates()
 
-        for predefined_template in predefined_templates:
-            # First check if template already exists
-            template_name = predefined_template['name']
+            for predefined_template in predefined_templates:
+                # First, check if the template already exists
+                template_name = predefined_template['name']
+                result = self.get_collection(collection).find_one({'name': template_name})
 
-            result = self.get_collection(collection).find_one(filter={'name':template_name})
+                if not result:
+                    # The template does not exist, create it
+                    LOGGER.info("Creating Template: %s", template_name)
+                    self.insert(collection, predefined_template)
+        except DocumentGetError as err:
+            raise DocumentGetError(
+                f"Error retrieving templates or counter for collection '{collection}': {err}"
+            ) from err
+        except Exception as err:
+            raise DocumentInsertError(
+                f"Error initializing predefined templates for collection '{collection}': {err}"
+            ) from err
+
+# ----------------------------------------------- CmdbReport - Section ----------------------------------------------- #
+
+    #TODO: REFACTOR-FIX (Move to seperate file)
+    def create_general_report_category(self, collection: str) -> None:
+        """
+        Creates the General Report Category if it does not already exist
+
+        Args:
+            collection (str): The name of the collection where the general report category is stored
+
+        Raises:
+            DocumentGetError: If there is an error fetching the counter or the report category
+            DocumentInsertError: If there is an error inserting the general report category into the collection
+        """
+        try:
+            counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
+
+            if not counter:
+                self.__init_public_id_counter(collection)
+
+            result = self.get_collection(collection).find_one({'name': 'General'})
 
             if not result:
-                # The template does not exist, create it
-                LOGGER.info("Creating Template: %s", {template_name})
-                self.insert(collection, predefined_template)
+                # The category does not exist, create it
+                LOGGER.info("Creating 'General' Report Category")
 
+                general_category = {
+                    'name': 'General',
+                    'predefined': True,
+                }
 
-    def create_general_report_category(self, collection: str):
-        """
-        Creates the General Report Category
-        """
-        ## check if counter is created in db, else create one
-        counter = self.get_collection(PublicIDCounter.COLLECTION).find_one(filter={'_id': collection})
-
-        if not counter:
-            self.__init_public_id_counter(collection)
-
-        result = self.get_collection(collection).find_one(filter={'name': 'General'})
-
-        if not result:
-            # The template does not exist, create it
-            LOGGER.info("Creating 'General' Report Category")
-
-            general_category = {
-                'name': 'General',
-                'predefined': True,
-            }
-
-            self.insert(collection, general_category)
+                self.insert(collection, general_category)
+        except DocumentGetError as err:
+            LOGGER.error("[create_general_report_category] Error fetching document. Error: %s", err)
+            raise DocumentGetError(
+                f"Error retrieving counter or report category for collection '{collection}': {err}"
+            ) from err
+        except DocumentInsertError as err:
+            LOGGER.error("[create_general_report_category] Error inserting report category. Error: %s", err)
+            raise DocumentInsertError(
+                f"Error creating 'General' report category for collection '{collection}': {err}"
+            ) from err
+        except Exception as err:
+            LOGGER.error("[create_general_report_category] Unexpected error. Error: %s", err)
+            raise DocumentInsertError(
+                f"Unexpected error while creating 'General' report category for collection '{collection}': {err}"
+            ) from err
