@@ -27,8 +27,8 @@ from cmdb.models.user_model import CmdbUser
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (
-    ManagerDeleteError,
-    ManagerGetError,
+    BaseManagerDeleteError,
+    BaseManagerGetError,
 )
 from cmdb.errors.manager.users_manager import (
     UsersManagerGetError,
@@ -102,7 +102,7 @@ class UsersManager(BaseManager):
         """
         try:
             requested_user = self.get_one(public_id)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise UsersManagerGetError(err) from err
 
         #TODO: ERROR-FIX (try catch block)
@@ -236,7 +236,7 @@ class UsersManager(BaseManager):
             if not self.delete({'public_id': public_id}):
                 raise UsersManagerGetError(f"No user matched the public_id: {public_id}")
 
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise UsersManagerDeleteError(f"Could not delete user with ID: {public_id}") from err
 
         return user

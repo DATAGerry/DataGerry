@@ -28,9 +28,9 @@ from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerIterationError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -69,7 +69,7 @@ class LocationsManager(BaseManager):
         try:
             ack = self.insert(data)
         except Exception as err:
-            raise ManagerInsertError(err) from err
+            raise BaseManagerInsertError(err) from err
 
         return ack
 
@@ -87,7 +87,7 @@ class LocationsManager(BaseManager):
             iteration_result: IterationResult[CmdbLocation] = IterationResult(aggregation_result, total)
             iteration_result.convert_to(CmdbLocation)
         except Exception as err:
-            raise ManagerIterationError(err) from err
+            raise BaseManagerIterationError(err) from err
 
         return iteration_result
 
@@ -109,7 +109,7 @@ class LocationsManager(BaseManager):
                 resource = CmdbLocation(**location)
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(str(err)) from err
+            raise BaseManagerGetError(err) from err
 
         return resource
 
@@ -122,7 +122,7 @@ class LocationsManager(BaseManager):
             object_id (int): public_id of the object
 
         Raises:
-            ManagerGetError: When location could not be retrieved
+            BaseManagerGetError: When location could not be retrieved
 
         Returns:
             CmdbLocation: The requested location
@@ -134,7 +134,7 @@ class LocationsManager(BaseManager):
                 location = CmdbLocation(**location)
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(str(err)) from err
+            raise BaseManagerGetError(err) from err
 
         if not location:
             location = []
@@ -157,7 +157,7 @@ class LocationsManager(BaseManager):
                 locations_list.append(CmdbLocation(**location))
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(str(err)) from err
+            raise BaseManagerGetError(err) from err
 
         return locations_list
 

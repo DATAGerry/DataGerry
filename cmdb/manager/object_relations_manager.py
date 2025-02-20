@@ -28,10 +28,10 @@ from cmdb.models.object_relation_model import CmdbObjectRelation
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerUpdateError,
-    ManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
 )
 from cmdb.errors.manager.object_relations_manager import (
     ObjectRelationsManagerInsertError,
@@ -86,7 +86,7 @@ class ObjectRelationsManager(BaseManager):
 
         try:
             return self.insert(object_relation)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             raise ObjectRelationsManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -106,7 +106,7 @@ class ObjectRelationsManager(BaseManager):
         """
         try:
             return self.get_one(public_id)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise ObjectRelationsManagerGetError(err) from err
 
 
@@ -149,7 +149,7 @@ class ObjectRelationsManager(BaseManager):
         """
         try:
             self.update({'public_id':public_id}, CmdbObjectRelation.to_json(data))
-        except ManagerUpdateError as err:
+        except BaseManagerUpdateError as err:
             raise ObjectRelationsManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -169,5 +169,5 @@ class ObjectRelationsManager(BaseManager):
         """
         try:
             return self.delete({'public_id':public_id})
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise ObjectRelationsManagerDeleteError(err) from err

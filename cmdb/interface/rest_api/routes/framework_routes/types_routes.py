@@ -48,10 +48,10 @@ from cmdb.interface.rest_api.responses import (
 )
 
 from cmdb.errors.manager import (
-    ManagerGetError,
-    ManagerInsertError,
-    ManagerUpdateError,
-    ManagerIterationError,
+    BaseManagerGetError,
+    BaseManagerInsertError,
+    BaseManagerUpdateError,
+    BaseManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -73,10 +73,6 @@ def insert_type(data: dict, request_user: CmdbUser):
     Args:
         data (CmdbType.SCHEMA): Insert data of a new type
 
-    Raises:
-        ManagerGetError: If the inserted resource could not be found after inserting
-        ManagerInsertError: If something went wrong during insertion
-
     Returns:
         InsertSingleResponse: Insert response with the new type and its public_id
     """
@@ -88,7 +84,7 @@ def insert_type(data: dict, request_user: CmdbUser):
     if possible_id:
         try:
             types_manager.get_type(possible_id)
-        except ManagerGetError:
+        except BaseManagerGetError:
             pass
         else:
             return abort(400, f'Type with PublicID {possible_id} already exists.')
@@ -96,11 +92,11 @@ def insert_type(data: dict, request_user: CmdbUser):
     try:
         result_id = types_manager.insert_type(data)
         raw_doc = types_manager.get_type(result_id)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404, "Can not retrieve the created Type from the database!")
-    except ManagerInsertError as err:
-        LOGGER.error("[insert_type] ManagerInsertError: %s", err.message)
+    except BaseManagerInsertError as err:
+        LOGGER.error("[insert_type] %s", err)
         return abort(400, "The Type could not be inserted!")
 
     api_response = InsertSingleResponse(result_id=result_id, raw=CmdbType.to_json(raw_doc))
@@ -128,8 +124,6 @@ def get_types(params: TypeIterationParameters, request_user: CmdbUser):
         You can pass any parameter based on the CollectionParameters.
         Optional parameters are passed over the function declaration.
 
-    Raises:
-        ManagerGetError: If the collection could not be found.
     """
     types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
@@ -156,10 +150,10 @@ def get_types(params: TypeIterationParameters, request_user: CmdbUser):
                                         params=params,
                                         url=request.url,
                                         body=request.method == 'HEAD')
-    except ManagerIterationError:
+    except BaseManagerIterationError:
         #TODO: ERROR-FIX
         return abort(400)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
 
@@ -177,9 +171,6 @@ def get_type(public_id: int, request_user: CmdbUser):
     Args:
         public_id (int): Public ID of the type.
 
-    Raises:
-        ManagerGetError: When the selected type does not exists.
-
     Returns:
         GetSingleResponse: Which includes the json data of a CmdbType.
     """
@@ -187,7 +178,7 @@ def get_type(public_id: int, request_user: CmdbUser):
 
     try:
         type_ = types_manager.get_type(public_id)
-    except ManagerGetError:
+    except BaseManagerGetError:
         return abort(404)
     api_response = GetSingleResponse(CmdbType.to_json(type_), body=request.method == 'HEAD')
 
@@ -209,7 +200,7 @@ def count_objects_of_type(public_id: int, request_user: CmdbUser):
     try:
         objects_count = objects_manager.count_objects({'type_id':public_id})
         api_response = DefaultResponse(objects_count)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
     except Exception:
@@ -233,10 +224,6 @@ def update_type(public_id: int, data: dict, request_user: CmdbUser):
         public_id (int): Public ID of the updatable type
         data (CmdbType.SCHEMA): New type data to update
 
-    Raises:
-        ManagerGetError: When the type with the `public_id` was not found.
-        ManagerUpdateError: When something went wrong during the update.
-
     Returns:
         UpdateSingleResponse: With update result of the new updated type.
     """
@@ -252,12 +239,12 @@ def update_type(public_id: int, data: dict, request_user: CmdbUser):
 
         types_manager.update_type(public_id, CmdbType.to_json(type_))
         api_response = UpdateSingleResponse(result=data)
-    except ManagerGetError as err:
-        LOGGER.error("[update_type] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.error("[update_type] %s", err)
         #TODO: ERROR-FIX
         return abort(404, "Could not retrieve the Type which should be updated!")
-    except ManagerUpdateError as err:
-        LOGGER.error("[update_type] ManagerUpdateError: %s", err.message)
+    except BaseManagerUpdateError as err:
+        LOGGER.error("[update_type] %s", err)
         return abort(400, f"Type with public_id: {public_id} could not be updated!")
     except Exception as err:
         LOGGER.error("[update_type] Update Type Exception: %s", err)
@@ -305,11 +292,10 @@ def delete_type(public_id: int, request_user: CmdbUser):
 
     Args:
         public_id (int): Public ID of the deletable type
-    Raises:
-        ManagerGetError: When the type with the `public_id` was not found.
-        ManagerDeleteError: When something went wrong during the deletion.
+
     Notes:
         Deleting the type will also delete all objects in this type!
+
     Returns:
         DeleteSingleResponse: Delete result with the deleted type as data.
     """
@@ -333,9 +319,9 @@ def delete_type(public_id: int, request_user: CmdbUser):
         deleted_type = types_manager.delete_type(public_id)
 
         api_response = DeleteSingleResponse(raw=CmdbType.to_json(deleted_type))
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[delete_type] ManagerGetError: %s", err.message)
+        LOGGER.error("[delete_type] %s", err)
         return abort(404)
     except Exception as err:
         #TODO: ERROR-FIX

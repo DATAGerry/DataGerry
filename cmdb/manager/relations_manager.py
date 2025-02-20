@@ -28,10 +28,10 @@ from cmdb.models.relation_model import CmdbRelation
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerUpdateError,
-    ManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
 )
 from cmdb.errors.manager.relations_manager import (
     RelationsManagerInsertError,
@@ -86,7 +86,7 @@ class RelationsManager(BaseManager):
 
         try:
             return self.insert(relation)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             raise RelationsManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -106,7 +106,7 @@ class RelationsManager(BaseManager):
         """
         try:
             return self.get_one(public_id)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise RelationsManagerGetError(err) from err
 
 
@@ -149,7 +149,7 @@ class RelationsManager(BaseManager):
         """
         try:
             self.update({'public_id':public_id}, CmdbRelation.to_json(data))
-        except ManagerUpdateError as err:
+        except BaseManagerUpdateError as err:
             raise RelationsManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -169,5 +169,5 @@ class RelationsManager(BaseManager):
         """
         try:
             return self.delete({'public_id':public_id})
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise RelationsManagerDeleteError(err) from err

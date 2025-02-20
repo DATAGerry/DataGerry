@@ -24,7 +24,7 @@ from cmdb.manager.base_manager import BaseManager
 from cmdb.models.settings_model.user_setting import UserSettingModel
 from cmdb.models.settings_model.user_setting_type_enum import UserSettingType
 
-from cmdb.errors.manager import ManagerDeleteError, ManagerGetError
+from cmdb.errors.manager import BaseManagerDeleteError, BaseManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ class UsersSettingsManager(BaseManager):
         for resource_result in result.limit(-1):
             return UserSettingModel.from_data(resource_result)
 
-        raise ManagerGetError(f'No setting with the name: {resource} was found!')
+        raise BaseManagerGetError(f'No setting with the name: {resource} was found!')
 
 
 
@@ -140,6 +140,6 @@ class UsersSettingsManager(BaseManager):
         delete_result = self.delete(criteria={'user_id': user_id, 'resource': resource})
 
         if not delete_result:
-            raise ManagerDeleteError('No user matched this public id')
+            raise BaseManagerDeleteError('No user matched this public id')
 
         return setting

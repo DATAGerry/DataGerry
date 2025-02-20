@@ -145,13 +145,13 @@ def post_login():
         LOGGER.error("[post_login] NoAccessTokenError: %s", err)
         return abort(500, "No access token found!")
     except InvalidCloudUserError as err:
-        LOGGER.error("[post_login] InvalidCloudUserError: %s", err)
+        LOGGER.error("[post_login] %s", err)
         return abort(403, "Invalid credentials!")
     except RequestTimeoutError as err:
         LOGGER.error("[post_login] RequestTimeoutError: %s", err)
         return abort(500, "Login request timed out!")
     except RequestError as err:
-        LOGGER.error("[post_login] RequestError: %s", err)
+        LOGGER.error("[post_login] %s", err)
         return abort(500, "Login failed due a malformed request!")
     except UsersManagerGetError as err:
         LOGGER.error("[post_login] UsersManagerGetError: %s", err)
@@ -278,7 +278,7 @@ def update_auth_settings(request_user: CmdbUser):
     try:
         new_auth_setting_instance = AuthSettingsDAO(**new_auth_settings_values)
     except AuthSettingsInitError as err:
-        LOGGER.debug("[update_auth_settings] Error: %s", str(err))
+        LOGGER.debug("[update_auth_settings] Error: %s", err)
         return abort(500, "Could not initialise auth settings!")
 
     update_result = settings_writer.write(_id='auth', data=new_auth_setting_instance.__dict__)

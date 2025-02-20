@@ -49,7 +49,6 @@ from cmdb.models.user_management_constants import (
 )
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
-from cmdb.errors.manager import ManagerGetError
 from cmdb.errors.security import (
     TokenValidationError,
     InvalidCloudUserError,
@@ -87,7 +86,7 @@ def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
     try:
         decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
     except TokenValidationError as err:
-        LOGGER.debug("[user_has_right] Error: %s", str(err))
+        LOGGER.debug("[user_has_right] Error: %s", err)
         return abort(401, "Invalid token!")
 
     try:
@@ -107,7 +106,7 @@ def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
 
         return right_status
 
-    except ManagerGetError:
+    except Exception:
         return False
 
 
@@ -473,15 +472,15 @@ def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None
         return user_data
 
     except NoAccessTokenError as err:
-        raise NoAccessTokenError() from err
+        raise NoAccessTokenError(err) from err
     except InvalidCloudUserError as err:
-        raise InvalidCloudUserError(err.message) from err
+        raise InvalidCloudUserError(err) from err
     except RequestTimeoutError as err:
-        raise RequestTimeoutError() from err
+        raise RequestTimeoutError(err) from err
     except RequestError as err:
-        raise RequestError(err.message) from err
+        raise RequestError(err) from err
     except Exception as err:
-        raise Exception() from err
+        raise Exception(err) from err
 
 
 def check_db_exists(db_name: dict):
@@ -606,7 +605,7 @@ def validate_subscrption_user(email: str, password: str, x_api_key: str = None) 
     x_access_token = os.getenv("X-ACCESS-TOKEN")
 
     if not x_access_token:
-        raise NoAccessTokenError()
+        raise NoAccessTokenError("No x-access-token provided!")
 
     headers = {
         "x-access-token": x_access_token
@@ -632,9 +631,9 @@ def validate_subscrption_user(email: str, password: str, x_api_key: str = None) 
 
         raise InvalidCloudUserError(response.json()['message'])
     except requests.exceptions.Timeout as err:
-        raise RequestTimeoutError() from err
+        raise RequestTimeoutError(err) from err
     except requests.exceptions.RequestException as err:
-        raise RequestError(str(err)) from err
+        raise RequestError(err) from err
 
 
 def sync_config_items(email: str, database: str, config_item_count: int) -> bool:
@@ -648,7 +647,7 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
     x_access_token = os.getenv("X-ACCESS-TOKEN")
 
     if not x_access_token:
-        raise NoAccessTokenError()
+        raise NoAccessTokenError("No x-access-token provided!")
 
     headers = {
         "x-access-token": x_access_token

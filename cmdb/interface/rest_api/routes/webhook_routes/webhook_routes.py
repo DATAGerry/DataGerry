@@ -33,11 +33,11 @@ from cmdb.interface.rest_api.responses.response_parameters.collection_parameters
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerIterationError,
-    ManagerUpdateError,
-    ManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerIterationError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
 )
 from cmdb.errors.database import NoDocumentFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -69,9 +69,9 @@ def create_webhook(params: dict, request_user: CmdbUser):
         params['active'] = params['active'] in ["True", "true"]
 
         new_webhook_id = webhooks_manager.insert_webhook(params)
-    except ManagerInsertError as err:
+    except BaseManagerInsertError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[create_webhook] ManagerInsertError: %s", err.message)
+        LOGGER.debug("[create_webhook] %s", err)
         return abort(400, "Could not create the Webhook!")
     except Exception as err:
         LOGGER.debug("[create_webhook] Exception: %s, Type: %s", err, type(err))
@@ -97,9 +97,9 @@ def get_webhook(public_id: int, request_user: CmdbUser):
 
     try:
         requested_webhook = webhooks_manager.get_webhook(public_id)
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_webhook] ManagerGetError: %s", err.message)
+        LOGGER.debug("[get_webhook] %s", err)
         return abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
 
     api_response = DefaultResponse(requested_webhook)
@@ -133,9 +133,9 @@ def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except ManagerIterationError as err:
+    except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_webhooks] ManagerIterationError: %s", err.message)
+        LOGGER.debug("[get_webhooks] %s", err)
         return abort(400, "Could not retrieve CmdbWebhooks!")
 
     return api_response.make_response()
@@ -171,13 +171,13 @@ def update_webhook(params: dict, request_user: CmdbUser):
         else:
             raise NoDocumentFoundError(webhooks_manager.collection)
 
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_webhook] ManagerGetError: %s", err.message)
+        LOGGER.debug("[update_webhook] %s", err)
         return abort(400, f"Could not retrieve CmdbWebhook with ID: {params['public_id']}!")
-    except ManagerUpdateError as err:
+    except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_webhook] ManagerUpdateError: %s", err.message)
+        LOGGER.debug("[update_webhook] %s", err)
         return abort(400, f"Could not update CmdbWebhook with ID: {params['public_id']}!")
     except NoDocumentFoundError:
         return abort(404, "Webhook not found!")
@@ -212,13 +212,13 @@ def delete_webhook(public_id: int, request_user: CmdbUser):
 
         #TODO: REFACTOR-FIX
         ack: bool = webhooks_manager.delete({'public_id':public_id})
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_webhook] ManagerGetError: %s", err.message)
+        LOGGER.debug("[delete_webhook] %s", err)
         return abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
-    except ManagerDeleteError as err:
+    except BaseManagerDeleteError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_webhook] ManagerDeleteError: %s", err)
+        LOGGER.debug("[delete_webhook] %s", err)
         return abort(400, f"Could not delete Webhook with ID: {public_id}!")
 
     api_response = DefaultResponse(ack)

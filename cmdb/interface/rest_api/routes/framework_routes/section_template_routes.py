@@ -35,13 +35,13 @@ from cmdb.interface.rest_api.responses import UpdateSingleResponse, GetMultiResp
 
 from cmdb.errors.database import NoDocumentFoundError
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerIterationError,
-    ManagerGetError,
-    ManagerUpdateError,
-    ManagerDeleteError,
-    DisallowedActionError,
+    BaseManagerInsertError,
+    BaseManagerIterationError,
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
 )
+from cmdb.errors.security import DisallowedActionError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -75,9 +75,9 @@ def create_section_template(params: dict, request_user: CmdbUser):
         params['type'] = 'section'
 
         created_section_template_id = template_manager.insert_section_template(params)
-    except ManagerInsertError as err:
+    except BaseManagerInsertError as err:
         # TODO: ERROR-FIX
-        LOGGER.debug("[create_section_template] ManagerInsertError: %s", err.message)
+        LOGGER.debug("[create_section_template] %s", err)
         return abort(400, "Could not create the section template!")
         # TODO: ERROR-FIX
     except Exception as err:
@@ -117,9 +117,9 @@ def get_all_section_templates(params: CollectionParameters, request_user: CmdbUs
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except ManagerIterationError as err:
+    except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_all_section_templates] ManagerIterationError: %s", err.message)
+        LOGGER.debug("[get_all_section_templates] %s", err)
         return abort(400, "Could not retrieve SectionTemplates!")
     except Exception as err:
         LOGGER.error("[get_all_section_templates] Exception: %s. Type: %s", err, type(err))
@@ -145,8 +145,8 @@ def get_section_template(public_id: int, request_user: CmdbUser):
 
     try:
         section_template_instance = template_manager.get_section_template(public_id)
-    except ManagerGetError as err:
-        LOGGER.debug("[get_section_template] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.debug("[get_section_template] %s", err)
         return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
 
     if not section_template_instance:
@@ -177,9 +177,9 @@ def get_global_section_template_count(public_id: int, request_user: CmdbUser):
         instance: CmdbSectionTemplate = template_manager.get_section_template(public_id)
         counts: dict = template_manager.get_global_template_usage_count(instance.name, instance.is_global)
 
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_section_template] ManagerGetError: %s", err.message)
+        LOGGER.debug("[get_section_template] %s", err)
         return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
     except Exception as err:
         LOGGER.debug("[get_section_template] Exception: %s", err)
@@ -225,13 +225,13 @@ def update_section_template(params: dict, request_user: CmdbUser):
         else:
             raise NoDocumentFoundError(template_manager.collection)
 
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_section_template] ManagerGetError: %s", err.message)
+        LOGGER.debug("[get_section_template] %s", err)
         return abort(404, f"Could not retrieve SectionTemplate with ID: {params['public_id']}!")
-    except ManagerUpdateError as err:
+    except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_section_template] ManagerUpdateError: %s", err.message)
+        LOGGER.debug("[update_section_template] %s", err)
         return abort(400, f"Could not update SectionTemplate with ID: {params['public_id']}!")
     except NoDocumentFoundError:
         return abort(404, "Section template not found!")
@@ -268,13 +268,13 @@ def delete_section_template(public_id: int, request_user: CmdbUser):
         #TODO: REFACTOR-FIX
         ack: bool = template_manager.delete({'public_id':public_id})
 
-    except ManagerGetError as err:
-        LOGGER.debug("[delete_section_template] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.debug("[delete_section_template] %s", err)
         return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
     except DisallowedActionError:
         return abort(400, f"Disallowed action for section template with ID: {public_id}")
-    except ManagerDeleteError as err:
-        LOGGER.debug("[delete_section_template] ManagerDeleteError: %s", err)
+    except BaseManagerDeleteError as err:
+        LOGGER.debug("[delete_section_template] %s", err)
         return abort(400, f"Could not delete SectionTemplate with public_id: {public_id}!")
     except Exception as err:
         LOGGER.error("[delete_section_template] Exception: %s, Type: %s", err, type(err))

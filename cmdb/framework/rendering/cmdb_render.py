@@ -37,7 +37,7 @@ from cmdb.models.type_model import (
 )
 from cmdb.models.user_model import CmdbUser
 
-from cmdb.errors.manager import ManagerGetError
+from cmdb.errors.manager import BaseManagerGetError
 from cmdb.errors.manager.objects_manager import ObjectManagerGetError
 from cmdb.errors.manager.users_manager import UsersManagerGetError
 from cmdb.errors.type import TypeReferenceLineFillError, FieldNotFoundError, FieldInitError
@@ -341,7 +341,7 @@ class CmdbRender:
                         'type_icon': ref_type.get_icon(),
                         'fields': []
                     }
-                except (ManagerGetError, Exception) as err:
+                except (BaseManagerGetError, Exception) as err:
                     #TODO: ERROR-FIX
                     LOGGER.debug("%s",str(err))
                     continue
@@ -409,7 +409,7 @@ class CmdbRender:
                                                              AccessControlPermission.READ)
             except AccessDeniedError as err:
                 #TODO: ERROR-FIX
-                return err.message
+                return err
             except ObjectManagerGetError:
                 return TypeReference.to_json(reference)
 

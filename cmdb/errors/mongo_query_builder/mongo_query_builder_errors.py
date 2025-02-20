@@ -20,11 +20,13 @@ Contains MongoDBQueryBuilder Error Classes
 
 class MongoDBQueryBuilderError(Exception):
     """
-    Base Database Error
+    Raised to catch all MongoDBQueryBuilder related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all MongoDBQueryBuilder related errors
+        """
+        super().__init__(err)
 
 # ------------------------------------------- MongoDBQueryBuilder - ERRORS ------------------------------------------- #
 
@@ -32,42 +34,27 @@ class MongoQueryBuilderInitError(MongoDBQueryBuilderError):
     """
     Raised if MongoDBQueryBuilder could not be initialised
     """
-    def __init__(self, err: str):
-        self.message = f"Could not init MongoDBQueryBuilder. Error: {err}"
-        super().__init__(self.message)
 
 
 class MongoQueryBuilderInvalidOperatorError(MongoDBQueryBuilderError):
     """
     Raised if a condition has an unsupported operator
     """
-    def __init__(self, operator: str):
-        self.message = f"Invalid operator provided: {operator}"
-        super().__init__(self.message)
 
 
 class MongoQueryBuilderBuildRuleError(MongoDBQueryBuilderError):
     """
     Raised if a rule could not be build
     """
-    def __init__(self, err: str):
-        self.message = f"MongoQueryBuilderBuildRuleError: {err}"
-        super().__init__(self.message)
 
 
 class MongoQueryBuilderBuildRulesetError(MongoDBQueryBuilderError):
     """
     Raised if a ruleset could not be build
     """
-    def __init__(self, err: str):
-        self.message = f"MongoQueryBuilderBuildRulesetError: {err}"
-        super().__init__(self.message)
 
 
 class MongoQueryBuilderBuildError(MongoDBQueryBuilderError):
     """
     Raised if the build fails
     """
-    def __init__(self, err: str):
-        self.message = f"MongoQueryBuilderBuildError: {err}"
-        super().__init__(self.message)

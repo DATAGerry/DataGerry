@@ -17,6 +17,7 @@
 This package provides all errors for the MongoDBQueryBuilder
 """
 from .mongo_query_builder_errors import (
+    MongoDBQueryBuilderError,
     MongoQueryBuilderInitError,
     MongoQueryBuilderInvalidOperatorError,
     MongoQueryBuilderBuildRuleError,
@@ -26,6 +27,7 @@ from .mongo_query_builder_errors import (
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'MongoDBQueryBuilderError',
     'MongoQueryBuilderInitError',
     'MongoQueryBuilderInvalidOperatorError',
     'MongoQueryBuilderBuildRuleError',

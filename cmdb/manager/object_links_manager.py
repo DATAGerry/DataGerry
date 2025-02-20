@@ -31,7 +31,7 @@ from cmdb.models.object_model.cmdb_object import CmdbObject
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerDeleteError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerInsertError, BaseManagerDeleteError
 from cmdb.errors.manager.object_links_manager import (
     ObjectLinksManagerInsertError,
     ObjectLinksManagerGetError,
@@ -98,9 +98,9 @@ class ObjectLinksManager(BaseManager):
                 raise ObjectLinksManagerGetObjectError(f"Object with ID: {link['secondary']} not found!")
 
             new_link_public_id = self.insert(link)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             raise ObjectLinksManagerInsertError(err) from err
-        except (ManagerGetError, ObjectLinksManagerGetObjectError) as err:
+        except (BaseManagerGetError, ObjectLinksManagerGetObjectError) as err:
             raise ObjectLinksManagerGetObjectError(err) from err
 
         return new_link_public_id
@@ -157,8 +157,8 @@ class ObjectLinksManager(BaseManager):
 
             #TODO: EXCEPTION-FIX (Catch CmdbObjectLink exception)
             link = CmdbObjectLink.from_data(link_instance)
-        except ManagerGetError as err:
-            LOGGER.debug("[get_link] %s", err.message)
+        except BaseManagerGetError as err:
+            LOGGER.debug("[get_link] %s", err)
             raise ObjectLinksManagerGetError(f'CmdbObjectLink with ID: {public_id} not found!') from err
 
         return link
@@ -178,7 +178,7 @@ class ObjectLinksManager(BaseManager):
             link_instance = self.get_one_by(criteria)
 
             return bool(link_instance)
-        except ManagerGetError:
+        except BaseManagerGetError:
             return False
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -201,9 +201,9 @@ class ObjectLinksManager(BaseManager):
             link: dict = self.get_one(public_id)
 
             self.delete({'public_id':public_id})
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise ObjectLinksManagerGetError(err) from err
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise ObjectLinksManagerDeleteError(err) from err
 
         return link

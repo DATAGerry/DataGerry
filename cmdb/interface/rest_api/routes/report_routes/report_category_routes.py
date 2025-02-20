@@ -32,15 +32,15 @@ from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerIterationError,
-    ManagerGetError,
-    ManagerUpdateError,
-    ManagerDeleteError,
-    DisallowedActionError,
-)
 from cmdb.errors.database import NoDocumentFoundError
+from cmdb.errors.security import DisallowedActionError
+from cmdb.errors.manager import (
+    BaseManagerInsertError,
+    BaseManagerIterationError,
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -72,9 +72,9 @@ def create_report_category(params: dict, request_user: CmdbUser):
         params['predefined'] = False
 
         new_report_category_id = report_categories_manager.insert_report_category(params)
-    except ManagerInsertError as err:
+    except BaseManagerInsertError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[create_report_category] ManagerInsertError: %s", err.message)
+        LOGGER.debug("[create_report_category] %s", err)
         return abort(400, "Could not create the report category!")
 
     api_response = DefaultResponse(new_report_category_id)
@@ -100,9 +100,9 @@ def get_report_category(public_id: int, request_user: CmdbUser):
 
     try:
         report_category = report_categories_manager.get_report_category(public_id)
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_report_category] ManagerGetError: %s", err.message)
+        LOGGER.debug("[get_report_category] %s", err)
         return abort(400, f"Could not retrieve CmdbReportCategory with ID: {public_id}!")
 
 
@@ -139,9 +139,9 @@ def get_report_categories(params: CollectionParameters, request_user: CmdbUser):
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except ManagerIterationError as err:
+    except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_report_categories] ManagerIterationError: %s", err.message)
+        LOGGER.debug("[get_report_categories] %s", err)
         return abort(400, "Could not retrieve CmdbReportCategories!")
 
     return api_response.make_response()
@@ -177,13 +177,13 @@ def update_report_category(params: dict, request_user: CmdbUser):
         else:
             raise NoDocumentFoundError(report_categories_manager.collection)
 
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_report_category] ManagerGetError: %s", err.message)
+        LOGGER.debug("[update_report_category] %s", err)
         return abort(400, f"Could not retrieve CmdbReportCategory with ID: {params['public_id']}!")
-    except ManagerUpdateError as err:
+    except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_report_category] ManagerUpdateError: %s", err.message)
+        LOGGER.debug("[update_report_category] %s", err)
         return abort(400, f"Could not update CmdbReportCategory with ID: {params['public_id']}!")
     except NoDocumentFoundError:
         return abort(404, "Report Category not found!")
@@ -225,15 +225,15 @@ def delete_report_category(public_id: int, request_user: CmdbUser):
 
         #TODO: REFACTOR-FIX
         ack: bool = report_categories_manager.delete({'public_id':public_id})
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_report_category] ManagerGetError: %s", err.message)
+        LOGGER.debug("[delete_report_category] %s", err)
         return abort(400, f"Could not retrieve ReportCategory with ID: {public_id}!")
     except DisallowedActionError:
         return abort(405, f"Unable to delete predefined CmdbReportCategory with ID: {public_id}!")
-    except ManagerDeleteError as err:
+    except BaseManagerDeleteError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_report_category] ManagerDeleteError: %s", err)
+        LOGGER.debug("[delete_report_category] %s", err)
         return abort(400, f"Could not delete ReportCategory with ID: {public_id}!")
 
     api_response = DefaultResponse(ack)

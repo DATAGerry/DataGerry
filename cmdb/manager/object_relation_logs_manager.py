@@ -29,10 +29,10 @@ from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerIterationError,
-    ManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerIterationError,
+    BaseManagerDeleteError,
 )
 from cmdb.errors.manager.object_relation_logs_manager import (
     ObjectRelationLogsManagerInsertError,
@@ -82,7 +82,7 @@ class ObjectRelationLogsManager(BaseManager):
         """
         try:
             return self.insert(object_relation_log)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             raise ObjectRelationLogsManagerInsertError(err) from err
 
 
@@ -103,7 +103,7 @@ class ObjectRelationLogsManager(BaseManager):
         """
         try:
             return self.get_one(public_id)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise ObjectRelationLogsManagerGetError(err) from err
 
 
@@ -134,7 +134,7 @@ class ObjectRelationLogsManager(BaseManager):
             iteration_result.convert_to(CmdbObjectRelationLog)
 
             return iteration_result
-        except ManagerIterationError as err:
+        except BaseManagerIterationError as err:
             raise ObjectRelationLogsManagerIterationError(err) from err
         except Exception as err:
             # TODO: ERROR-FIX (catch IterationResult exceptions)
@@ -158,5 +158,5 @@ class ObjectRelationLogsManager(BaseManager):
         """
         try:
             return self.delete({'public_id':public_id})
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise ObjectRelationLogsManagerDeleteError(err) from err

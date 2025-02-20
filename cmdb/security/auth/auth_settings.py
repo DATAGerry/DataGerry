@@ -51,7 +51,7 @@ class AuthSettingsDAO:
             self.token_lifetime = token_lifetime
             self.enable_external = enable_external
         except Exception as err:
-            raise AuthSettingsInitError(str(err)) from err
+            raise AuthSettingsInitError(err) from err
 
 
     def get_id(self) -> str:

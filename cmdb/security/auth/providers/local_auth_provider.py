@@ -27,7 +27,7 @@ from cmdb.security.auth.base_authentication_provider import BaseAuthenticationPr
 from cmdb.security.auth.providers.local_auth_config import LocalAuthenticationProviderConfig
 from cmdb.models.user_model import CmdbUser
 
-from cmdb.errors.manager import ManagerGetError
+from cmdb.errors.manager import BaseManagerGetError
 from cmdb.errors.provider import AuthenticationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -58,7 +58,7 @@ class LocalAuthenticationProvider(BaseAuthenticationProvider):
                 user = self.users_manager.get_user_by({'email': user_name})
             else:
                 user = self.users_manager.get_user_by({'user_name': user_name})
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise AuthenticationError(str(err)) from err
         login_pass = self.security_manager.generate_hmac(password)
 

@@ -17,7 +17,10 @@
 Implementation of the BaseManager for all Managers requiring a database connection
 """
 import logging
-from pymongo.results import DeleteResult
+from typing import Optional
+from pymongo.results import DeleteResult, UpdateResult
+from pymongo.cursor import Cursor
+from pymongo.command_cursor import CommandCursor
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BaseQueryBuilder, BuilderParameters
@@ -25,13 +28,20 @@ from cmdb.manager.query_builder import BaseQueryBuilder, BuilderParameters
 from cmdb.models.user_model import CmdbUser
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.database import DocumentGetError
+from cmdb.errors.database import (
+    DocumentInsertError,
+    DocumentGetError,
+    DocumentUpdateError,
+    DocumentDeleteError,
+    DocumentAggregationError,
+)
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerUpdateError,
-    ManagerDeleteError,
-    ManagerIterationError,
+    BaseManagerInitError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
+    BaseManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -41,12 +51,27 @@ LOGGER = logging.getLogger(__name__)
 #                                                  BaseManager - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseManager:
-    """This is the base class for every FrameworkManager"""
+    """
+    This is the base class for every FrameworkManager
+    """
 
     def __init__(self, collection: str, dbm: MongoDatabaseManager):
-        self.collection = collection
-        self.query_builder = BaseQueryBuilder()
-        self.dbm: MongoDatabaseManager = dbm
+        """
+        Initializes the class with a collection name and database manager
+
+        Args:
+            collection (str): Name of the MongoDB collection
+            dbm (MongoDatabaseManager): An instance of the database manager
+
+        Raises:
+            BaseManagerInitError: If the initialisation fails
+        """
+        try:
+            self.collection = collection
+            self.query_builder = BaseQueryBuilder()
+            self.dbm: MongoDatabaseManager = dbm
+        except Exception as err:
+            raise BaseManagerInitError(err) from err
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -62,20 +87,19 @@ class BaseManager:
         Insert document into database
 
         Args:
-            data (dict): Data which should be inserted
-            skip_public (bool): Skip the public id creation and counter increment
+            data (dict): The document data which should be inserted
+            skip_public (bool): If True, skips public ID creation and counter increment. Defaults to False.
 
         Raises:
-            ManagerInsertError: When the insertion failed
+            BaseManagerInsertError: When the insertion failed
 
         Returns:
-            int: New public_id of inserted document
-            None: If anything goes wrong
+            int: The newly assigned public_id of the inserted document
         """
         try:
             return self.dbm.insert(self.collection, data, skip_public)
-        except Exception as err:
-            raise ManagerInsertError(err) from err
+        except DocumentInsertError as err:
+            raise BaseManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -87,15 +111,15 @@ class BaseManager:
         Performs an aggregation on the database
 
         Args:
-            `builder_params` (BuilderParameters): Contains input to identify the target of action
-            `user` (CmdbUser, optional): User requesting this action
-            `permission` (AccessControlPermission, optional): Permission which should be checked for the user
+            builder_params (BuilderParameters): Parameters to define the query
+            user (CmdbUser, optional): The user making the request. Defaults to None
+            permission (AccessControlPermission, optional): Permission to check. Defaults to None
 
         Raises:
-            `ManagerIterationError`: Raised when something goes wrong during the aggregation
+            BaseManagerIterationError: If the aggregation process fails
 
         Returns:
-            `tuple[list, int]`: Result which matches the builder_params and the number of results
+            tuple[list, int]: A tuple containing the aggregation results and the total count
         """
         try:
             query: list[dict] = self.query_builder.build(builder_params, user, permission)
@@ -104,309 +128,369 @@ class BaseManager:
             aggregation_result = list(self.aggregate(query))
             total_cursor = self.aggregate(count_query)
 
-            total = 0
-            while total_cursor.alive:
-                total = next(total_cursor)['total']
+            total = next(total_cursor, {}).get('total', 0)
 
             return aggregation_result , total
         except Exception as err:
-            raise ManagerIterationError(err) from err
+            raise BaseManagerIterationError(err) from err
 
 
-    def get_one(self, *args, **kwargs):
+    def get_one(self, *args, **kwargs) -> Optional[dict]:
         """
-        Calls MongoDB find operation for a single document
+        Retrieves a single document from MongoDB
+
+        Args:
+            *args: Positional arguments for the 'find_one' query
+            **kwargs: Keyword arguments for the 'find_one' query
 
         Raises:
-            `ManagerGetError`: When the 'find_one' operation fails
+            BaseManagerGetError: If the document could not be retrieved
 
         Returns:
-            Cursor over the result set
+            Optional[dict]: The found document or None if no document matches the query
         """
         try:
             return self.dbm.find_one(self.collection, *args, **kwargs)
-        except Exception as err:
-            raise ManagerGetError(err) from err
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
 
 
-    def get_one_from_other_collection(self, collection: str, public_id: int):
+    def get_one_from_other_collection(self, collection: str, public_id: int) -> Optional[dict]:
         """
-        Calls MongoDB find operation for a single document from another collection
+        Retrieves a single document from another MongoDB collection
+
+        Args:
+            collection (str): The name of the collection to search in
+            public_id (int): The public ID of the document to retrieve
 
         Raises:
-            ManagerGetError: When the find_one operation fails
+            BaseManagerGetError: When the find_one operation fails
         
         Returns:
-            Cursor over the result set
+            Optional[dict]: The found document as a dictionary or None if no document matches the query
         """
         try:
             return self.dbm.find_one(collection, public_id)
         except DocumentGetError as err:
-            raise ManagerGetError(err) from err
+            raise BaseManagerGetError(err) from err
 
 
-    def get_many_from_other_collection(self,
-                                       collection: str,
-                                       sort: str = 'public_id',
-                                       direction: int = -1,
-                                       limit: int = 0,
-                                       **requirements: dict) -> list[dict]:
+    def get_many_from_other_collection(
+            self,
+            collection: str,
+            sort: str = 'public_id',
+            direction: int = -1,
+            limit: int = 0,
+            **requirements: dict) -> list[dict]:
         """
-        Get all documents from the database which have the passing requirements
+        Retrieves documents from a given collection that match the specified requirements
 
         Args:
-            collection (str): The target collection
-            sort (str): sort by given key - default public_id
-            direction (int): 1 = ascending, -1 = descending
-            limit (int): limit the amount of 
-            **requirements (dict): dictionary of key value pairs
+            collection (str): The name of the target collection
+            sort (str): Field to sort by (default: 'public_id')
+            direction (int): Sorting direction (1 for ascending, -1 for descending)
+            limit (int): umber of documents to retrieve (0 for no limit)
+            **requirements (dict): Key-value pairs for filtering the documents
 
         Raises:
-            ManagerGetError: When documents could not be retrieved
+            BaseManagerGetError: If an error occurs during the retrieval process
 
         Returns:
-            list: list of all retrieved documents
+            list[dict]: List of documents that match the filtering criteria
         """
         try:
-            requirements_filter = {}
+            requirements_filter = requirements if requirements else {}
             formatted_sort = [(sort, direction)]
-
-            for k, req in requirements.items():
-                requirements_filter.update({k: req})
 
             return self.dbm.find_all(collection=collection,
                                     limit=limit,
                                     filter=requirements_filter,
                                     sort=formatted_sort)
-        except Exception as err:
-            LOGGER.debug("[get_many_from_other_collection] Exception: %s. Type: %s", err, type(err))
-            raise ManagerGetError(str(err)) from err
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
 
 
-    def get(self, *args, **kwargs):
+    def get(self, *args, **kwargs) -> Cursor:
         """
-        General find function
+        General method to retrieve documents from the collection using MongoDB's 'find' operation
+
+        Args:
+            *args: Positional arguments for the 'find' query
+            **kwargs: Keyword arguments for the 'find' query
 
         Raises:
-            ManagerGetError: When something goes wrong while retrieving the documents
+            BaseManagerGetError: If an error occurs during the retrieval process
 
         Returns:
-            Cursor: Result of the 'find'-Operation as Cursor
+            Cursor: A cursor that points to the result set of the 'find' operation
         """
         try:
             return self.dbm.find(self.collection, *args, **kwargs)
-        except Exception as err:
-            LOGGER.debug("[get] Error: %s , Type: %s", err, type(err))
-            raise ManagerGetError(err) from err
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
 
 
-    def find_all(self, *args, **kwargs):
-        """calls find with all returns
+    def find_all(self, *args, **kwargs) -> list[dict]:
+        """
+        Retrieves all documents that match the given criteria using the 'find' method
 
         Args:
-            collection (str): name of database collection
-            *args: arguments for search operation
-            **kwargs: key arguments
-
-        Returns:
-            list: list of found documents
-        """
-        found_documents = self.find(collection=self.collection, *args, **kwargs)
-
-        return list(found_documents)
-
-
-    def find(self, *args, criteria=None, **kwargs):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        try:
-            return self.dbm.find(self.collection, filter=criteria, *args, **kwargs)
-        except Exception as err:
-            raise ManagerGetError(err) from err
-
-
-    def get_one_by(self, criteria: dict) -> dict:
-        """
-        Retrieves a single document defined by the given critera
+            *args: Positional arguments for the 'find' query
+            **kwargs: Keyword arguments for the 'find' query
 
         Raises:
-            ManagerGetError: When the 'find_one_by' operation fails
+            BaseManagerFindError: If an error occurs during the find operation
+
+        Returns:
+            list[dict]: A list of documents matching the search criteria
+        """
+        try:
+            found_documents = self.find(collection=self.collection, *args, **kwargs)
+
+            try:
+                return list(found_documents)
+            except Exception as err:
+                raise BaseManagerGetError(err) from err
+        except BaseManagerGetError as err:
+            raise err
+
+
+    def find(self, *args, criteria: Optional[dict] = None, **kwargs) -> Cursor:
+        """
+        Retrieves documents from the specified collection that match the given criteria.
+
         Args:
-            criteria (dict): Filter for the document
+            *args: Additional positional arguments for the 'find' operation
+            criteria Optional[dict]: The filter criteria for the find query. Defaults to Nones
+            **kwargs: Additional keyword arguments for the 'find' operation
+
+        Raises:
+            BaseManagerGetError: If an error occurs while retrieving documents from the collection
+
+        Returns:
+            Cursor: A cursor for the result set, allowing iteration over the documents that match the criteria
+        """
+        try:
+            if criteria is None:
+                criteria = {}
+
+            return self.dbm.find(self.collection, filter=criteria, *args, **kwargs)
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
+
+
+    def get_one_by(self, criteria: dict) -> Optional[dict]:
+        """
+        Retrieves a single document defined by the given criteria
+
+        Args:
+            criteria (dict): The filter for the document to be retrieved
+
+        Raises:
+            BaseManagerGetError: If an error occurs during the 'find_one_by' operation
+
+        Returns:
+            Optional[dict]: The found document, or None if no document matches the criteria
         """
         try:
             return self.dbm.find_one_by(self.collection, criteria)
         except DocumentGetError as err:
-            raise ManagerGetError(err) from err
+            raise BaseManagerGetError(err) from err
 
 
-    def get_many(self,
-                 sort: str = 'public_id',
-                 direction: int = -1,
-                 limit: int=0,
-                 **requirements: dict) -> list[dict]:
+    def get_many(
+            self,
+            sort: str = 'public_id',
+            direction: int = -1,
+            limit: int=0,
+            **requirements: dict) -> list[dict]:
         """
-        Get all documents from the database filtered by the requirements
+        Retrieves documents from the database filtered by the provided requirements
 
         Args:
-            `sort` (str): sort by given key  (Default 'public_id')
-            `direction` (int): Ascending = 1, Descending = -1 - (Default: -1)
-            `limit` (int): Limits the amount of results, 0 equals no limit (Default: 0)
-            `**requirements` (dict): dictionary of key value pairs as filter
+            sort (str): The field to sort the results by. Default is 'public_id'
+            direction (int): The sorting direction. 1 for ascending, -1 for descending. Default is -1
+            limit (int): The maximum number of documents to retrieve. 0 means no limit (default is 0)
+            **requirements (dict): Dictionary of key-value pairs used as filters for the query
 
         Raises:
-            `ManagerGetError` : When retrieving the documents fails
+            BaseManagerGetError: If the retrieval of documents fails
 
         Returns:
-            `list[dict]`: list of all documents
+            list[dict]: A list of documents that match the criteria
         """
         try:
-            requirements_filter = {}
+            requirements_filter = requirements if requirements else {}
             formatted_sort = [(sort, direction)]
-
-            for k, req in requirements.items():
-                requirements_filter.update({k: req})
 
             return self.dbm.find_all(collection=self.collection,
                                     limit=limit,
                                     filter=requirements_filter,
                                     sort=formatted_sort)
-        except Exception as err:
-            raise ManagerGetError(err) from err
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
 
 
-    def aggregate(self, *args, **kwargs):
+    def aggregate(self, *args, **kwargs) -> CommandCursor:
         """
-        Calls MongoDB aggregation with *args
+        Performs a MongoDB aggregation operation on the collection
+
         Args:
+            *args: Positional arguments for the aggregation pipeline
+            **kwargs: Keyword arguments for additional aggregation options
+
+        Raises:
+            BaseManagerIterationError: If an error occurs during the aggregation operation
+
         Returns:
-            - A :class:`~pymongo.command_cursor.CommandCursor` over the result set
+            CommandCursor: A cursor that can be iterated over to access the aggregation results
         """
         try:
             return self.dbm.aggregate(self.collection, *args, **kwargs)
-        except Exception as err:
-            raise ManagerIterationError(err) from err
+        except DocumentAggregationError as err:
+            raise BaseManagerIterationError(err) from err
 
 
-    def aggregate_from_other_collection(self, collection: str, *args, **kwargs):
+    def aggregate_from_other_collection(self, collection: str, *args, **kwargs) -> CommandCursor:
         """
-        Calls MongoDB aggregation with *args
+        Performs a MongoDB aggregation operation on the specified collection
+
         Args:
+            collection (str): The name of the collection to perform the aggregation on
+            *args: Positional arguments for the aggregation pipeline
+            **kwargs: Keyword arguments for additional aggregation options
+
+        Raises:
+            BaseManagerIterationError: If an error occurs during the aggregation operation
+
         Returns:
-            - A :class:`~pymongo.command_cursor.CommandCursor` over the result set
+            CommandCursor: A cursor that can be iterated over to access the aggregation results
         """
         try:
             return self.dbm.aggregate(collection, *args, **kwargs)
-        except Exception as err:
-            raise ManagerIterationError(err) from err
+        except DocumentAggregationError as err:
+            raise BaseManagerIterationError(err) from err
 
 
-    def get_next_public_id(self):
+    def get_next_public_id(self) -> int:
         """
-        Retrieves next public_id for the collection
-
-        Returns:
-            `int`: New highest public_id of the collection
-        """
-        # TODO: ERROR-FIX (create and catch error for this operation)
-        return self.dbm.get_next_public_id(self.collection)
-
-
-    def count_documents(self, collection: str, *args, **kwargs):
-        """
-        Counts the number of documents in a collection
-
-        Args:
-            collection: Name of the collection
+        Retrieves the next public_id for the collection
 
         Raises:
-            ManagerGetError: If an error occures during the 'count' operation
+            BaseManagerGetError: If retrieving the next public_id fails for any reason
 
         Returns:
-            int: Number of found documents with given filter 
+            int: The next public_id for the collection
+        """
+        try:
+            return self.dbm.get_next_public_id(self.collection)
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
+
+
+    def count_documents(self, collection: str, *args, **kwargs) -> int:
+        """
+        Counts the number of documents in a collection based on the given filter
+
+        Args:
+            collection (str): The name of the collection to count documents from
+            *args: Positional arguments for the 'count' operation
+            **kwargs: Keyword arguments for the 'count' operation (e.g., filter criteria)
+
+        Raises:
+            BaseManagerGetError: If an error occurs during the 'count' operation
+
+        Returns:
+            int: The number of documents that match the given criteria
         """
         try:
             return self.dbm.count(collection, *args, **kwargs)
-        except Exception as err:
-            LOGGER.debug("[count_documents] Exception: %s , Type: %s", err, type(err))
-            raise ManagerGetError(err) from err
+        except DocumentGetError as err:
+            raise BaseManagerGetError(err) from err
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
-    #TODO: ERROR-FIX (keyword before argument)
-    def update(self, criteria: dict, data: dict, add_to_set: bool = True, *args, **kwargs):
+    def update(self, criteria: dict, data: dict, *args, add_to_set: bool = True, **kwargs) -> UpdateResult:
         """
-        Updates a document in the database
+        Updates a document in the database with the specified criteria and new data
 
         Args:
-            `criteria` (dict): Filter for which documents should match
-            `data`: New values for the document
+            criteria (dict): The filter used to match the document(s) to be updated
+            data (dict): The update data to apply to the matched document(s)
+            *args: Additional positional arguments passed to the update operation
+            add_to_set (bool, optional): If True, wraps `data` in `$set` unless the `data` already contains update
+                                         operators. Defaults to True
+            **kwargs: Additional keyword arguments passed to the update operation
 
         Raises:
-            `ManagerUpdateError`: When the update operation failed
+            BaseManagerUpdateError: If an error occurs during the update operation
 
         Returns:
-            `UpdateResult`: The pymongo UpdateResult
+            UpdateResult: An object containing the outcome of the update operation, such as the number of documents
+                          matched and modified
         """
-        #TODO: DOCUMENTATION-FIX (finish the function description)
         try:
-            return self.dbm.update(self.collection, criteria, data, add_to_set, *args, **kwargs)
-        except Exception as err:
-            raise ManagerUpdateError(err) from err
+            return self.dbm.update(self.collection, criteria, data, *args, add_to_set, **kwargs)
+        except DocumentUpdateError as err:
+            raise BaseManagerUpdateError(err) from err
 
 
-    def update_many(self, criteria: dict, update: dict, add_to_set: bool = False):
+    def update_many(self, criteria: dict, update: dict, add_to_set: bool = False) -> UpdateResult:
         """
-        Update all documents that match the filter from a collection
+        Updates multiple documents in the collection that match the given filter
 
         Args:
-            criteria (dict): Filter that matches the documents to update
-            update (dict): The modifications to apply
+            criteria (dict): A dictionary specifying the filter criteria for selecting documents to update
+            update (dict): A dictionary containing the update operations to be applied
+            add_to_set (bool, optional): If True, wraps `update` in '$set' unless it already contains update
+                                         operators. Defaults to False
+
+        Raises:
+            BaseManagerUpdateError: If the update operation fails
+
         Returns:
-            Acknowledgment of database
+            UpdateResult: The result of the update operation, containing metadata about the operation's success
         """
         try:
             return self.dbm.update_many(self.collection, criteria, update, add_to_set)
-        except Exception as err:
-            raise ManagerUpdateError(err) from err
+        except DocumentUpdateError as err:
+            raise BaseManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
     def delete(self, criteria: dict) -> bool:
         """
-        Calls MongoDB delete operation
+        Deletes a document from the collection that matches the given criteria
 
         Args:
-            criteria (dict): Filter to match document
+            criteria (dict): A dictionary specifying the filter criteria for selecting the document to delete
 
         Raises:
-            ManagerDeleteError: Something went wrong while trying to delete document
+            BaseManagerDeleteError: If the deletion operation fails
 
         Returns:
-            bool: True if deletion is successful
+            bool: True if the deletion was acknowledged, otherwise False
         """
         try:
             return self.dbm.delete(self.collection, criteria).acknowledged
-        except Exception as err:
-            raise ManagerDeleteError(err) from err
+        except DocumentDeleteError as err:
+            raise BaseManagerDeleteError(err) from err
 
 
     def delete_many(self, filter_query: dict) -> DeleteResult:
         """
-        Removes all documents that match the filter from a collection
+        Deletes multiple documents from the collection that match the given filter criteria
 
         Args:
-            filter (dict): Specifies deletion criteria using query operators
+            filter_query (dict): A dictionary specifying the filter criteria for selecting documents to delete
 
         Raises:
-            ManagerDeleteError: If something goes wrong
+            BaseManagerDeleteError: If the deletion operation fails
 
         Returns:
-            Acknowledgment of database
+            DeleteResult: The result of the delete operation, containing details about the number of deleted documents
         """
         try:
-            delete_result = self.dbm.delete_many(collection=self.collection, **filter_query)
-        except Exception as err:
-            raise ManagerDeleteError(str(err)) from err
-
-        return delete_result
+            return self.dbm.delete_many(collection=self.collection, **filter_query)
+        except DocumentDeleteError as err:
+            raise BaseManagerDeleteError(str(err)) from err

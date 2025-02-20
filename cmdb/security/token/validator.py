@@ -53,7 +53,7 @@ class TokenValidator:
         try:
             decoded_token = jwt.decode(s=token, key=self.key_holder.get_public_key())
         except (BadSignatureError, Exception) as err:
-            raise TokenValidationError(str(err)) from err
+            raise TokenValidationError(err) from err
 
         return decoded_token
 
@@ -70,4 +70,4 @@ class TokenValidator:
         try:
             token.validate(time.time())
         except InvalidClaimError as err:
-            raise TokenValidationError(str(err)) from err
+            raise TokenValidationError(err) from err

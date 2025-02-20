@@ -31,7 +31,7 @@ from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.manager import ManagerGetError, ManagerIterationError, ManagerInsertError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError, BaseManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -84,8 +84,8 @@ class LogsManager(BaseManager):
         try:
             new_log = CmdbLog(**log_data)
             ack = self.insert(CmdbObjectLog.to_json(new_log))
-        except ManagerInsertError as err:
-            raise ManagerInsertError(err) from err
+        except BaseManagerInsertError as err:
+            raise BaseManagerInsertError(err) from err
 
         return ack
 
@@ -102,20 +102,17 @@ class LogsManager(BaseManager):
             user (CmdbUser, optional): User requesting this action
             permission (AccessControlPermission, optional): Permission which should be checked for the user
         Raises:
-            ManagerIterationError: Raised when something goes wrong during the aggregate part
-            ManagerIterationError: Raised when something goes wrong during the building of the IterationResult
+            BaseManagerIterationError: Raised when something goes wrong during the aggregate part
+            BaseManagerIterationError: Raised when something goes wrong during the building of the IterationResult
         Returns:
             IterationResult[CmdbMetaLog]: Result which matches the Builderparameters
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
-        except ManagerGetError as err:
-            raise ManagerIterationError(err) from err
 
-        try:
             iteration_result: IterationResult[CmdbMetaLog] = IterationResult(aggregation_result, total)
             iteration_result.convert_to(CmdbObjectLog)
-        except Exception as err:
-            raise ManagerIterationError(err) from err
 
-        return iteration_result
+            return iteration_result
+        except Exception as err:
+            raise BaseManagerIterationError(err) from err

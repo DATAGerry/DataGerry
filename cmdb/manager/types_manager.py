@@ -32,7 +32,7 @@ from cmdb.models.object_model.cmdb_object import CmdbObject
 
 from cmdb.framework.results import IterationResult, ListResult
 
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerInsertError
 from cmdb.errors.manager.types_manager import (
     TypesManagerGetError,
     TypesManagerUpdateError,
@@ -89,7 +89,7 @@ class TypesManager(BaseManager):
 
         try:
             return self.insert(type_to_add)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             raise TypesManagerInsertError(f"Could not insert the type. Error: {err}") from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -127,7 +127,7 @@ class TypesManager(BaseManager):
             return CmdbType.from_data(requested_type)
         except Exception as err:
             #TODO: ERROR-FIX (Needs a TypesManagerGetError)
-            raise ManagerGetError(str(err)) from err
+            raise BaseManagerGetError(str(err)) from err
 
 
     def iterate(self, builder_params: BuilderParameters) -> IterationResult[CmdbType]:
@@ -147,13 +147,13 @@ class TypesManager(BaseManager):
 
         try:
             aggregation_result, total = self.iterate_query(builder_params)
+
+            iteration_result: IterationResult[CmdbType] = IterationResult(aggregation_result, total)
+            iteration_result.convert_to(CmdbType)
+
+            return iteration_result
         except Exception as err:
             raise TypesManagerGetError(err) from err
-
-        iteration_result: IterationResult[CmdbType] = IterationResult(aggregation_result, total)
-        iteration_result.convert_to(CmdbType)
-
-        return iteration_result
 
 
     def find_types(self, criteria: dict) -> ListResult[CmdbType]:
@@ -183,12 +183,12 @@ class TypesManager(BaseManager):
         try:
             raw_types: list[dict] = self.get_many()
         except Exception as err:
-            raise ManagerGetError(err) from err
+            raise BaseManagerGetError(err) from err
         try:
             return [CmdbType.from_data(type) for type in raw_types]
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(err) from err
+            raise BaseManagerGetError(err) from err
 
 
     def get_types_by(self, sort='public_id', **requirements):
@@ -198,7 +198,7 @@ class TypesManager(BaseManager):
             return [CmdbType.from_data(data) for data in self.get_many(sort=sort, **requirements)]
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(err) from err
+            raise BaseManagerGetError(err) from err
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 

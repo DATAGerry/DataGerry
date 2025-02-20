@@ -63,7 +63,12 @@ from cmdb.interface.rest_api.responses import (
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
 
 from cmdb.errors.security import AccessDeniedError
-from cmdb.errors.manager import ManagerGetError, ManagerUpdateError, ManagerInsertError, ManagerIterationError
+from cmdb.errors.manager import (
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerInsertError,
+    BaseManagerIterationError,
+)
 from cmdb.errors.manager.objects_manager import (
     ObjectManagerGetError,
     ObjectManagerUpdateError,
@@ -177,19 +182,19 @@ def insert_object(request_user: CmdbUser):
             }
 
             logs_manager.insert_log(action=LogAction.CREATE, log_type=CmdbObjectLog.__name__, **log_params)
-        except ManagerInsertError as err:
-            LOGGER.warning("[insert_object] ManagerInsertError: %s", err.message)
+        except BaseManagerInsertError as err:
+            LOGGER.warning("[insert_object] %s", err)
 
     except (TypeError, ObjectManagerInsertError) as err:
         #TODO: ERROR-FIX
         LOGGER.warning("[insert_object] TypeError, ObjectManagerInsertError: %s", err.message)
         return abort(400, str(err))
-    except (ManagerGetError, ObjectManagerGetError) as err:
+    except (BaseManagerGetError, ObjectManagerGetError) as err:
         #TODO: ERROR-FIX
-        LOGGER.warning("[insert_object] ObjectManagerGetError: %s", err.message)
+        LOGGER.warning("[insert_object] ObjectManagerGetError: %s", err)
         return abort(400)
     except AccessDeniedError as err:
-        LOGGER.warning("[insert_object] Exception: %s", err.message)
+        LOGGER.warning("[insert_object] Exception: %s", err)
         return abort(403, "No permission to insert the object !")
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
@@ -303,10 +308,10 @@ def get_objects(params: CollectionParameters, request_user: CmdbUser):
         else:
             return abort(401, 'No possible view parameter')
 
-    except ManagerIterationError:
+    except BaseManagerIterationError:
         #TODO: ERROR-FIX
         return abort(400, "Could not iterate the objects")
-    except ManagerGetError:
+    except BaseManagerGetError:
         return abort(404, "No objects found!")
     except Exception as err:
         #TODO: ERROR-FIX
@@ -396,7 +401,7 @@ def get_object_mds_reference(public_id: int, request_user: CmdbUser):
 
         referenced_type: CmdbType = objects_manager.get_object_type(referenced_object.get_type_id())
 
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
     except Exception as err:
@@ -450,7 +455,7 @@ def get_object_mds_references(public_id: int, request_user: CmdbUser):
 
             referenced_type: CmdbType = objects_manager.get_object_type(referenced_object.get_type_id())
 
-        except ManagerGetError:
+        except BaseManagerGetError:
             #TODO: ERROR-FIX
             return abort(404)
 
@@ -500,7 +505,7 @@ def get_object_references(public_id: int, params: CollectionParameters, request_
         referenced_object: CmdbObject = objects_manager.get_object(public_id,
                                                                    request_user,
                                                                    AccessControlPermission.READ)
-    except ManagerGetError:
+    except BaseManagerGetError:
         return abort(404)
     except AccessDeniedError:
         return abort(403, "No permission to view object references!")
@@ -530,7 +535,7 @@ def get_object_references(public_id: int, params: CollectionParameters, request_
                                             url=request.url, body=request.method == 'HEAD')
         else:
             return abort(401, 'No possible view parameter')
-    except ManagerIterationError:
+    except BaseManagerIterationError:
         #TODO: ERROR-FIX
         return abort(400)
     except Exception as err:
@@ -575,11 +580,11 @@ def get_object_state(public_id: int, request_user: CmdbUser):
 @objects_blueprint.protect(auth=True, right='base.framework.type.clean')
 def get_unstructured_objects(public_id: int, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for a multi resources which are not formatted according the type structure.
+    HTTP `GET`/`HEAD` route for a multi resources which are not formatted according the type structure
+
     Args:
         public_id (int): Public ID of the type.
-    Raises:
-        ManagerGetError: When the selected type does not exists or the objects could not be loaded.
+
     Returns:
         GetListResponse: Which includes the json data of multiple objects.
     """
@@ -607,7 +612,7 @@ def get_unstructured_objects(public_id: int, request_user: CmdbUser):
         api_response = GetListResponse(unstructured, body=request.method == 'HEAD')
 
         return api_response.make_response()
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(400, "Could not retrive objects!")
     except Exception as err:
@@ -731,8 +736,8 @@ def update_object(public_id: int, data: dict, request_user: CmdbUser):
                     'render_state': json.dumps(update_object_instance, default=default).encode('UTF-8')
                 }
                 logs_manager.insert_log(action=LogAction.EDIT, log_type=CmdbObjectLog.__name__, **log_data)
-            except ManagerInsertError as err:
-                LOGGER.debug("[update_object] ManagerInsertError: %s", err.message)
+            except BaseManagerInsertError as err:
+                LOGGER.debug("[update_object] %s", err)
 
         except AccessDeniedError as err:
             LOGGER.error("AccessDeniedError: %s", err)
@@ -742,8 +747,8 @@ def update_object(public_id: int, data: dict, request_user: CmdbUser):
             failed.append(ResponseFailedMessage(error_message=err.message, status=400,
                                                 public_id=obj_id, obj=new_data).to_dict())
             continue
-        except (ManagerGetError, ObjectManagerUpdateError) as err:
-            LOGGER.error("ManagerGetError, ObjectManagerUpdateError: %s", err.message)
+        except (BaseManagerGetError, ObjectManagerUpdateError) as err:
+            LOGGER.error("BaseManagerGetError, ObjectManagerUpdateError: %s", err)
             failed.append(ResponseFailedMessage(error_message=err.message, status=404,
                                                 public_id=obj_id, obj=new_data).to_dict())
             continue
@@ -837,8 +842,8 @@ def update_object_state(public_id: int, request_user: CmdbUser):
         }
 
         logs_manager.insert_log(action=LogAction.ACTIVE_CHANGE, log_type=CmdbObjectLog.__name__, **log_data)
-    except ManagerInsertError as err:
-        LOGGER.debug("[update_object_state] ManagerInsertError: %s", err.message)
+    except BaseManagerInsertError as err:
+        LOGGER.debug("[update_object_state] %s", err)
 
     api_response = UpdateSingleResponse(result=found_object.__dict__)
     return api_response.make_response()
@@ -851,11 +856,10 @@ def update_object_state(public_id: int, request_user: CmdbUser):
 def update_unstructured_objects(public_id: int, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route for a multi resources which will be formatted based on the CmdbType
+
     Args:
         public_id (int): Public ID of the type.
-    Raises:
-        ManagerGetError: When the type with the `public_id` was not found.
-        ManagerUpdateError: When something went wrong during the update.
+
     Returns:
         UpdateMultiResponse: Which includes the json data of multiple updated objects.
     """
@@ -895,8 +899,8 @@ def update_unstructured_objects(public_id: int, request_user: CmdbUser):
             for field in removed_type_fields:
                 try:
                     objects_manager.update(criteria={'public_id': obj.public_id},
-                                        data={'$pull': {'fields': {"name": field}}},
-                                        add_to_set=False)
+                                           data={'$pull': {'fields': {"name": field}}},
+                                           add_to_set=False)
                 except Exception as error:
                     LOGGER.debug("Clean Removed Type Fields - Update Object: %s, Type: %s", error, type(error))
                     return abort(500, "Could not clean objects!")
@@ -939,8 +943,8 @@ def update_unstructured_objects(public_id: int, request_user: CmdbUser):
 
         return api_response.make_response()
 
-    except ManagerUpdateError as err:
-        LOGGER.debug("[update_unstructured_objects] ManagerUpdateError: %s", err.message)
+    except BaseManagerUpdateError as err:
+        LOGGER.debug("[update_unstructured_objects] %s", err)
         return abort(500, "Could not update an object with new schema!")
     except Exception as err:
         LOGGER.debug("Clean PUT Exception: %s, Type: %s", err, type(err))
@@ -1040,8 +1044,8 @@ def delete_object(public_id: int, request_user: CmdbUser):
         }
 
         logs_manager.insert_log(action=LogAction.DELETE, log_type=CmdbObjectLog.__name__, **log_data)
-    except ManagerInsertError as err:
-        LOGGER.debug("[delete_object] ManagerInsertError: %s", err.message)
+    except BaseManagerInsertError as err:
+        LOGGER.debug("[delete_object] %s", err)
 
 
     try:
@@ -1255,7 +1259,7 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
 
                 if location_for_object:
                     return abort(400, """It is not possible to bulk delete objects if any of them has a location""")
-            except ManagerGetError:
+            except BaseManagerGetError:
                 pass
 
         current_object_instance: CmdbObject
@@ -1318,8 +1322,8 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
                     'render_state': json.dumps(current_object_render_result, default=default).encode('UTF-8')
                 }
                 logs_manager.insert_log(action=LogAction.DELETE, log_type=CmdbObjectLog.__name__, **log_data)
-            except ManagerInsertError as err:
-                LOGGER.debug("[delete_many_objects] ManagerInsertError: %s", err.message)
+            except BaseManagerInsertError as err:
+                LOGGER.debug("[delete_many_objects] %s", err)
 
         api_response = DefaultResponse({'successfully': ack})
 

@@ -20,11 +20,13 @@ Contains Security Error Classes
 
 class SecurityError(Exception):
     """
-    Base Security Error
+    Raised to catch all Security related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all Security related errors
+        """
+        super().__init__(err)
 
 # -------------------------------------------------- SECURITY ERRORS ------------------------------------------------- #
 
@@ -32,96 +34,70 @@ class TokenValidationError(SecurityError):
     """
     Raised when a jwt token could not be decoded
     """
-    def __init__(self, err: str):
-        self.message = f"Error while decode the token operation - Error: {err}"
-        super().__init__(self.message)
 
 
 class AccessDeniedError(SecurityError):
     """
     Raised when access was denied
     """
-    def __init__(self, err: str):
-        self.message = f"Access was denied. Error: {err}"
-        super().__init__(self.message)
 
 
 class RightNotFoundError(SecurityError):
     """
     Raised when a right was not found
     """
-    def __init__(self, err: str):
-        self.message = f"Right was not found inside the group. {err}"
-        super().__init__(self.message)
 
 
 class InvalidLevelRightError(SecurityError):
     """
     Raised when a right level is not valid
     """
-    def __init__(self, err: str):
-        self.message = f"Invalid right level. Level does not exist: {err}"
-        super().__init__(self.message)
 
 
 class MinLevelRightError(SecurityError):
     """
     Raised when min level for a right was violated
     """
-    def __init__(self, err: str):
-        self.message = f"Min level for the right has been violated. Error: {err}"
-        super().__init__(self.message)
 
 
 class MaxLevelRightError(SecurityError):
     """
     Raised when max level for a right was violated
     """
-    def __init__(self, err: str):
-        self.message = f"Max level for the right has been violated. Error: {err}"
-        super().__init__(self.message)
 
 
+#TODO: REFACTOR-FIX (Move to own set of errors)
 class AuthSettingsInitError(SecurityError):
     """
     Raised when AuthSettingsDAO could not be initialised
     """
-    def __init__(self, err: str):
-        self.message = f"Could not initialise AuthSettingsDAO. Error: {err}"
-        super().__init__(self.message)
 
 
 class NoAccessTokenError(SecurityError):
     """
     Raised when AccessToken is not available
     """
-    def __init__(self):
-        self.message = "No AccessToken available!"
-        super().__init__(self.message)
 
 
 class InvalidCloudUserError(SecurityError):
     """
     Raised when Cloud Login failed
     """
-    def __init__(self, err: str):
-        self.message = f"Login Failed. Reason: {err}"
-        super().__init__(self.message)
 
 
 class RequestTimeoutError(SecurityError):
     """
-    Raised when request timed out
+    Raised when a request timed out
     """
-    def __init__(self):
-        self.message = "Request timed out"
-        super().__init__(self.message)
 
 
 class RequestError(SecurityError):
     """
-    Raised request had an error
+    Raised when a request had an error
     """
-    def __init__(self, err: str):
-        self.message = f"Request Error: {err}"
-        super().__init__(self.message)
+
+
+class DisallowedActionError(SecurityError):
+    """
+    Raised when an illegal action is requested
+    """

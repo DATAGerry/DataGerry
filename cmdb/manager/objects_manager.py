@@ -40,7 +40,12 @@ from cmdb.errors.manager.objects_manager import (
     ObjectManagerInsertError,
     ObjectManagerDeleteError,
 )
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError, ManagerIterationError, ManagerUpdateError
+from cmdb.errors.manager import (
+    BaseManagerGetError,
+    BaseManagerInsertError,
+    BaseManagerIterationError,
+    BaseManagerUpdateError,
+)
 from cmdb.errors.security import AccessDeniedError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -106,7 +111,7 @@ class ObjectsManager(BaseManager):
 
         try:
             ack = self.insert(new_object.__dict__)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             LOGGER.debug("[insert_object] Error while inserting object. Error: %s", str(err))
             raise ObjectManagerInsertError(err) from err
         except Exception as err:
@@ -164,7 +169,7 @@ class ObjectsManager(BaseManager):
             iteration_result.convert_to(CmdbObject)
         #TODO: ERROR-FIX
         except Exception as err:
-            raise ManagerIterationError(err) from err
+            raise BaseManagerIterationError(err) from err
 
         return iteration_result
 
@@ -288,7 +293,7 @@ class ObjectsManager(BaseManager):
                 object_count = self.count_documents(self.collection, criteria=criteria)
             else:
                 object_count = self.count_documents(self.collection)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise ObjectManagerGetError(err) from err
 
         return object_count
@@ -369,9 +374,9 @@ class ObjectsManager(BaseManager):
 
         try:
             results = list(self.aggregate_from_other_collection(CmdbType.COLLECTION, query))
-        except ManagerIterationError as err:
+        except BaseManagerIterationError as err:
             #TODO: ERROR-FIX
-            LOGGER.debug("[get_mds_references_for_object] aggregation error: %s", err.message)
+            LOGGER.debug("[get_mds_references_for_object] aggregation error: %s", err)
 
         matching_results = []
 
@@ -480,7 +485,7 @@ class ObjectsManager(BaseManager):
 
         #TODO: ERROR-FIX
         if update_result.matched_count != 1:
-            raise ManagerUpdateError('Something happened during the update!')
+            raise BaseManagerUpdateError('Something happened during the update!')
 
         return update_result
 
@@ -497,7 +502,7 @@ class ObjectsManager(BaseManager):
         """
         try:
             update_result = self.update_many(criteria=query, update=update, add_to_set=add_to_set)
-        except (ManagerUpdateError, AccessDeniedError) as err:
+        except (BaseManagerUpdateError, AccessDeniedError) as err:
             #TODO: ERROR-FIX
             raise err
 

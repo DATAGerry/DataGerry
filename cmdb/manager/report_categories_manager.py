@@ -25,7 +25,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerGetError, ManagerIterationError, ManagerInsertError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError, BaseManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -65,17 +65,13 @@ class ReportCategoriesManager(BaseManager):
         """
         try:
             new_report_category = CmdbReportCategory(**data)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            raise ManagerInsertError(err) from err
 
-        try:
             ack = self.insert(new_report_category.__dict__)
+
+            return ack
             #TODO: ERROR-FIX
         except Exception as err:
-            raise ManagerInsertError(err) from err
-
-        return ack
+            raise BaseManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -86,7 +82,7 @@ class ReportCategoriesManager(BaseManager):
         Args:
             public_id (int): public_id of the CmdbReportCategory which should be retrieved
         Raises:
-            ManagerGetError: Raised if the CmdbReportCategory could not ne retrieved
+            BaseManagerGetError: Raised if the CmdbReportCategory could not ne retrieved
         Returns:
             CmdbReportCategory: The requested CmdbReportCategory if it exists, else None
         """
@@ -94,7 +90,7 @@ class ReportCategoriesManager(BaseManager):
             requested_report_category = self.get_one(public_id)
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(f"Report Category with ID: {public_id}! 'GET' Error: {err}") from err
+            raise BaseManagerGetError(f"Report Category with ID: {public_id}! 'GET' Error: {err}") from err
 
         if requested_report_category:
             requested_report_category = CmdbReportCategory.from_data(requested_report_category)
@@ -102,7 +98,7 @@ class ReportCategoriesManager(BaseManager):
             return requested_report_category
 
         #TODO: ERROR-FIX
-        raise ManagerGetError(f'Report Category with ID: {public_id} not found!')
+        raise BaseManagerGetError(f'Report Category with ID: {public_id} not found!')
 
 
     def iterate(self, builder_params: BuilderParameters) -> IterationResult[CmdbReportCategory]:
@@ -113,22 +109,19 @@ class ReportCategoriesManager(BaseManager):
             builder_params (BuilderParameters): Contains input to identify the target of action
 
         Raises:
-            ManagerIterationError: Raised when something goes wrong during the aggregate part
-            ManagerIterationError: Raised when something goes wrong during the building of the IterationResult
+            BaseManagerIterationError: Raised when something goes wrong during the aggregate part
+            BaseManagerIterationError: Raised when something goes wrong during the building of the IterationResult
         Returns:
             IterationResult[CmdbReportCategory]: Result which matches the Builderparameters
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params)
-        except ManagerGetError as err:
-            #TODO: ERROR-FIX
-            raise ManagerIterationError(err) from err
 
-        try:
             iteration_result: IterationResult[CmdbReportCategory] = IterationResult(aggregation_result, total)
             iteration_result.convert_to(CmdbReportCategory)
+
+            return iteration_result
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerIterationError(err) from err
+            raise BaseManagerIterationError(err) from err
 
-        return iteration_result

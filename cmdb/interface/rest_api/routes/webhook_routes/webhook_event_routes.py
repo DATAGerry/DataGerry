@@ -32,9 +32,9 @@ from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (
-    ManagerGetError,
-    ManagerDeleteError,
-    ManagerIterationError,
+    BaseManagerGetError,
+    BaseManagerDeleteError,
+    BaseManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -60,9 +60,9 @@ def get_webhook_event(public_id: int, request_user: CmdbUser):
 
     try:
         requested_webhook_event = webhook_events_manager.get_webhook_event(public_id)
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_webhook_event] ManagerGetError: %s", err.message)
+        LOGGER.debug("[get_webhook_event] %s", err)
         return abort(400, f"Could not retrieve Webhook Event with ID: {public_id}!")
 
     api_response = DefaultResponse(requested_webhook_event)
@@ -97,9 +97,9 @@ def get_webhook_events(params: CollectionParameters, request_user: CmdbUser):
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except ManagerIterationError as err:
+    except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_webhook_events] ManagerIterationError: %s", err.message)
+        LOGGER.debug("[get_webhook_events] %s", err)
         return abort(400, "Could not retrieve Webhook Events!")
 
     return api_response.make_response()
@@ -128,13 +128,13 @@ def delete_webhook_event(public_id: int, request_user: CmdbUser):
 
         #TODO: REFACTOR-FIX
         ack: bool = webhook_events_manager.delete({'public_id':public_id})
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_webhook_event] ManagerGetError: %s", err.message)
+        LOGGER.debug("[delete_webhook_event] %s", err)
         return abort(400, f"Could not retrieve Webhook Event with ID: {public_id}!")
-    except ManagerDeleteError as err:
+    except BaseManagerDeleteError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_webhook_event] ManagerDeleteError: %s", err)
+        LOGGER.debug("[delete_webhook_event] %s", err)
         return abort(400, f"Could not delete Webhook Event with ID: {public_id}!")
 
     api_response = DefaultResponse(ack)

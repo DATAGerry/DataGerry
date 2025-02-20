@@ -16,21 +16,23 @@
 """
 This package contains general errors for the managers of DATAGERRY
 """
-from .manager_errors import ManagerError,\
-                            ManagerGetError,\
-                            ManagerInsertError,\
-                            ManagerUpdateError,\
-                            ManagerDeleteError,\
-                            ManagerIterationError,\
-                            DisallowedActionError
+from .manager_errors import (
+    BaseManagerError,
+    BaseManagerInitError,
+    BaseManagerGetError,
+    BaseManagerInsertError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
+    BaseManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ManagerError',
-    'ManagerGetError',
-    'ManagerInsertError',
-    'ManagerUpdateError',
-    'ManagerDeleteError',
-    'ManagerIterationError',
-    'DisallowedActionError'
+    'BaseManagerError',
+    'BaseManagerInitError',
+    'BaseManagerGetError',
+    'BaseManagerInsertError',
+    'BaseManagerUpdateError',
+    'BaseManagerDeleteError',
+    'BaseManagerIterationError',
 ]

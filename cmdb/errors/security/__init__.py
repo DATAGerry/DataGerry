@@ -17,6 +17,7 @@
 This module provides all errors for Security
 """
 from .security_errors import (
+    SecurityError,
     TokenValidationError,
     AccessDeniedError,
     RightNotFoundError,
@@ -28,10 +29,12 @@ from .security_errors import (
     InvalidCloudUserError,
     RequestTimeoutError,
     RequestError,
+    DisallowedActionError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'SecurityError',
     'TokenValidationError',
     'AccessDeniedError',
     'RightNotFoundError',
@@ -43,4 +46,5 @@ __all__ = [
     'InvalidCloudUserError',
     'RequestTimeoutError',
     'RequestError',
+    'DisallowedActionError',
 ]
