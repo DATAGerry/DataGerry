@@ -24,11 +24,13 @@ from cmdb.utils.cast import auto_cast
 from cmdb.utils.system_env_reader import SystemEnvironmentReader
 from cmdb.utils.system_reader import SystemReader
 
-from cmdb.errors.system_config import ConfigFileSetError,\
-                                      ConfigFileNotFound,\
-                                      ConfigNotLoaded,\
-                                      SectionError,\
-                                      KeySectionError
+from cmdb.errors.system_config import (
+    ConfigFileSetError,
+    ConfigFileNotFound,
+    ConfigNotLoaded,
+    SectionError,
+    KeySectionError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -64,7 +66,7 @@ class ConfigFileReader(SystemReader):
             self.config_status = self.setup()
 
         if self.config_status == self.CONFIG_NOT_LOADED:
-            raise ConfigFileNotFound(self.config_name)
+            raise ConfigFileNotFound(f"Config file: {self.config_name} was not found!")
         # load environment variables
         self.__envvars = SystemEnvironmentReader()
 
@@ -78,7 +80,8 @@ class ConfigFileReader(SystemReader):
             section: name of the section
         """
         if not self.config_file_less:
-            raise ConfigFileSetError(self.config_file)
+            raise ConfigFileSetError(f"Config file: {self.config_file} was loaded. \
+                                     No manual editing of values are allowed!")
 
         self.config.add_section(section)
 
@@ -94,7 +97,8 @@ class ConfigFileReader(SystemReader):
             value: value of the option
         """
         if not self.config_file_less:
-            raise ConfigFileSetError(self.config_file)
+            raise ConfigFileSetError(f"Config file: {self.config_file} was loaded. \
+                                     No manual editing of values are allowed!")
 
         self.config.set(section, option, value)
 
@@ -122,7 +126,7 @@ class ConfigFileReader(SystemReader):
         if os.path.isfile(file):
             self.config.read(file)
         else:
-            raise ConfigFileNotFound(self.config_name)
+            raise ConfigFileNotFound(f"Config file: {self.config_name} was not found!")
 
 
     def get_value(self, name: str, section: str, default: Any = None):
@@ -151,9 +155,9 @@ class ConfigFileReader(SystemReader):
 
                 return auto_cast(self.config[section][name])
 
-            raise SectionError(section)
+            raise SectionError(f"The section '{section}' does not exist!")
 
-        raise ConfigNotLoaded(self.config_name)
+        raise ConfigNotLoaded(f"Config file: {self.config_name} was not loaded correctly!")
 
 
     def get_sections(self):
@@ -165,7 +169,7 @@ class ConfigFileReader(SystemReader):
         if self.config_status == self.CONFIG_LOADED:
             return self.config.sections()
 
-        raise ConfigNotLoaded(self.config_name)
+        raise ConfigNotLoaded(f"Config file: {self.config_name} was not loaded correctly!")
 
 
     def get_all_values_from_section(self, section):
@@ -191,11 +195,12 @@ class ConfigFileReader(SystemReader):
                 if self.config.has_section(section):
                     section_conffile = dict(self.config.items(section))
                 else:
-                    raise SectionError(section)
+                    raise SectionError(f"The section '{section}' does not exist!")
             except KeyError as err:
-                raise KeySectionError(section) from err
+                #TODO: ERROR-FIX
+                raise KeySectionError(f"The key '{section}' was not found!") from err
         else:
-            raise ConfigNotLoaded(self.config_name)
+            raise ConfigNotLoaded(f"Config file: {self.config_name} was not loaded correctly!")
 
         # merge two the config dicts
         section_merged = section_conffile.copy()

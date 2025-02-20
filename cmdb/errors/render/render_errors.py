@@ -14,17 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains Render Error Classes
+This module contains the classes of all Render errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class RenderError(Exception):
     """
-    Base Render Error
+    Raised to catch all Render related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all Render related errors
+        """
+        super().__init__(err)
 
 # --------------------------------------------------- RENDER ERRORS -------------------------------------------------- #
 
@@ -32,24 +34,15 @@ class ObjectInstanceError(RenderError):
     """
     Raised when the passed object is not an instance of CmdbObject
     """
-    def __init__(self):
-        self.message = "Not an instance of CmdbObject!"
-        super().__init__(self.message)
 
 
 class TypeInstanceError(RenderError):
     """
     Raised when the passed object is not an instance of CmdbType
     """
-    def __init__(self):
-        self.message = "Not an instance of CmdbObject!"
-        super().__init__(self.message)
 
 
 class InstanceRenderError(RenderError):
     """
     Raised when an error occurs during rendering
     """
-    def __init__(self, err: str):
-        self.message = f"An error occured while rendering. Error: {err}"
-        super().__init__(self.message)

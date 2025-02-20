@@ -189,7 +189,7 @@ class MongoDBQueryBuilder:
             raise MongoQueryBuilderInvalidOperatorError(operator) from err
         except Exception as err:
             LOGGER.error("[create_rule] Exception: %s. Type: %s", err, type(err))
-            raise MongoQueryBuilderBuildRuleError(str(err)) from err
+            raise MongoQueryBuilderBuildRuleError(err) from err
 
     def get_operator_fragment(self,
                               operator: str,

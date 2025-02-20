@@ -22,11 +22,11 @@ class ObjectLinksManagerError(Exception):
     """
     Raised to catch all ObjectLinksManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all ObjectLinksManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
 # --------------------------------------------- ObjectLinksManager errors -------------------------------------------- #
 
@@ -34,52 +34,27 @@ class ObjectLinksManagerInsertError(ObjectLinksManagerError):
     """
     Raised when ObjectLinksManager could not insert a CmdbObjectLink
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectLinksManager could not insert a CmdbObjectLink
-        """
-        super().__init__(f"ObjectLinksManagerInsertError: {err}")
 
 
 class ObjectLinksManagerGetError(ObjectLinksManagerError):
     """
     Raised when ObjectLinksManager could not retrieve a CmdbObjectLink
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectLinksManager could not retrieve a CmdbObjectLink
-        """
-        super().__init__(f"ObjectLinksManagerGetError: {err}")
 
 
 class ObjectLinksManagerGetObjectError(ObjectLinksManagerError):
     """
     Raised when ObjectLinksManager could not retrieve an CmdbObject
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectLinksManager could not retrieve an CmdbObject
-        """
-        super().__init__(f"ObjectLinksManagerGetObjectError: {err}")
 
 
 class ObjectLinksManagerIterationError(ObjectLinksManagerError):
     """
     Raised when ObjectLinksManager could not iterate over CmdbObjectLinks
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectLinksManager could not iterate over CmdbObjectLinks
-        """
-        super().__init__(f"ObjectLinksManagerIterationError: {err}")
 
 
 class ObjectLinksManagerDeleteError(ObjectLinksManagerError):
     """
     Raised when ObjectLinksManager could not delete a CmdbObjectLink
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectLinksManager could not delete a CmdbObjectLink
-        """
-        super().__init__(f"ObjectLinksManagerDeleteError: {err}")

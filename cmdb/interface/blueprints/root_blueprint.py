@@ -48,8 +48,8 @@ class RootBlueprint(Blueprint):
             def _decorate(*args, **kwargs):
                 try:
                     location_args = request.args.to_dict()
-                except Exception as error:
-                    return abort(400, str(error))
+                except Exception as err:
+                    return abort(400, err)
 
                 return f(location_args)
 

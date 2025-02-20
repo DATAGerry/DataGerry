@@ -60,7 +60,6 @@ class SetDatabaseError(DataBaseError):
     """
 
 
-#TODO: ERROR-FIX (not used)
 class CollectionAlreadyExistsError(DataBaseError):
     """
     Raised when trying to create a collection that alrady exists
@@ -130,4 +129,10 @@ class DocumentAggregationError(DataBaseError):
 class PublicIdCounterInitError(DataBaseError):
     """
     Raised if a public_id counter could not be initialised
+    """
+
+
+class CollectionInitError(DataBaseError):
+    """
+    Raised when a collection could not be initialised
     """

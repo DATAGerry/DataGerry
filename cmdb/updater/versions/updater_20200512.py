@@ -21,7 +21,7 @@ from cmdb.models.category_model import CmdbCategory
 from cmdb.models.type_model import CmdbType
 from cmdb.updater.updater import Updater
 
-from cmdb.errors.manager.objects_manager import ObjectManagerInsertError
+from cmdb.errors.manager.objects_manager import ObjectsManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class Update20200512(Updater):
         for category in new_categories:
             try:
                 self.categories_manager.insert_category(CmdbCategory.to_json(category))
-            except ObjectManagerInsertError:
+            except ObjectsManagerInsertError:
                 continue
         self.__clear_up_types()
         super().increase_updater_version(20200512)

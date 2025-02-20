@@ -85,6 +85,7 @@ class TypesManager(BaseManager):
             else:
                 type_to_add = json.loads(json.dumps(new_type, default=json_util.default), object_hook=object_hook)
         except Exception as err:
+            #TODO: ERROR-FIX (Proper error)
             raise TypesManagerInitError("Could not initialise the type from data!") from err
 
         try:
@@ -127,7 +128,7 @@ class TypesManager(BaseManager):
             return CmdbType.from_data(requested_type)
         except Exception as err:
             #TODO: ERROR-FIX (Needs a TypesManagerGetError)
-            raise BaseManagerGetError(str(err)) from err
+            raise BaseManagerGetError(err) from err
 
 
     def iterate(self, builder_params: BuilderParameters) -> IterationResult[CmdbType]:
@@ -248,7 +249,7 @@ class TypesManager(BaseManager):
         try:
             self.delete({'public_id': public_id})
         except Exception as err:
-            raise TypesManagerDeleteError(str(err)) from err
+            raise TypesManagerDeleteError(err) from err
 
         return raw_type
 

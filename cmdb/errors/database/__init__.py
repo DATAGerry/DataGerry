@@ -35,6 +35,7 @@ from .database_errors import (
     DocumentGetError,
     DocumentAggregationError,
     PublicIdCounterInitError,
+    CollectionInitError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -57,4 +58,5 @@ __all__ = [
     'DocumentGetError',
     'DocumentAggregationError',
     'PublicIdCounterInitError',
+    'CollectionInitError',
 ]

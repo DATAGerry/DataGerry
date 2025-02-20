@@ -101,7 +101,7 @@ class CmdbDAO:
             NoPublicIDError: if `public_id` is zero or not set
         """
         if self.public_id == 0 or self.public_id is None:
-            raise NoPublicIDError()
+            raise NoPublicIDError("No public_id assigned!")
 
         return self.public_id
 
@@ -129,7 +129,7 @@ class CmdbDAO:
             if req_key in kwargs:
                 continue
 
-            raise RequiredInitKeyNotFoundError(req_key)
+            raise RequiredInitKeyNotFoundError(f"A required InitKey is missing: {req_key}!")
 
         return super().__new__(cls)
 

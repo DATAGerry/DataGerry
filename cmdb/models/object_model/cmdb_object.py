@@ -22,8 +22,6 @@ from typing import Union
 from dateutil.parser import parse
 
 from cmdb.models.cmdb_dao import CmdbDAO
-
-from cmdb.errors.manager.objects_manager import TypeNotSetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -93,7 +91,7 @@ class CmdbObject(CmdbDAO):
 
 
     def __init__(self,
-                 type_id,
+                 type_id: int,
                  creation_time,
                  author_id,
                  active,
@@ -185,10 +183,7 @@ class CmdbObject(CmdbDAO):
         Returns:
             int: public id of input_type
         """
-        if self.type_id == 0 or self.type_id is None:
-            raise TypeNotSetError()
-
-        return int(self.type_id)
+        return self.type_id
 
 
     def get_all_fields(self) -> list:

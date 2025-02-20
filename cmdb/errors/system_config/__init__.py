@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This package contains all errors of the system config
+This package contains all errors of the system config file
 """
-from .system_config_errors import ConfigFileError,\
-                                  ConfigFileSetError,\
-                                  ConfigFileNotFound,\
-                                  ConfigNotLoaded,\
-                                  SectionError,\
-                                  KeySectionError
+from .system_config_errors import (
+    ConfigFileError,
+    ConfigFileSetError,
+    ConfigFileNotFound,
+    ConfigNotLoaded,
+    SectionError,
+    KeySectionError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [

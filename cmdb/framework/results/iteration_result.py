@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides the implementation of IterationResult
+"""
 from typing import TypeVar, Generic, Union, Type
 
 from cmdb.models.cmdb_dao import CmdbDAO
@@ -22,22 +23,45 @@ from cmdb.models.cmdb_dao import CmdbDAO
 
 C = TypeVar('C', bound=CmdbDAO)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                IterationResult - CLASS                                               #
+# -------------------------------------------------------------------------------------------------------------------- #
 class IterationResult(Generic[C]):
-    """Framework Result for a iteration call over a collection"""
+    """
+    A result container for an iteration call over a collection.
+    This class holds the query results along with additional metadata such as the total number of items.
+    It also provides functionality to convert the raw results into specific CmdbDAO subtypes if necessary.
+    """
 
-    def __init__(self, results: list[Union[C, dict]], total: int):
+    def __init__(self, results: list[Union[C, dict]], total: int, c: Type[C] = None):
         """
-        Constructor of IterationResult
+        Initialises the IterationResult
+
         Args:
-            results: List of raw oder generic database results
-            total: Total number of elements in the query.
+            results: A list of raw or generic database results (either CmdbDAO or dict)
+            total: The total number of elements in the query
+            c: The class type (CmdbDAO subtype) to which the results should be converted. 
+               If provided, the results will be converted to instances of this type.
         """
         self.results = results
         self.count = len(self.results)
         self.total = total
 
+        if c is not None:
+            self.convert_to(c)
 
-    def convert_to(self, c: Type[C]):
-        """Converts the results inside the instance to a passed CmdbDAO subtype."""
+
+    def convert_to(self, c: Type[C]) -> None:
+        """
+        Converts the results inside the instance to a specified CmdbDAO subtype.
+
+        Args:
+            c: The CmdbDAO subclass to convert the results to. This class must implement a `from_data` method.
+        
+        Raises:
+            AttributeError: If the provided class `c` does not have a `from_data` method.
+        """
+        if not hasattr(c, 'from_data'):
+            raise AttributeError(f"Class '{c.__name__}' does not have a 'from_data' method.")
+
         self.results = [c.from_data(result) for result in self.results]

@@ -33,8 +33,7 @@ from cmdb.utils.system_config_reader import SystemConfigReader
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 from cmdb.models.user_management_constants import __COLLECTIONS__ as USER_MANAGEMENT_COLLECTION
 
-from cmdb.errors.database import ServerTimeoutError
-from cmdb.errors.setup import CollectionInitError
+from cmdb.errors.database import ServerTimeoutError, CollectionInitError
 from cmdb.errors.system_config import SectionError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -162,7 +161,7 @@ class UpdateRoutine:
                     LOGGER.info('[UPDATE ROUTINE] Database collection %s was created.', collection.COLLECTION)
         except Exception as err:
             LOGGER.error("[UPDATE ROUTINE] Database collection validation failed: %s, %s", err, type(err))
-            raise CollectionInitError(str(err)) from err
+            raise CollectionInitError(err) from err
 
 
     def update_db_version(self) -> None:

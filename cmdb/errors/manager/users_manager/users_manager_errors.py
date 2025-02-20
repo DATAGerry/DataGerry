@@ -34,53 +34,27 @@ class UsersManagerGetError(UsersManagerError):
     """
     Raised when UsersManager could not retrieve a CmdbUser
     """
-    def __init__(self, err: str):
-        """
-        Raised when UsersManager could not retrieve a CmdbUser
-        """
-        super().__init__(f"UsersManagerGetError: {err}")
 
 
 class UsersManagerInsertError(UsersManagerError):
     """
     Raised when UsersManager could not create a CmdbUser
     """
-    def __init__(self, err: str):
-        """
-        Raised when UsersManager could not create a CmdbUser
-        """
-        super().__init__(f"UsersManagerInsertError: {err}")
 
 
-#TODO: ERROR-FIX (not used)
 class UsersManagerUpdateError(UsersManagerError):
     """
     Raised when UsersManager could not update a CmdbUser
     """
-    def __init__(self, err: str):
-        """
-        Raised when UsersManager could not update a CmdbUser
-        """
-        super().__init__(f"UsersManagerUpdateError: {err}")
 
 
 class UsersManagerDeleteError(UsersManagerError):
     """
     Raised when UsersManager could not delete a CmdbUser
     """
-    def __init__(self, err: str):
-        """
-        Raised when UsersManager could not delete a CmdbUser
-        """
-        super().__init__(f"UsersManagerDeleteError: {err}")
 
 
 class UsersManagerIterationError(UsersManagerError):
     """
     Raised when UsersManager could not iterate CmdbUsers
     """
-    def __init__(self, err: str):
-        """
-        Raised when UsersManager could not iterate CmdbUsers
-        """
-        super().__init__(f"UsersManagerIterationError: {err}")

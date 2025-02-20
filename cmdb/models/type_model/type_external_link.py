@@ -120,4 +120,5 @@ class TypeExternalLink:
         try:
             self.href = self.href.format(*inputs)
         except Exception as err:
-            raise ExternalFillError(self.href) from err
+            #TODO: ERROR-FIX
+            raise ExternalFillError(f"Href link do not fit with inputs: {self.href}!") from err

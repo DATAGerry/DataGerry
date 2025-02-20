@@ -17,6 +17,7 @@
 This module provides all errors for the MediaFilesManager
 """
 from .media_files_manager_errors import (
+    MediaFileManagerError,
     MediaFileManagerGetError,
     MediaFileManagerInsertError,
     MediaFileManagerUpdateError,
@@ -25,6 +26,7 @@ from .media_files_manager_errors import (
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'MediaFileManagerError',
     'MediaFileManagerGetError',
     'MediaFileManagerInsertError',
     'MediaFileManagerUpdateError',

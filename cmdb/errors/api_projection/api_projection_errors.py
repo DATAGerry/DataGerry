@@ -20,11 +20,13 @@ Contains API Projection Error Classes
 
 class ApiProjectionError(Exception):
     """
-    Base API Projection Error
+    Raised to catch all ApiProjection related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all ApiProjection related errors
+        """
+        super().__init__(err)
 
 # ----------------------------------------------- API PROJECTION ERRORS ---------------------------------------------- #
 
@@ -32,6 +34,3 @@ class APIProjectionInclusionError(ApiProjectionError):
     """
     Raised when an errors occured during inclusion projection
     """
-    def __init__(self, err: str):
-        self.message = f"Error while inclusion projection. Error: {err}"
-        super().__init__(self.message)

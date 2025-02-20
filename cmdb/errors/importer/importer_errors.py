@@ -14,51 +14,41 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains Importer Error Classes
+Contains all Importer Error Classes
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ImporterError(Exception):
     """
-    Base Importer Error
+    Raised to catch all Importer related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all Importer related errors
+        """
+        super().__init__(err)
 
-# --------------------------------------------------- RENDER ERRORS -------------------------------------------------- #
+# -------------------------------------------------- IMPORTER ERRORS ------------------------------------------------- #
 
 class ImportRuntimeError(ImporterError):
     """
     Raised when an errors occurs during import
     """
-    def __init__(self, err: str):
-        self.message = f"An error occured during import. Error: {err}"
-        super().__init__(self.message)
 
 
 class ParserRuntimeError(ImporterError):
     """
     Raised when an errors occures during parsing files
     """
-    def __init__(self, err: str):
-        self.message = f"Error while parsing. Error: {err}"
-        super().__init__(self.message)
 
 
 class ImporterLoadError(ImporterError):
     """
     Raised when an error occurs loading the importer
     """
-    def __init__(self, err: str):
-        self.message = f"Could not load importer. Error: {err}"
-        super().__init__(self.message)
 
 
 class ParserLoadError(ImporterError):
     """
     Raised when an error occurs loading the parser
     """
-    def __init__(self, err: str):
-        self.message = f"Could not load parser. Error: {err}"
-        super().__init__(self.message)

@@ -28,7 +28,6 @@ from cmdb.models.type_model.type_section import TypeSection
 from cmdb.models.type_model.type_render_meta import TypeRenderMeta
 from cmdb.class_schema.cmdb_type_schema import get_cmdb_type_schema
 
-from cmdb.errors.cmdb_object import RequiredInitKeyNotFoundError
 from cmdb.errors.type import FieldNotFoundError, FieldInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -305,7 +304,7 @@ class CmdbType(CmdbDAO):
         if fields:
             return fields
 
-        raise FieldNotFoundError(value)
+        raise FieldNotFoundError(f"Field '{value}' was not found!")
 
 
     def get_field(self, name) -> dict:
@@ -315,11 +314,11 @@ class CmdbType(CmdbDAO):
         if field:
             try:
                 return field[0]
-            except (RequiredInitKeyNotFoundError, Exception) as err:
+            except Exception as err:
                 #TODO: ERROR-FIX
-                raise FieldInitError(name) from err
+                raise FieldInitError(f"Field '{name}' could not be initialized") from err
 
-        raise FieldNotFoundError(name)
+        raise FieldNotFoundError(f"Field '{name}' was not found!")
 
 
     def get_all_mds_fields(self) -> list:

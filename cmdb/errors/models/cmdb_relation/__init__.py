@@ -14,23 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains Setup Error Classes
+This module provides all errors for CmdbRelations
 """
+from .cmdb_relation_errors import (
+    CmdbRelationError,
+    CmdbRelationInitError,
+    CmdbRelationInitFromDataError,
+    CmdbRelationToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class SetupError(Exception):
-    """
-    Base Setup Error
-    """
-    def __init__(self, message: str):
-        super().__init__(message)
-
-# --------------------------------------------------- SETUP ERRORS --------------------------------------------------- #
-
-class CollectionInitError(SetupError):
-    """
-    Raised when Datagerry could not initialise the database collection
-    """
-    def __init__(self, err: str):
-        self.message = f"CollectionInitError: {err}"
-        super().__init__(self.message)
+__all__ = [
+    'CmdbRelationError',
+    'CmdbRelationInitError',
+    'CmdbRelationInitFromDataError',
+    'CmdbRelationToJsonError',
+]

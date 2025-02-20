@@ -130,7 +130,7 @@ class APIBlueprint(Blueprint):
                     validation_result = validator.validate(data)
                 except Exception as err:
                     LOGGER.debug("Schema '%s' validation failed", schema)
-                    LOGGER.debug("Schema Exception: %s", str(err))
+                    LOGGER.debug("Schema Exception: %s", err)
                     return abort(400, f"Schema '{schema}' validation failed")
 
                 if not validation_result:
@@ -180,8 +180,8 @@ class APIBlueprint(Blueprint):
             def _decorate(*args, **kwargs):
                 try:
                     request_args = request.args.to_dict()
-                except Exception as error:
-                    return abort(400, str(error))
+                except Exception as err:
+                    return abort(400, err)
 
                 return f(params=request_args, *args, **kwargs)
 

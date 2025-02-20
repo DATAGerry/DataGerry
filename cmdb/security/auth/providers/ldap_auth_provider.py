@@ -31,7 +31,7 @@ from cmdb.security.auth.base_authentication_provider import BaseAuthenticationPr
 from cmdb.security.auth.providers.ldap_auth_config import LdapAuthenticationProviderConfig
 
 from cmdb.errors.provider import GroupMappingError, AuthenticationError
-from cmdb.errors.manager import BaseManagerGetError, BaseManagerUpdateError
+from cmdb.errors.manager import BaseManagerUpdateError
 from cmdb.errors.manager.users_manager import UsersManagerGetError, UsersManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -98,7 +98,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
             if not ldap_connection_status:
                 raise AuthenticationError('Could not connection to ldap server.')
         except LDAPExceptionError as err:
-            raise AuthenticationError(str(err)) from err
+            raise AuthenticationError(err) from err
 
         user_search_filter = self.config.search['searchfilter'].replace("%username%", user_name)
         user_search_result = self.__ldap_connection.search(self.config.search['basedn'], user_search_filter)
@@ -128,7 +128,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
             try:
                 Connection(self.__ldap_server, entry_dn, password, auto_bind=True)
             except Exception as err:
-                raise AuthenticationError(str(err)) from err
+                raise AuthenticationError(err) from err
 
         try:
             user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
@@ -139,7 +139,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                     self.users_manager.update_user(user_instance.public_id, user_instance)
                     user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
                 except BaseManagerUpdateError as err:
-                    raise AuthenticationError(str(err)) from err
+                    raise AuthenticationError(err) from err
         except Exception as err:
             #TODO: ERROR-FIX
             LOGGER.warning('[LdapAuthenticationProvider] CmdbUser exists on LDAP but not in database: %s', err)
@@ -154,7 +154,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
             except Exception as error:
                 #TODO: ERROR-FIX
                 LOGGER.debug('[LdapAuthenticationProvider] %s',error)
-                raise AuthenticationError(str(error)) from error
+                raise AuthenticationError(error) from error
             LOGGER.debug('[LdapAuthenticationProvider] New user was init')
 
             try:
@@ -162,14 +162,14 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
             except UsersManagerInsertError as error:
                 #TODO: ERROR-FIX
                 LOGGER.debug('[authenticate] UsersManagerInsertError: %s', error)
-                raise AuthenticationError(str(error)) from error
+                raise AuthenticationError(error) from error
 
             try:
                 user_instance = self.users_manager.get_user(user_id)
             except UsersManagerGetError as error:
                 #TODO: ERROR-FIX
                 LOGGER.debug('[authenticate] %s', error)
-                raise AuthenticationError(str(error)) from error
+                raise AuthenticationError(error) from error
 
         return user_instance
 

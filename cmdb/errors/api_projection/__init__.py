@@ -16,9 +16,13 @@
 """
 This module provides all errors for API Projection
 """
-from .api_projection_errors import APIProjectionInclusionError
+from .api_projection_errors import (
+    ApiProjectionError,
+    APIProjectionInclusionError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'ApiProjectionError',
     'APIProjectionInclusionError',
 ]

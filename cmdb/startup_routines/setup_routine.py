@@ -40,7 +40,6 @@ from cmdb.models.user_management_constants import (
 from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
 from cmdb.errors.database import ServerTimeoutError, DatabaseNotFoundError, DatabaseAlreadyExistsError
-from cmdb.errors.manager.users_manager import UsersManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -187,7 +186,7 @@ class SetupRoutine:
         # except Exception as err:
         #     #TODO: ERROR-FIX
         #     LOGGER.info('[KEY ROUTINE] Password update for user failed: %s', err)
-        #     raise UsersManagerInsertError(err) from err
+        #     raise Exception(err) from err
 
         LOGGER.info('[KEY ROUTINE] FINISHED!')
 

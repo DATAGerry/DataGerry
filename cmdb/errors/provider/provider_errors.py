@@ -14,17 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains Provider Error Classes
+This module contains the classes of all Provider errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ProviderError(Exception):
     """
-    Base Provider Error
+    Raised to catch all Provider related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all RelationsManager related errors
+        """
+        super().__init__(err)
 
 # -------------------------------------------------- PROVIDER ERRORS ------------------------------------------------- #
 
@@ -32,33 +34,21 @@ class GroupMappingError(ProviderError):
     """
     Raised if a LDAP mapping was not found or failed
     """
-    def __init__(self, err: str):
-        self.message = f"LDAP mapping failed or was not found. Error: {err}"
-        super().__init__(self.message)
 
 
 class AuthenticationProviderNotActivated(ProviderError):
     """
     Raised if auth provider is not activated
     """
-    def __init__(self, err: str):
-        self.message = f"Auth provider not activated. Error: {err}"
-        super().__init__(self.message)
 
 
 class AuthenticationProviderNotFoundError(ProviderError):
     """
     Raised if auth provider does not exist
     """
-    def __init__(self, err: str):
-        self.message = f"Provider does not exist or is not installed. Error: {err}"
-        super().__init__(self.message)
 
 
 class AuthenticationError(ProviderError):
     """
     Raised when user could not be authenticated via provider
     """
-    def __init__(self, err: str):
-        self.message = f"Could not authenticate via provider. Error: {err}"
-        super().__init__(self.message)

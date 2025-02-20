@@ -68,7 +68,7 @@ class MediaFilesManager(BaseManager):
                 media_file.metadata = FileMetadata(**metadata).__dict__
         except Exception as err:
             #TODO: ERROR-FIX
-            raise MediaFileManagerInsertError(str(err)) from err
+            raise MediaFileManagerInsertError(err) from err
 
         return media_file._file
 
@@ -105,7 +105,7 @@ class MediaFilesManager(BaseManager):
                 results.append(MediaFile.to_json(MediaFile(**grid._file)))
         except (Exception, MediaFileManagerGetError) as err:
             #TODO: ERROR-FIX
-            raise MediaFileManagerGetError(str(err)) from err
+            raise MediaFileManagerGetError(err) from err
 
         return GridFsResponse(results, records_total)
 

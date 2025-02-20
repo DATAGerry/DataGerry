@@ -20,55 +20,43 @@ This module contains all error classes for CmdbTypes
 
 class CmdbTypeError(Exception):
     """
-    Base CmdbType Error
+    Raised to catch all CmdbType related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbType related errors
+        """
+        super().__init__(err)
 
 # -------------------------------------------------- CmdbType ERRORS ------------------------------------------------- #
+#TODO: REFACTOR-FIX (move to model errors)
+
 
 class TypeNotFoundError(CmdbTypeError):
     """
-    Raised when a type was not found
+    Raised when a CmdbType was not found
     """
-    def __init__(self, type_id: int):
-        self.message = f"Type with ID: {type_id} not found!"
-        super().__init__(self.message)
 
 
-#TODO: ERROR-FIX (never used)
 class ExternalFillError(CmdbTypeError):
     """
     Raised if href of TypeExternalLink could not filled with input data
     """
-    def __init__(self, href: str):
-        self.message = f"Href link do not fit with inputs: {href}!"
-        super().__init__(self.message)
 
 
 class TypeReferenceLineFillError(CmdbTypeError):
     """
     Raised if summary line of TypeReferences could not filled with input data
     """
-    def __init__(self, line: str):
-        self.message = f"Type reference summary line do not fit with inputs: {line}!"
-        super().__init__(self.message)
 
 
 class FieldNotFoundError(CmdbTypeError):
     """
-    Raised if field do not exists
+    Raised if field does not exists
     """
-    def __init__(self, field_name: str = None):
-        self.message = f"Field '{field_name}' was not found!"
-        super().__init__(self.message)
 
 
 class FieldInitError(CmdbTypeError):
     """
     Error if field could not be initialized
     """
-    def __init__(self, field_name:str):
-        self.message = f"Field '{field_name}' could not be initialized"
-        super().__init__(self.message)

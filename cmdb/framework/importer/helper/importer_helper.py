@@ -52,7 +52,7 @@ def load_importer_class(importer_type: str, importer_name: str):
     try:
         importer_class = __importer.get(importer_type).get(importer_name)
     except (IndexError, KeyError, ValueError, TypeError) as err:
-        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: {str(err)}") from err
+        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: {err}") from err
 
     if not importer_class:
         raise ImporterLoadError(f"[{importer_type} - {importer_name}]: No importer_class!")
@@ -70,7 +70,7 @@ def load_importer_config_class(importer_type: str, importer_name: str):
     try:
         importer_config_class = __importer_config.get(importer_type).get(importer_name)
     except (IndexError, KeyError, ValueError, TypeError) as err:
-        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: {str(err)}") from err
+        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: {err}") from err
     if not importer_config_class:
         raise ImporterLoadError(f"[{importer_type} - {importer_name}]: No importer_config_class!")
     return importer_config_class
@@ -86,7 +86,7 @@ def load_parser_class(parser_type: str, parser_name: str):
     try:
         parser_class = __parser.get(parser_type).get(parser_name)
     except (IndexError, KeyError, ValueError, TypeError) as err:
-        raise ParserLoadError(f"[{parser_type} - {parser_name}]: {str(err)}") from err
+        raise ParserLoadError(f"[{parser_type} - {parser_name}]: {err}") from err
 
     if not parser_class:
         raise ParserLoadError(f"[{parser_type} - {parser_name}]: No parser_class!")

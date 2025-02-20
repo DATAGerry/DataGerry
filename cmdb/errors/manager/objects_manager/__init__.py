@@ -17,20 +17,20 @@
 This module provides all errors for the ObjectsManager
 """
 from .objects_manager_errors import (
-    ObjectManagerInsertError,
-    ObjectManagerDeleteError,
-    ObjectManagerUpdateError,
-    ObjectManagerGetError,
-    ObjectManagerInitError,
-    TypeNotSetError,
+    ObjectsManagerError,
+    ObjectsManagerInsertError,
+    ObjectsManagerDeleteError,
+    ObjectsManagerUpdateError,
+    ObjectsManagerGetError,
+    ObjectsManagerInitError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ObjectManagerInsertError',
-    'ObjectManagerDeleteError',
-    'ObjectManagerUpdateError',
-    'ObjectManagerGetError',
-    'ObjectManagerInitError',
-    'TypeNotSetError',
+    'ObjectsManagerError',
+    'ObjectsManagerInsertError',
+    'ObjectsManagerDeleteError',
+    'ObjectsManagerUpdateError',
+    'ObjectsManagerGetError',
+    'ObjectsManagerInitError',
 ]

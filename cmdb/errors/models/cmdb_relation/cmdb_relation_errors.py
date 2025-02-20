@@ -14,11 +14,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This package contains all errors which occurs when initialising DATAGERRY
+This module contains the classes of all CmdbRelation errors
 """
-from .setup_errors import CollectionInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'CollectionInitError',
-]
+class CmdbRelationError(Exception):
+    """
+    Raised to catch all CmdbRelation related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbRelation related errors
+        """
+        super().__init__(err)
+
+# ----------------------------------------------- CmdbRelation - ERRORS ---------------------------------------------- #
+
+class CmdbRelationInitError(CmdbRelationError):
+    """
+    Raised when a CmdbRelation could not be initialised
+    """
+
+class CmdbRelationInitFromDataError(CmdbRelationError):
+    """
+    Raised when a CmdbRelation could not be initialised from a dict
+    """
+
+class CmdbRelationToJsonError(CmdbRelationError):
+    """
+    Raised when a CmdbRelation could not be transformed into a json compatible dict
+    """

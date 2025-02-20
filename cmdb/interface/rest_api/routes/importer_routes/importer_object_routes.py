@@ -62,7 +62,7 @@ from cmdb.interface.rest_api.routes.importer_routes.importer_route_utils import 
 
 from cmdb.errors.manager import BaseManagerInsertError
 from cmdb.errors.security import AccessDeniedError
-from cmdb.errors.manager.objects_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.render import InstanceRenderError
 from cmdb.errors.importer import ImportRuntimeError, ParserRuntimeError, ImporterLoadError, ParserLoadError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -221,9 +221,9 @@ def import_objects(request_user: CmdbUser):
         if not type_.active:
             raise AccessDeniedError(f'Objects cannot be created because type `{type_.name}` is deactivated.')
         verify_import_access(request_user, type_, types_manager)
-    except ObjectManagerGetError as err:
+    except ObjectsManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] ObjectManagerGetError: %s", err.message)
+        LOGGER.debug("[import_objects] %s", err)
         return abort(404, "Could not import objects !")
     except AccessDeniedError:
         return abort(403, "Access denied for importing objects !")
@@ -233,7 +233,7 @@ def import_objects(request_user: CmdbUser):
         parser_class = load_parser_class('object', file_format)
     except ParserLoadError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] ObjectManagerGetError: %s", err.message)
+        LOGGER.debug("[import_objects] %s", err)
         return abort(406)
 
     parser = parser_class(parser_config)
@@ -243,7 +243,7 @@ def import_objects(request_user: CmdbUser):
         importer_config_class = load_importer_config_class('object', file_format)
     except ImporterLoadError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] ImporterLoadError: %s", err.message)
+        LOGGER.debug("[import_objects] ImporterLoadError: %s", err)
         return abort(406)
     importer_config = importer_config_class(**importer_config_request)
 
@@ -252,7 +252,7 @@ def import_objects(request_user: CmdbUser):
         importer_class = load_importer_class('object', file_format)
     except ImporterLoadError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] ImporterLoadError: %s", err.message)
+        LOGGER.debug("[import_objects] ImporterLoadError: %s", err)
         return abort(406)
     importer = importer_class(working_file, importer_config, parser, objects_manager, request_user)
 
@@ -260,7 +260,7 @@ def import_objects(request_user: CmdbUser):
         import_response: ImporterObjectResponse = importer.start_import()
     except ImportRuntimeError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("Error while importing objects: %s", err.message)
+        LOGGER.error("Error while importing objects: %s", err)
         return abort(500)
     except AccessDeniedError as err:
         #TODO: ERROR-FIX
@@ -296,12 +296,12 @@ def import_objects(request_user: CmdbUser):
 
             logs_manager.insert_log(action=LogAction.CREATE, log_type=CmdbObjectLog.__name__, **log_params)
 
-        except ObjectManagerGetError as err:
-            LOGGER.debug("[import_objects] ObjectManagerGetError: %s", err.message)
+        except ObjectsManagerGetError as err:
+            LOGGER.debug("[import_objects] %s", err)
             return abort(404)
         except InstanceRenderError as err:
             #TODO: ERROR-FIX
-            LOGGER.debug("[import_objects] InstanceRenderError: %s", err.message)
+            LOGGER.debug("[import_objects] InstanceRenderError: %s", err)
             return abort(500)
         except BaseManagerInsertError as err:
             #TODO: ERROR-FIX

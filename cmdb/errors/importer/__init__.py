@@ -14,15 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for Importer
+This module provides all errors for the Importer
 """
-from .importer_errors import ImportRuntimeError,\
-                             ParserRuntimeError,\
-                             ImporterLoadError,\
-                             ParserLoadError
+from .importer_errors import (
+    ImporterError,
+    ImportRuntimeError,
+    ParserRuntimeError,
+    ImporterLoadError,
+    ParserLoadError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'ImporterError',
     'ImportRuntimeError',
     'ParserRuntimeError',
     'ImporterLoadError',
