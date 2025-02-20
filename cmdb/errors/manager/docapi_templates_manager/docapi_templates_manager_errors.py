@@ -22,11 +22,11 @@ class DocapiTemplatesManagerError(Exception):
     """
     Raised to catch all DocapiTemplatesManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all DocapiTemplatesManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
 # ------------------------------------------- DocapiTemplatesManager errors ------------------------------------------ #
 
@@ -34,52 +34,27 @@ class DocapiTemplatesManagerInsertError(DocapiTemplatesManagerError):
     """
     Raised when DocapiTemplatesManager could not insert a DocapiTemplate
     """
-    def __init__(self, err: str):
-        """
-        Raised when DocapiTemplatesManager could not insert a DocapiTemplate
-        """
-        super().__init__(f"DocapiTemplatesManagerInsertError: {err}")
 
 
 class DocapiTemplatesManagerGetError(DocapiTemplatesManagerError):
     """
     Raised when DocapiTemplatesManager could not retrieve a DocapiTemplate
     """
-    def __init__(self, err: str):
-        """
-        Raised when DocapiTemplatesManager could not retrieve a DocapiTemplate
-        """
-        super().__init__(f"DocapiTemplatesManagerGetError: {err}")
 
 
 class DocapiTemplatesManagerIterationError(DocapiTemplatesManagerError):
     """
     Raised when DocapiTemplatesManager could not aggregate DocapiTemplates
     """
-    def __init__(self, err: str):
-        """
-        Raised when DocapiTemplatesManager could not aggregate DocapiTemplates
-        """
-        super().__init__(f"DocapiTemplatesManagerIterationError: {err}")
 
 
 class DocapiTemplatesManagerUpdateError(DocapiTemplatesManagerError):
     """
     Raised when DocapiTemplatesManager could not update a DocapiTemplate
     """
-    def __init__(self, err: str):
-        """
-        Raised when DocapiTemplatesManager could not update a DocapiTemplate
-        """
-        super().__init__(f"DocapiTemplatesManagerUpdateError: {err}")
 
 
 class DocapiTemplatesManagerDeleteError(DocapiTemplatesManagerError):
     """
     Raised when DocapiTemplatesManager could not delete a DocapiTemplate
     """
-    def __init__(self, err: str):
-        """
-        Raised when DocapiTemplatesManager could not delete a DocapiTemplate
-        """
-        super().__init__(f"DocapiTemplatesManagerDeleteError: {err}")

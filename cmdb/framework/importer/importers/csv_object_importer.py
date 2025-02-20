@@ -31,7 +31,7 @@ from cmdb.framework.importer.responses.csv_object_parser_response import CsvObje
 from cmdb.framework.importer.helper.improve_object import ImproveObject
 from cmdb.framework.importer.responses.importer_object_response import ImporterObjectResponse
 
-from cmdb.errors.manager.objects_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.importer import ImportRuntimeError, ParserRuntimeError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -128,8 +128,8 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
                         'value': founded_objects[0].get_public_id()
                 })
 
-            except (ObjectManagerGetError, Exception) as err:
-                LOGGER.error('[CSV] Error while loading ref object %s', err.message)
+            except (ObjectsManagerGetError, Exception) as err:
+                LOGGER.error('[CSV] Error while loading ref object %s', err)
                 continue
 
         return working_object
@@ -139,7 +139,7 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
         try:
             parsed_response: CsvObjectParserResponse = self.parser.parse(self.file)
         except ParserRuntimeError as err:
-            raise ImportRuntimeError(f"{err.message}") from err
+            raise ImportRuntimeError(err) from err
 
         type_instance_fields: list[dict] = self.objects_manager.get_object_type(self.config.get_type_id()).get_fields()
 

@@ -35,10 +35,10 @@ from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager.objects_manager import (
-    ObjectManagerGetError,
-    ObjectManagerInitError,
-    ObjectManagerInsertError,
-    ObjectManagerDeleteError,
+    ObjectsManagerGetError,
+    ObjectsManagerInitError,
+    ObjectsManagerInsertError,
+    ObjectsManagerDeleteError,
 )
 from cmdb.errors.manager import (
     BaseManagerGetError,
@@ -87,7 +87,7 @@ class ObjectsManager(BaseManager):
             permission: Extended user acl rights
 
         Raises:
-            ObjectManagerInsertError: If an error occured during inserting the object
+            ObjectsManagerInsertError: If an error occured during inserting the object
         Returns:
             Public ID of the new object in database
         """
@@ -96,13 +96,14 @@ class ObjectsManager(BaseManager):
         try:
             new_object = CmdbObject(**data)
         except Exception as err:
-            LOGGER.debug("[insert_object] Error while initialising object. Error: %s", str(err))
-            raise ObjectManagerInitError(str(err)) from err
+            #TODO: ERROR-FIX (Proper way required)
+            LOGGER.debug("[insert_object] Error while initialising object. Error: %s", err)
+            raise ObjectsManagerInitError(err) from err
 
         try:
             object_type = self.get_object_type(new_object.type_id)
-        except ObjectManagerGetError as err:
-            raise ObjectManagerGetError(err) from err
+        except ObjectsManagerGetError as err:
+            raise err
 
         if not object_type.active:
             raise AccessDeniedError(f'Objects cannot be created because type `{object_type.name}` is deactivated.')
@@ -112,12 +113,12 @@ class ObjectsManager(BaseManager):
         try:
             ack = self.insert(new_object.__dict__)
         except BaseManagerInsertError as err:
-            LOGGER.debug("[insert_object] Error while inserting object. Error: %s", str(err))
-            raise ObjectManagerInsertError(err) from err
+            LOGGER.debug("[insert_object] Error while inserting object. Error: %s", err)
+            raise ObjectsManagerInsertError(err) from err
         except Exception as err:
             #TODO: ERROR-FIX
-            LOGGER.debug("[insert_object] Error while inserting object. Exception: %s", str(err))
-            raise ObjectManagerInsertError(err) from err
+            LOGGER.debug("[insert_object] Error while inserting object. Exception: %s", err)
+            raise ObjectsManagerInsertError(err) from err
 
         return ack
 
@@ -135,7 +136,7 @@ class ObjectsManager(BaseManager):
             permission: ACL permission
 
         Raises:
-            ObjectManagerGetError: If object was not found
+            ObjectsManagerGetError: If object was not found
 
         Returns:
             (CmdbObject): Requested object
@@ -144,7 +145,7 @@ class ObjectsManager(BaseManager):
             requested_object = self.get_one(public_id)
         except Exception as err:
             LOGGER.debug("[get_object] Error: %s, Type: %s", err, type(err))
-            raise ObjectManagerGetError(f"Error while retrieving object with ID: {public_id}! Error: {err}") from err
+            raise ObjectsManagerGetError(f"Error while retrieving object with ID: {public_id}! Error: {err}") from err
 
         if requested_object:
             requested_object = CmdbObject.from_data(requested_object)
@@ -153,7 +154,7 @@ class ObjectsManager(BaseManager):
 
             return requested_object
 
-        raise ObjectManagerGetError(f'Object with ID: {public_id} not found!')
+        raise ObjectsManagerGetError(f'Object with ID: {public_id} not found!')
 
 
     def iterate(self,
@@ -260,7 +261,7 @@ class ObjectsManager(BaseManager):
             type_id (int): public_id of the CmdbType
 
         Raises:
-            ObjectManagerGetError: When CmdbType could not be retrieved
+            ObjectsManagerGetError: When CmdbType could not be retrieved
 
         Returns:
             CmdbType: CmdbType with the given type_id
@@ -270,7 +271,7 @@ class ObjectsManager(BaseManager):
             requested_type = CmdbType.from_data(requested_type)
         except Exception as err:
             LOGGER.debug("[get_object_type] Error: %s, Type: %s", err, type(err))
-            raise ObjectManagerGetError(f"Error while retrieving type with ID: {type_id}. Error: {err}") from err
+            raise ObjectsManagerGetError(f"Error while retrieving type with ID: {type_id}. Error: {err}") from err
 
         return requested_type
 
@@ -283,7 +284,7 @@ class ObjectsManager(BaseManager):
             criteria (dict): Filter for counting documents like {'type_id: 1} 
 
         Raises:
-            ObjectManagerGetError: When an error occures during counting objects
+            ObjectsManagerGetError: When an error occures during counting objects
 
         Returns:
             (int): Returns the number of documents with the given criteria
@@ -294,7 +295,7 @@ class ObjectsManager(BaseManager):
             else:
                 object_count = self.count_documents(self.collection)
         except BaseManagerGetError as err:
-            raise ObjectManagerGetError(err) from err
+            raise ObjectsManagerGetError(err) from err
 
         return object_count
 
@@ -315,7 +316,7 @@ class ObjectsManager(BaseManager):
         try:
             return self.aggregate(pipeline=pipeline, **kwargs)
         except Exception as error:
-            raise ObjectManagerGetError(error) from error
+            raise ObjectsManagerGetError(error) from error
 
 
     def get_mds_references_for_object(self, referenced_object: CmdbObject, query_filter: Union[dict, list]):
@@ -515,13 +516,13 @@ class ObjectsManager(BaseManager):
         #TODO: DOCUMENT-FIX
         try:
             type_id = self.get_object(public_id).type_id
-        except ObjectManagerGetError as err:
-            raise ObjectManagerDeleteError(str(err)) from err
+        except ObjectsManagerGetError as err:
+            raise ObjectsManagerDeleteError(err) from err
 
         try:
             object_type = self.get_object_type(type_id)
-        except ObjectManagerGetError as err:
-            raise ObjectManagerDeleteError(str(err)) from err
+        except ObjectsManagerGetError as err:
+            raise ObjectsManagerDeleteError(err) from err
 
         if not object_type.active:
             #TODO: ERROR-FIX
@@ -533,7 +534,7 @@ class ObjectsManager(BaseManager):
             ack = self.delete({'public_id': public_id})
             return ack
         except Exception as err:
-            raise ObjectManagerDeleteError(str(err)) from err
+            raise ObjectsManagerDeleteError(err) from err
 
 
     def delete_all_object_references(self, public_id: int):

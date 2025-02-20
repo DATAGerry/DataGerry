@@ -493,4 +493,4 @@ class BaseManager:
         try:
             return self.dbm.delete_many(collection=self.collection, **filter_query)
         except DocumentDeleteError as err:
-            raise BaseManagerDeleteError(str(err)) from err
+            raise BaseManagerDeleteError(err) from err

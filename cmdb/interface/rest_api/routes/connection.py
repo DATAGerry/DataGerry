@@ -53,5 +53,5 @@ def connection_response():
 
         return api_response.make_response()
     except Exception as err:
-        LOGGER.debug("[connection_response] Exception: %s", str(err))
+        LOGGER.debug("[connection_response] Exception: %s", err)
         abort(500, "Could not connect to REST API!")

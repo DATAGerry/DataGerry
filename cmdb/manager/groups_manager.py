@@ -124,11 +124,10 @@ class GroupsManager(BaseManager):
         try:
             aggregation_result, total = self.iterate_query(builder_params)
 
-            iteration_result: IterationResult[CmdbUserGroup] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CmdbUserGroup)
+            iteration_result: IterationResult[CmdbUserGroup] = IterationResult(aggregation_result, total,
+                                                                               CmdbUserGroup)
 
             return iteration_result
-        #TODO: ERROR-FIX (catch init errors)
         except Exception as err:
             raise GroupsManagerIterationError(err) from err
 

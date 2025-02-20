@@ -144,9 +144,8 @@ class DocapiTemplatesManager(BaseManager):
         try:
             aggregation_result, total = self.iterate_query(builder_params)
 
-            #TODO: ERROR-FIX (catch iterationresult error)
-            iteration_result: IterationResult[DocapiTemplate] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(DocapiTemplate)
+            iteration_result: IterationResult[DocapiTemplate] = IterationResult(aggregation_result, total,
+                                                                                DocapiTemplate)
 
             return iteration_result
         except BaseManagerIterationError as err:
@@ -175,7 +174,7 @@ class DocapiTemplatesManager(BaseManager):
             return ack
         #TODO: ERROR-FIX (catch proper errors)
         except Exception as err:
-            raise DocapiTemplatesManagerGetError(str(err)) from err
+            raise DocapiTemplatesManagerGetError(err) from err
 
 
     def get_template_by_name(self, **requirements) -> DocapiTemplate:
@@ -202,7 +201,7 @@ class DocapiTemplatesManager(BaseManager):
             raise DocapiTemplatesManagerGetError('No document matches the filter!')
         except Exception as err:
             #TODO: ERROR-FIX
-            raise DocapiTemplatesManagerGetError(str(err)) from err
+            raise DocapiTemplatesManagerGetError(err) from err
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 

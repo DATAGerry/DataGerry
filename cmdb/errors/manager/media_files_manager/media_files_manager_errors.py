@@ -20,11 +20,13 @@ This module contains the classes of all MediaFilesManager errors
 
 class MediaFileManagerError(Exception):
     """
-    Base MediaFileManagerError error
+    Raised to catch all MediaFilesManager related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all MediaFilesManager related errors
+        """
+        super().__init__(err)
 
 # --------------------------------------------- MediaFilesManager Errors --------------------------------------------- #
 
@@ -32,33 +34,21 @@ class MediaFileManagerGetError(MediaFileManagerError):
     """
     Raised when MediaFilesManager could not retrieve a file
     """
-    def __init__(self, err: str):
-        self.message = f"File could not be retrieved. Error: {err}"
-        super().__init__(self.message)
 
 
 class MediaFileManagerInsertError(MediaFileManagerError):
     """
     Raised when MediaFilesManager could not create a file
     """
-    def __init__(self, err: str):
-        self.message = f"File could not be created. Error: {err}"
-        super().__init__(self.message)
 
 
 class MediaFileManagerUpdateError(MediaFileManagerError):
     """
     Raised when MediaFilesManager could not update a file
     """
-    def __init__(self, err: str):
-        self.message = f"File could not be updated. Error: {err}"
-        super().__init__(self.message)
 
 
 class MediaFileManagerDeleteError(MediaFileManagerError):
     """
     Raised when MediaFilesManager could not delete a file
     """
-    def __init__(self, err: str):
-        self.message = f"File could not be deleted. Error: {err}"
-        super().__init__(self.message)

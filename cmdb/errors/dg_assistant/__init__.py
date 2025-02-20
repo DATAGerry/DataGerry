@@ -14,11 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the DATAGerry Assistant
+This module provides all errors for the DataGerry Assistant
 """
-from .dg_assistant_errors import ProfileCreationError
+from .dg_assistant_errors import (
+    AssistantError,
+    ProfileCreationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'AssistantError',
     'ProfileCreationError',
 ]

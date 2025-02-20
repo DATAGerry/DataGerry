@@ -16,14 +16,18 @@
 """
 This module provides all errors for the TypesManager
 """
-from .types_manager_errors import TypesManagerGetError,\
-                                  TypesManagerDeleteError,\
-                                  TypesManagerInsertError,\
-                                  TypesManagerUpdateError,\
-                                  TypesManagerInitError
+from .types_manager_errors import (
+    TypesManagerError,
+    TypesManagerGetError,
+    TypesManagerDeleteError,
+    TypesManagerInsertError,
+    TypesManagerUpdateError,
+    TypesManagerInitError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'TypesManagerError',
     'TypesManagerGetError',
     'TypesManagerDeleteError',
     'TypesManagerInsertError',

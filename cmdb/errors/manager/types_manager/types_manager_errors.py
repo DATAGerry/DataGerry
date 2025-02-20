@@ -20,56 +20,41 @@ This module contains the classes of all TypesManager errors
 
 class TypesManagerError(Exception):
     """
-    Base TypesManager error
+    Raised to catch all TypesManager related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all TypesManager related errors
+        """
+        super().__init__(err)
 
-# -------------------------------------------------------------------------------------------------------------------- #
-#                                               TypesManagerError Errors                                               #
-# -------------------------------------------------------------------------------------------------------------------- #
+# ------------------------------------------------ TypesManager Errors ----------------------------------------------- #
 
 class TypesManagerGetError(TypesManagerError):
     """
-    Raised when TypesManager could not retrieve a type
+    Raised when TypesManager could not retrieve a CmdbType
     """
-    def __init__(self, err: str):
-        self.message = f"Type could not be retrieved. Error: {err}"
-        super().__init__(self.message)
 
 
 class TypesManagerInsertError(TypesManagerError):
     """
     Raised when TypesManager could not create a type
     """
-    def __init__(self, err: str):
-        self.message = f"Type could not be created. Error: {err}"
-        super().__init__(self.message)
 
 
 class TypesManagerUpdateError(TypesManagerError):
     """
     Raised when TypesManager could not update a type
     """
-    def __init__(self, err: str):
-        self.message = f"Type could not be updated. Error: {err}"
-        super().__init__(self.message)
 
 
 class TypesManagerDeleteError(TypesManagerError):
     """
     Raised when TypesManager could not delete a type
     """
-    def __init__(self, err: str):
-        self.message = f"Type could not be deleted. Error: {err}"
-        super().__init__(self.message)
 
 
 class TypesManagerInitError(TypesManagerError):
     """
     Raised when TypesManager could not initialise a type
     """
-    def __init__(self, err: str):
-        self.message = f"Type could not be initialised. Error: {err}"
-        super().__init__(self.message)

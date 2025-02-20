@@ -16,13 +16,17 @@
 """
 This module provides all CmdbDAO object errors
 """
-from .cmdb_object_errors import NoPublicIDError,\
-                                VersionTypeError,\
-                                NoVersionError,\
-                                RequiredInitKeyNotFoundError
+from .cmdb_object_errors import (
+    CmdbDAOError,
+    NoPublicIDError,
+    VersionTypeError,
+    NoVersionError,
+    RequiredInitKeyNotFoundError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'CmdbDAOError',
     'NoPublicIDError',
     'VersionTypeError',
     'NoVersionError',

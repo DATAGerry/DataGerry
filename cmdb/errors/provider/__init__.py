@@ -16,13 +16,17 @@
 """
 This module provides all errors for Providers
 """
-from .provider_errors import GroupMappingError,\
-                             AuthenticationProviderNotActivated,\
-                             AuthenticationProviderNotFoundError,\
-                             AuthenticationError
+from .provider_errors import (
+    ProviderError,
+    GroupMappingError,
+    AuthenticationProviderNotActivated,
+    AuthenticationProviderNotFoundError,
+    AuthenticationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'ProviderError',
     'GroupMappingError',
     'AuthenticationProviderNotActivated',
     'AuthenticationProviderNotFoundError',

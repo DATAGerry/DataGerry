@@ -22,11 +22,11 @@ class ObjectRelationLogsManagerError(Exception):
     """
     Raised to catch all ObjectRelationLogsManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all ObjectRelationLogsManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
 # ---------------------------------------- ObjectRelationsManagerError errors ---------------------------------------- #
 
@@ -34,41 +34,21 @@ class ObjectRelationLogsManagerInsertError(ObjectRelationLogsManagerError):
     """
     Raised when ObjectRelationLogsManager could not insert a CmdbObjectRelationLog
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationLogsManager could not insert a CmdbObjectRelationLog
-        """
-        super().__init__(f"ObjectRelationLogsManagerInsertError: {err}")
 
 
 class ObjectRelationLogsManagerGetError(ObjectRelationLogsManagerError):
     """
     Raised when ObjectRelationLogsManager could not retrieve a CmdbObjectRelationLog
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationLogsManager could not retrieve a CmdbObjectRelationLog
-        """
-        super().__init__(f"ObjectRelationLogsManagerGetError: {err}")
 
 
 class ObjectRelationLogsManagerDeleteError(ObjectRelationLogsManagerError):
     """
     Raised when ObjectRelationLogsManager could not delete a CmdbObjectRelationLog
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationLogsManager could not delete a CmdbObjectRelationLog
-        """
-        super().__init__(f"ObjectRelationLogsManagerDeleteError: {err}")
 
 
 class ObjectRelationLogsManagerIterationError(ObjectRelationLogsManagerError):
     """
     Raised when ObjectRelationLogsManager could not iterate over CmdbObjectRelationLog
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationLogsManager could not iterate over CmdbObjectRelationLog
-        """
-        super().__init__(f"ObjectRelationLogsManagerIterationError: {err}")

@@ -70,10 +70,10 @@ from cmdb.errors.manager import (
     BaseManagerIterationError,
 )
 from cmdb.errors.manager.objects_manager import (
-    ObjectManagerGetError,
-    ObjectManagerUpdateError,
-    ObjectManagerDeleteError,
-    ObjectManagerInsertError,
+    ObjectsManagerGetError,
+    ObjectsManagerUpdateError,
+    ObjectsManagerDeleteError,
+    ObjectsManagerInsertError,
 )
 from cmdb.errors.render import InstanceRenderError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -109,8 +109,8 @@ def insert_object(request_user: CmdbUser):
         else:
             try:
                 objects_manager.get_object(public_id=new_object_data['public_id'])
-            except ObjectManagerGetError as err:
-                LOGGER.warning("[insert_object] ObjectManagerGetError: %s , Type: %s", err, type(err))
+            except ObjectsManagerGetError as err:
+                LOGGER.warning("[insert_object] %s , Type: %s", err, type(err))
             else:
                 return abort(400, f'Object with PublicID {new_object_data["public_id"]} already exists.')
 
@@ -167,7 +167,7 @@ def insert_object(request_user: CmdbUser):
                 if not success:
                     raise Exception("Status code was not 200!")
         except Exception as err:
-            LOGGER.error("[insert_object] Could not sync config items count to service portal. Error: %s", str(err))
+            LOGGER.error("[insert_object] Could not sync config items count to service portal. Error: %s", err)
 
         # Generate new insert log
         try:
@@ -185,20 +185,20 @@ def insert_object(request_user: CmdbUser):
         except BaseManagerInsertError as err:
             LOGGER.warning("[insert_object] %s", err)
 
-    except (TypeError, ObjectManagerInsertError) as err:
+    except (TypeError, ObjectsManagerInsertError) as err:
         #TODO: ERROR-FIX
-        LOGGER.warning("[insert_object] TypeError, ObjectManagerInsertError: %s", err.message)
-        return abort(400, str(err))
-    except (BaseManagerGetError, ObjectManagerGetError) as err:
+        LOGGER.warning("[insert_object] TypeError: %s", err)
+        return abort(400, err)
+    except (BaseManagerGetError, ObjectsManagerGetError) as err:
         #TODO: ERROR-FIX
-        LOGGER.warning("[insert_object] ObjectManagerGetError: %s", err)
+        LOGGER.warning("[insert_object] %s", err)
         return abort(400)
     except AccessDeniedError as err:
         LOGGER.warning("[insert_object] Exception: %s", err)
         return abort(403, "No permission to insert the object !")
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.warning("[insert_object] InstanceRenderError: %s", err.message)
+        LOGGER.warning("[insert_object] InstanceRenderError: %s", err)
         return abort(500)
     except Exception as err:
         #TODO: ERROR-FIX
@@ -222,17 +222,17 @@ def get_object(public_id, request_user: CmdbUser):
 
     try:
         object_instance = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
-    except ObjectManagerGetError as err:
-        LOGGER.debug("[get_object] ObjectManagerGetError: %s", err.message)
+    except ObjectsManagerGetError as err:
+        LOGGER.debug("[get_object] %s", err)
         return abort(404, f"Could not retrieve object with public_id: {public_id} !")
     except AccessDeniedError:
         return abort(403, f"Access denied for object with public_id: {public_id} !")
 
     try:
         type_instance = objects_manager.get_object_type(object_instance.get_type_id())
-    except ObjectManagerGetError as err:
+    except ObjectsManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_object] ObjectManagerGetError: %s", err.message)
+        LOGGER.debug("[get_object] %s", err)
         return abort(404, f"Could not retrieve object with public_id: {public_id} !")
 
     try:
@@ -241,7 +241,7 @@ def get_object(public_id, request_user: CmdbUser):
         render_result = render.result()
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[get_object] InstanceRenderError: %s", err.message)
+        LOGGER.error("[get_object] InstanceRenderError: %s", err)
         return abort(500, "Could not render the object!")
     except Exception as err:
         #TODO: ERROR-FIX
@@ -333,7 +333,7 @@ def get_native_object(public_id: int, request_user: CmdbUser):
 
     try:
         object_instance = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
-    except ObjectManagerGetError:
+    except ObjectsManagerGetError:
         return abort(404)
     except AccessDeniedError:
         #TODO: ERROR-FIX
@@ -418,7 +418,7 @@ def get_object_mds_reference(public_id: int, request_user: CmdbUser):
 
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[get_object_mds_reference] InstanceRenderError: %s", err.message)
+        LOGGER.error("[get_object_mds_reference] InstanceRenderError: %s", err)
         return abort(500)
     except Exception as err:
         #TODO: ERROR-FIX
@@ -470,7 +470,7 @@ def get_object_mds_references(public_id: int, request_user: CmdbUser):
 
         except InstanceRenderError as err:
             #TODO: ERROR-FIX
-            LOGGER.error("[get_object_mds_references] InstanceRenderError: %s", err.message)
+            LOGGER.error("[get_object_mds_references] InstanceRenderError: %s", err)
             return abort(500)
 
     api_response = DefaultResponse(summary_lines)
@@ -564,8 +564,8 @@ def get_object_state(public_id: int, request_user: CmdbUser):
             return api_response.make_response()
 
         abort(404, f"Object with ID:{public_id} not found!")
-    except ObjectManagerGetError as err:
-        LOGGER.debug("[get_object_state] ObjectManagerGetError: %s", err.message)
+    except ObjectsManagerGetError as err:
+        LOGGER.debug("[get_object_state] %s", err)
         return abort(404)
     except Exception as err:
         #TODO: ERROR-FIX
@@ -742,19 +742,19 @@ def update_object(public_id: int, data: dict, request_user: CmdbUser):
         except AccessDeniedError as err:
             LOGGER.error("AccessDeniedError: %s", err)
             return abort(403)
-        except ObjectManagerGetError as err:
-            LOGGER.debug("[update_object] ObjectManagerGetError: %s", err.message)
-            failed.append(ResponseFailedMessage(error_message=err.message, status=400,
+        except ObjectsManagerGetError as err:
+            LOGGER.debug("[update_object] %s", err)
+            failed.append(ResponseFailedMessage(error_message=err, status=400,
                                                 public_id=obj_id, obj=new_data).to_dict())
             continue
-        except (BaseManagerGetError, ObjectManagerUpdateError) as err:
-            LOGGER.error("BaseManagerGetError, ObjectManagerUpdateError: %s", err)
-            failed.append(ResponseFailedMessage(error_message=err.message, status=404,
+        except (BaseManagerGetError, ObjectsManagerUpdateError) as err:
+            LOGGER.error("BaseManagerGetError: %s", err)
+            failed.append(ResponseFailedMessage(error_message=err, status=404,
                                                 public_id=obj_id, obj=new_data).to_dict())
             continue
         except InstanceRenderError as err:
-            LOGGER.debug("[update_object] InstanceRenderError: %s", err.message)
-            failed.append(ResponseFailedMessage(error_message=err.message, status=500,
+            LOGGER.debug("[update_object] InstanceRenderError: %s", err)
+            failed.append(ResponseFailedMessage(error_message=err, status=500,
                                                 public_id=obj_id, obj=new_data).to_dict())
             continue
 
@@ -780,8 +780,8 @@ def update_object_state(public_id: int, request_user: CmdbUser):
         return abort(400, "Object state is not a boolean value (true/false)!")
     try:
         found_object = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
-    except ObjectManagerGetError as err:
-        LOGGER.debug("[update_object_state] ObjectManagerGetError: %s", err.message)
+    except ObjectsManagerGetError as err:
+        LOGGER.debug("[update_object_state] %s", err)
         return abort(404, f"Could not update object state for public_id: {public_id} !")
 
     if found_object.active == state:
@@ -797,8 +797,8 @@ def update_object_state(public_id: int, request_user: CmdbUser):
         #TODO: ERROR-FIX
         LOGGER.error("AccessDeniedError: %s", err)
         return abort(403)
-    except ObjectManagerUpdateError as err:
-        LOGGER.error("[update_object_state] ObjectManagerUpdateError: %s", err)
+    except ObjectsManagerUpdateError as err:
+        LOGGER.error("[update_object_state] %s", err)
         return abort(500, f"Fatal error when updating object state of public_id: {public_id}")
 
         # get current object state
@@ -810,12 +810,12 @@ def update_object_state(public_id: int, request_user: CmdbUser):
                                                   request_user,
                                                   False,
                                                   objects_manager.dbm).result()
-    except ObjectManagerGetError as err:
-        LOGGER.debug("[update_object_state] ObjectManagerGetError: %s", err.message)
+    except ObjectsManagerGetError as err:
+        LOGGER.debug("[update_object_state] %s", err)
         return abort(404)
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[update_object_state] InstanceRenderError: %s", err.message)
+        LOGGER.error("[update_object_state] InstanceRenderError: %s", err)
         return abort(500)
 
     try:
@@ -1003,12 +1003,12 @@ def delete_object(public_id: int, request_user: CmdbUser):
         except Exception as err:
             LOGGER.error("Uncaught Exception: %s. Type: %s", err, type(err))
 
-    except ObjectManagerGetError as err:
-        LOGGER.debug("[delete_object] ObjectManagerGetError: %s", err.message)
+    except ObjectsManagerGetError as err:
+        LOGGER.debug("[delete_object] %s", err)
         return abort(404)
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[delete_object] InstanceRenderError: %s", err.message)
+        LOGGER.error("[delete_object] InstanceRenderError: %s", err)
         return abort(500)
 
     try:
@@ -1016,12 +1016,12 @@ def delete_object(public_id: int, request_user: CmdbUser):
             locations_manager.delete({'public_id':current_location.public_id})
 
         ack = objects_manager.delete_object(public_id, request_user, AccessControlPermission.DELETE)
-    except ObjectManagerGetError as err:
-        LOGGER.debug("[delete_object] ObjectManagerGetError: %s", err.message)
+    except ObjectsManagerGetError as err:
+        LOGGER.debug("[delete_object]  %s", err)
         return abort(400, f"Could not delete object with public_id: {public_id}!")
     except AccessDeniedError as err:
         return abort(403, f"Access denied for object with public_id: {public_id}")
-    except ObjectManagerDeleteError:
+    except ObjectsManagerDeleteError:
         #TODO: ERROR-FIX
         return abort(400, "Could not delete the object")
     except Exception:
@@ -1057,7 +1057,7 @@ def delete_object(public_id: int, request_user: CmdbUser):
             if not success:
                 raise Exception("Status code was not 200!")
     except Exception as err:
-        LOGGER.error("[delete_object] Could not sync config items count to service portal. Error: %s", str(err))
+        LOGGER.error("[delete_object] Could not sync config items count to service portal. Error: %s", err)
 
 
     api_response = DefaultResponse(ack)
@@ -1115,18 +1115,18 @@ def delete_object_with_child_locations(public_id: int, request_user: CmdbUser):
                     if not success:
                         raise Exception("Status code was not 200!")
             except Exception as error:
-                LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
+                LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
         else:
             # something went wrong, either object or location don't exist
             return abort(404)
 
-    except ObjectManagerGetError as err:
+    except ObjectsManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_object_with_child_locations] ObjectManagerGetError: %s", err.message)
+        LOGGER.debug("[delete_object_with_child_locations] %s", err)
         return abort(404)
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[delete_object_with_child_locations] InstanceRenderError: %s", err.message)
+        LOGGER.error("[delete_object_with_child_locations] InstanceRenderError: %s", err)
         return abort(500)
 
     api_response = DefaultResponse(deleted)
@@ -1203,18 +1203,18 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
                     if not success:
                         raise Exception("Status code was not 200!")
             except Exception as error:
-                LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
+                LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
         else:
             # something went wrong, either object or location don't exist
             return abort(404)
 
-    except ObjectManagerGetError as err:
+    except ObjectsManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[delete_object_with_child_objects] ObjectManagerGetError: %s", err.message)
+        LOGGER.debug("[delete_object_with_child_objects] %s", err)
         return abort(404)
     except InstanceRenderError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[delete_object_with_child_objects] InstanceRenderError: %s", err.message)
+        LOGGER.error("[delete_object_with_child_objects] InstanceRenderError: %s", err)
         return abort(500)
 
     api_response = DefaultResponse(deleted)
@@ -1276,13 +1276,13 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
                                                           request_user,
                                                           False,
                                                           objects_manager).result()
-            except ObjectManagerGetError as err:
+            except ObjectsManagerGetError as err:
                 #TODO: ERROR-FIX
-                LOGGER.debug("[delete_many_objects] ObjectManagerGetError: %s", err.message)
+                LOGGER.debug("[delete_many_objects] %s", err)
                 return abort(404)
             except InstanceRenderError as err:
                 #TODO: ERROR-FIX
-                LOGGER.error("[delete_many_objects] InstanceRenderError: %s", err.message)
+                LOGGER.error("[delete_many_objects] InstanceRenderError: %s", err)
                 return abort(500)
 
             try:
@@ -1293,7 +1293,7 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
                 #EVENT: DELETE-EVENT
                 webhooks_manager.send_webhook_event(WebhookEventType.DELETE,
                                                     object_before=CmdbObject.to_json(current_object_instance))
-            except ObjectManagerDeleteError:
+            except ObjectsManagerDeleteError:
                 #TODO: ERROR-FIX
                 return abort(400)
             except AccessDeniedError as err:
@@ -1309,7 +1309,7 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
                     if not success:
                         raise Exception("Status code was not 200!")
             except Exception as error:
-                LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
+                LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
 
             try:
                 # generate log
@@ -1329,9 +1329,9 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
 
         return api_response.make_response()
 
-    except ObjectManagerDeleteError as err:
+    except ObjectsManagerDeleteError as err:
         #TODO: ERROR-FIX
-        return jsonify(message='Delete Error', error=err.message)
+        return jsonify(message='Delete Error', error=err)
     except Exception:
         #TODO: ERROR-FIX
         return abort(500)

@@ -22,64 +22,39 @@ class GroupsManagerError(Exception):
     """
     Raised to catch all GroupsManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all GroupsManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
-# ------------------------------------------- DocapiTemplatesManager errors ------------------------------------------ #
+# ----------------------------------------------- GroupsManager Errors ----------------------------------------------- #
 
 class GroupsManagerInsertError(GroupsManagerError):
     """
     Raised when GroupsManager could not insert a CmdbUserGroup
     """
-    def __init__(self, err: str):
-        """
-        Raised when GroupsManager could not insert a CmdbUserGroup
-        """
-        super().__init__(f"GroupsManagerInsertError: {err}")
 
 
 class GroupsManagerGetError(GroupsManagerError):
     """
     Raised when GroupsManager could not retrieve a CmdbUserGroup
     """
-    def __init__(self, err: str):
-        """
-        Raised when GroupsManager could not retrieve a CmdbUserGroup
-        """
-        super().__init__(f"GroupsManagerGetError: {err}")
 
 
 class GroupsManagerIterationError(GroupsManagerError):
     """
     Raised when GroupsManager could not iterate over CmdbUserGroups
     """
-    def __init__(self, err: str):
-        """
-        Raised when GroupsManager could not iterate over CmdbUserGroups
-        """
-        super().__init__(f"GroupsManagerIterationError: {err}")
 
 
 class GroupsManagerUpdateError(GroupsManagerError):
     """
     Raised when GroupsManager could not update a CmdbUserGroup
     """
-    def __init__(self, err: str):
-        """
-        Raised when GroupsManager could not update a CmdbUserGroup
-        """
-        super().__init__(f"GroupsManagerUpdateError: {err}")
 
 
 class GroupsManagerDeleteError(GroupsManagerError):
     """
     Raised when GroupsManager could not delete a CmdbUserGroup
     """
-    def __init__(self, err: str):
-        """
-        Raised when GroupsManager could not delete a CmdbUserGroup
-        """
-        super().__init__(f"GroupsManagerDeleteError: {err}")

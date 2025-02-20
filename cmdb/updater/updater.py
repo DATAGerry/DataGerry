@@ -89,7 +89,7 @@ class Updater(BaseManager):
         settings_writer.write(_id='updater', data=updater_setting_instance.__dict__)
 
 
-    def error(self, msg):
+    def error(self, msg: str) -> None:
         """document"""
         #TODO: DOCUMENT-FIX
         raise UpdaterException(msg)

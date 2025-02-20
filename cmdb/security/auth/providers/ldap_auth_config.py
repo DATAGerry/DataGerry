@@ -77,4 +77,4 @@ class LdapAuthenticationProviderConfig(BaseAuthProviderConfig):
             return next(int(group['group_id']) for group in self.groups['mapping'] if
                         group['group_dn'].lower() == group_dn.lower())
         except StopIteration as err:
-            raise GroupMappingError(str(err)) from err
+            raise GroupMappingError(err) from err

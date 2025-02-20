@@ -16,14 +16,18 @@
 """
 This module provides all CmdbType errors
 """
-from .type_errors import TypeNotFoundError,\
-                         ExternalFillError,\
-                         TypeReferenceLineFillError,\
-                         FieldNotFoundError,\
-                         FieldInitError
+from .type_errors import (
+    CmdbTypeError,
+    TypeNotFoundError,
+    ExternalFillError,
+    TypeReferenceLineFillError,
+    FieldNotFoundError,
+    FieldInitError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'CmdbTypeError',
     'TypeNotFoundError',
     'ExternalFillError',
     'TypeReferenceLineFillError',

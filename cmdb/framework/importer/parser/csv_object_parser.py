@@ -91,7 +91,7 @@ class CsvObjectParser(BaseObjectParser, CSVContent):
                 else:
                     raise ParserRuntimeError(f"[{self.__class__.__name__}]: No content data!")
         except Exception as err:
-            LOGGER.error(str(err))
-            raise ParserRuntimeError(f"[{self.__class__.__name__}]: An error occured: {str(err)}") from err
+            LOGGER.error(err)
+            raise ParserRuntimeError(f"[{self.__class__.__name__}]: An error occured: {err}") from err
 
         return CsvObjectParserResponse(**parsed)

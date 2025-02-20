@@ -22,11 +22,11 @@ class ObjectRelationsManagerError(Exception):
     """
     Raised to catch all ObjectRelationsManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all ObjectRelationsManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
 # ------------------------------------------- ObjectRelationsManager errors ------------------------------------------ #
 
@@ -34,52 +34,27 @@ class ObjectRelationsManagerInsertError(ObjectRelationsManagerError):
     """
     Raised when ObjectRelationsManager could not insert a CmdbObjectRelation
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationsManager could not insert a CmdbObjectRelation
-        """
-        super().__init__(f"ObjectRelationsManagerInsertError: {err}")
 
 
 class ObjectRelationsManagerGetError(ObjectRelationsManagerError):
     """
     Raised when ObjectRelationsManager could not retrieve a CmdbObjectRelation
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationsManager could not retrieve a CmdbObjectRelation
-        """
-        super().__init__(f"ObjectRelationsManagerGetError: {err}")
 
 
 class ObjectRelationsManagerUpdateError(ObjectRelationsManagerError):
     """
     Raised when ObjectRelationsManager could not update a CmdbObjectRelation
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationsManager could not update a CmdbObjectRelation
-        """
-        super().__init__(f"ObjectRelationsManagerUpdateError: {err}")
 
 
 class ObjectRelationsManagerDeleteError(ObjectRelationsManagerError):
     """
     Raised when ObjectRelationsManager could not delete a CmdbObjectRelation
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationsManager could not delete a CmdbObjectRelation
-        """
-        super().__init__(f"ObjectRelationsManagerDeleteError: {err}")
 
 
 class ObjectRelationsManagerIterationError(ObjectRelationsManagerError):
     """
     Raised when ObjectRelationsManager could not iterate over CmdbObjectRelations
     """
-    def __init__(self, err: str):
-        """
-        Raised when ObjectRelationsManager could not iterate over CmdbObjectRelations
-        """
-        super().__init__(f"ObjectRelationsManagerIterationError: {err}")

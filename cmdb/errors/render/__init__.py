@@ -16,12 +16,16 @@
 """
 This module provides all errors for Rendering
 """
-from .render_errors import ObjectInstanceError,\
-                           TypeInstanceError,\
-                           InstanceRenderError
+from .render_errors import (
+    RenderError,
+    ObjectInstanceError,
+    TypeInstanceError,
+    InstanceRenderError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'RenderError',
     'ObjectInstanceError',
     'TypeInstanceError',
     'InstanceRenderError',

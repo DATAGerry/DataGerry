@@ -568,10 +568,10 @@ def set_admin_user(user_data: dict, subscription: dict):
     except UsersManagerGetError as err:
         raise UsersManagerGetError(err) from err
     except UsersManagerInsertError as err:
-        raise UsersManagerInsertError(str(err)) from err
+        raise UsersManagerInsertError(err) from err
     except Exception as err:
         LOGGER.debug("[set_admin_user] Exception: %s, Type: %s", err, type(err))
-        raise UsersManagerInsertError(str(err)) from err
+        raise UsersManagerInsertError(err) from err
 
 
 def retrive_user(user_data: dict, database: str):
@@ -667,5 +667,5 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
 
         return False
     except (requests.exceptions.Timeout, requests.exceptions.RequestException) as err:
-        LOGGER.error("[sync_config_items] Request Error: %s", str(err))
+        LOGGER.error("[sync_config_items] Request Error: %s", err)
         return False

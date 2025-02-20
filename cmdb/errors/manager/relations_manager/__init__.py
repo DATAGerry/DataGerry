@@ -18,6 +18,7 @@ This module provides all errors for the RelationsManager
 """
 from .relations_manager_errors import (
     RelationsManagerError,
+    RelationsManagerInitError,
     RelationsManagerInsertError,
     RelationsManagerGetError,
     RelationsManagerUpdateError,
@@ -28,6 +29,7 @@ from .relations_manager_errors import (
 
 __all__ = [
     'RelationsManagerError',
+    'RelationsManagerInitError',
     'RelationsManagerInsertError',
     'RelationsManagerGetError',
     'RelationsManagerUpdateError',

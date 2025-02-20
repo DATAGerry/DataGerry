@@ -84,12 +84,13 @@ class LocationsManager(BaseManager):
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            iteration_result: IterationResult[CmdbLocation] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CmdbLocation)
+            iteration_result: IterationResult[CmdbLocation] = IterationResult(aggregation_result,
+                                                                              total,
+                                                                              CmdbLocation)
+
+            return iteration_result
         except Exception as err:
             raise BaseManagerIterationError(err) from err
-
-        return iteration_result
 
 
     def get_location(self, public_id: int) -> CmdbLocation:

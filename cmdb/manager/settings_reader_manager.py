@@ -97,7 +97,7 @@ class SettingsReaderManager(SystemReader):
             if default:
                 return default
 
-            raise SectionError(section)
+            raise SectionError(f"The section '{section}' does not exist!")
 
         return section_values
 

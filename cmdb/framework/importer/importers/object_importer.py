@@ -37,9 +37,9 @@ from cmdb.interface.route_utils import sync_config_items
 from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.manager.objects_manager import (
-    ObjectManagerDeleteError,
-    ObjectManagerInsertError,
-    ObjectManagerGetError,
+    ObjectsManagerDeleteError,
+    ObjectsManagerInsertError,
+    ObjectsManagerGetError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -133,11 +133,11 @@ class ObjectImporter(BaseImporter):
                 existing = self.objects_manager.get_object(current_public_id)
                 current_import_object['creation_time'] = existing.creation_time
                 current_import_object['last_edit_time'] = datetime.now(timezone.utc)
-            except ObjectManagerGetError as err:
+            except ObjectsManagerGetError as err:
                 try:
                     if current_app.cloud_mode:
                         if self.check_config_item_limit_reached(self.request_user, self.objects_manager):
-                            raise ObjectManagerInsertError("Config item limit reached!") from err
+                            raise ObjectsManagerInsertError("Config item limit reached!") from err
 
                     self.objects_manager.insert_object(current_import_object)
 
@@ -152,9 +152,9 @@ class ObjectImporter(BaseImporter):
                             if not success:
                                 raise Exception("Status code was not 200!")
                     except Exception as error:
-                        LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
-                except ObjectManagerInsertError as error:
-                    failed_imports.append(ImportFailedMessage(error_message=error.message, obj=current_import_object))
+                        LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
+                except ObjectsManagerInsertError as error:
+                    failed_imports.append(ImportFailedMessage(error_message=error, obj=current_import_object))
                     current_import_index += 1
                     continue
                 else:
@@ -162,15 +162,15 @@ class ObjectImporter(BaseImporter):
             else:
                 try:
                     self.objects_manager.delete_object(current_public_id, self.request_user)
-                except ObjectManagerDeleteError as err:
-                    failed_imports.append(ImportFailedMessage(error_message=err.message, obj=current_import_object))
+                except ObjectsManagerDeleteError as err:
+                    failed_imports.append(ImportFailedMessage(error_message=err, obj=current_import_object))
                     current_import_index += 1
                     continue
                 else:
                     try:
                         if current_app.cloud_mode:
                             if self.check_config_item_limit_reached(self.request_user, self.objects_manager):
-                                raise ObjectManagerInsertError("Config item limit reached")
+                                raise ObjectsManagerInsertError("Config item limit reached")
 
                         self.objects_manager.insert_object(current_import_object)
 
@@ -185,9 +185,9 @@ class ObjectImporter(BaseImporter):
                                 if not success:
                                     raise Exception("Status code was not 200!")
                         except Exception as error:
-                            LOGGER.error("Could not sync config items count to service portal. Error: %s", str(error))
-                    except ObjectManagerInsertError as err:
-                        failed_imports.append(ImportFailedMessage(error_message=err.message, obj=current_import_object))
+                            LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
+                    except ObjectsManagerInsertError as err:
+                        failed_imports.append(ImportFailedMessage(error_message=err, obj=current_import_object))
                         current_import_index += 1
                         continue
                     else:

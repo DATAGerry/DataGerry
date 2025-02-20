@@ -59,7 +59,7 @@ class LocalAuthenticationProvider(BaseAuthenticationProvider):
             else:
                 user = self.users_manager.get_user_by({'user_name': user_name})
         except BaseManagerGetError as err:
-            raise AuthenticationError(str(err)) from err
+            raise AuthenticationError(err) from err
         login_pass = self.security_manager.generate_hmac(password)
 
         if login_pass == user.password:

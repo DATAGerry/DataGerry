@@ -142,8 +142,8 @@ class SectionTemplatesManager(BaseManager):
 
             if section_template:
                 found_template = CmdbSectionTemplate(**section_template)
-        except Exception as error:
-            raise BaseManagerGetError(str(error)) from error
+        except Exception as err:
+            raise BaseManagerGetError(err) from err
 
         return found_template
 

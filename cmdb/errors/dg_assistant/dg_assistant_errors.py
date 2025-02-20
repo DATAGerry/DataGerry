@@ -14,22 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains DATAerry Assistant Error Classes
+Contains DataGerry Assistant Error Classes
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class AssistantError(Exception):
-    """Base DocAPI Error"""
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    """
+    Raised to catch all DataGerry Assistant related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all DataGerry Assistant related errors
+        """
+        super().__init__(err)
 
-# --------------------------------------------------- DOCAPI ERRORS -------------------------------------------------- #
+# -------------------------------------------- DATAGERRY ASSISTANT ERRORS -------------------------------------------- #
 
 class ProfileCreationError(AssistantError):
     """
     Error raised when a profile could not be created
     """
-    def __init__(self, err: str):
-        self.message = f"ProfileCreationError: {err}"
-        super().__init__(self.message)

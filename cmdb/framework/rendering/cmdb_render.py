@@ -38,7 +38,7 @@ from cmdb.models.type_model import (
 from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.manager import BaseManagerGetError
-from cmdb.errors.manager.objects_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.manager.users_manager import UsersManagerGetError
 from cmdb.errors.type import TypeReferenceLineFillError, FieldNotFoundError, FieldInitError
 from cmdb.errors.security import AccessDeniedError
@@ -94,7 +94,7 @@ class CmdbRender:
         belongs to the correct class, not whether it is valid.
         """
         if not isinstance(object_instance, CmdbObject):
-            raise ObjectInstanceError()
+            raise ObjectInstanceError("The passed object is not an CmdbObject")
 
         self._object_instance = object_instance
 
@@ -116,7 +116,7 @@ class CmdbRender:
         belongs to the correct class, not whether it is valid.
         """
         if not isinstance(type_instance, CmdbType):
-            raise TypeInstanceError()
+            raise TypeInstanceError("The passed type is not an CmdbType")
 
         self._type_instance = type_instance
 
@@ -157,7 +157,7 @@ class CmdbRender:
             render_result = self.__set_external(render_result)
             render_result = self.__set_multi_data_sections(render_result)
         except Exception as err:
-            raise InstanceRenderError(f'Error while generating a CMDBResult: {str(err)}') from err
+            raise InstanceRenderError(f'Error while generating a RenderResult: {err}') from err
 
         return render_result
 
@@ -310,7 +310,7 @@ class CmdbRender:
                                 }
 
                     except (ValueError, IndexError, FileNotFoundError,
-                            ObjectManagerGetError, FieldNotFoundError, FieldInitError):
+                            ObjectsManagerGetError, FieldNotFoundError, FieldInitError):
                         field['value'] = None
 
                     field_map.append(field)
@@ -321,14 +321,14 @@ class CmdbRender:
                     ref_field = self.type_instance.get_field(ref_field_name)
                 except (FieldInitError, FieldNotFoundError) as err:
                     #TODO: ERROR-FIX
-                    LOGGER.debug("%s",err.message)
+                    LOGGER.debug("%s",err)
                     continue
 
                 try:
                     reference_id: int = self.object_instance.get_value(ref_field_name)
                     ref_field['value'] = reference_id
                     reference_object: CmdbObject = self.objects_manager.get_object(reference_id)
-                except (ObjectManagerGetError, ValueError, KeyError):
+                except (ObjectsManagerGetError, ValueError, KeyError):
                     reference_object = None
 
                 try:
@@ -343,7 +343,7 @@ class CmdbRender:
                     }
                 except (BaseManagerGetError, Exception) as err:
                     #TODO: ERROR-FIX
-                    LOGGER.debug("%s",str(err))
+                    LOGGER.debug("%s",err)
                     continue
 
                 if not ref_section:
@@ -365,7 +365,7 @@ class CmdbRender:
                                                                                            [], level)
                                 ref_section_field.get('references', {'fields': []})['fields'] = ref_section_fields
                     except (FileNotFoundError, FieldNotFoundError, FieldInitError,
-                            ValueError, IndexError, ObjectManagerGetError):
+                            ValueError, IndexError, ObjectsManagerGetError):
                         continue
                     ref_field['references']['fields'].append(ref_section_field)
                 field_map.append(ref_field)
@@ -392,7 +392,7 @@ class CmdbRender:
                                                                   ref_section_fields, level)
                         else:
                             ref_section_fields.append(merged_field_content)
-            except (Exception, TypeError, ObjectManagerGetError) as err:
+            except (Exception, TypeError, ObjectsManagerGetError) as err:
                 LOGGER.info(err)
         return ref_section_fields
 
@@ -410,7 +410,7 @@ class CmdbRender:
             except AccessDeniedError as err:
                 #TODO: ERROR-FIX
                 return err
-            except ObjectManagerGetError:
+            except ObjectsManagerGetError:
                 return TypeReference.to_json(reference)
 
             try:
@@ -425,7 +425,7 @@ class CmdbRender:
                     _nested_summary_fields = ref_type.get_nested_summary_fields(_nested_summaries)
                 except (FieldInitError, FieldNotFoundError) as error:
                     #TODO: ERROR-FIX
-                    LOGGER.warning('Summary setting refers to non-existent field(s), Error %s',error.message)
+                    LOGGER.warning('Summary setting refers to non-existent field(s), Error %s',error)
 
                 reference.type_id = ref_type.get_public_id()
                 reference.object_id = int(current_field['value'])
@@ -456,8 +456,8 @@ class CmdbRender:
                 except (TypeReferenceLineFillError, Exception, FieldNotFoundError, FieldInitError):
                     pass
 
-            except ObjectManagerGetError as err:
-                LOGGER.error(err.message)
+            except ObjectsManagerGetError as err:
+                LOGGER.error(err)
             finally:
                 return TypeReference.to_json(reference)
 

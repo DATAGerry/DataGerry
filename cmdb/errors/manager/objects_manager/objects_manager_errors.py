@@ -18,65 +18,43 @@ This module contains the classes of all ObjectsManager errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectManagerError(Exception):
+class ObjectsManagerError(Exception):
     """
-    Base ObjectsManager error
+    Raised to catch all ObjectsManager related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all ObjectsManager related errors
+        """
+        super().__init__(err)
 
 # ---------------------------------------------- ObjectsManager Errors ----------------------------------------------- #
 
-class ObjectManagerInsertError(ObjectManagerError):
+class ObjectsManagerInsertError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not insert a CmdbObject
     """
-    def __init__(self, err: str):
-        self.message = f"ObjectManagerInsertError: {err}"
-        super().__init__(self.message)
 
 
-class ObjectManagerDeleteError(ObjectManagerError):
+class ObjectsManagerDeleteError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not delete a CmdbObject
     """
-    def __init__(self, err: str):
-        self.message = f"ObjectManagerDeleteError: {err}"
-        super().__init__(self.message)
 
 
-class ObjectManagerUpdateError(ObjectManagerError):
+class ObjectsManagerUpdateError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not update a CmdbObject
     """
-    def __init__(self, err: str):
-        self.message = f"ObjectManagerUpdateError: {err}"
-        super().__init__(self.message)
 
 
-class ObjectManagerGetError(ObjectManagerError):
+class ObjectsManagerGetError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not retrieve a CmdbObject
     """
-    def __init__(self, err: str):
-        self.message = f"ObjectManagerGetError: {err}"
-        super().__init__(self.message)
 
 
-class ObjectManagerInitError(ObjectManagerError):
+class ObjectsManagerInitError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not initialise a CmdbObject
     """
-    def __init__(self, err: str):
-        self.message = f"ObjectManagerInitError: {err}"
-        super().__init__(self.message)
-
-
-class TypeNotSetError(ObjectManagerError):
-    """
-    Raised when the type_id was not set for a CmdbObject
-    """
-    def __init__(self):
-        self.message = "The CmdbObject has no type_id!"
-        super().__init__(self.message)

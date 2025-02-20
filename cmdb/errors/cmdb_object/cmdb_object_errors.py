@@ -17,14 +17,16 @@
 Contains CmdbDAO object error classes
 """
 # -------------------------------------------------------------------------------------------------------------------- #
-
+#TODO: REFACTOR-FIX (refactor this, there wont be cmdbdao errors)
 class CmdbDAOError(Exception):
     """
-    Base CmdbDAO Error
+    Raised to catch all CmdbDAO related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbDAO related errors
+        """
+        super().__init__(err)
 
 # -------------------------------------------------- CmdbDAO ERRORS -------------------------------------------------- #
 
@@ -32,35 +34,21 @@ class NoPublicIDError(CmdbDAOError):
     """
     Error if object has no public_id
     """
-    def __init__(self):
-        self.message = "The object has no public_id!"
-        super().__init__(self.message)
 
 
-#TODO: ERROR-FIX (not used)
 class VersionTypeError(CmdbDAOError):
     """
     Error if update step of object version was wrong
     """
-    def __init__(self, err: str):
-        self.message = f"Error: {err}"
-        super().__init__(self.message)
 
 
-#TODO: ERROR-FIX (not used)
 class NoVersionError(CmdbDAOError):
     """
     Error if object from models child class has no version number
     """
-    def __init__(self, err: str):
-        self.message = f"No version control. Error: {err}"
-        super().__init__(self.message)
 
 
 class RequiredInitKeyNotFoundError(CmdbDAOError):
     """
     Error if on of the given parameters is missing inside required init keys
     """
-    def __init__(self, err: str):
-        self.message = f"Initialization key was not found: {err}"
-        super().__init__(self.message)

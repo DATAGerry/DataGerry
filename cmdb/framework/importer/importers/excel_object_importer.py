@@ -61,7 +61,7 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
         try:
             possible_fields: list[dict] = kwargs['fields']
         except (KeyError, IndexError, ValueError) as err:
-            raise ImportRuntimeError(f"[generate_object] cant import objects: {str(err)}") from err
+            raise ImportRuntimeError(err) from err
 
         working_object: dict = {
             'active': True,
@@ -101,7 +101,7 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
         try:
             parsed_response: ExcelObjectParserResponse = self.parser.parse(self.file)
         except ParserRuntimeError as err:
-            raise ImportRuntimeError(f"{err.message}") from err
+            raise ImportRuntimeError(err) from err
 
         LOGGER.debug(parsed_response)
 

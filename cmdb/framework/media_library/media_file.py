@@ -79,7 +79,7 @@ class MediaFile(BaseMediaFile):
             NoPublicIDError: if `public_id` is zero or not set
         """
         if self.public_id == 0 or self.public_id is None:
-            raise NoPublicIDError()
+            raise NoPublicIDError("No public_id assigned!")
 
         return self.public_id
 

@@ -48,13 +48,13 @@ class ExcelObjectParser(BaseObjectParser, XLSXContent):
         try:
             working_sheet = run_config['sheet_name']
         except (IndexError, ValueError, KeyError) as err:
-            raise ParserRuntimeError(f"[ExcelObjectParser] An error occured: {str(err)}") from err
+            raise ParserRuntimeError(f"[ExcelObjectParser] An error occured: {err}") from err
 
         wb = load_workbook(file)
 
         try:
             wb[working_sheet]
         except KeyError as err:
-            raise ParserRuntimeError(f"[ExcelObjectParser] An error occured: {str(err)}") from err
+            raise ParserRuntimeError(f"[ExcelObjectParser] An error occured: {err}") from err
 
         return ExcelObjectParserResponse(0, [], 0)

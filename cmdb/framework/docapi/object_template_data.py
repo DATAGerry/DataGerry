@@ -22,7 +22,7 @@ from cmdb.manager import ObjectsManager
 from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.framework.docapi.abstract_template_data import AbstractTemplateData
 
-from cmdb.errors.manager.objects_manager import ObjectManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -67,7 +67,7 @@ class ObjectTemplateData(AbstractTemplateData):
                         data['fields'][field_name]['fields'][section_ref_field['name']] = section_ref_field['value']
                 else:
                     data["fields"][field_name] = field["value"]
-            except ObjectManagerGetError:
+            except ObjectsManagerGetError:
                 continue
             except Exception as err:
                 #TODO: ERROR-FIX

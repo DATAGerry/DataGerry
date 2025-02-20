@@ -58,16 +58,16 @@ relations_blueprint = APIBlueprint('relations', __name__)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @relations_blueprint.protect(auth=True, right='base.framework.relation.add')
 @relations_blueprint.validate(CmdbRelation.SCHEMA)
-def insert_relation(data: dict, request_user: CmdbUser):
+def insert_cmdb_relation(data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route to insert a CmdbRelation into the database
 
     Args:
-        `data` (CmdbRelation.SCHEMA): Data of the CmdbRelation which should be inserted
-        `request_user` (CmdbUser): User requesting this data
+        data (CmdbRelation.SCHEMA): Data of the CmdbRelation which should be inserted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `InsertSingleResponse`: The new CmdbRelation and its public_id
+        InsertSingleResponse: The new CmdbRelation and its public_id
     """
     try:
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
@@ -75,19 +75,19 @@ def insert_relation(data: dict, request_user: CmdbUser):
 
         result_id: int = relations_manager.insert_relation(data)
 
-        created_relation = relations_manager.get_relation(result_id)
+        created_relation: dict = relations_manager.get_relation(result_id)
 
         api_response = InsertSingleResponse(created_relation, result_id)
 
         return api_response.make_response()
     except RelationsManagerInsertError as err:
-        LOGGER.error("[insert_relation] %s", err, exc_info=True)
+        LOGGER.error("[insert_cmdb_relation] RelationsManagerInsertError: %s", err, exc_info=True)
         return abort(400, "Could not insert the new relation in the database!")
     except RelationsManagerGetError as err:
-        LOGGER.error("[insert_relation] %s", err, exc_info=True)
+        LOGGER.error("[insert_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
         return abort(404, "Could not retrieve the created relation from the database!")
     except Exception as err:
-        LOGGER.error("[insert_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[insert_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -97,13 +97,13 @@ def insert_relation(data: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @relations_blueprint.protect(auth=True, right='base.framework.relation.view')
 @relations_blueprint.parse_collection_parameters()
-def get_relations(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_relations(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting multiple CmdbRelations
 
     Args:
-        `params` (CollectionParameters): Filter for requested CmdbRelations
-        `request_user` (CmdbUser): User requesting this data
+        params (CollectionParameters): Filter for requested CmdbRelations
+        request_user (CmdbUser): User requesting this data
 
     Returns:
         `GetMultiResponse`: All the CmdbRelations matching the CollectionParameters
@@ -128,10 +128,10 @@ def get_relations(params: CollectionParameters, request_user: CmdbUser):
 
         return api_response.make_response()
     except RelationsManagerIterationError as err:
-        LOGGER.error("[get_relations] %s", err, exc_info=True)
+        LOGGER.error("[get_cmdb_relations] RelationsManagerIterationError: %s", err, exc_info=True)
         return abort(400, "Could not retrieve relations from database!")
     except Exception as err:
-        LOGGER.error("[get_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 
@@ -139,16 +139,16 @@ def get_relations(params: CollectionParameters, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @relations_blueprint.protect(auth=True, right='base.framework.relation.view')
-def get_relation(public_id: int, request_user: CmdbUser):
+def get_cmdb_relation(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbRelation
 
     Args:
-        `public_id` (int): public_id of the CmdbRelation
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbRelation
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `GetSingleResponse`: The requested CmdbRelation
+        GetSingleResponse: The requested CmdbRelation
     """
     try:
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
@@ -160,10 +160,10 @@ def get_relation(public_id: int, request_user: CmdbUser):
 
         return api_response.make_response()
     except RelationsManagerGetError as err:
-        LOGGER.error("[get_relation] %s", err, exc_info=True)
+        LOGGER.error("[get_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
         return abort(404, "Could not retrieve the requested relation from the database!")
     except Exception as err:
-        LOGGER.error("[get_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
@@ -173,17 +173,17 @@ def get_relation(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @relations_blueprint.protect(auth=True, right='base.framework.relation.edit')
 @relations_blueprint.validate(CmdbRelation.SCHEMA)
-def update_relation(public_id: int, data: dict, request_user: CmdbUser):
+def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update a single CmdbRelation
 
     Args:
-        `public_id` (int): public_id of the CmdbRelation which should be updated
-        `data` (CmdbRelation.SCHEMA): New CmdbRelation data
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbRelation which should be updated
+        data (CmdbRelation.SCHEMA): New CmdbRelation data
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `UpdateSingleResponse`: The new data of the CmdbRelation
+        UpdateSingleResponse: The new data of the CmdbRelation
     """
     try:
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
@@ -197,10 +197,10 @@ def update_relation(public_id: int, data: dict, request_user: CmdbUser):
 
         return api_response.make_response()
     except RelationsManagerUpdateError as err:
-        LOGGER.error("[update_relation] %s", err, exc_info=True)
+        LOGGER.error("[update_cmdb_relation] RelationsManagerUpdateError: %s", err, exc_info=True)
         return abort(400, "Could not update the relation!")
     except Exception as err:
-        LOGGER.error("[update_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[update_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -209,16 +209,16 @@ def update_relation(public_id: int, data: dict, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @relations_blueprint.protect(auth=True, right='base.framework.relation.delete')
-def delete_relation(public_id: int, request_user: CmdbUser):
+def delete_cmdb_relation(public_id: int, request_user: CmdbUser):
     """
     HTTP `DELETE` route to delete a single CmdbRelation
 
     Args:
-        `public_id` (int): public_id of the CmdbRelation which should be deleted
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbRelation which should be deleted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `DeleteSingleResponse`: The deleted CmdbRelation data
+        DeleteSingleResponse: The deleted CmdbRelation data
     """
     try:
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
@@ -231,11 +231,11 @@ def delete_relation(public_id: int, request_user: CmdbUser):
 
         return api_response.make_response()
     except RelationsManagerDeleteError as err:
-        LOGGER.error("[delete_relation] %s", err, exc_info=True)
+        LOGGER.error("[delete_cmdb_relation] RelationsManagerDeleteError: %s", err, exc_info=True)
         return abort(400, f"Could not delete the relation with the ID:{public_id}")
     except RelationsManagerGetError as err:
-        LOGGER.error("[delete_relation] %s", err, exc_info=True)
+        LOGGER.error("[delete_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
         return abort(404, "Could not retrieve the relation from the database!")
     except Exception as err:
-        LOGGER.error("[delete_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[delete_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")

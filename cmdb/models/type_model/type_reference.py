@@ -137,4 +137,6 @@ class TypeReference:
         try:
             self.line = self.line.format(*inputs)
         except Exception as err:
-            raise TypeReferenceLineFillError(self.line) from err
+            #TODO: ERROR-FIX
+            raise TypeReferenceLineFillError(f"Type reference summary line do not fit \
+                                             with inputs: {self.line}!") from err

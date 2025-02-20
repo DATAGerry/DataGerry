@@ -91,7 +91,7 @@ class CategoriesManager(BaseManager):
 
             category_tree = CategoryTree(categories, cmdb_types)
         except Exception as err:
-            raise CategoriesManagerTreeInitError(str(err)) from err
+            raise CategoriesManagerTreeInitError(err) from err
 
         return category_tree
 
@@ -162,15 +162,12 @@ class CategoriesManager(BaseManager):
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            # TODO: ERROR-FIX (catch IterationResult exceptions)
-            iteration_result: IterationResult[CmdbCategory] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CmdbCategory)
+            iteration_result: IterationResult[CmdbCategory] = IterationResult(aggregation_result, total, CmdbCategory)
 
             return iteration_result
         except BaseManagerIterationError as err:
             raise CategoriesManagerIterationError(err) from err
         except Exception as err:
-            # TODO: ERROR-FIX (catch IterationResult exceptions)
             raise CategoriesManagerIterationError(err) from err
 
 

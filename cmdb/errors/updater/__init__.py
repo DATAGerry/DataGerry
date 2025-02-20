@@ -16,9 +16,13 @@
 """
 This module provides all Updater errors
 """
-from .updater_errors import UpdaterException
+from .updater_errors import (
+    UpdaterError,
+    UpdaterException,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'UpdaterError',
     'UpdaterException',
 ]

@@ -20,11 +20,13 @@ This module contains all error classes for Updater
 
 class UpdaterError(Exception):
     """
-    Base UpdaterError
+    Raised to catch all Update related errors
     """
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+    def __init__(self, err: str):
+        """
+        Raised to catch all Update related errors
+        """
+        super().__init__(err)
 
 # -------------------------------------------------- UPDATER ERRORS -------------------------------------------------- #
 
@@ -32,6 +34,3 @@ class UpdaterException(UpdaterError):
     """
     Raised when during an update an error occurs
     """
-    def __init__(self, err: str):
-        self.message = f"Updater Exception: {err}!"
-        super().__init__(self.message)

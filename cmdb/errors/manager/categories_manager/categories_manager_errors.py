@@ -22,11 +22,11 @@ class CategoriesManagerError(Exception):
     """
     Raised to catch all CategoriesManager related errors
     """
-    def __init__(self, message: str):
+    def __init__(self, err: str):
         """
         Raised to catch all CategoriesManager related errors
         """
-        super().__init__(message)
+        super().__init__(err)
 
 # --------------------------------------------- CategoriesManager errors --------------------------------------------- #
 
@@ -34,63 +34,33 @@ class CategoriesManagerInsertError(CategoriesManagerError):
     """
     Raised when CategoriesManager could not insert a CmdbCategory
     """
-    def __init__(self, err: str):
-        """
-        Raised when CategoriesManager could not insert a CmdbCategory
-        """
-        super().__init__(f"CategoriesManagerInsertError: {err}")
 
 
 class CategoriesManagerGetError(CategoriesManagerError):
     """
     Raised when CategoriesManager could not retrieve a CmdbCategory
     """
-    def __init__(self, err: str):
-        """
-        Raised when CategoriesManager could not retrieve a CmdbCategory
-        """
-        super().__init__(f"CategoriesManagerGetError: {err}")
 
 
 class CategoriesManagerUpdateError(CategoriesManagerError):
     """
     Raised when CategoriesManager could not update a CmdbCategory
     """
-    def __init__(self, err: str):
-        """
-        Raised when CategoriesManager could not update a CmdbCategory
-        """
-        super().__init__(f"CategoriesManagerUpdateError: {err}")
 
 
 class CategoriesManagerDeleteError(CategoriesManagerError):
     """
     Raised when CategoriesManager could not delete a CmdbCategory
     """
-    def __init__(self, err: str):
-        """
-        Raised when CategoriesManager could not delete a CmdbCategory
-        """
-        super().__init__(f"CategoriesManagerDeleteError: {err}")
 
 
 class CategoriesManagerIterationError(CategoriesManagerError):
     """
     Raised when CategoriesManager could not iterate over CmdbCategories
     """
-    def __init__(self, err: str):
-        """
-        Raised when CategoriesManager could not iterate over CmdbCategories
-        """
-        super().__init__(f"CategoriesManagerIterationError: {err}")
 
 
 class CategoriesManagerTreeInitError(CategoriesManagerError):
     """
     Raised when CategoriesManager could not initialise the CategoryTree
     """
-    def __init__(self, err: str):
-        """
-        Raised when CategoriesManager could not initialise the CategoryTree
-        """
-        super().__init__(f"CategoriesManagerTreeInitError: {err}")
