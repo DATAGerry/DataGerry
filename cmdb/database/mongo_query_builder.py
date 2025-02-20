@@ -42,37 +42,62 @@ class MongoDBQueryBuilder:
     The MongoDBQueryBuilder generates a MongoDB query from a dict of rules
     """
     def __init__(self, query_data: dict, report_type: CmdbType):
+        """
+        Initializes a MongoQueryBuilder instance
+
+        Args:
+            query_data (dict): Data containing the query condition and rules
+            report_type (CmdbType): The CMDB type object containing field definitions
+
+        Raises:
+            MongoQueryBuilderInitError: If initialization fails
+        """
         try:
-            self.condition = None
-            self.rules = None
-
-            if query_data:
-                self.condition = query_data["condition"]
-                self.rules = query_data["rules"]
-
+            self.condition = query_data.get("condition")
+            self.rules = query_data.get("rules")
             self.report_type = report_type
+
             self.number_fields = self.report_type.get_all_fields_of_type("number")
             self.date_fields = self.report_type.get_all_fields_of_type("date")
             self.ref_fields = self.report_type.get_all_fields_of_type("ref")
             self.ref_section_fields = self.report_type.get_all_fields_of_type("ref-section-field")
             self.mds_fields = self.report_type.get_all_mds_fields()
         except Exception as err:
-            LOGGER.debug("[__init__] Exception: %s, Type: %s", err, type(err))
-            raise MongoQueryBuilderInitError(err) from err
+            LOGGER.error("[__init__] Initialization failed. Error: %s, Type: %s", err, type(err))
+            raise MongoQueryBuilderInitError(f"Failed to initialize MongoQueryBuilder: {err}") from err
 
 
-    def build(self):
+    def build(self) -> dict:
         """
-        Builds the MongoDB query by using the self.conditions
+        Builds the MongoDB query using the defined condition and rules
+
+        Returns:
+            dict: The constructed MongoDB query
+
+        Raises:
+            MongoQueryBuilderBuildError: If query building fails
         """
         try:
             return self.__build_ruleset(self.condition, self.rules)
         except Exception as err:
-            LOGGER.debug("[build] Exception: %s, Type: %s", err, type(err))
-            raise MongoQueryBuilderBuildError(str(err)) from err
+            LOGGER.error("[build] Query building failed. Error: %s, Type: %s", err, type(err))
+            raise MongoQueryBuilderBuildError(f"Failed to build MongoDB query: {err}") from err
 
-    def __build_ruleset(self, condition: str, rules: list[dict]):
-        """TODO. document"""
+
+    def __build_ruleset(self, condition: str, rules: list[dict]) -> dict:
+        """
+        Recursively constructs a MongoDB query ruleset based on the provided condition and rules
+
+        Args:
+            condition (str): Logical condition ('and' or 'or') for combining rules
+            rules (list[dict]): List of rules or nested rule sets
+
+        Returns:
+            dict: A MongoDB query representation of the ruleset
+
+        Raises:
+            MongoQueryBuilderBuildRulesetError: If ruleset construction fails
+        """
         try:
             if self.condition and self.rules:
                 children = []
@@ -81,10 +106,7 @@ class MongoDBQueryBuilder:
                     if "condition" in rule:
                         children.append(self.__build_ruleset(rule["condition"], rule["rules"]))
                     else:
-                        if "value" in rule:
-                            children.append(self.__build_rule(rule["field"], rule["operator"], rule["value"]))
-                        else:
-                            children.append(self.__build_rule(rule["field"], rule["operator"]))
+                        children.append(self.__build_rule(rule["field"], rule["operator"], rule.get("value")))
 
                 possible_conditions = {
                     "and": {'$and': [{'$and': children}, {"type_id": self.report_type.public_id}]},
@@ -95,39 +117,57 @@ class MongoDBQueryBuilder:
 
             return {"type_id": self.report_type.public_id}
         except Exception as err:
-            raise MongoQueryBuilderBuildRulesetError(str(err)) from err
+            LOGGER.error("[__build_ruleset] Failed to build ruleset. Error: %s, Type: %s", err, type(err))
+            raise MongoQueryBuilderBuildRulesetError(f"Error building MongoDB ruleset: {err}") from err
 
-    def __build_rule(self, field_name: str, operator: str, value: Union[int, str, list[str]] = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
+
+    def __build_rule(self, field_name: str, operator: str, value: Union[int, str, list[str]] = None) -> dict:
+        """
+        Builds a query rule for MongoDB based on the provided field name, operator, and value
+
+        Args:
+            field_name (str): The name of the field to filter by
+            operator (str): The comparison operator (e.g., "$eq", "$gt", "$in")
+            value (Union[int, str, list[str]], optional): The value(s) to compare against
+
+        Raises:
+            MongoQueryBuilderInvalidOperatorError: If the provided operator is invalid
+            MongoQueryBuilderBuildRuleError: If any other error occurs during rule creation
+
+        Returns:
+            dict: A MongoDB query rule
+        """
         try:
-            target_field = 'fields'
+            target_field = "fields"
             target_value = value
 
             if field_name in self.date_fields and value:
                 target_value = datetime.strptime(value, '%Y-%m-%d')
 
             if (field_name in self.ref_fields or
-                field_name in self.ref_section_fields or field_name in self.number_fields) and value:
+                field_name in self.ref_section_fields or 
+                field_name in self.number_fields
+               ) and value:
                 target_value = int(value)
 
             if field_name in self.mds_fields:
-                target_field = 'multi_data_sections.values.data'
+                target_field = "multi_data_sections.values.data"
 
             return self.create_rule(target_field, operator, field_name, target_value)
         except MongoQueryBuilderInvalidOperatorError as err:
-            raise MongoQueryBuilderInvalidOperatorError(operator) from err
+            raise MongoQueryBuilderInvalidOperatorError(f"Invalid operator: {operator}") from err
         except Exception as err:
-            LOGGER.debug("[__build_rule] Exception: %s, Type: %s", err, type(err))
-            raise MongoQueryBuilderBuildRuleError(str(err)) from err
+            LOGGER.error("[__build_rule] Exception: %s, Type: %s", err, type(err))
+            raise MongoQueryBuilderBuildRuleError(err) from err
 
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 
-    def create_rule(self,
-                    target_field: str,
-                    operator: str,
-                    field_name: str,
-                    value: Union[int, str, list[int], list[str]] = None) -> dict:
+    def create_rule(
+            self,
+            target_field: str,
+            operator: str,
+            field_name: str,
+            value: Union[int, str, list[int], list[str]] = None) -> dict:
         """
         Transforms a rule to a MongoDB compatible query part
         
@@ -147,6 +187,9 @@ class MongoDBQueryBuilder:
             return {target_field: self.get_operator_fragment(operator, field_name, value)}
         except MongoQueryBuilderInvalidOperatorError as err:
             raise MongoQueryBuilderInvalidOperatorError(operator) from err
+        except Exception as err:
+            LOGGER.error("[create_rule] Exception: %s. Type: %s", err, type(err))
+            raise MongoQueryBuilderBuildRuleError(str(err)) from err
 
     def get_operator_fragment(self,
                               operator: str,
@@ -174,12 +217,16 @@ class MongoDBQueryBuilder:
                 }
             }
         except MongoQueryBuilderInvalidOperatorError as err:
-            raise MongoQueryBuilderInvalidOperatorError(operator) from err
+            raise MongoQueryBuilderInvalidOperatorError(f"Invalid value for operator '{operator}'") from err
+        except Exception as err:
+            LOGGER.error("[get_operator_fragment] Unexpected error: %s, Type: %s", err, type(err))
+            raise MongoQueryBuilderBuildRuleError(err) from err
 
 
-    def get_value_fragment(self,
-                           operator: str,
-                           value: Union[int, str, list[int], list[str]] = None) -> Union[dict, str]:
+    def get_value_fragment(
+            self,
+            operator: str,
+            value: Union[int, str, list[int], list[str]] = None) -> Union[dict, str, None]:
         """
         Creates the value part of a condition for a MongoDB query
 
@@ -188,10 +235,10 @@ class MongoDBQueryBuilder:
             value (Union[int, str, list[int], list[str]], optional): value of the condition
 
         Raises:
-            MongoQueryBuilderInvalidOperatorError: When an unsupported operator was provided
+            MongoQueryBuilderInvalidOperatorError: When an unsupported operator is provided
 
         Returns:
-            Union[dict, str]: Value part of a condition
+            Union[dict, str, None]: Value part of a condition
         """
 
         allowed_operators = {

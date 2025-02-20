@@ -581,6 +581,9 @@ class MongoDatabaseManager:
             criteria (dict): Document count requirements (default is empty criteria)
             **kwargs: Additional keyword arguments for the count operation
 
+        Raises:
+            DocumentGetError: When the count operation fails
+
         Returns:
             int: The count of the documents that match the criteria
         """

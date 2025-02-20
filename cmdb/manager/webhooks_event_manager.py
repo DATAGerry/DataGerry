@@ -25,7 +25,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerInsertError, ManagerGetError, ManagerIterationError
+from cmdb.errors.manager import BaseManagerInsertError, BaseManagerGetError, BaseManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -66,17 +66,13 @@ class WebhooksEventManager(BaseManager):
         """
         try:
             new_webhook_event = CmdbWebhookEvent(**data)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            raise ManagerInsertError(err) from err
 
-        try:
             ack = self.insert(new_webhook_event.__dict__)
+
+            return ack
             #TODO: ERROR-FIX
         except Exception as err:
-            raise ManagerInsertError(err) from err
-
-        return ack
+            raise BaseManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -87,7 +83,7 @@ class WebhooksEventManager(BaseManager):
         Args:
             public_id (int): public_id of the CmdbWebhookEvent which should be retrieved
         Raises:
-            ManagerGetError: Raised if the CmdbWebhookEvent could not be retrieved
+            BaseManagerGetError: Raised if the CmdbWebhookEvent could not be retrieved
         Returns:
             CmdbWebhookEvent: The requested CmdbWebhookEvent if it exists, else None
         """
@@ -95,7 +91,7 @@ class WebhooksEventManager(BaseManager):
             requested_webhook_event = self.get_one(public_id)
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerGetError(f"Webhook with ID: {public_id}! 'GET' Error: {err}") from err
+            raise BaseManagerGetError(f"Webhook with ID: {public_id}! 'GET' Error: {err}") from err
 
         if requested_webhook_event:
             requested_webhook_event = CmdbWebhookEvent.from_data(requested_webhook_event)
@@ -103,7 +99,7 @@ class WebhooksEventManager(BaseManager):
             return requested_webhook_event
 
         #TODO: ERROR-FIX
-        raise ManagerGetError(f'Webhook with ID: {public_id} not found!')
+        raise BaseManagerGetError(f'Webhook with ID: {public_id} not found!')
 
 
     def iterate(self, builder_params: BuilderParameters) -> IterationResult[CmdbWebhookEvent]:
@@ -114,22 +110,18 @@ class WebhooksEventManager(BaseManager):
             builder_params (BuilderParameters): Contains input to identify the target of action
 
         Raises:
-            ManagerIterationError: Raised when something goes wrong during the aggregate part
-            ManagerIterationError: Raised when something goes wrong during the building of the IterationResult
+            BaseManagerIterationError: Raised when something goes wrong during the aggregate part
+            BaseManagerIterationError: Raised when something goes wrong during the building of the IterationResult
         Returns:
             IterationResult[CmdbWebhookEvent]: Result which matches the Builderparameters
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params)
-        except ManagerGetError as err:
-            #TODO: ERROR-FIX
-            raise ManagerIterationError(err) from err
 
-        try:
             iteration_result: IterationResult[CmdbWebhookEvent] = IterationResult(aggregation_result, total)
             iteration_result.convert_to(CmdbWebhookEvent)
+
+            return iteration_result
         except Exception as err:
             #TODO: ERROR-FIX
-            raise ManagerIterationError(err) from err
-
-        return iteration_result
+            raise BaseManagerIterationError(err) from err

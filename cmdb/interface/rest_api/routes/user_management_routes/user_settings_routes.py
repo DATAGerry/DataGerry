@@ -34,7 +34,12 @@ from cmdb.interface.rest_api.responses import (
     GetSingleResponse,
 )
 
-from cmdb.errors.manager import ManagerUpdateError, ManagerDeleteError, ManagerInsertError, ManagerGetError
+from cmdb.errors.manager import (
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -55,10 +60,6 @@ def insert_setting(user_id: int, data: dict, request_user: CmdbUser):
         user_id (int): Public ID of the user.
         data (CmdbUser.SCHEMA): Insert data of a new user.
 
-    Raises:
-        ManagerGetError: If the inserted user could not be found after inserting.
-        ManagerInsertError: If something went wrong during insertion.
-
     Returns:
         InsertSingleResponse: Insert response with the new user and its identifier.
     """
@@ -69,11 +70,11 @@ def insert_setting(user_id: int, data: dict, request_user: CmdbUser):
         users_settings_manager.insert_setting(data)
 
         setting: UserSettingModel = users_settings_manager.get_user_setting(user_id, data.get('resource'))
-    except ManagerGetError as err:
-        LOGGER.debug("[insert_setting] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.debug("[insert_setting] %s", err)
         return abort(404, "An error occured when creating the setting!")
-    except ManagerInsertError as err:
-        LOGGER.debug("[insert_setting] ManagerInsertError: %s", err.message)
+    except BaseManagerInsertError as err:
+        LOGGER.debug("[insert_setting] %s", err)
         return abort(400, "Could not insert the setting!")
 
     api_response = InsertSingleResponse(raw=UserSettingModel.to_dict(setting), result_id=setting.resource)
@@ -91,12 +92,12 @@ def get_user_settings(user_id: int, request_user: CmdbUser):
 
     Args:
         user_id (int): PublicID of the current user.
+
     Returns:
         GetListResponse: Which includes all of the `UserSettingModel`.
+
     Notes:
         Calling the route over HTTP HEAD method will result in an empty body.
-    Raises:
-        ManagerGetError: If the collection/resources could not be found.
     """
     users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS_MANAGER,
                                                                                request_user)
@@ -107,7 +108,7 @@ def get_user_settings(user_id: int, request_user: CmdbUser):
         raw_settings = [UserSettingModel.to_dict(setting) for setting in settings]
 
         api_response = GetListResponse(results=raw_settings, body=request.method == 'HEAD')
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
 
@@ -125,9 +126,6 @@ def get_user_setting(user_id: int, resource: str, request_user: CmdbUser):
         user_id (int): Public ID of the user.
         resource (str): Identifier/Name of the user setting.
 
-    Raises:
-        ManagerGetError: When the selected user setting does not exists.
-
     Notes:
         Calling the route over HTTP HEAD method will result in an empty body.
 
@@ -141,7 +139,7 @@ def get_user_setting(user_id: int, resource: str, request_user: CmdbUser):
         setting: UserSettingModel = users_settings_manager.get_user_setting(user_id, resource)
 
         api_response = GetSingleResponse(UserSettingModel.to_dict(setting), body=request.method == 'HEAD')
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
 
@@ -162,10 +160,6 @@ def update_setting(user_id: int, resource: str, data: dict, request_user: CmdbUs
         resource (str): Identifier/Name of the user setting.
         data (CmdbUser.SCHEMA): New setting data to update.
 
-    Raises:
-        ManagerGetError: When the setting with the `identifier` was not found.
-        ManagerUpdateError: When something went wrong during the update.
-
     Returns:
         UpdateSingleResponse: With update result of the new updated user setting.
     """
@@ -178,7 +172,7 @@ def update_setting(user_id: int, resource: str, data: dict, request_user: CmdbUs
 
         try:
             users_settings_manager.get_user_setting(user_id, data.get('resource'))
-        except ManagerGetError:
+        except BaseManagerGetError:
             setting_found = False
 
         if setting_found:
@@ -187,11 +181,11 @@ def update_setting(user_id: int, resource: str, data: dict, request_user: CmdbUs
             users_settings_manager.insert_setting(data)
 
         api_response = UpdateSingleResponse(data)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
-    except ManagerUpdateError as err:
-        LOGGER.debug("[update_setting] ManagerUpdateError: %s", err.message)
+    except BaseManagerUpdateError as err:
+        LOGGER.debug("[update_setting] %s", err)
         return abort(400, f"Setting for resource: {resource} could not be updated!")
 
     return api_response.make_response()
@@ -207,11 +201,7 @@ def delete_setting(user_id: int, resource: str, request_user: CmdbUser):
 
     Args:
         user_id (int): Public ID of the user.
-        resource (str): Identifier/Name of the user setting.
-
-    Raises:
-        ManagerGetError: When the setting with the `identifier` was not found.
-        ManagerDeleteError: When something went wrong during the deletion.
+        resource (str): Identifier/Name of the user setting
 
     Returns:
         DeleteSingleResponse: Delete result with the deleted setting as data.
@@ -222,11 +212,11 @@ def delete_setting(user_id: int, resource: str, request_user: CmdbUser):
     try:
         deleted_setting = users_settings_manager.delete(user_id=user_id, resource=resource)
         api_response = DeleteSingleResponse(raw=UserSettingModel.to_dict(deleted_setting))
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
-    except ManagerDeleteError as err:
-        LOGGER.debug("[delete_setting] ManagerDeleteError: %s", err.message)
+    except BaseManagerDeleteError as err:
+        LOGGER.debug("[delete_setting] %s", err)
         return abort(404, f"Could not delete the setting: {resource} !")
 
     return api_response.make_response()

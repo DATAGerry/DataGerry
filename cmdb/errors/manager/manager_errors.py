@@ -14,55 +14,53 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Contains general Manager Error Classes
+Contains general BaseManager Error Classes
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ManagerError(Exception):
-    """Base Manager Error"""
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(message)
+class BaseManagerError(Exception):
+    """
+    Raised to catch all BaseManager related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all BaseManager related errors
+        """
+        super().__init__(err)
 
 # -------------------------------------------------- MANAGER ERRORS -------------------------------------------------- #
 
-class ManagerGetError(ManagerError):
-    """Manager error for get operations"""
-    def __init__(self, err: str):
-        self.message = f'ManagerGetError: {err}'
-        super().__init__(self.message)
+class BaseManagerInitError(BaseManagerError):
+    """
+    When the BaseManager could not be initialised
+    """
 
 
-class ManagerIterationError(ManagerError):
-    """Manager error for iteration operations"""
-    def __init__(self, err: str):
-        self.message = f'ManagerIterationError: {err}'
-        super().__init__(self.message)
+class BaseManagerGetError(BaseManagerError):
+    """
+    When the BaseManager could not retrieve a document
+    """
 
 
-class ManagerInsertError(ManagerError):
-    """Manager error for insert operations"""
-    def __init__(self, err: str):
-        self.message = f'ManagerInsertError: {err}'
-        super().__init__(self.message)
+class BaseManagerIterationError(BaseManagerError):
+    """
+    When the BaseManager iteration fails
+    """
 
 
-class ManagerUpdateError(ManagerError):
-    """Manager error for update operations"""
-    def __init__(self, err: str):
-        self.message = f'ManagerUpdateError: {err}'
-        super().__init__(self.message)
+class BaseManagerInsertError(BaseManagerError):
+    """
+    When the BaseManager could not insert a document
+    """
 
 
-class ManagerDeleteError(ManagerError):
-    """Manager error for delete operations"""
-    def __init__(self, err: str):
-        self.message = f'ManagerDeleteError: {err}'
-        super().__init__(self.message)
+class BaseManagerUpdateError(BaseManagerError):
+    """
+    When the BaseManager could not update a document
+    """
 
 
-class DisallowedActionError(ManagerError):
-    """Manager exception when an illegal action is requested"""
-    def __init__(self, err: str):
-        self.message = f'DisallowedActionError: {err}'
-        super().__init__(self.message)
+class BaseManagerDeleteError(BaseManagerError):
+    """
+    When the BaseManager could not delete a document
+    """

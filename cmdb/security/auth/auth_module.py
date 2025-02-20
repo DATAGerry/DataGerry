@@ -35,7 +35,7 @@ from cmdb.errors.provider import (
     AuthenticationProviderNotFoundError,
     AuthenticationError,
 )
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -253,8 +253,8 @@ class AuthModule:
                     return provider_instance.authenticate(user_name, password)
                 except AuthenticationError:
                     continue
-                except (ManagerGetError, ManagerInsertError) as error:
-                    LOGGER.debug("User found by provider but could not be inserted or found %s",error.message)
+                except (BaseManagerGetError, BaseManagerInsertError) as error:
+                    LOGGER.debug("User found by provider but could not be inserted or found %s",error)
                     continue
 
             raise AuthenticationError('Could not login.') from err

@@ -105,7 +105,7 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
         profile_assistant = ProfileAssistant(categories_manager)
         created_ids = profile_assistant.create_profiles(profiles)
     except ProfileCreationError as err:
-        LOGGER.debug("[create_initial_profiles] ManagerInsertError: %s", err.message)
+        LOGGER.debug("[create_initial_profiles] %s", err.message)
         return abort(400, "Could not create initial profiles!")
 
     api_response = DefaultResponse(created_ids)

@@ -42,11 +42,13 @@ from cmdb.interface.rest_api.responses import (
     DefaultResponse,
 )
 
-from cmdb.errors.manager import ManagerInsertError,\
-                                ManagerIterationError,\
-                                ManagerGetError,\
-                                ManagerUpdateError,\
-                                ManagerDeleteError
+from cmdb.errors.manager import (
+    BaseManagerInsertError,
+    BaseManagerIterationError,
+    BaseManagerGetError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -107,8 +109,8 @@ def create_location(params: dict, request_user: CmdbUser):
 
     try:
         created_location_id = locations_manager.insert_location(location_creation_params)
-    except ManagerInsertError as err:
-        LOGGER.debug("[ManagerInsertError] ManagerInsertError: %s", err.message)
+    except BaseManagerInsertError as err:
+        LOGGER.error("[create_location] %s", err)
         return abort(400, "Could not insert the new location in database)!")
 
     api_response = DefaultResponse(created_location_id)
@@ -147,8 +149,8 @@ def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
                                         request.url,
                                         request.method == 'HEAD')
 
-    except ManagerIterationError as err:
-        LOGGER.debug("[get_all_locations] ManagerIterationError: %s", err.message)
+    except BaseManagerIterationError as err:
+        LOGGER.debug("[get_all_locations] %s", err)
         return abort(400, "Could not retrieve locations from database!")
 
     return api_response.make_response()
@@ -204,8 +206,8 @@ def get_locations_tree(params: CollectionParameters, request_user: CmdbUser):
                                         request.url,
                                         request.method == 'HEAD')
 
-    except ManagerIterationError as err:
-        LOGGER.debug("[get_locations_tree] ManagerIterationError: %s", err.message)
+    except BaseManagerIterationError as err:
+        LOGGER.debug("[get_locations_tree] %s", err)
         return abort(400, "Could not retrieve locations from database!")
 
     return api_response.make_response()
@@ -227,8 +229,8 @@ def get_location(public_id: int, request_user: CmdbUser):
 
     try:
         location_instance = locations_manager.get_location(public_id)
-    except ManagerGetError as err:
-        LOGGER.debug("[get_location] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.debug("[get_location] %s", err)
         return abort(404, "Could not retrieve the location from database!")
 
     api_response = DefaultResponse(location_instance)
@@ -252,8 +254,8 @@ def get_location_for_object(object_id: int, request_user: CmdbUser):
 
     try:
         location_instance = locations_manager.get_location_for_object(object_id)
-    except ManagerGetError as err:
-        LOGGER.debug("[get_location_for_object] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.debug("[get_location_for_object] %s", err)
         return abort(404, "Could not retrieve the location from database!")
 
     api_response = DefaultResponse(location_instance)
@@ -374,8 +376,8 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
         api_response = UpdateSingleResponse(params)
 
         return api_response.make_response()
-    except ManagerUpdateError as err:
-        LOGGER.debug("[update_location_for_object] ManagerUpdateError: %s", err.message)
+    except BaseManagerUpdateError as err:
+        LOGGER.debug("[update_location_for_object] %s", err)
         return abort(400, "Could not update the location!")
     except Exception as err:
         LOGGER.error("[update_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
@@ -405,11 +407,11 @@ def delete_location_for_object(object_id: int, request_user: CmdbUser):
         location_public_id = current_location_instance.public_id
 
         ack = locations_manager.delete({'public_id':location_public_id})
-    except ManagerGetError as err:
-        LOGGER.debug("[delete_location_for_object] ManagerGetError: %s", err.message)
+    except BaseManagerGetError as err:
+        LOGGER.debug("[delete_location_for_object] %s", err)
         return abort(404, "Could not retrieve the location which should be deleted!")
-    except ManagerDeleteError as err:
-        LOGGER.debug("[delete_location_for_object] ManagerDeleteError: %s", err.message)
+    except BaseManagerDeleteError as err:
+        LOGGER.debug("[delete_location_for_object] %s", err)
         return abort(400, f"Could not delete the location with ID: {object_id} !")
 
     api_response = DefaultResponse(ack)

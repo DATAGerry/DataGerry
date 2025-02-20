@@ -21,7 +21,7 @@ from multiprocessing.managers import BaseManager
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerGetError, ManagerIterationError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class RightsManager(BaseManager):
             else:
                 spliced_rights = sorted_rights
         except (AttributeError, ValueError, IndexError) as err:
-            raise ManagerIterationError(err) from err
+            raise BaseManagerIterationError(err) from err
 
         result: IterationResult[BaseRight] = IterationResult(spliced_rights, len(self.rights))
 
@@ -71,7 +71,7 @@ class RightsManager(BaseManager):
         try:
             return next(right for right in self.rights if right.name == name)
         except Exception as err:
-            raise ManagerGetError(err) from err
+            raise BaseManagerGetError(err) from err
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 

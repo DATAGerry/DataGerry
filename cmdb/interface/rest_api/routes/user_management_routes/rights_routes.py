@@ -29,7 +29,7 @@ from cmdb.interface.rest_api.responses.response_parameters.collection_parameters
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import GetMultiResponse, GetSingleResponse
 
-from cmdb.errors.manager import ManagerGetError, ManagerIterationError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 rights_blueprint = APIBlueprint('rights', __name__)
@@ -48,13 +48,6 @@ def get_rights(params: CollectionParameters):
 
     Returns:
         GetMultiResponse: Which includes a IterationResult of the BaseRight.
-
-    Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
-
-    Raises:
-        ManagerIterationError: If the collection could not be iterated.
-        ManagerGetError: If the collection/resources could not be found.
     """
     rights_manager = RightsManager(right_tree)
     body = request.method == 'HEAD'
@@ -84,10 +77,10 @@ def get_rights(params: CollectionParameters):
                                         body=request.method == 'HEAD')
 
         return api_response.make_response()
-    except ManagerIterationError:
+    except BaseManagerIterationError:
         #TODO: ERROR-FIX
         return abort(400)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
 
@@ -101,9 +94,6 @@ def get_right(name: str):
     Args:
         name (str): Name of the right.
 
-    Raises:
-        ManagerGetError: When the selected right does not exists.
-
     Notes:
         Calling the route over HTTP HEAD method will result in an empty body.
 
@@ -114,7 +104,7 @@ def get_right(name: str):
 
     try:
         right = rights_manager.get_right(name)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
 

@@ -32,12 +32,14 @@ from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import NestedBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
 
-from cmdb.errors.manager import ManagerGetError, ManagerInsertError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 importer_type_blueprint = NestedBlueprint(importer_blueprint, url_prefix='/type')
 
 LOGGER = logging.getLogger(__name__)
+
+# --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
 @importer_type_blueprint.route('/create/', methods=['POST'])
 @insert_request_user
@@ -61,7 +63,7 @@ def add_type(request_user: CmdbUser):
         try:
             type_instance = CmdbType.from_data(new_type_data)
             types_manager.insert_type(type_instance)
-        except (ManagerInsertError, Exception) as err:
+        except (BaseManagerInsertError, Exception) as err:
             #TODO: ERROR-FIX
             error_collection.update({"public_id": new_type_data['public_id'], "message": err})
 
@@ -90,7 +92,7 @@ def update_type(request_user: CmdbUser):
         try:
             types_manager.get_type(update_type_instance.public_id)
             types_manager.update_type(update_type_instance.public_id, update_type_instance)
-        except (ManagerGetError, Exception) as err:
+        except (BaseManagerGetError, Exception) as err:
             #TODO: ERROR-FIX
             error_collection.update({"public_id": add_data_dump['public_id'], "message": err})
 

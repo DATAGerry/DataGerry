@@ -42,11 +42,11 @@ from cmdb.interface.rest_api.responses import DefaultResponse, GetMultiResponse,
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerIterationError,
-    ManagerUpdateError,
-    ManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerIterationError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
 )
 from cmdb.errors.database import NoDocumentFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -87,9 +87,9 @@ def create_report(params: dict, request_user: CmdbUser):
                                                                   CmdbType.from_data(report_type)).build())}
 
         new_report_id = reports_manager.insert_report(params)
-    except ManagerInsertError as err:
+    except BaseManagerInsertError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[create_report] ManagerInsertError: %s", err.message)
+        LOGGER.debug("[create_report] %s", err)
         return abort(400, "Could not create the report!")
     except Exception as err:
         LOGGER.debug("[create_report] Exception: %s, Type: %s", err, type(err))
@@ -116,9 +116,9 @@ def get_report(public_id: int, request_user: CmdbUser):
 
     try:
         requested_report = reports_manager.get_report(public_id)
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_report] ManagerGetError: %s", err.message)
+        LOGGER.debug("[get_report] %s", err)
         return abort(400, f"Could not retrieve Report with ID: {public_id}!")
 
     api_response = DefaultResponse(requested_report)
@@ -152,9 +152,9 @@ def get_reports(params: CollectionParameters, request_user: CmdbUser):
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except ManagerIterationError as err:
+    except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_reports] ManagerIterationError: %s", err.message)
+        LOGGER.debug("[get_reports] %s", err)
         return abort(400, "Could not retrieve CmdbReports!")
 
     return api_response.make_response()
@@ -174,7 +174,7 @@ def count_reports_of_type(public_id: int, request_user: CmdbUser):
     try:
         reports_count = reports_manager.count_reports({'type_id':public_id})
         api_response = DefaultResponse(reports_count)
-    except ManagerGetError:
+    except BaseManagerGetError:
         #TODO: ERROR-FIX
         return abort(404)
     except Exception:
@@ -265,13 +265,13 @@ def update_report(params: dict, request_user: CmdbUser):
         else:
             raise NoDocumentFoundError(reports_manager.collection)
 
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_report] ManagerGetError: %s", err.message)
+        LOGGER.debug("[update_report] %s", err)
         return abort(400, f"Could not retrieve CmdbReport with ID: {params['public_id']}!")
-    except ManagerUpdateError as err:
+    except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[update_report] ManagerUpdateError: %s", err.message)
+        LOGGER.debug("[update_report] %s", err)
         return abort(400, f"Could not update CmdbReport with ID: {params['public_id']}!")
     except NoDocumentFoundError:
         return abort(404, "Report not found!")
@@ -306,13 +306,13 @@ def delete_report(public_id: int, request_user: CmdbUser):
 
         #TODO: REFACTOR-FIX
         ack: bool = reports_manager.delete({'public_id':public_id})
-    except ManagerGetError as err:
+    except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[delete_report] ManagerGetError: %s", err.message)
+        LOGGER.error("[delete_report] %s", err)
         return abort(400, f"Could not retrieve Report with ID: {public_id}!")
-    except ManagerDeleteError as err:
+    except BaseManagerDeleteError as err:
         #TODO: ERROR-FIX
-        LOGGER.error("[delete_report] ManagerDeleteError: %s", err)
+        LOGGER.error("[delete_report] %s", err)
         return abort(400, f"Could not delete Report with ID: {public_id}!")
     except Exception as err:
         #TODO: ERROR-FIX

@@ -20,14 +20,14 @@ import logging
 from typing import Union
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.errors.manager.manager_errors import ManagerDeleteError, ManagerGetError
+from cmdb.errors.manager.manager_errors import BaseManagerDeleteError, BaseManagerGetError
 from cmdb.manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerIterationError
+from cmdb.errors.manager import BaseManagerIterationError
 
 from cmdb.errors.manager.docapi_templates_manager import (
     DocapiTemplatesManagerInsertError,
@@ -120,7 +120,7 @@ class DocapiTemplatesManager(BaseManager):
             result = self.get_one(public_id)
 
             return DocapiTemplate(**result)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise DocapiTemplatesManagerGetError(err) from err
         except Exception as err:
             #TODO: ERROR-FIX (raise and catch docapitemplate init error)
@@ -149,7 +149,7 @@ class DocapiTemplatesManager(BaseManager):
             iteration_result.convert_to(DocapiTemplate)
 
             return iteration_result
-        except ManagerIterationError as err:
+        except BaseManagerIterationError as err:
             raise DocapiTemplatesManagerIterationError(err) from err
         except Exception as err:
             raise DocapiTemplatesManagerIterationError(err) from err
@@ -254,5 +254,5 @@ class DocapiTemplatesManager(BaseManager):
         """
         try:
             return self.delete({'public_id': public_id})
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise DocapiTemplatesManagerDeleteError(err) from err

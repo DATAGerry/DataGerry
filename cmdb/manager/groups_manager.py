@@ -26,7 +26,7 @@ from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as righ
 from cmdb.models.group_model import CmdbUserGroup
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import ManagerUpdateError, ManagerDeleteError
+from cmdb.errors.manager import BaseManagerUpdateError, BaseManagerDeleteError
 from cmdb.errors.manager.groups_manager import (
     GroupsManagerInsertError,
     GroupsManagerGetError,
@@ -154,7 +154,7 @@ class GroupsManager(BaseManager):
                 raise GroupsManagerUpdateError('No CmdbUserGroup matches the input!')
             if update_result.matched_count > 1:
                 raise GroupsManagerUpdateError('More than one CmdbUserGroup matched the input!')
-        except ManagerUpdateError as err:
+        except BaseManagerUpdateError as err:
             raise GroupsManagerUpdateError(err) from err
         #TODO: ERROR-FIX (catch init errors, handle multiple or no matches)
         except Exception as err:
@@ -170,9 +170,9 @@ class GroupsManager(BaseManager):
             `public_id` (int): public_id of the CmdbUserGroup which should be deleted
 
         Raises:
-            `ManagerDeleteError`: If you try to delete the Admin or User CmdbUserGroup
-            `ManagerDeleteError`: Could not retrieve the CmdbUserGroup which should be deleted
-            `ManagerDeleteError`: When the delete operation failed
+            `BaseManagerDeleteError`: If you try to delete the Admin or User CmdbUserGroup
+            `BaseManagerDeleteError`: Could not retrieve the CmdbUserGroup which should be deleted
+            `BaseManagerDeleteError`: When the delete operation failed
 
         Returns:
             `bool`: True if the deletion succeded
@@ -188,7 +188,7 @@ class GroupsManager(BaseManager):
             return group
         except GroupsManagerGetError as err:
             raise GroupsManagerDeleteError(err) from err
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise GroupsManagerDeleteError(err) from err
         except Exception as err:
             raise GroupsManagerDeleteError(err) from err

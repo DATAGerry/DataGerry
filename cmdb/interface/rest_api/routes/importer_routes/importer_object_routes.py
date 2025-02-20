@@ -60,7 +60,7 @@ from cmdb.interface.rest_api.routes.importer_routes.importer_route_utils import 
     verify_import_access,
 )
 
-from cmdb.errors.manager import ManagerInsertError
+from cmdb.errors.manager import BaseManagerInsertError
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.manager.objects_manager import ObjectManagerGetError
 from cmdb.errors.render import InstanceRenderError
@@ -303,9 +303,9 @@ def import_objects(request_user: CmdbUser):
             #TODO: ERROR-FIX
             LOGGER.debug("[import_objects] InstanceRenderError: %s", err.message)
             return abort(500)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             #TODO: ERROR-FIX
-            LOGGER.debug("[import_objects] ManagerInsertError: %s", err.message)
+            LOGGER.debug("[import_objects] %s", err)
 
     api_response = DefaultResponse(import_response)
 

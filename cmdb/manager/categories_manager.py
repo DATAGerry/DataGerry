@@ -30,11 +30,11 @@ from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.manager import (
-    ManagerInsertError,
-    ManagerGetError,
-    ManagerIterationError,
-    ManagerUpdateError,
-    ManagerDeleteError,
+    BaseManagerInsertError,
+    BaseManagerGetError,
+    BaseManagerIterationError,
+    BaseManagerUpdateError,
+    BaseManagerDeleteError,
 )
 from cmdb.errors.manager.categories_manager import (
     CategoriesManagerInsertError,
@@ -116,7 +116,7 @@ class CategoriesManager(BaseManager):
 
         try:
             return self.insert(category)
-        except ManagerInsertError as err:
+        except BaseManagerInsertError as err:
             raise CategoriesManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -136,7 +136,7 @@ class CategoriesManager(BaseManager):
         """
         try:
             return self.get_one(public_id)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise CategoriesManagerGetError(err) from err
 
 
@@ -167,7 +167,7 @@ class CategoriesManager(BaseManager):
             iteration_result.convert_to(CmdbCategory)
 
             return iteration_result
-        except ManagerIterationError as err:
+        except BaseManagerIterationError as err:
             raise CategoriesManagerIterationError(err) from err
         except Exception as err:
             # TODO: ERROR-FIX (catch IterationResult exceptions)
@@ -194,7 +194,7 @@ class CategoriesManager(BaseManager):
                                                                  **requirements)
 
             return [CmdbCategory.from_data(category) for category in raw_categories]
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise CategoriesManagerGetError(err) from err
         except Exception as err:
             #TODO: ERROR-FIX (need CmdbCategory init error)
@@ -213,7 +213,7 @@ class CategoriesManager(BaseManager):
         """
         try:
             categories_count = self.count_documents(self.collection)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise CategoriesManagerGetError(err) from err
 
         return categories_count
@@ -233,7 +233,7 @@ class CategoriesManager(BaseManager):
         """
         try:
             self.update({'public_id':public_id}, CmdbCategory.to_json(data))
-        except ManagerUpdateError as err:
+        except BaseManagerUpdateError as err:
             raise CategoriesManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -253,7 +253,7 @@ class CategoriesManager(BaseManager):
         """
         try:
             return self.delete({'public_id':public_id})
-        except ManagerDeleteError as err:
+        except BaseManagerDeleteError as err:
             raise CategoriesManagerDeleteError(err) from err
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
@@ -278,7 +278,7 @@ class CategoriesManager(BaseManager):
                 category['parent'] = None
                 category_public_id = category['public_id']
                 self.update({'public_id':category_public_id}, category)
-        except ManagerGetError as err:
+        except BaseManagerGetError as err:
             raise CategoriesManagerGetError(err) from err
-        except ManagerUpdateError as err:
+        except BaseManagerUpdateError as err:
             raise CategoriesManagerUpdateError(err) from err

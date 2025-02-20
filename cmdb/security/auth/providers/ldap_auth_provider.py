@@ -31,7 +31,7 @@ from cmdb.security.auth.base_authentication_provider import BaseAuthenticationPr
 from cmdb.security.auth.providers.ldap_auth_config import LdapAuthenticationProviderConfig
 
 from cmdb.errors.provider import GroupMappingError, AuthenticationError
-from cmdb.errors.manager import ManagerGetError, ManagerUpdateError
+from cmdb.errors.manager import BaseManagerGetError, BaseManagerUpdateError
 from cmdb.errors.manager.users_manager import UsersManagerGetError, UsersManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -138,7 +138,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                 try:
                     self.users_manager.update_user(user_instance.public_id, user_instance)
                     user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
-                except ManagerUpdateError as err:
+                except BaseManagerUpdateError as err:
                     raise AuthenticationError(str(err)) from err
         except Exception as err:
             #TODO: ERROR-FIX
@@ -168,7 +168,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                 user_instance = self.users_manager.get_user(user_id)
             except UsersManagerGetError as error:
                 #TODO: ERROR-FIX
-                LOGGER.debug('[authenticate] ManagerGetError: %s', error)
+                LOGGER.debug('[authenticate] %s', error)
                 raise AuthenticationError(str(error)) from error
 
         return user_instance
