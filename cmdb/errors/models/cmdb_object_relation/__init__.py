@@ -14,11 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all CmdbRelation relevant classes
+This module provides all errors for CmdbObjectRelations
 """
-from .cmdb_relation import CmdbRelation
+from .cmdb_object_relation_errors import (
+    CmdbObjectRelationError,
+    CmdbObjectRelationInitError,
+    CmdbObjectRelationInitFromDataError,
+    CmdbObjectRelationToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'CmdbRelation',
+    'CmdbObjectRelationError',
+    'CmdbObjectRelationInitError',
+    'CmdbObjectRelationInitFromDataError',
+    'CmdbObjectRelationToJsonError',
 ]

@@ -22,6 +22,12 @@ from dateutil.parser import parse
 
 from cmdb.class_schema.cmdb_object_relation_schema import get_cmdb_object_relation_schema
 from cmdb.models.cmdb_dao import CmdbDAO
+
+from cmdb.errors.models.cmdb_object_relation import (
+    CmdbObjectRelationInitError,
+    CmdbObjectRelationInitFromDataError,
+    CmdbObjectRelationToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -34,7 +40,8 @@ LOGGER = logging.getLogger(__name__)
 #pylint: disable=too-many-instance-attributes
 class CmdbObjectRelation(CmdbDAO):
     """
-    Model for CmdbObjectRelation in DataGerry
+    Implementation of a CmdbObjectRelation in DataGerry
+
     `Extends`: CmdbDAO
     """
     COLLECTION = "framework.objectRelations"
@@ -61,19 +68,25 @@ class CmdbObjectRelation(CmdbDAO):
             relation_parent_id (int): public_id of the parent CmdbObject
             relation_child_id (int): public_id of the child CmdbObject
             author_id (int): public_id of the CmdbUser who created the CmdbObjectRelation then the last one editing it
-            creation_time (datetime, optional): When the CmdbObjectRelation was created. Defaults to None.
-            last_edit_time (datetime, optional): When the CmdbObjectRelation was last time edited. Defaults to None.
-            field_values (list[dict], optional): All field values for this CmdbObjectRelation. Defaults to None.
-        """
-        self.relation_id = relation_id
-        self.relation_parent_id = relation_parent_id
-        self.relation_child_id = relation_child_id
-        self.author_id = author_id
-        self.creation_time = creation_time or datetime.now(timezone.utc)
-        self.last_edit_time = last_edit_time
-        self.field_values = field_values
+            creation_time (datetime, optional): When the CmdbObjectRelation was created. Defaults to None
+            last_edit_time (datetime, optional): When the CmdbObjectRelation was last time edited. Defaults to None
+            field_values (list[dict], optional): All field values for this CmdbObjectRelation. Defaults to None
 
-        super().__init__(public_id=public_id)
+        Raises:
+            CmdbObjectRelationInitError: If the initialisation failed
+        """
+        try:
+            self.relation_id = relation_id
+            self.relation_parent_id = relation_parent_id
+            self.relation_child_id = relation_child_id
+            self.author_id = author_id
+            self.creation_time = creation_time or datetime.now(timezone.utc)
+            self.last_edit_time = last_edit_time
+            self.field_values = field_values
+
+            super().__init__(public_id=public_id)
+        except Exception as err:
+            raise CmdbObjectRelationInitError(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
@@ -85,29 +98,35 @@ class CmdbObjectRelation(CmdbDAO):
         Args:
             data (dict): Data with which the CmdbObjectRelation should be initialised
 
+        Raises:
+            CmdbObjectRelationInitFromDataError: If the initialisation with the given data fails 
+
         Returns:
             CmdbObjectRelation: CmdbObjectRelation with the given data
         """
-        creation_time = data.get('creation_time', None)
+        try:
+            creation_time = data.get('creation_time', None)
 
-        if creation_time and isinstance(creation_time, str):
-            creation_time = parse(creation_time, fuzzy=True)
+            if creation_time and isinstance(creation_time, str):
+                creation_time = parse(creation_time, fuzzy=True)
 
-        last_edit_time = data.get('last_edit_time', None)
+            last_edit_time = data.get('last_edit_time', None)
 
-        if last_edit_time and isinstance(last_edit_time, str):
-            last_edit_time = parse(last_edit_time, fuzzy=True)
+            if last_edit_time and isinstance(last_edit_time, str):
+                last_edit_time = parse(last_edit_time, fuzzy=True)
 
-        return cls(
-            public_id = data.get('public_id'),
-            relation_id = data.get('relation_id'),
-            relation_parent_id = data.get('relation_parent_id'),
-            relation_child_id = data.get('relation_child_id'),
-            author_id = data.get('author_id'),
-            creation_time = creation_time,
-            last_edit_time = last_edit_time,
-            field_values = data.get('field_values', None) or [],
-        )
+            return cls(
+                public_id = data.get('public_id'),
+                relation_id = data.get('relation_id'),
+                relation_parent_id = data.get('relation_parent_id'),
+                relation_child_id = data.get('relation_child_id'),
+                author_id = data.get('author_id'),
+                creation_time = creation_time,
+                last_edit_time = last_edit_time,
+                field_values = data.get('field_values', None) or [],
+            )
+        except Exception as err:
+            raise CmdbObjectRelationInitFromDataError(err) from err
 
 
     @classmethod
@@ -118,16 +137,21 @@ class CmdbObjectRelation(CmdbDAO):
         Args:
             instance (CmdbObjectRelation): The CmdbObjectRelation which should be converted
 
+        Raises:
+            CmdbObjectRelationToJsonError: If the CmdbRelation could not be converted to a json compatible dict
         Returns:
             dict: Json dict of the CmdbObjectRelation values
         """
-        return {
-            'public_id': instance.get_public_id(),
-            'relation_id': instance.relation_id,
-            'relation_parent_id': instance.relation_parent_id,
-            'relation_child_id': instance.relation_child_id,
-            'author_id': instance.author_id,
-            'creation_time': instance.creation_time,
-            'last_edit_time': instance.last_edit_time,
-            'field_values': instance.field_values,
-        }
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'relation_id': instance.relation_id,
+                'relation_parent_id': instance.relation_parent_id,
+                'relation_child_id': instance.relation_child_id,
+                'author_id': instance.author_id,
+                'creation_time': instance.creation_time,
+                'last_edit_time': instance.last_edit_time,
+                'field_values': instance.field_values,
+            }
+        except Exception as err:
+            raise CmdbObjectRelationToJsonError(err) from err

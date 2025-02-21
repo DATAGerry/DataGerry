@@ -28,7 +28,7 @@ from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
 from cmdb.models.type_model import CmdbType
 from cmdb.models.category_model import CmdbCategory
-from cmdb.models.object_link_model.link import CmdbObjectLink
+from cmdb.models.object_link_model import CmdbObjectLink
 from cmdb.models.log_model.cmdb_meta_log import CmdbMetaLog
 from cmdb.models.log_model.cmdb_log import CmdbLog
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog

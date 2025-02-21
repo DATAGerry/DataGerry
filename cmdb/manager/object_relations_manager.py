@@ -17,6 +17,7 @@
 This module contains the implementation of the ObjectRelationsManager
 """
 import logging
+from typing import Optional
 
 from cmdb.database import MongoDatabaseManager
 
@@ -40,6 +41,9 @@ from cmdb.errors.manager.object_relations_manager import (
     ObjectRelationsManagerUpdateError,
     ObjectRelationsManagerDeleteError,
 )
+from cmdb.errors.models.cmdb_object_relation import (
+    CmdbObjectRelationToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -57,8 +61,8 @@ class ObjectRelationsManager(BaseManager):
         Set the database connection for the ObjectRelationsManager
 
         Args:
-            `dbm` (MongoDatabaseManager): Database interaction manager
-            `database` (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
+            dbm (MongoDatabaseManager): Database interaction manager
+            database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
         if database:
             dbm.connector.set_database(database)
@@ -72,37 +76,41 @@ class ObjectRelationsManager(BaseManager):
         Insert a CmdbObjectRelation into the database
 
         Args:
-            `object_relation` (dict): Raw data of the CmdbObjectRelation
+            object_relation (dict): Raw data of the CmdbObjectRelation
 
         Raises:
-            `ObjectRelationsManagerInsertError`: When a CmdbObjectRelation could not be inserted into the database
+            ObjectRelationsManagerInsertError: When a CmdbObjectRelation could not be inserted into the database
 
         Returns:
-            `int`: The public_id of the created CmdbObjectRelation
+            int: The public_id of the created CmdbObjectRelation
         """
-        #TODO: ERROR-FIX (try-catch block)
-        if isinstance(object_relation, CmdbObjectRelation):
-            object_relation = CmdbObjectRelation.to_json(object_relation)
-
         try:
+            if isinstance(object_relation, CmdbObjectRelation):
+                object_relation = CmdbObjectRelation.to_json(object_relation)
+
             return self.insert(object_relation)
+        except CmdbObjectRelationToJsonError as err:
+            raise ObjectRelationsManagerInsertError(err) from err
         except BaseManagerInsertError as err:
+            raise ObjectRelationsManagerInsertError(err) from err
+        except Exception as err:
+            LOGGER.error("[insert_object_relation] Exception: %s. Type: %s", err, type(err))
             raise ObjectRelationsManagerInsertError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-    def get_object_relation(self, public_id: int) -> dict:
+    def get_object_relation(self, public_id: int) -> Optional[dict]:
         """
         Retrieves a CmdbObjectRelation from the database
 
         Args:
-            `public_id` (int): public_id of the CmdbObjectRelation
+            public_id (int): public_id of the CmdbObjectRelation
 
         Raises:
-            `ObjectRelationsManagerGetError`: When a CmdbObjectRelation could not be retrieved
+            ObjectRelationsManagerGetError: When a CmdbObjectRelation could not be retrieved
 
         Returns:
-            `dict`: Raw data of the CmdbObjectRelation
+            Optional[dict]: Dict representation of the CmdbObjectRelation attributes if it exists else None
         """
         try:
             return self.get_one(public_id)
@@ -115,20 +123,20 @@ class ObjectRelationsManager(BaseManager):
         Retrieves multiple CmdbObjectRelations
 
         Args:
-            `builder_params` (BuilderParameters): Filter for which CmdbObjectRelations should be retrieved
+            builder_params (BuilderParameters): Filter for which CmdbObjectRelations should be retrieved
 
         Raises:
-            `ObjectRelationsManagerIterationError`: When the iteration failed
+            ObjectRelationsManagerIterationError: When the iteration failed
 
         Returns:
-            `IterationResult[CmdbRelation]`: All CmdbObjectRelations matching the filter
+            IterationResult[CmdbRelation]: All CmdbObjectRelations matching the filter
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params)
 
-            # TODO: ERROR-FIX (catch IterationResult exceptions)
-            iteration_result: IterationResult[CmdbObjectRelation] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CmdbObjectRelation)
+            iteration_result: IterationResult[CmdbObjectRelation] = IterationResult(aggregation_result,
+                                                                                    total,
+                                                                                    CmdbObjectRelation)
 
             return iteration_result
         except Exception as err:
@@ -141,15 +149,20 @@ class ObjectRelationsManager(BaseManager):
         Updates a CmdbObjectRelation in the database
 
         Args:
-            `public_id` (int): public_id of the CmdbObjectRelation which should be updated
-            `data` (dict): The data with new values for the CmdbObjectRelation
+            public_id (int): public_id of the CmdbObjectRelation which should be updated
+            data (dict): The data with new values for the CmdbObjectRelation
 
         Raises:
-            `ObjectRelationsManagerUpdateError`: When the update operation fails
+            ObjectRelationsManagerUpdateError: When the update operation fails
         """
         try:
             self.update({'public_id':public_id}, CmdbObjectRelation.to_json(data))
+        except CmdbObjectRelationToJsonError as err:
+            raise ObjectRelationsManagerUpdateError(err) from err
         except BaseManagerUpdateError as err:
+            raise ObjectRelationsManagerUpdateError(err) from err
+        except Exception as err:
+            LOGGER.error("[update_object_relation] Exception: %s. Type: %s", err, type(err))
             raise ObjectRelationsManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -159,13 +172,13 @@ class ObjectRelationsManager(BaseManager):
         Deletes a CmdbObjectRelation from the database
 
         Args:
-            `public_id` (int): public_id of the CmdbObjectRelation which should be deleted
+            public_id (int): public_id of the CmdbObjectRelation which should be deleted
 
         Raises:
-            `ObjectRelationsManagerDeleteError`: When the delete operation fails
+            ObjectRelationsManagerDeleteError: When the delete operation fails
 
         Returns:
-            `bool`: True if deletion was successful
+            bool: True if deletion was successful
         """
         try:
             return self.delete({'public_id':public_id})

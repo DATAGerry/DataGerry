@@ -14,35 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all CmdbRelation errors
+This module contains the classes of all CmdbObjectLinks errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class CmdbRelationError(Exception):
+class CmdbObjectLinkError(Exception):
     """
-    Raised to catch all CmdbRelation related errors
+    Raised to catch all CmdbObjectLink related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all CmdbRelation related errors
+        Raised to catch all CmdbObjectLink related errors
         """
         super().__init__(err)
 
-# ----------------------------------------------- CmdbRelation - ERRORS ---------------------------------------------- #
+# ---------------------------------------------- CmdbObjectLink - ERRORS --------------------------------------------- #
 
-class CmdbRelationInitError(CmdbRelationError):
+class CmdbObjectLinkInitError(CmdbObjectLinkError):
     """
-    Raised when a CmdbRelation could not be initialised
-    """
-
-
-class CmdbRelationInitFromDataError(CmdbRelationError):
-    """
-    Raised when a CmdbRelation could not be initialised from a dict
+    Raised when a CmdbObjectLink could not be initialised
     """
 
 
-class CmdbRelationToJsonError(CmdbRelationError):
+class CmdbObjectLinkInitFromDataError(CmdbObjectLinkError):
     """
-    Raised when a CmdbRelation could not be transformed into a json compatible dict
+    Raised when a CmdbObjectLink could not be initialised from a dict
+    """
+
+
+class CmdbObjectLinkToJsonError(CmdbObjectLinkError):
+    """
+    Raised when a CmdbObjectLink could not be transformed into a json compatible dict
     """

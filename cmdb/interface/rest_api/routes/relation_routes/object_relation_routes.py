@@ -19,6 +19,7 @@ Implementation of all API routes for CmdbObjectRelations
 import logging
 from datetime import datetime, timezone
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager import ObjectRelationsManager
 from cmdb.manager.query_builder import BuilderParameters
@@ -61,16 +62,16 @@ object_relations_blueprint = APIBlueprint('object_relations', __name__)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.add')
 @object_relations_blueprint.validate(CmdbObjectRelation.SCHEMA)
-def insert_object_relation(data: dict, request_user: CmdbUser):
+def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route to insert a CmdbObjectRelation into the database
 
     Args:
-        `data` (CmdbObjectRelation.SCHEMA): Data of the CmdbObjectRelation which should be inserted
-        `request_user` (CmdbUser): User requesting this data
+        data (CmdbObjectRelation.SCHEMA): Data of the CmdbObjectRelation which should be inserted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `InsertSingleResponse`: The new CmdbObjectRelation and its public_id
+        InsertSingleResponse: The new CmdbObjectRelation and its public_id
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
@@ -84,17 +85,22 @@ def insert_object_relation(data: dict, request_user: CmdbUser):
 
         created_object_relation = object_relations_manager.get_object_relation(result_id)
 
-        api_response = InsertSingleResponse(created_object_relation, result_id)
+        if created_object_relation:
+            api_response = InsertSingleResponse(created_object_relation, result_id)
 
-        return api_response.make_response()
+            return api_response.make_response()
+
+        return abort(404, "Could not retrieve the created ObjectRelation from the database!")
+    except HTTPException as http_err:
+        raise http_err
     except ObjectRelationsManagerInsertError as err:
-        LOGGER.error("[insert_object_relation] %s", err, exc_info=True)
-        return abort(400, "Could not insert the new object relation in the database!")
+        LOGGER.error("[insert_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, "Could not insert the new ObjectRelation in the database!")
     except ObjectRelationsManagerGetError as err:
-        LOGGER.error("[insert_object_relation] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the created object relation from the database!")
+        LOGGER.error("[insert_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the created ObjectRelation from the database!")
     except Exception as err:
-        LOGGER.error("[insert_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[insert_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -104,16 +110,16 @@ def insert_object_relation(data: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.view')
 @object_relations_blueprint.parse_collection_parameters()
-def get_object_relations(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_object_relations(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting multiple CmdbObjectRelations
 
     Args:
-        `params` (CollectionParameters): Filter for requested CmdbObjectRelations
-        `request_user` (CmdbUser): User requesting this data
+        params (CollectionParameters): Filter for requested CmdbObjectRelations
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `GetMultiResponse`: All the CmdbObjectRelations matching the CollectionParameters
+        GetMultiResponse: All the CmdbObjectRelations matching the CollectionParameters
     """
     try:
         body = request.method == 'HEAD'
@@ -138,10 +144,10 @@ def get_object_relations(params: CollectionParameters, request_user: CmdbUser):
 
         return api_response.make_response()
     except ObjectRelationsManagerIterationError as err:
-        LOGGER.error("[get_object_relations] %s", err, exc_info=True)
-        return abort(400, "Could not retrieve relations from database!")
+        LOGGER.error("[get_cmdb_object_relations] %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the ObjectRelations from database!")
     except Exception as err:
-        LOGGER.error("[get_object_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_object_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 
@@ -149,16 +155,16 @@ def get_object_relations(params: CollectionParameters, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.view')
-def get_object_relation(public_id: int, request_user: CmdbUser):
+def get_cmdb_object_relation(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbObjectRelation
 
     Args:
-        `public_id` (int): public_id of the CmdbObjectRelation
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbObjectRelation
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `GetSingleResponse`: The requested CmdbObjectRelation
+        GetSingleResponse: The requested CmdbObjectRelation
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
@@ -168,14 +174,19 @@ def get_object_relation(public_id: int, request_user: CmdbUser):
 
         requested_object_relation = object_relations_manager.get_object_relation(public_id)
 
-        api_response = GetSingleResponse(requested_object_relation, body = request.method == 'HEAD')
+        if requested_object_relation:
+            api_response = GetSingleResponse(requested_object_relation, body = request.method == 'HEAD')
 
-        return api_response.make_response()
+            return api_response.make_response()
+
+        return abort(404, f"The ObjectRelation with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except ObjectRelationsManagerGetError as err:
-        LOGGER.error("[get_object_relation] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the requested object relation from the database!")
+        LOGGER.error("[get_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the requested ObjectRelation with ID:{public_id} from the database!")
     except Exception as err:
-        LOGGER.error("[get_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
@@ -185,17 +196,17 @@ def get_object_relation(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.edit')
 @object_relations_blueprint.validate(CmdbObjectRelation.SCHEMA)
-def update_object_relation(public_id: int, data: dict, request_user: CmdbUser):
+def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update a single CmdbObjectRelation
 
     Args:
-        `public_id` (int): public_id of the CmdbObjectRelation which should be updated
-        `data` (CmdbObjectRelation.SCHEMA): New CmdbObjectRelation data
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbObjectRelation which should be updated
+        data (CmdbObjectRelation.SCHEMA): New CmdbObjectRelation data
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `UpdateSingleResponse`: The new data of the CmdbObjectRelation
+        UpdateSingleResponse: The new data of the CmdbObjectRelation
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
@@ -203,20 +214,30 @@ def update_object_relation(public_id: int, data: dict, request_user: CmdbUser):
                                                                                request_user
                                                                            )
 
-        data['last_edit_time'] = datetime.now(timezone.utc)
+        to_update_object_relation = object_relations_manager.get_object_relation(public_id)
 
-        relation = CmdbObjectRelation.from_data(data)
+        if to_update_object_relation:
+            data['last_edit_time'] = datetime.now(timezone.utc)
 
-        object_relations_manager.update_object_relation(public_id, relation)
+            updated_object_relation = CmdbObjectRelation.from_data(data)
 
-        api_response = UpdateSingleResponse(result=data)
+            object_relations_manager.update_object_relation(public_id, updated_object_relation)
 
-        return api_response.make_response()
+            api_response = UpdateSingleResponse(result=data)
+
+            return api_response.make_response()
+
+        return abort(404, f"The ObjectRelation with ID: {public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
+    except ObjectRelationsManagerGetError as err:
+        LOGGER.error("[update_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the ObjectRelation with ID:{public_id} which should be updated!")
     except ObjectRelationsManagerUpdateError as err:
-        LOGGER.error("[update_relation] %s", err, exc_info=True)
-        return abort(400, "Could not update the object relation!")
+        LOGGER.error("[update_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, f"Failed to update the ObjectRelation with ID:{public_id}!")
     except Exception as err:
-        LOGGER.error("[update_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[update_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -225,16 +246,16 @@ def update_object_relation(public_id: int, data: dict, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.delete')
-def delete_object_relation(public_id: int, request_user: CmdbUser):
+def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
     """
     HTTP `DELETE` route to delete a single CmdbObjectRelation
 
     Args:
-        `public_id` (int): public_id of the CmdbObjectRelation which should be deleted
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbObjectRelation which should be deleted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `DeleteSingleResponse`: The deleted CmdbObjectRelation data
+        DeleteSingleResponse: The deleted CmdbObjectRelation data
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
@@ -242,18 +263,24 @@ def delete_object_relation(public_id: int, request_user: CmdbUser):
                                                                                request_user
                                                                            )
 
-        object_relation_instance = object_relations_manager.get_object_relation(public_id)
-        object_relations_manager.delete_object_relation(public_id)
+        to_delete_object_relation = object_relations_manager.get_object_relation(public_id)
 
-        api_response = DeleteSingleResponse(raw=object_relation_instance)
+        if to_delete_object_relation:
+            object_relations_manager.delete_object_relation(public_id)
 
-        return api_response.make_response()
+            api_response = DeleteSingleResponse(raw=to_delete_object_relation)
+
+            return api_response.make_response()
+
+        return abort(404, f"The ObjectRelation with ID: {public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except ObjectRelationsManagerDeleteError as err:
-        LOGGER.error("[delete_object_relation] %s", err, exc_info=True)
-        return abort(400, f"Could not delete the object relation with the ID:{public_id}")
+        LOGGER.error("[delete_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, f"Could not delete the ObjectRelation with ID:{public_id}!")
     except ObjectRelationsManagerGetError as err:
-        LOGGER.error("[delete_object_relation] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve an object relation from the database!")
+        LOGGER.error("[delete_cmdb_object_relation] %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the ObjectRelation with ID:{public_id} from the database!")
     except Exception as err:
-        LOGGER.error("[delete_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[delete_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
