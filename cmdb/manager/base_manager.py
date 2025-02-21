@@ -472,8 +472,10 @@ class BaseManager:
             bool: True if the deletion was acknowledged, otherwise False
         """
         try:
-            return self.dbm.delete(self.collection, criteria).acknowledged
-        except DocumentDeleteError as err:
+            result = self.dbm.delete(self.collection, criteria)
+
+            return result.acknowledged and result.deleted_count > 0
+        except (DocumentDeleteError, Exception) as err:
             raise BaseManagerDeleteError(err) from err
 
 
