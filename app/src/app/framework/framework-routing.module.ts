@@ -52,6 +52,15 @@ const routes: Routes = [
         loadChildren: () => import('./type/type.module').then(m => m.TypeModule),
     },
     {
+        path: 'relation',
+        canActivateChild: [PermissionGuard],
+        data: {
+            breadcrumb: 'Relation',
+            right: 'base.framework.relation.view'
+        },
+        loadChildren: () => import('./relation/relation.module').then(m => m.RelationModule),
+    },
+    {
         path: 'category',
         canActivateChild: [PermissionGuard],
         data: {

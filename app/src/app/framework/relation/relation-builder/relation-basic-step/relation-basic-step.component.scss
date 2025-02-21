@@ -1,0 +1,61 @@
+#basicForm{
+  small{
+    float: left;
+  }
+
+  div.custom-control-right {
+    padding-right: 24px;
+    padding-left: 0;
+    margin-left: 16px;
+    margin-right: 0;
+  }
+  div.custom-control-right .custom-control-label::before,
+  div.custom-control-right .custom-control-label::after{
+    right: -1.5rem;
+    left: initial;
+  }
+
+}
+.invalid-feedback, .valid-feedback{
+  div{
+    float: right;
+  }
+}
+
+
+/* relation-basic-step.component.scss */
+#relation-basic-step {
+  .card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    
+    .card-header {
+      font-weight: 600;
+      background-color: #f8f9fa;
+    }
+  }
+
+  .color-picker-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    cursor: pointer;
+    
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: 3px;
+    }
+  }
+
+  .required {
+    color: #dc3545;
+    font-size: 0.8em;
+  }
+
+  ng-select {
+    .ng-control {
+      min-height: 38px;
+    }
+  }
+
+
+}
