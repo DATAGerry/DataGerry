@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   cloudMode: false,
+  preCloudMode: false,
   protocol: 'http',
   apiUrl: 'localhost',
   apiPort: 4000

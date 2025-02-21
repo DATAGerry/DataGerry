@@ -1,0 +1,227 @@
+<div id="relation-basic-step" class="container-fluid">
+  <form
+    [formGroup]="form"
+    id="basic-relation-information-form"
+    class="needs-validation"
+    novalidate
+    autocomplete="off"
+  >
+    <!-- Main Relation Section -->
+  
+    <div class="form-group mb-4">
+      <label for="relationNameInput" class="form-label fw-semibold">
+        Relation Name <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        formControlName="relation_name"
+        class="form-control"
+        id="relationNameInput"
+        placeholder="e.g. Server-Connection"
+        [ngClass]="{
+          'is-valid': relation_name.valid && (relation_name.dirty || relation_name.touched),
+          'is-invalid': relation_name.invalid && (relation_name.dirty || relation_name.touched)
+        }"
+      />
+      <small class="form-text text-muted">
+        Use letters, numbers, and hyphens only
+      </small>
+      <div *ngIf="relation_name.invalid && (relation_name.dirty || relation_name.touched)"
+           class="invalid-feedback text-end">
+        <span *ngIf="relation_name.errors?.required">Name is required.</span>
+        <span *ngIf="relation_name.errors?.invalidCharacters">Contains invalid characters.</span>
+        <span *ngIf="relation_name.errors?.typeExists">A type with this name already exists.</span>
+      </div>
+    </div>
+    
+
+    <!-- Directional Configuration -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card h-100 border">
+          <div class="card-header bg-light border-bottom">
+            <h4 class="h6 mb-0">
+              <i class="fas fa-arrow-down me-2 text-muted"></i>
+              Parent → Child
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="form-group mb-3">
+              <label class="form-label fw-semibold">
+                Label <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                formControlName="relation_name_parent"
+                class="form-control"
+                placeholder="e.g. Contains"
+                [ngClass]="{
+                  'is-valid': relation_name_parent.valid && (relation_name_parent.dirty || relation_name_parent.touched),
+                  'is-invalid': relation_name_parent.invalid && (relation_name_parent.dirty || relation_name_parent.touched)
+                }"
+              />
+              <div *ngIf="relation_name_parent.invalid && (relation_name_parent.dirty || relation_name_parent.touched)"
+                   class="invalid-feedback d-block">
+                Label is required
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-8">
+                <cmdb-icon-picker
+                  [iconFormGroup]="parentIconForm"
+                  [fallbackIcon]="relation_icon_parent.value"
+                  class="w-100"
+                  [inputDescription]="'Symbol for the parent-to-child relation'"
+                ></cmdb-icon-picker>
+              </div>
+              <div class="col-4 ">
+                <label class="form-label fw-semibold">Color</label>
+                <input
+                  type="color"
+                  formControlName="relation_color_parent"
+                  class="form-control form-control-color"
+                  title="Choose color"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card h-100 border">
+          <div class="card-header bg-light border-bottom">
+            <h4 class="h6 mb-0">
+              <i class="fas fa-arrow-up me-2 text-muted"></i>
+              Child → Parent
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="form-group mb-3">
+              <label class="form-label fw-semibold">
+                Label <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                formControlName="relation_name_child"
+                class="form-control"
+                placeholder="e.g. Part Of"
+                [ngClass]="{
+                  'is-valid': relation_name_child.valid && (relation_name_child.dirty || relation_name_child.touched),
+                  'is-invalid': relation_name_child.invalid && (relation_name_child.dirty || relation_name_child.touched)
+                }"
+              />
+              <div *ngIf="relation_name_child.invalid && (relation_name_child.dirty || relation_name_child.touched)"
+                   class="invalid-feedback d-block">
+                Label is required
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-8">
+                <cmdb-icon-picker
+                  [iconFormGroup]="childIconForm"
+                  [fallbackIcon]="relation_icon_child.value"
+                  class="w-100"
+                  [inputDescription]="'Symbol for the child-to-parent relation'"
+                ></cmdb-icon-picker>
+              </div>
+              <div class="col-4">
+                <label class="form-label fw-semibold">Color</label>
+                <input
+                  type="color"
+                  formControlName="relation_color_child"
+                  class="form-control form-control-color"
+                  title="Choose color"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Type Restrictions -->
+    <div class="card mb-4 border">
+      <div class="card-header bg-light border-bottom">
+        <h3 class="h6 mb-0">
+          <i class="fas fa-filter me-2 text-muted"></i>
+          Type Restrictions
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label fw-semibold">
+                Parent Types <span class="text-danger">*</span>
+              </label>
+              <ng-select
+                formControlName="parent_type_ids"
+                [items]="availableTypes"
+                bindLabel="label"
+                bindValue="public_id"
+                [multiple]="true"
+                placeholder="Select types..."
+                [loading]="isLoadingTypes"
+                [closeOnSelect]="false"
+              >
+              </ng-select>
+              <small class="form-text text-muted mt-1 d-block">
+                Allowed parent types in this relation
+              </small>
+            </div>
+          </div>
+    
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label fw-semibold">
+                Child Types <span class="text-danger">*</span>
+              </label>
+              <ng-select
+                formControlName="child_type_ids"
+                [items]="availableTypes"
+                bindLabel="label"
+                bindValue="public_id"
+                [multiple]="true"
+                placeholder="Select types..."
+                [loading]="isLoadingTypes"
+                [closeOnSelect]="false"
+              >
+              </ng-select>
+              <small class="form-text text-muted mt-1 d-block">
+                Allowed child types in this relation
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+
+        <div class="form-group">
+          <h3 class="h6 mb-3">
+            Description
+          </h3>
+          <textarea
+            class="form-control"
+            formControlName="description"
+            rows="3"
+            placeholder="Describe the purpose and usage of this relation..."
+            [ngClass]="{
+              'is-valid': description.valid && (description.dirty || description.touched),
+              'is-invalid': description.invalid && (description.dirty || description.touched)
+            }"
+          ></textarea>
+          <small class="form-text text-muted d-block mt-1">
+            Optional description for documentation purposes
+          </small>
+        </div>
+
+  </form>
+</div>
+
+<app-loading-popup [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."></app-loading-popup>

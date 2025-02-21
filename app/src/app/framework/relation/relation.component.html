@@ -1,0 +1,37 @@
+<div class="d-flex justify-content-between">
+  <h1>Relation List</h1>
+</div>
+<hr />
+
+<cmdb-table [items]="relations" [columns]="columns" [page]="page" [sort]="sort" [id]="id" [stateEnabled]="true"
+  [emptyMessage]="'No relations were found!'" [customButtons]="[addTemplate]" [totalItems]="totalRelations"
+  [selectEnabled]="selectEnabled" [loading]="loading" [pageSize]="limit" (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
+  (selectedChange)="onSelectedChange($event)" (searchChange)="onSearchChange($event)"
+  (stateReset)="onStateReset()"></cmdb-table>
+
+<!-- Table templates -->
+
+<ng-template #actionsTemplate let-item="item">
+  <cmdb-relation-table-actions [publicID]="item.public_id"></cmdb-relation-table-actions>
+</ng-template>
+
+<ng-template #descriptionTemplate let-item="item">
+  <span *ngIf="item.description?.length <= 120">{{ item.description }}</span>
+
+  <span *ngIf="item.description?.length > 120" matTooltip="{{ item.description }}" matTooltipPosition="above"
+    class="tooltip-text">
+    {{ item.description | slice:0:120 }}...
+  </span>
+</ng-template>
+
+
+<ng-template #addTemplate>
+  <button type="button" *permissionLink="['base.framework.relation.add']" class="btn btn-success btn-sm mr-1 ml-1"
+    [routerLink]="['/framework/relation/add']">
+    <i class="fas fa-plus"></i> Add
+  </button>
+</ng-template>
+
+
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>

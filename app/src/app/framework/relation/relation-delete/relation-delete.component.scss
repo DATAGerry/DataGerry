@@ -1,0 +1,25 @@
+@import 'src/scss/variables';
+
+#deleteTypeModalForm{
+  small{
+    float: left;
+  }
+}
+.invalid-feedback, .valid-feedback{
+  div{
+    float: right;
+  }
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+#error_message {
+  padding-top: 10px;
+  color: $dg-error-message-color;
+}
+
+.back-button {
+  margin-right: 10px;
+}

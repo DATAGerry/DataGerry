@@ -1,0 +1,20 @@
+<h1>Delete relation: {{relationInstance?.relation_name}}</h1><hr />
+<dl class="row">
+    <dt class="col-sm-2">Name</dt>
+    <dd class="col-sm-10">{{relationInstance?.relation_name}}</dd>
+
+    <dt class="col-sm-2">Description</dt>
+    <dd class="col-sm-10 text-truncate">{{relationInstance?.description}}</dd>
+
+</dl>
+
+<hr />
+
+<button (click)="goBack()" class="back-button btn btn-outline-dark ml-3">Back to Relation List</button>
+<button class="btn btn-danger"  (click)="open()">Delete</button>
+
+<div>
+  <label id="error_message" *ngIf="numberOfObjects > 0">Deletion is only possible if there are no relation objects of this relation!</label>
+  <br>
+</div>
+

@@ -1,8 +1,9 @@
 import { CmdbType, CmdbTypeSection } from "src/app/framework/models/cmdb-type";
-import { FieldIdentifierValidationService } from "../../services/field-identifier-validation.service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import { DiagnosticModalComponent } from "../modals/diagnostic-modal/diagnostic-modal.component";
-import { PreviewModalComponent } from "../modals/preview-modal/preview-modal.component";
+import { DiagnosticModalComponent } from "src/app/framework/type/builder/modals/diagnostic-modal/diagnostic-modal.component";
+import { PreviewModalComponent } from "src/app/framework/type/builder/modals/preview-modal/preview-modal.component";
+import { FieldIdentifierValidationService } from "src/app/framework/type/services/field-identifier-validation.service";
+
 
 export class BuilderUtils {
 
@@ -106,10 +107,10 @@ export class BuilderUtils {
         switch (value) {
             case 'textarea':
                 return 'align-left';
+             case 'number':
+                return 'calculator';
             case 'password':
                 return 'key';
-            case 'number':
-                return 'calculator';
             case 'checkbox':
                 return 'check-square';
             case 'radio':
