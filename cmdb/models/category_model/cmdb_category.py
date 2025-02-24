@@ -13,16 +13,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Represents a CmdbCategory in DataGerry
+"""
 import logging
-from typing import Union
 
 from cmdb.class_schema.cmdb_category_schema import get_cmdb_category_schema
 
-from cmdb.models.type_model import CmdbType
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.category_model.category_meta import CategoryMeta
+
+from cmdb.errors.models.cmdb_category import (
+    CmdbCategoryInitError,
+    CmdbCategoryInitFromDataError,
+    CmdbCategoryToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -31,9 +36,11 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CmdbCategory - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbCategory(CmdbDAO):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Implementation of a CmdbCategory in DataGerry
 
+    Extends: CmdbDAO
+    """
     COLLECTION = 'framework.categories'
     MODEL = 'Category'
     SCHEMA: dict = get_cmdb_category_schema()
@@ -44,7 +51,6 @@ class CmdbCategory(CmdbDAO):
         {'keys': [('types', CmdbDAO.DAO_ASCENDING)], 'name': 'types', 'unique': False}
     ]
 
-
     #pylint: disable=too-many-arguments
     def __init__(self,
                  public_id: int,
@@ -52,95 +58,133 @@ class CmdbCategory(CmdbDAO):
                  label: str = None,
                  meta: CategoryMeta = None,
                  parent: int = None,
-                 types: Union[list[int], list[CmdbType]] = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        self.name: str = name
-        self.label: str = label
-        self.meta: CategoryMeta = meta
+                 types: list[int] = None):
+        """
+        Initialises a CmdbCategory
 
-        if parent == public_id and (parent is not None):
-            raise ValueError(f'Category {name} has his own ID as Parent')
+        Args:
+            public_id (int): public_id of the CmdbCategory
+            name (str): The name of the CmdbCategory
+            label (str, optional): The Label of the CmdbCategory. Defaults to None
+            meta (CategoryMeta, optional): The CategoryMeta of the CmdbCategory. Defaults to None
+            parent (int, optional): The public_id of the parent CmdbCategory. Defaults to None
+            types list[int], optional): public_ids of CmdbTypes assigned to this CmdbCategory.\
+                                                                Defaults to None
 
-        self.parent: int = parent
-        self.types: Union[list[int], list[CmdbType]] = types or []
-        super().__init__(public_id=public_id)
+        Raises:
+            CmdbCategoryInitError: if the CmdbCategory could not be initialised
+        """
+        try:
+            self.name: str = name
+            self.label: str = label
+            self.meta: CategoryMeta = meta
 
+            if parent == public_id and (parent is not None):
+                raise ValueError(f'Category {name} has his own ID as Parent')
+
+            self.parent: int = parent
+            self.types: list[int] = types or []
+
+            super().__init__(public_id=public_id)
+        except Exception as err:
+            raise CmdbCategoryInitError(err) from err
+
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbCategory":
-        """Create a instance of a category from database"""
-        raw_meta: dict = data.get('meta', None)
+        """
+        Initialises a CmdbCategory from a dict
 
-        if raw_meta:
-            meta = CategoryMeta(raw_meta.get('icon', ''), raw_meta.get('order', None))
-        else:
-            meta = raw_meta
+        Args:
+            data (dict): Data with which the CmdbCategory should be initialised
 
-        return cls(public_id=data.get('public_id'), name=data.get('name'), label=data.get('label', None),
-                   meta=meta, parent=data.get('parent'), types=data.get('types', None)
-                   )
+        Raises:
+            CmdbCategoryInitFromDataError: If the initialisation with the given data fails
+
+        Returns:
+            CmdbCategory: CmdbRelation with the given data
+        """
+        try:
+            raw_meta: dict = data.get('meta', None)
+
+            if raw_meta:
+                meta = CategoryMeta(raw_meta.get('icon', ''), raw_meta.get('order', None))
+            else:
+                meta = raw_meta
+
+            return cls(
+                public_id = data.get('public_id'),
+                name = data.get('name'),
+                label = data.get('label', None),
+                meta = meta,
+                parent = data.get('parent'),
+                types = data.get('types', [])
+            )
+        except Exception as err:
+            raise CmdbCategoryInitFromDataError(err) from err
 
 
     @classmethod
     def to_json(cls, instance: "CmdbCategory") -> dict:
-        """Convert a category instance to json conform data"""
-        meta = instance.get_meta()
+        """
+        Converts a CmdbCategory into a json compatible dict
 
-        return {
-            'public_id': instance.get_public_id(),
-            'name': instance.get_name(),
-            'label': instance.get_label(),
-            'meta': {
-                'icon': meta.get_icon(),
-                'order': meta.get_order()
-            },
-            'parent': instance.get_parent(),
-            'types': instance.get_types()
-        }
+        Args:
+            instance (CmdbCategory): The CmdbCategory which should be converted
 
+        Raises:
+            CmdbCategoryToJsonError: If the CmdbCategory could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the CmdbCategory values
+        """
+        try:
+            meta = instance.get_meta()
+
+            return {
+                'public_id': instance.get_public_id(),
+                'name': instance.name,
+                'label': instance.get_label(),
+                'meta': {
+                    'icon': meta.get_icon(),
+                    'order': meta.get_order()
+                },
+                'parent': instance.parent,
+                'types': instance.types
+            }
+        except Exception as err:
+            raise CmdbCategoryToJsonError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
     def get_name(self) -> str:
-        """Get the identifier name"""
+        """
+        Returns the name of the CmdbCategory
+
+        Returns:
+            str: The name of the CmdbCategory
+        """
         return self.name
 
 
     def get_label(self) -> str:
-        """Get the display name"""
-        if not self.label:
-            self.label = self.name.title()
-        return self.label
+        """
+        Returns the label of the CmdbCategory. If the label is not set, it returns 
+        the title-cased name without modifying the instance attribute
+
+        Returns:
+            str: The label of the CmdbCategory
+        """
+        return self.label or self.name.title()
 
 
     def get_meta(self) -> CategoryMeta:
-        """Get meta data"""
-        if not self.meta:
-            self.meta = CategoryMeta()
-        return self.meta
+        """
+        Retrieves the metadata for the CmdbCategory
 
-
-    def has_parent(self) -> bool:
-        """Check if category has parent"""
-        return bool(self.parent)
-
-
-    def get_parent(self) -> int:
-        """Get the public id of the parent"""
-        return self.parent
-
-
-    def has_types(self) -> bool:
-        """Check if this category has types"""
-        return self.get_number_of_types() > 0
-
-
-    def get_types(self) -> Union[list[int], list[CmdbType]]:
-        """Get list of type ids in this category"""
-        if not self.types:
-            self.types = []
-        return self.types
-
-
-    def get_number_of_types(self) -> int:
-        """Get number of types in this category"""
-        return len(self.get_types())
+        Returns:
+            CategoryMeta: The metadata associated with the CmdbCategory. If no metadata 
+            is set, a new `CategoryMeta` instance is returned as a default.
+        """
+        return self.meta or CategoryMeta()

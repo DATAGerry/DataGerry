@@ -35,6 +35,7 @@ from cmdb.errors.manager import (
     BaseManagerDeleteError,
 )
 from cmdb.errors.manager.object_relations_manager import (
+    ObjectRelationsManagerInitError,
     ObjectRelationsManagerInsertError,
     ObjectRelationsManagerGetError,
     ObjectRelationsManagerIterationError,
@@ -63,11 +64,17 @@ class ObjectRelationsManager(BaseManager):
         Args:
             dbm (MongoDatabaseManager): Database interaction manager
             database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
-        """
-        if database:
-            dbm.connector.set_database(database)
 
-        super().__init__(CmdbObjectRelation.COLLECTION, dbm)
+        Raises:
+            ObjectRelationsManagerInitError: If the ObjectRelationsManager could not be initialised
+        """
+        try:
+            if database:
+                dbm.connector.set_database(database)
+
+            super().__init__(CmdbObjectRelation.COLLECTION, dbm)
+        except Exception as err:
+            raise ObjectRelationsManagerInitError(err) from err
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 

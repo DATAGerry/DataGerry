@@ -28,7 +28,7 @@ post:
         Inserts a new CmdbCategory into the database
         <br><br>
         The **public_id** and **creation_time** properties will be automatically created and don't need to be provided.
-    operationId: insert_category
+    operationId: insert_cmdb_category
     requestBody:
         required: true
         content:
@@ -50,7 +50,11 @@ post:
                             raw:
                                 $ref: "../../components/schemas/CmdbCategory.yaml"
         "400":
-            description: Could not insert the new CmdbCategory in database
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Failed to insert the new CmdbCategory in database
+                - Failed to retrieve the new CmdbCategory from the database
             content:
                 application/json:
                     schema:
@@ -58,7 +62,7 @@ post:
                         properties:
                             error:
                                 type: string
-                                example: "Could not insert the new CmdbCategory in database"
+                                example: "Failed to insert the new CmdbCategory in database"
         "404":
             description: Could not retrieve the created CmdbCategory from database
             content:
@@ -92,7 +96,7 @@ get:
         Required User Right: **base.framework.category.view**
         <br><hr><br>
         Returns all CmdbCategories if no **CollectionParameters** are passed
-    operationId: get_categories
+    operationId: get_cmdb_categories
     parameters:
         - name: CollectionParameters
           in: query

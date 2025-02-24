@@ -31,7 +31,8 @@ def get_cmdb_object_relation_schema() -> dict:
         },
         'relation_id': {  # public_id of the CmdbRelation
             'type': 'integer',
-            'required': True
+            'required': True,
+            'empty': False
         },
         'creation_time': { # When the CmdbObjectRelation was created
             'type': 'dict',
@@ -49,12 +50,14 @@ def get_cmdb_object_relation_schema() -> dict:
         'relation_parent_id': { # public_id of the parent CmdbObject
             'type': 'integer',
             'nullable': False,
-            'required': True
+            'required': True,
+            'empty': False
         },
         'relation_child_id': { # public_id of the child CmdbObject
             'type': 'integer',
             'nullable': False,
-            'required': True
+            'required': True,
+            'empty': False
         },
         'field_values': { # All field values for this CmdbObjectRelation
             'type': 'list',

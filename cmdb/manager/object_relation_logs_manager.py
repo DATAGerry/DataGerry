@@ -17,10 +17,12 @@
 This module contains the implementation of the ObjectRelationLogsManager
 """
 import logging
+from typing import Optional
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.manager.query_builder import BuilderParameters
+
 from cmdb.manager import BaseManager
+from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.log_model import CmdbObjectRelationLog
 from cmdb.models.user_model import CmdbUser
@@ -35,6 +37,7 @@ from cmdb.errors.manager import (
     BaseManagerDeleteError,
 )
 from cmdb.errors.manager.object_relation_logs_manager import (
+    ObjectRelationLogsManagerInitError,
     ObjectRelationLogsManagerInsertError,
     ObjectRelationLogsManagerGetError,
     ObjectRelationLogsManagerIterationError,
@@ -50,35 +53,42 @@ LOGGER = logging.getLogger(__name__)
 class ObjectRelationLogsManager(BaseManager):
     """
     The ObjectRelationLogsManager handles the interaction between the CmdbObjectRelationLogs-API and the database
-    `Extends`: BaseManager
+
+    Extends: BaseManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database:str = None):
         """
         Set the database connection for the ObjectRelationLogsManager
 
         Args:
-            `dbm` (MongoDatabaseManager): Database interaction manager
-            `database` (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
-        """
-        if database:
-            dbm.connector.set_database(database)
+            dbm (MongoDatabaseManager): Database interaction manager
+            database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
 
-        super().__init__(CmdbObjectRelationLog.COLLECTION, dbm)
+        Raises:
+            ObjectRelationLogsManagerInitError: If the ObjectRelationLogsManager could not be initialised
+        """
+        try:
+            if database:
+                dbm.connector.set_database(database)
+
+            super().__init__(CmdbObjectRelationLog.COLLECTION, dbm)
+        except Exception as err:
+            raise ObjectRelationLogsManagerInitError(err) from err
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
     def insert_object_relation_log(self, object_relation_log: dict) -> int:
         """
-        Insert a CmdbCategory into the database
+        Insert a CmdbObjectRelationLog into the database
 
         Args:
-            `object_relation_log` (dict): Raw data of the CmdbObjectRelationLog
+            object_relation_log (dict): Raw data of the CmdbObjectRelationLog
 
         Raises:
-            `ObjectRelationLogsManagerInsertError`: When a CmdbObjectRelationLog could not be inserted into database
+            ObjectRelationLogsManagerInsertError: When a CmdbObjectRelationLog could not be inserted into database
 
         Returns:
-            `int`: The public_id of the created CmdbObjectRelationLog
+            int: The public_id of the created CmdbObjectRelationLog
         """
         try:
             return self.insert(object_relation_log)
@@ -88,18 +98,18 @@ class ObjectRelationLogsManager(BaseManager):
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-    def get_object_relation_log(self, public_id: int) -> dict:
+    def get_object_relation_log(self, public_id: int) -> Optional[dict]:
         """
         Retrieves a CmdbObjectRelationLog from the database
 
         Args:
-            `public_id` (int): public_id of the CmdbObjectRelationLog
+            public_id (int): public_id of the CmdbObjectRelationLog
 
         Raises:
-            `ObjectRelationLogsManagerGetError`: When a CmdbObjectRelationLog could not be retrieved
+            ObjectRelationLogsManagerGetError: When a CmdbObjectRelationLog could not be retrieved
 
         Returns:
-            `dict`: Raw data of the CmdbObjectRelationLog
+            Optional[dict]: Raw data of the CmdbObjectRelationLog if it exists
         """
         try:
             return self.get_one(public_id)
@@ -115,31 +125,26 @@ class ObjectRelationLogsManager(BaseManager):
         Retrieves multiple CmdbObjectRelationLogs
 
         Args:
-            `builder_params` (BuilderParameters): Filter for which CmdbObjectRelationLogs should be retrieved
-            `user` (CmdbUser, optional): CmdbUser requestion this operation. Defaults to None
-            `permission` (AccessControlPermission, optional): Required permission for the operation. Defaults to None
+            builder_params (BuilderParameters): Filter for which CmdbObjectRelationLogs should be retrieved
+            user (CmdbUser, optional): CmdbUser requestion this operation. Defaults to None
+            permission (AccessControlPermission, optional): Required permission for the operation. Defaults to None
 
         Raises:
-            `ObjectRelationLogsManagerIterationError`: When the iteration failed
-            `ObjectRelationLogsManagerIterationError`: When an unexpected error occured
+            ObjectRelationLogsManagerIterationError: When the iteration or creating the IterationResult failed
 
         Returns:
-            `IterationResult[CmdbCategory]`: All CmdbObjectRelationLogs matching the filter
+            IterationResult[CmdbObjectRelationLog]: All CmdbObjectRelationLogs matching the filter
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            # TODO: ERROR-FIX (catch IterationResult exceptions)
-            iteration_result: IterationResult[CmdbObjectRelationLog] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CmdbObjectRelationLog)
+            iteration_result: IterationResult[CmdbObjectRelationLog] = IterationResult(aggregation_result,
+                                                                                       total,
+                                                                                       CmdbObjectRelationLog)
 
             return iteration_result
-        except BaseManagerIterationError as err:
+        except (BaseManagerIterationError, Exception) as err:
             raise ObjectRelationLogsManagerIterationError(err) from err
-        except Exception as err:
-            # TODO: ERROR-FIX (catch IterationResult exceptions)
-            raise ObjectRelationLogsManagerIterationError(err) from err
-
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -148,13 +153,13 @@ class ObjectRelationLogsManager(BaseManager):
         Deletes a CmdbObjectRelationLog from the database
 
         Args:
-            `public_id` (int): public_id of the CmdbObjectRelationLog which should be deleted
+            public_id (int): public_id of the CmdbObjectRelationLog which should be deleted
 
         Raises:
-            `ObjectRelationLogsManagerDeleteError`: When the delete operation fails
+            ObjectRelationLogsManagerDeleteError: When the delete operation fails
 
         Returns:
-            `bool`: True if deletion was successful
+            bool: True if deletion was successful
         """
         try:
             return self.delete({'public_id':public_id})

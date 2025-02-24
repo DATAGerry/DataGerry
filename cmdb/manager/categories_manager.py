@@ -37,12 +37,17 @@ from cmdb.errors.manager import (
     BaseManagerDeleteError,
 )
 from cmdb.errors.manager.categories_manager import (
+    CategoriesManagerInitError,
     CategoriesManagerInsertError,
     CategoriesManagerGetError,
     CategoriesManagerUpdateError,
     CategoriesManagerDeleteError,
     CategoriesManagerIterationError,
     CategoriesManagerTreeInitError,
+)
+from cmdb.errors.models.cmdb_category import (
+    CmdbCategoryToJsonError,
+    CmdbCategoryInitFromDataError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -54,20 +59,26 @@ LOGGER = logging.getLogger(__name__)
 class CategoriesManager(BaseManager):
     """
     The CategoriesManager handles the interaction between the CmdbCategories-API and the database
-    `Extends`: BaseManager
+
+    Extends: BaseManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database:str = None):
         """
         Set the database connection for the CategoriesManager
 
         Args:
-            `dbm` (MongoDatabaseManager): Database interaction manager
-            `database` (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
-        """
-        if database:
-            dbm.connector.set_database(database)
+            dbm (MongoDatabaseManager): Database interaction manager
+            database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
 
-        super().__init__(CmdbCategory.COLLECTION, dbm)
+        Raises: If the CategoriesManager could not be initialised
+        """
+        try:
+            if database:
+                dbm.connector.set_database(database)
+
+            super().__init__(CmdbCategory.COLLECTION, dbm)
+        except Exception as err:
+            raise CategoriesManagerInitError(err) from err
 
 
     @property
@@ -76,10 +87,10 @@ class CategoriesManager(BaseManager):
         Get the CmdbCategories as a nested tree
 
         Raises:
-            `CategoriesManagerTreeInitError`: When the CategoryTree Initialisation failed
+            CategoriesManagerTreeInitError: When the CategoryTree initialisation failed
 
         Returns:
-            `CategoryTree`: CmdbCategories as a tree structure
+            CategoryTree: CmdbCategories as a tree structure
         """
         try:
 
@@ -90,10 +101,10 @@ class CategoriesManager(BaseManager):
             categories = self.iterate(build_params).results
 
             category_tree = CategoryTree(categories, cmdb_types)
+
+            return category_tree
         except Exception as err:
             raise CategoriesManagerTreeInitError(err) from err
-
-        return category_tree
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
@@ -102,22 +113,24 @@ class CategoriesManager(BaseManager):
         Insert a CmdbCategory into the database
 
         Args:
-            `category` (dict): Raw data of the CmdbCategory
+            category (dict): Raw data of the CmdbCategory
 
         Raises:
-            `CategoriesManagerInsertError`: When a CmdbCategory could not be inserted into the database
+            CategoriesManagerInsertError: When a CmdbCategory could not be inserted into the database
 
         Returns:
-            `int`: The public_id of the created CmdbCategory
+            int: The public_id of the created CmdbCategory
         """
-        #TODO: ERROR-FIX (try-catch block)
-        if isinstance(category, CmdbCategory):
-            category = CmdbCategory.to_json(category)
-
         try:
+            if isinstance(category, CmdbCategory):
+                category = CmdbCategory.to_json(category)
+
             return self.insert(category)
-        except BaseManagerInsertError as err:
+        except (BaseManagerInsertError, CmdbCategoryToJsonError)  as err:
             raise CategoriesManagerInsertError(err) from err
+        except Exception as err:
+            LOGGER.error("[insert_category] Exception: %s. Type: %s", err, type(err))
+            raise CategoriesManagerIterationError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -126,13 +139,13 @@ class CategoriesManager(BaseManager):
         Retrieves a CmdbCategory from the database
 
         Args:
-            `public_id` (int): public_id of the CmdbCategory
+            public_id (int): public_id of the CmdbCategory
 
         Raises:
-            `CategoriesManagerGetError`: When a CmdbCategory could not be retrieved
+            CategoriesManagerGetError: When a CmdbCategory could not be retrieved
 
         Returns:
-            `dict`: Raw data of the CmdbCategory
+            dict: Raw data of the CmdbCategory
         """
         try:
             return self.get_one(public_id)
@@ -148,26 +161,28 @@ class CategoriesManager(BaseManager):
         Retrieves multiple CmdbCategories
 
         Args:
-            `builder_params` (BuilderParameters): Filter for which CmdbCategories should be retrieved
-            `user` (CmdbUser, optional): CmdbUser requestion this operation. Defaults to None
-            `permission` (AccessControlPermission, optional): Required permission for the operation. Defaults to None
+            builder_params (BuilderParameters): Filter for which CmdbCategories should be retrieved
+            user (CmdbUser, optional): CmdbUser requestion this operation. Defaults to None
+            permission (AccessControlPermission, optional): Required permission for the operation. Defaults to None
 
         Raises:
-            `CategoriesManagerIterationError`: When the iteration failed
-            `CategoriesManagerIterationError`: When an unexpected error occured
+            CategoriesManagerIterationError: When the iteration failed or initialising the IterationResult
 
         Returns:
-            `IterationResult[CmdbCategory]`: All CmdbCategories matching the filter
+            IterationResult[CmdbCategory]: All CmdbCategories matching the filter
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            iteration_result: IterationResult[CmdbCategory] = IterationResult(aggregation_result, total, CmdbCategory)
+            iteration_result: IterationResult[CmdbCategory] = IterationResult(aggregation_result,
+                                                                              total,
+                                                                              CmdbCategory)
 
             return iteration_result
         except BaseManagerIterationError as err:
             raise CategoriesManagerIterationError(err) from err
         except Exception as err:
+            LOGGER.error("[iterate] Exception: %s. Type: %s", err, type(err))
             raise CategoriesManagerIterationError(err) from err
 
 
@@ -176,14 +191,13 @@ class CategoriesManager(BaseManager):
         Retrieves a list of CmdbCategories according to the 'requirements'
 
         Args:
-            `sort` (str, optional): key be which the results should be sorted. Defaults to 'public_id'
+            sort (str, optional): key be which the results should be sorted. Defaults to 'public_id'
 
         Raises:
-            `CategoriesManagerGetError`: When the CmdbCategories could not be retrieved
-            `CategoriesManagerGetError`: When an Exception occured
+            CategoriesManagerGetError: When the CmdbCategories could not be retrieved
 
         Returns:
-            `list[CmdbCategory]`: list of CmdbCategories match the requirements
+            list[CmdbCategory]: list of CmdbCategories match the requirements
         """
         try:
             raw_categories = self.get_many_from_other_collection(collection=CmdbCategory.COLLECTION,
@@ -191,10 +205,10 @@ class CategoriesManager(BaseManager):
                                                                  **requirements)
 
             return [CmdbCategory.from_data(category) for category in raw_categories]
-        except BaseManagerGetError as err:
+        except (BaseManagerGetError, CmdbCategoryInitFromDataError) as err:
             raise CategoriesManagerGetError(err) from err
         except Exception as err:
-            #TODO: ERROR-FIX (need CmdbCategory init error)
+            LOGGER.error("[get_categories_by] Exception: %s. Type: %s", err, type(err))
             raise CategoriesManagerGetError(err) from err
 
 
@@ -203,17 +217,17 @@ class CategoriesManager(BaseManager):
         Returns the number of CmdbCategories
 
         Raises:
-            `CategoriesManagerGetError`: When an error occures during counting CmdbCategories
+            CategoriesManagerGetError: When an error occures during counting CmdbCategories
 
         Returns:
-            `int`: Returns the number of CmdbCategories
+            int: Returns the number of CmdbCategories
         """
         try:
             categories_count = self.count_documents(self.collection)
+
+            return categories_count
         except BaseManagerGetError as err:
             raise CategoriesManagerGetError(err) from err
-
-        return categories_count
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -222,15 +236,15 @@ class CategoriesManager(BaseManager):
         Updates a CmdbCategory in the database
 
         Args:
-            `public_id` (int): public_id of the CmdbCategory which should be updated
-            `data` (dict): The data with new values for the CmdbCategory
+            public_id (int): public_id of the CmdbCategory which should be updated
+            data (dict): The data with new values for the CmdbCategory
 
         Raises:
-            `CategoriesManagerUpdateError`: When the update operation fails
+            CategoriesManagerUpdateError: When the update operation fails
         """
         try:
             self.update({'public_id':public_id}, CmdbCategory.to_json(data))
-        except BaseManagerUpdateError as err:
+        except (BaseManagerUpdateError, CmdbCategoryToJsonError) as err:
             raise CategoriesManagerUpdateError(err) from err
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -240,13 +254,13 @@ class CategoriesManager(BaseManager):
         Deletes a CmdbCategory from the database
 
         Args:
-            `public_id` (int): public_id of the CmdbCategory which should be deleted
+            public_id (int): public_id of the CmdbCategory which should be deleted
 
         Raises:
-            `CategoriesManagerDeleteError`: When the delete operation fails
+            CategoriesManagerDeleteError: When the delete operation fails
 
         Returns:
-            `bool`: True if deletion was successful
+            bool: True if deletion was successful
         """
         try:
             return self.delete({'public_id':public_id})
@@ -260,22 +274,25 @@ class CategoriesManager(BaseManager):
         Sets the parent attribute to null for all children of a CmdbCategory
 
         Args:
-            `public_id` (int): public_id of the parent category
+            public_id (int): public_id of the parent category
 
         Raises:
-            `CategoriesManagerGetError`: When the child CmdbCategories could not be retrieved
-            `CategoriesManagerUpdateError`: When a child CmdbCategory could not be updated
+            CategoriesManagerGetError: When the child CmdbCategories could not be retrieved
+            CategoriesManagerUpdateError: When a child CmdbCategory could not be updated
         """
         try:
             # Get all children
-            cursor_result = self.get(filter={'parent': public_id})
+            child_categories = self.get(filter={'parent': public_id})
 
             # Update all child CmdbCategories
-            for category in cursor_result:
+            for category in child_categories:
                 category['parent'] = None
                 category_public_id = category['public_id']
                 self.update({'public_id':category_public_id}, category)
         except BaseManagerGetError as err:
             raise CategoriesManagerGetError(err) from err
         except BaseManagerUpdateError as err:
+            raise CategoriesManagerUpdateError(err) from err
+        except Exception as err:
+            LOGGER.error("[reset_children_categories] Exception: %s. Type: %s", err, type(err))
             raise CategoriesManagerUpdateError(err) from err

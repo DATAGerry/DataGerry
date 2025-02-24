@@ -267,7 +267,7 @@ def get_location_for_object(object_id: int, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_parent(object_id: int, request_user: CmdbUser):
+def get_location_parent(object_id: int, request_user: CmdbUser):
     """
     Returns the parent location for a given object_id
     

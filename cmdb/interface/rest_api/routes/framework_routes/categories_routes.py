@@ -19,6 +19,7 @@ Implementation of all API routes for CmdbCategories
 import logging
 from datetime import datetime, timezone
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -60,16 +61,16 @@ categories_blueprint = APIBlueprint('categories', __name__)
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.add')
 @categories_blueprint.validate(CmdbCategory.SCHEMA)
-def insert_category(data: dict, request_user: CmdbUser):
+def insert_cmdb_category(data: dict, request_user: CmdbUser):
     """
     HTTP `POST` route to insert a CmdbCategory into the database
 
     Args:
-        `data` (CmdbCategory.SCHEMA): Data of the CmdbCategory which should be inserted
-        `request_user` (CmdbUser): User requesting this data
+        data (CmdbCategory.SCHEMA): Data of the CmdbCategory which should be inserted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `InsertSingleResponse`: The new CmdbCategory and its public_id
+        InsertSingleResponse: The new CmdbCategory and its public_id
     """
     try:
         categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
@@ -81,17 +82,22 @@ def insert_category(data: dict, request_user: CmdbUser):
 
         created_category = categories_manager.get_category(result_id)
 
-        api_response = InsertSingleResponse(created_category, result_id)
+        if created_category:
+            api_response = InsertSingleResponse(created_category, result_id)
 
-        return api_response.make_response()
+            return api_response.make_response()
+
+        return abort(404, "Could not retrieve the created Category from the database!")
+    except HTTPException as http_err:
+        raise http_err
     except CategoriesManagerInsertError as err:
-        LOGGER.error("[insert_category] %s", err, exc_info=True)
-        return abort(400, "Could not insert the new category in the database!")
+        LOGGER.error("[insert_cmdb_category] %s", err, exc_info=True)
+        return abort(400, "Failed to insert the new Category in the database!")
     except CategoriesManagerGetError as err:
-        LOGGER.error("[insert_category] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the created category from the database!")
+        LOGGER.error("[insert_cmdb_category] %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the created Category from the database!")
     except Exception as err:
-        LOGGER.error("[insert_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[insert_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -101,16 +107,16 @@ def insert_category(data: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.view')
 @categories_blueprint.parse_collection_parameters(view='list')
-def get_categories(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_categories(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting multiple CmdbCategories
 
     Args:
-        `params` (CollectionParameters): Filter for requested CmdbCategories
-        `request_user` (CmdbUser): User requesting this data
+        params (CollectionParameters): Filter for requested CmdbCategories
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `GetMultiResponse`: All the CmdbCategories matching the CollectionParameters
+        GetMultiResponse: All the CmdbCategories matching the CollectionParameters
     """
     try:
         categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
@@ -143,13 +149,13 @@ def get_categories(params: CollectionParameters, request_user: CmdbUser):
 
         return api_response.make_response()
     except CategoriesManagerIterationError as err:
-        LOGGER.error("[get_categories] %s", err, exc_info=True)
-        return abort(400, "Could not retrieve categories from database!")
+        LOGGER.error("[get_cmdb_categories] %s", err, exc_info=True)
+        return abort(400, "Could not retrieve Categories from database!")
     except CategoriesManagerTreeInitError as err:
-        LOGGER.error("[get_categories] %s", err, exc_info=True)
-        return abort(500, "Could not place the categories into a tree structure!")
+        LOGGER.error("[get_cmdb_categories] %s", err, exc_info=True)
+        return abort(500, "Failed to place the Categories into a tree structure!")
     except Exception as err:
-        LOGGER.error("[get_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 
@@ -157,33 +163,36 @@ def get_categories(params: CollectionParameters, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.view')
-def get_category(public_id: int, request_user: CmdbUser):
+def get_cmdb_category(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbCategory
 
     Args:
-        `public_id` (int): public_id of the CmdbCategory
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbCategory
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `GetSingleResponse`: The requested CmdbCategory
+        GetSingleResponse: The requested CmdbCategory
     """
     try:
         categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
                                                                             request_user)
 
         requested_category = categories_manager.get_category(public_id)
+        if requested_category:
+            api_response = GetSingleResponse(requested_category, body = request.method == 'HEAD')
 
-        api_response = GetSingleResponse(requested_category, body = request.method == 'HEAD')
+            return api_response.make_response()
 
-        return api_response.make_response()
+        return abort(404, f"The Category with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except CategoriesManagerGetError as err:
-        LOGGER.error("[get_category] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the requested category from the database!")
+        LOGGER.error("[get_cmdb_category] %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the requested Category with ID:{public_id} from the database!")
     except Exception as err:
-        LOGGER.error("[get_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
-
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -192,17 +201,17 @@ def get_category(public_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.edit')
 @categories_blueprint.validate(CmdbCategory.SCHEMA)
-def update_category(public_id: int, data: dict, request_user: CmdbUser):
+def update_cmdb_category(public_id: int, data: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update a single CmdbCategory
 
     Args:
-        `public_id` (int): public_id of the CmdbCategory which should be updated
-        `data` (CmdbCategory.SCHEMA): New CmdbCategory data
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbCategory which should be updated
+        data (CmdbCategory.SCHEMA): New CmdbCategory data
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `UpdateSingleResponse`: The new data of the CmdbCategory
+        UpdateSingleResponse: The new data of the CmdbCategory
     """
     try:
         categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
@@ -210,16 +219,26 @@ def update_category(public_id: int, data: dict, request_user: CmdbUser):
 
         category = CmdbCategory.from_data(data)
 
-        categories_manager.update_category(public_id, category)
+        to_update_category = categories_manager.get_category(public_id)
 
-        api_response = UpdateSingleResponse(result=data)
+        if to_update_category:
+            categories_manager.update_category(public_id, category)
 
-        return api_response.make_response()
+            api_response = UpdateSingleResponse(result=data)
+
+            return api_response.make_response()
+
+        return abort(404, f"The Category with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
+    except CategoriesManagerGetError as err:
+        LOGGER.error("[update_cmdb_category] %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the requested Category with ID:{public_id} from the database!")
     except CategoriesManagerUpdateError as err:
-        LOGGER.error("[update_category] %s", err, exc_info=True)
-        return abort(400, "Could not update the category!")
+        LOGGER.error("[update_cmdb_category] %s", err, exc_info=True)
+        return abort(400, "Failed to update the Category!")
     except Exception as err:
-        LOGGER.error("[update_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[update_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
@@ -228,38 +247,45 @@ def update_category(public_id: int, data: dict, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @categories_blueprint.protect(auth=True, right='base.framework.category.delete')
-def delete_category(public_id: int, request_user: CmdbUser):
+def delete_cmdb_category(public_id: int, request_user: CmdbUser):
     """
     HTTP `DELETE` route to delete a single CmdbCategory
 
     Args:
-        `public_id` (int): public_id of the CmdbCategory which should be deleted
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbCategory which should be deleted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `DeleteSingleResponse`: The deleted CmdbCategory data
+        DeleteSingleResponse: The deleted CmdbCategory data
     """
     try:
         categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
                                                                             request_user)
 
-        category_instance = categories_manager.get_category(public_id)
-        categories_manager.delete_category(public_id)
+        to_delete_category = categories_manager.get_category(public_id)
 
-        # Update 'parent' attribute on direct children
-        categories_manager.reset_children_categories(public_id)
+        if to_delete_category:
+            categories_manager.delete_category(public_id)
 
-        api_response = DeleteSingleResponse(raw=category_instance)
-        return api_response.make_response()
+            # Update 'parent' attribute on direct children
+            categories_manager.reset_children_categories(public_id)
+
+            api_response = DeleteSingleResponse(raw=to_delete_category)
+
+            return api_response.make_response()
+
+        return abort(404, f"The Category with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except CategoriesManagerDeleteError as err:
-        LOGGER.error("[delete_category] %s", err, exc_info=True)
-        return abort(400, f"Could not delete the category with the ID:{public_id}")
+        LOGGER.error("[delete_cmdb_category] %s", err, exc_info=True)
+        return abort(400, f"Failed to delete the Category with the ID:{public_id}")
     except CategoriesManagerGetError as err:
-        LOGGER.error("[delete_category] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve a category from the database!")
+        LOGGER.error("[delete_cmdb_category] %s", err, exc_info=True)
+        return abort(400, "Failed not retrieve a Category from the database!")
     except CategoriesManagerUpdateError as err:
-        LOGGER.error("[update_category] %s", err, exc_info=True)
-        return abort(500, "Could not update a child category although the requested category got deleted!")
+        LOGGER.error("[delete_cmdb_category] %s", err, exc_info=True)
+        return abort(500, "Could not update a child Category although the requested Category got deleted!")
     except Exception as err:
-        LOGGER.error("[delete_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[delete_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")

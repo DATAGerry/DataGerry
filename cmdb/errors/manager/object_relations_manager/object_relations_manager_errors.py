@@ -30,6 +30,11 @@ class ObjectRelationsManagerError(Exception):
 
 # ------------------------------------------- ObjectRelationsManager errors ------------------------------------------ #
 
+class ObjectRelationsManagerInitError(ObjectRelationsManagerError):
+    """
+    Raised when ObjectRelationsManager could not be initialised
+    """
+
 class ObjectRelationsManagerInsertError(ObjectRelationsManagerError):
     """
     Raised when ObjectRelationsManager could not insert a CmdbObjectRelation

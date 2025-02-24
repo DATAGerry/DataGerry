@@ -33,7 +33,7 @@ get:
           required: true
           schema:
               type: integer
-    operationId: get_category
+    operationId: get_cmdb_category
     responses:
         "200":
             description: Returns the CmdbCategory with the given **public_id**
@@ -44,8 +44,8 @@ get:
                         properties:
                             result:
                                 $ref: "../../components/schemas/CmdbCategory.yaml"
-        "404":
-            description: Could not retrive the requested CmdbCategory
+        "400":
+            description: Failed to retrive the requested CmdbCategory from the database!
             content:
                 application/json:
                     schema:
@@ -53,7 +53,17 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrive the requested CmdbCategory"
+                                example: "Failed to retrive the requested CmdbCategory from the database!"
+        "404":
+            description: The CmdbCategory with the given public_id was not found!
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "The CmdbCategory with the given public_id was not found!"
         "500":
             description: Internal server error
             content:
@@ -90,7 +100,7 @@ put:
             application/json:
                 schema:
                     $ref: '../../components/schemas/CmdbCategory.yaml'
-    operationId: update_category
+    operationId: update_cmdb_category
     responses:
         "200":
             description: Returns the updated CmdbCategory with the given **public_id**
@@ -102,7 +112,11 @@ put:
                             result:
                                 $ref: "../../components/schemas/CmdbCategory.yaml"
         "400":
-            description: Could not update the requested CmdbCategory
+            description: |
+                Multiple cases are possible:
+                <br>
+                - Failed to retrieve the target CmdbCategory from the database
+                - Failed to update the requested CmdbCategory
             content:
                 application/json:
                     schema:
@@ -111,6 +125,16 @@ put:
                             error:
                                 type: string
                                 example: "Could not update the CmdbCategory"
+        "404":
+            description: The CmdbCategory with the given public_id was not found!
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "The CmdbCategory with the given public_id was not found!"
         "500":
             description: Internal server error
             content:
@@ -141,7 +165,7 @@ delete:
           required: true
           schema:
               type: integer
-    operationId: delete_category
+    operationId: delete_cmdb_category
     responses:
         "200":
             description: Returns the deleted CmdbCategory with the given **public_id**
@@ -153,21 +177,12 @@ delete:
                             raw:
                                 $ref: "../../components/schemas/CmdbCategory.yaml"
         "400":
-            description: Could not delete the CmdbCategory
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            error:
-                                type: string
-                                example: "Could not delete the CmdbCategory"
-        "404":
             description: |
                 Multiple cases are possible:
                 <br>
                 - Could not retrieve the target CmdbCategory from the database
                 - Could not retrieve a child CmdbCategory which need to be updated
+                - Failed to update the CmdbCategory
             content:
                 application/json:
                     schema:
@@ -176,6 +191,16 @@ delete:
                             error:
                                 type: string
                                 example: "Could not retrieve a CmdbCategory"
+        "404":
+            description: The CmdbCategory with the given public_id was not found!
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "The CmdbCategory with the given public_id was not found!"
         "500":
             description: |
                 Multiple cases are possible:

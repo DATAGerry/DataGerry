@@ -14,23 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the ObjectRelationLogsManager
+This module provides all errors for CmdbObjectRelationLogs
 """
-from .object_relation_logs_manager_errors import (
-    ObjectRelationLogsManagerError,
-    ObjectRelationLogsManagerInitError,
-    ObjectRelationLogsManagerInsertError,
-    ObjectRelationLogsManagerGetError,
-    ObjectRelationLogsManagerDeleteError,
-    ObjectRelationLogsManagerIterationError,
+from .cmdb_object_relation_log_errors import (
+    CmdbObjectRelationLogError,
+    CmdbObjectRelationLogInitError,
+    CmdbObjectRelationLogInitFromDataError,
+    CmdbObjectRelationLogToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ObjectRelationLogsManagerError',
-    'ObjectRelationLogsManagerInitError',
-    'ObjectRelationLogsManagerInsertError',
-    'ObjectRelationLogsManagerGetError',
-    'ObjectRelationLogsManagerDeleteError',
-    'ObjectRelationLogsManagerIterationError',
+    'CmdbObjectRelationLogError',
+    'CmdbObjectRelationLogInitError',
+    'CmdbObjectRelationLogInitFromDataError',
+    'CmdbObjectRelationLogToJsonError',
 ]
