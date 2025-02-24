@@ -20,7 +20,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { UntypedFormControl } from '@angular/forms';
 
-import { BehaviorSubject, Observable, Subject, throwError, timer } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, throwError, timer } from 'rxjs';
 import { catchError, map, switchMap, finalize, shareReplay } from 'rxjs/operators';
 
 import { ApiCallService, ApiServicePrefix, httpObserveOptions, resp } from '../../services/api-call.service';
@@ -38,6 +38,10 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 export const checkObjectExistsValidator = (objectService: ObjectService, time: number = 500) => {
     return (control: UntypedFormControl) => {
+        const value = control.value;
+        if (!value) {
+            return of(null);
+        }
         return timer(time).pipe(switchMap(() => {
             return objectService.getObject(+control.value).pipe(
                 map((response) => {
