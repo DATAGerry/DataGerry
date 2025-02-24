@@ -18,6 +18,7 @@ This module provides all errors for the CategoriesManager
 """
 from .categories_manager_errors import (
     CategoriesManagerError,
+    CategoriesManagerInitError,
     CategoriesManagerInsertError,
     CategoriesManagerGetError,
     CategoriesManagerUpdateError,
@@ -29,6 +30,7 @@ from .categories_manager_errors import (
 
 __all__ = [
     'CategoriesManagerError',
+    'CategoriesManagerInitError',
     'CategoriesManagerInsertError',
     'CategoriesManagerGetError',
     'CategoriesManagerUpdateError',

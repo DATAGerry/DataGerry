@@ -14,23 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the ObjectRelationLogsManager
+This module contains the classes of all CmdbCategory errors
 """
-from .object_relation_logs_manager_errors import (
-    ObjectRelationLogsManagerError,
-    ObjectRelationLogsManagerInitError,
-    ObjectRelationLogsManagerInsertError,
-    ObjectRelationLogsManagerGetError,
-    ObjectRelationLogsManagerDeleteError,
-    ObjectRelationLogsManagerIterationError,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'ObjectRelationLogsManagerError',
-    'ObjectRelationLogsManagerInitError',
-    'ObjectRelationLogsManagerInsertError',
-    'ObjectRelationLogsManagerGetError',
-    'ObjectRelationLogsManagerDeleteError',
-    'ObjectRelationLogsManagerIterationError',
-]
+class CmdbCategoryError(Exception):
+    """
+    Raised to catch all CmdbCategory related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbCategory related errors
+        """
+        super().__init__(err)
+
+# ----------------------------------------------- CmdbCategory - ERRORS ---------------------------------------------- #
+
+class CmdbCategoryInitError(CmdbCategoryError):
+    """
+    Raised when a CmdbCategory could not be initialised
+    """
+
+
+class CmdbCategoryInitFromDataError(CmdbCategoryError):
+    """
+    Raised when a CmdbCategory could not be initialised from a dict
+    """
+
+
+class CmdbCategoryToJsonError(CmdbCategoryError):
+    """
+    Raised when a CmdbCategory could not be transformed into a json compatible dict
+    """

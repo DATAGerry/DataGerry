@@ -188,7 +188,7 @@ def get_type(public_id: int, request_user: CmdbUser):
 @types_blueprint.route('/count_objects/<int:public_id>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
-@types_blueprint.protect(auth=True, right='base.framework.type.read')
+@types_blueprint.protect(auth=True, right='base.framework.type.view')
 def count_objects_of_type(public_id: int, request_user: CmdbUser):
     """
     Return the number of objects in der database with the given public_id as type_id

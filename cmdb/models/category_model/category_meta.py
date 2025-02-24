@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Represents a CategoryMeta of a CmdbCategory in DataGerry
+"""
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -24,34 +25,49 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CategoryMeta - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CategoryMeta:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Implementation of a CategoryMeta for a CmdbCategory
+    """
     def __init__(self, icon: str = '', order: int = None):
         self.icon = icon
         self.order = order
 
 
+    def has_icon(self) -> bool:
+        """
+        Checks whether an icon is set for the CmdbCategory
+
+        Returns:
+            bool: True if an icon is set, otherwise False
+        """
+        return bool(self.icon)
+
+
     def get_icon(self) -> str:
-        """Get a icon, string or unicode symbol"""
+        """
+        Retrieves the icon associated with the CmdbCategory
+
+        Returns:
+            str: The icon, which may be a string or a Unicode symbol
+        """
         return self.icon
 
 
-    def has_icon(self) -> bool:
-        """Check if icon is set"""
-        if self.icon:
-            return True
+    def has_order(self) -> bool:
+        """
+        Checks whether an order value is set for the CmdbCategory
 
-        return False
+        Returns:
+            bool: True if the order is set, otherwise False
+        """
+        return bool(self.order)
 
 
     def get_order(self) -> int:
-        """Get the order"""
+        """
+        Retrieves the order of the CmdbCategory
+
+        Returns:
+            int: The order value, which determines the CmdbCategory's position
+        """
         return self.order
-
-
-    def has_order(self) -> bool:
-        """Check if order is set"""
-        if self.order:
-            return True
-
-        return False

@@ -31,15 +31,17 @@ def get_cmdb_relation_schema() -> dict:
         },
         'relation_name': {  # Name of the CmdbRelation
             'type': 'string',
-            'required': True
+            'required': True,
+            'empty': False
         },
         'relation_name_parent': { # Name of parent to child relation
             'type': 'string',
-            'required': True
+            'required': True,
+            'empty': False
         },
         'relation_icon_parent': { # Icon of the parent to child relation
             'type': 'string',
-            'required': False
+            'required': False,
         },
         'relation_color_parent': { # Color of the parent to child relation
             'type': 'string',
@@ -47,7 +49,8 @@ def get_cmdb_relation_schema() -> dict:
         },
         'relation_name_child': {  # Name of child to parent relation
             'type': 'string',
-            'required': True
+            'required': True,
+            'empty': False
         },
         'relation_icon_child': { # Icon of the child to parent relation
             'type': 'string',
@@ -65,6 +68,7 @@ def get_cmdb_relation_schema() -> dict:
         'parent_type_ids': { # public_ids of allowed parent CmdbTypes
             'type': 'list',
             'required': True,
+            'empty': False,
             'schema': {
                 'type': 'integer'
             }
@@ -72,6 +76,7 @@ def get_cmdb_relation_schema() -> dict:
         'child_type_ids': { # public_ids of allowed child CmdbTypes
             'type': 'list',
             'required': True,
+            'empty': False,
             'schema': {
                 'type': 'integer'
             }
@@ -83,15 +88,18 @@ def get_cmdb_relation_schema() -> dict:
                 'schema': {
                     "type": { # Type of the section, currently only "section" available
                         'type': 'string',
-                        'required': True
+                        'required': True,
+                        'empty': False
                     },
                     "name": { # Unique identifier of the section
                         'type': 'string',
-                        'required': True
+                        'required': True,
+                        'empty': False
                     },
                     "label": { # Label of the section
                         'type': 'string',
-                        'required': True
+                        'required': True,
+                        'empty': False
                     },
                     'fields': { # All fields of the section
                         'type': 'list',
@@ -110,7 +118,8 @@ def get_cmdb_relation_schema() -> dict:
                 'schema': {
                     "type": {
                         'type': 'string',  # Text, Password, Textarea, radio, select, date etc.
-                        'required': True
+                        'required': True,
+                        'empty': False
                     },
                     "required": { # If field is required
                         'type': 'boolean',
@@ -118,7 +127,8 @@ def get_cmdb_relation_schema() -> dict:
                     },
                     "name": { # Unique identifier for the field
                         'type': 'string',
-                        'required': True
+                        'required': True,
+                        'empty': False
                     },
                     "rows": { # Number of rows for TextArea Field
                         'type': 'integer',
@@ -126,7 +136,8 @@ def get_cmdb_relation_schema() -> dict:
                     },
                     "label": { # Label of the field
                         'type': 'string',
-                        'required': True
+                        'required': True,
+                        'empty': False
                     },
                     "description": { # Description of the field
                         'type': 'string',

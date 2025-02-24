@@ -18,6 +18,7 @@ This module provides all errors for the ObjectRelationsManager
 """
 from .object_relations_manager_errors import (
     ObjectRelationsManagerError,
+    ObjectRelationsManagerInitError,
     ObjectRelationsManagerInsertError,
     ObjectRelationsManagerGetError,
     ObjectRelationsManagerUpdateError,
@@ -28,6 +29,7 @@ from .object_relations_manager_errors import (
 
 __all__ = [
     'ObjectRelationsManagerError',
+    'ObjectRelationsManagerInitError',
     'ObjectRelationsManagerInsertError',
     'ObjectRelationsManagerGetError',
     'ObjectRelationsManagerUpdateError',

@@ -32,6 +32,7 @@ def get_cmdb_category_schema() -> dict:
         'name': {
             'type': 'string',
             'required': True,
+            'empty': False,
             'regex': r'(\w+)-*(\w)([\w-]*)'  # kebab case validation,
         },
         'label': {

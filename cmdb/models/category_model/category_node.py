@@ -13,9 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Represents a CategoryNode of a CategoryTree in DataGerry
+"""
 import logging
+from itertools import chain
 
 from cmdb.models.type_model import CmdbType
 from cmdb.models.category_model.cmdb_category import CmdbCategory
@@ -27,22 +29,65 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CategoryNode - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CategoryNode:
-    """Class of a category node inside the category tree"""
+    """
+    Represents a CategoryNode in a CategoryTree
+    """
+    def __init__(
+            self,
+            category: CmdbCategory,
+            children: list["CategoryNode"] = None,
+            types: list[CmdbType] = None):
+        """
+        Initializes a CategoryNode
 
-    def __init__(self, category: CmdbCategory, children: list["CategoryNode"] = None,
-                    types: list[CmdbType] = None):
-        self.category: CmdbCategory = category
-        self.node_order: int = self.category.get_meta().get_order()
-        self.children: list["CategoryNode"] = sorted(children or [], key=lambda node: (
-                                                            node.get_order() is None, node.get_order()))
-        # prevent wrong type order
-        self.types: list[CmdbType] = [type_ for id_ in self.category.types for type_ in types if
-                                        id_ == type_.public_id]
+        Args:
+            category (CmdbCategory): The CmdbCategory associated with this node
+            children (list[CategoryNode], optional): A list of child CategoryNodes, sorted by their order.\
+                Defaults to None
+            types (list[CmdbType], optional): A list of CmdbType instances to filter based on the CmdbCategory's types.
+                Defaults to None
+        """
+        try:
+            self.category = category
+            self.node_order = self.category.get_meta().get_order()
 
+            self.children: list["CategoryNode"] = sorted(
+                children or [], key=lambda node: (node.get_order() is None, node.get_order())
+            )
+
+            # Filter and maintain correct type order
+            self.types = [
+                a_type for type_id in self.category.types for a_type in (types or []) if type_id == a_type.public_id
+            ]
+        except Exception as err:
+            LOGGER.debug("CategoryNode Exception: %s", err)
+            raise err
+
+
+    def __repr__(self):
+        """
+        String representation of the CategoryNode for debugging and logging
+
+        Returns:
+            str: A string representation of the CategoryNode
+        """
+        return f"CategoryNode(CategoryID={self.category.public_id}, " \
+               f"NodeOrder={self.node_order}, " \
+               f"ChildrenCount={len(self.children)})"
+
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
     def to_json(cls, instance: "CategoryNode"):
-        """Get the node as json"""
+        """
+        Converts a CategoryNode into a json compatible dict
+
+        Args:
+            instance (CategoryNode): The CategoryNode which should be converted
+
+        Returns:
+            dict: Json compatible dict of the CategoryNode values
+        """
         return {
             'category': CmdbCategory.to_json(instance.category),
             'node_order': instance.node_order,
@@ -50,22 +95,23 @@ class CategoryNode:
             'types': [CmdbType.to_json(type) for type in instance.types]
         }
 
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
     def get_order(self) -> int:
-        """Get the order value from the main category inside this node.
-        Should be equal to __CategoryMeta -> order
+        """
+        Returns the order value from the CmdbCategory associated with this CategoryNode
+        
+        Returns:
+            int: The order value of the CategoryNode
         """
         return self.node_order
 
 
     def flatten(self) -> list[CmdbCategory]:
-        """Flats a category node and its children"""
-        return [self.category] + sum(
-            (c.flatten() for c in self.children),
-            [],
-        )
+        """
+        Flattens this CategoryNode and its children into a single list
 
-
-    def __repr__(self):
-        """String representation of the category node"""
-        return f'CategoryNode(CategoryID={self.category.public_id})'
+        Returns:
+            list[CmdbCategory]: A flat list of CmdbCategories
+        """
+        return [self.category] + list(chain.from_iterable(c.flatten() for c in self.children))

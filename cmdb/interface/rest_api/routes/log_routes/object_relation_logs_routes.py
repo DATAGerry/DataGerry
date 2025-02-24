@@ -18,6 +18,7 @@ Implementation of all API routes for CmdbObjectRelationLogs
 """
 import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager import ObjectRelationLogsManager
 from cmdb.manager.query_builder import BuilderParameters
@@ -59,11 +60,11 @@ def get_object_relation_logs(params: CollectionParameters, request_user: CmdbUse
     HTTP `GET`/`HEAD` route for getting multiple CmdbObjectRelationLogs
 
     Args:
-        `params` (CollectionParameters): Filter for requested CmdbObjectRelationLogs
-        `request_user` (CmdbUser): User requesting this data
+        params (CollectionParameters): Filter for requested CmdbObjectRelationLogs
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        `GetMultiResponse`: All the CmdbObjectRelationLogs matching the CollectionParameters
+        GetMultiResponse: All the CmdbObjectRelationLogs matching the CollectionParameters
     """
     try:
         body = request.method == 'HEAD'
@@ -88,7 +89,7 @@ def get_object_relation_logs(params: CollectionParameters, request_user: CmdbUse
         return api_response.make_response()
     except ObjectRelationLogsManagerIterationError as err:
         LOGGER.error("[get_object_relation_logs] %s", err, exc_info=True)
-        return abort(400, "Could not retrieve object relation logs from database!")
+        return abort(400, "Could not retrieve ObjectRelationLogs from database!")
     except Exception as err:
         LOGGER.error("[get_object_relation_logs] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
@@ -103,11 +104,11 @@ def get_object_relation_log(public_id: int, request_user: CmdbUser):
     HTTP `GET`/`HEAD` route to retrieve a single CmdbObjectRelationLog
 
     Args:
-        `public_id` (int): public_id of the CmdbObjectRelationLog
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbObjectRelationLog
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `GetSingleResponse`: The requested CmdbObjectRelationLog
+        GetSingleResponse: The requested CmdbObjectRelationLog
     """
     try:
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
@@ -116,12 +117,17 @@ def get_object_relation_log(public_id: int, request_user: CmdbUser):
 
         requested_object_relation_log = object_relation_logs_manager.get_object_relation_log(public_id)
 
-        api_response = GetSingleResponse(requested_object_relation_log, body = request.method == 'HEAD')
+        if requested_object_relation_log:
+            api_response = GetSingleResponse(requested_object_relation_log, body = request.method == 'HEAD')
 
-        return api_response.make_response()
+            return api_response.make_response()
+
+        return abort(404, f"The ObjectRelationLog with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except ObjectRelationLogsManagerGetError as err:
         LOGGER.error("[get_object_relation_log] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the requested object relation log from the database!")
+        return abort(400, f"Failed to retrieve the ObjectRelationLog with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_object_relation_log] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
@@ -137,30 +143,35 @@ def delete_object_relation_log(public_id: int, request_user: CmdbUser):
     HTTP `DELETE` route to delete a single CmdbObjectRelationLog
 
     Args:
-        `public_id` (int): public_id of the CmdbObjectRelationLog which should be deleted
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of the CmdbObjectRelationLog which should be deleted
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        `DeleteSingleResponse`: The deleted CmdbObjectRelationLog data
+        DeleteSingleResponse: The deleted CmdbObjectRelationLog data
     """
     try:
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
                                                             ManagerType.OBJECT_RELATION_LOGS_MANAGER,
                                                             request_user)
 
-        object_relation_log_instance = object_relation_logs_manager.get_object_relation_log(public_id)
+        to_delete_object_relation_log = object_relation_logs_manager.get_object_relation_log(public_id)
 
-        object_relation_logs_manager.delete_object_relation_log(public_id)
+        if to_delete_object_relation_log:
+            object_relation_logs_manager.delete_object_relation_log(public_id)
 
-        api_response = DeleteSingleResponse(raw=object_relation_log_instance)
+            api_response = DeleteSingleResponse(raw=to_delete_object_relation_log)
 
-        return api_response.make_response()
+            return api_response.make_response()
+
+        return abort(404, f"The ObjectRelationLog with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except ObjectRelationLogsManagerDeleteError as err:
         LOGGER.error("[delete_object_relation_log] %s", err, exc_info=True)
-        return abort(400, f"Could not delete the object relation log with the ID:{public_id}")
+        return abort(400, f"Failed to delete the ObjectRelationLog with ID:{public_id}!")
     except ObjectRelationLogsManagerGetError as err:
         LOGGER.error("[delete_object_relation_log] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the object relation log from the database!")
+        return abort(400, f"Failed to retrieve the ObjectRelationLog ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_object_relation_log] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")

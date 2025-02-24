@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of CmdbObjectRelationLog
+Represents a CmdbObjectRelationLog in DataGerry
 """
 import logging
 from datetime import datetime, timezone
@@ -22,6 +22,12 @@ from dateutil.parser import parse
 
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.log_model import LogInteraction
+
+from cmdb.errors.models.cmdb_object_relation_log import (
+    CmdbObjectRelationLogInitError,
+    CmdbObjectRelationLogInitFromDataError,
+    CmdbObjectRelationLogToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -31,7 +37,9 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbObjectRelationLog(CmdbDAO):
     """
-    Implementation of CmdbObjectRelationLog
+    Implementation of a CmdbObjectRelationLog in DataGerry
+
+    Extends: CmdbDAO
     """
     COLLECTION = 'framework.objectRelationLogs'
     MODEL = 'CmdbObjectRelationLog'
@@ -39,9 +47,9 @@ class CmdbObjectRelationLog(CmdbDAO):
     INDEX_KEYS = [{
         'keys': [('object_relation_id', CmdbDAO.DAO_ASCENDING)],
         'name': 'object_relation_id',
-        'unique': True
     }]
 
+    # pylint: disable=too-many-arguments
     def __init__(self,
                  public_id: int,
                  object_relation_id: int,
@@ -64,18 +72,24 @@ class CmdbObjectRelationLog(CmdbDAO):
             action: (LogInteraction): CREATE, EDIT or DELETE
             author_id (int): public_id of the CmdbUser who have done the change to the CmdbObjectRelation
             author_name (str, optional): Name of the CmdbbUser if any.
-            changes (dict, optional): Changes to the CmdbObjectRelation. Defaults to None (When deleted).
-        """
-        self.object_relation_id = object_relation_id
-        self.object_relation_parent_id = object_relation_parent_id
-        self.object_relation_child_id = object_relation_child_id
-        self.creation_time = creation_time or datetime.now(timezone.utc)
-        self.action = action
-        self.author_id = author_id
-        self.author_name = author_name
-        self.changes = changes
+            changes (dict, optional): Changes to the CmdbObjectRelation. Defaults to None (When deleted)
 
-        super().__init__(public_id=public_id)
+        Raises:
+            CmdbObjectRelationLogInitError: If the CmdbObjectRelationLog could not be initialised
+        """
+        try:
+            self.object_relation_id = object_relation_id
+            self.object_relation_parent_id = object_relation_parent_id
+            self.object_relation_child_id = object_relation_child_id
+            self.creation_time = creation_time or datetime.now(timezone.utc)
+            self.action = action
+            self.author_id = author_id
+            self.author_name = author_name
+            self.changes = changes
+
+            super().__init__(public_id=public_id)
+        except Exception as err:
+            raise CmdbObjectRelationLogInitError(err) from err
 
 # --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
@@ -87,25 +101,31 @@ class CmdbObjectRelationLog(CmdbDAO):
         Args:
             data (dict): Data with which the CmdbObjectRelationLog should be instantiated
 
+        Raises:
+            CmdbObjectRelationLogInitFromDataError: If the initialisation with the given data fails
+
         Returns:
             CmdbObjectRelationLog: CmdbObjectRelationLog instance with given data
         """
-        creation_time = data.get('creation_time', None)
+        try:
+            creation_time = data.get('creation_time', None)
 
-        if creation_time and isinstance(creation_time, str):
-            creation_time = parse(creation_time, fuzzy=True)
+            if creation_time and isinstance(creation_time, str):
+                creation_time = parse(creation_time, fuzzy=True)
 
-        return cls(
-            public_id = data.get('public_id'),
-            object_relation_id = data.get('object_relation_id'),
-            object_relation_parent_id = data.get('object_relation_parent_id'),
-            object_relation_child_id = data.get('object_relation_child_id'),
-            creation_time = creation_time,
-            action = data.get('action'),
-            author_id = data.get('author_id'),
-            author_name = data.get('author_name'),
-            changes = data.get('changes', None),
-        )
+            return cls(
+                public_id = data.get('public_id'),
+                object_relation_id = data.get('object_relation_id'),
+                object_relation_parent_id = data.get('object_relation_parent_id'),
+                object_relation_child_id = data.get('object_relation_child_id'),
+                creation_time = creation_time,
+                action = data.get('action'),
+                author_id = data.get('author_id'),
+                author_name = data.get('author_name'),
+                changes = data.get('changes', None),
+            )
+        except Exception as err:
+            raise CmdbObjectRelationLogInitFromDataError(err) from err
 
 
     @classmethod
@@ -116,17 +136,24 @@ class CmdbObjectRelationLog(CmdbDAO):
         Args:
             instance (CmdbObjectRelationLog): The CmdbObjectRelationLog which should be converted
 
+        Raises:
+            CmdbObjectRelationLogToJsonError: If the CmdbObjectRelationLog could not be converted\
+                                              to a json compatible dict
+
         Returns:
             dict: Json dict of the CmdbObjectRelationLog values
         """
-        return {
-            'public_id': instance.get_public_id(),
-            'object_relation_id': instance.object_relation_id,
-            'object_relation_parent_id': instance.object_relation_parent_id,
-            'object_relation_child_id': instance.object_relation_child_id,
-            'creation_time': instance.creation_time,
-            'action': instance.action,
-            'author_id': instance.author_id,
-            'author_name': instance.author_name,
-            'changes': instance.changes,
-        }
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'object_relation_id': instance.object_relation_id,
+                'object_relation_parent_id': instance.object_relation_parent_id,
+                'object_relation_child_id': instance.object_relation_child_id,
+                'creation_time': instance.creation_time,
+                'action': instance.action,
+                'author_id': instance.author_id,
+                'author_name': instance.author_name,
+                'changes': instance.changes,
+            }
+        except Exception as err:
+            raise CmdbObjectRelationLogToJsonError(err) from err
