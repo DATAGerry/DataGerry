@@ -65,11 +65,11 @@ export class RelationFieldsStepComponent extends RelationBuilderStepComponent im
   /* ---------------------------------------------------- FUNCTIONS --------------------------------------------------- */
 
   public get status(): boolean {
-    const hasFields: boolean = this.relationInstance?.fields?.length > 0;
-    const hasSections: boolean = this.relationInstance?.sections?.length > 0;
-
-    return hasFields && hasSections && this.builderValid;
+    const sections = this.relationInstance?.sections || [];
+    const allSectionsValid = sections.every(section => section.fields?.length > 0);
+    return this.builderValid && (sections.length === 0 || allSectionsValid);
   }
+  
 
   public onBuilderValidChange(status: boolean): void {
     this.builderValid = status;

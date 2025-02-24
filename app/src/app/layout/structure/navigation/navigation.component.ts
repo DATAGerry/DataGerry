@@ -50,6 +50,7 @@ export class NavigationComponent implements OnInit {
     public usedObjects: number = 0;
     public totalObjects: number = 0;
     public isCloudMode = environment.cloudMode;
+    public isPreCloudMode = environment.preCloudMode;
     configItemsLimit: number;
     private subscription: Subscription;
 

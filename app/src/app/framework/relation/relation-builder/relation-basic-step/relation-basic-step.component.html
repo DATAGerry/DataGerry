@@ -1,15 +1,14 @@
-<div id="relation-basic-step" class="container-fluid">
+<div id="relation-basic-step" class="container-fluid px-3">
   <form
     [formGroup]="form"
     id="basic-relation-information-form"
-    class="needs-validation"
+    class="needs-validation modern-form"
     novalidate
     autocomplete="off"
   >
     <!-- Main Relation Section -->
-  
     <div class="form-group mb-4">
-      <label for="relationNameInput" class="form-label fw-semibold">
+      <label for="relationNameInput" class="form-label fw-semibold text-primary-dark">
         Relation Name <span class="text-danger">*</span>
       </label>
       <input
@@ -23,37 +22,35 @@
           'is-invalid': relation_name.invalid && (relation_name.dirty || relation_name.touched)
         }"
       />
-      <small class="form-text text-muted">
-        Use letters, numbers, and hyphens only
+      <small class="form-text text-muted mt-1">
+        <i class=" me-1"></i>Use letters, numbers, and hyphens only
       </small>
       <div *ngIf="relation_name.invalid && (relation_name.dirty || relation_name.touched)"
-           class="invalid-feedback text-end">
-        <span *ngIf="relation_name.errors?.required">Name is required.</span>
-        <span *ngIf="relation_name.errors?.invalidCharacters">Contains invalid characters.</span>
-        <span *ngIf="relation_name.errors?.typeExists">A type with this name already exists.</span>
+           class="invalid-feedback d-flex align-items-center gap-2 mt-2">
+        <span *ngIf="relation_name.errors?.required">Name is required</span>
+        <span *ngIf="relation_name.errors?.invalidCharacters">Contains invalid characters</span>
+        <span *ngIf="relation_name.errors?.typeExists">Type already exists</span>
       </div>
     </div>
-    
 
     <!-- Directional Configuration -->
-    <div class="row g-3 mb-4">
+    <div class="row g-4 mb-4">
       <div class="col-md-6">
-        <div class="card h-100 border">
-          <div class="card-header bg-light border-bottom">
-            <h4 class="h6 mb-0">
-              <i class="fas fa-arrow-down me-2 text-muted"></i>
-              Parent → Child
+        <div class="card h-100 border-primary-20 shadow-sm hover-shadow transition-all">
+          <div class="card-header bg-primary-10 border-bottom border-primary-20 py-3">
+            <h4 class="h6 mb-0 text-primary-dark">
+              Parent Relation
             </h4>
           </div>
           <div class="card-body">
-            <div class="form-group mb-3">
+            <div class="form-group mb-4">
               <label class="form-label fw-semibold">
                 Label <span class="text-danger">*</span>
               </label>
               <input
                 type="text"
                 formControlName="relation_name_parent"
-                class="form-control"
+                class="form-control border-primary-20"
                 placeholder="e.g. Contains"
                 [ngClass]="{
                   'is-valid': relation_name_parent.valid && (relation_name_parent.dirty || relation_name_parent.touched),
@@ -61,12 +58,12 @@
                 }"
               />
               <div *ngIf="relation_name_parent.invalid && (relation_name_parent.dirty || relation_name_parent.touched)"
-                   class="invalid-feedback d-block">
+                   class="invalid-feedback d-flex align-items-center gap-2 mt-2">
                 Label is required
               </div>
             </div>
 
-            <div class="row g-2">
+            <div class="row g-3 mb-4">
               <div class="col-8">
                 <cmdb-icon-picker
                   [iconFormGroup]="parentIconForm"
@@ -85,27 +82,46 @@
                 />
               </div>
             </div>
+
+            <div class="form-group">
+              <label class="form-label fw-semibold">
+                Allowed Parent Types <span class="text-danger">*</span>
+              </label>
+              <ng-select
+                formControlName="parent_type_ids"
+                [items]="availableTypes"
+                bindLabel="label"
+                bindValue="public_id"
+                [multiple]="true"
+                placeholder="Select parent types..."
+                [loading]="isLoadingTypes"
+                [closeOnSelect]="false"
+              >
+              </ng-select>
+              <small class="form-text text-muted mt-1 d-block">
+                Allowed parent types in this relation
+              </small>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="col-md-6">
-        <div class="card h-100 border">
-          <div class="card-header bg-light border-bottom">
-            <h4 class="h6 mb-0">
-              <i class="fas fa-arrow-up me-2 text-muted"></i>
-              Child → Parent
+        <div class="card h-100 border-secondary-20 shadow-sm hover-shadow transition-all">
+          <div class="card-header bg-secondary-10 border-bottom border-secondary-20 py-3">
+            <h4 class="h6 mb-0 text-secondary-dark">
+              Child Relation
             </h4>
           </div>
           <div class="card-body">
-            <div class="form-group mb-3">
+            <div class="form-group mb-4">
               <label class="form-label fw-semibold">
                 Label <span class="text-danger">*</span>
               </label>
               <input
                 type="text"
                 formControlName="relation_name_child"
-                class="form-control"
+                class="form-control border-secondary-20"
                 placeholder="e.g. Part Of"
                 [ngClass]="{
                   'is-valid': relation_name_child.valid && (relation_name_child.dirty || relation_name_child.touched),
@@ -113,12 +129,12 @@
                 }"
               />
               <div *ngIf="relation_name_child.invalid && (relation_name_child.dirty || relation_name_child.touched)"
-                   class="invalid-feedback d-block">
+                   class="invalid-feedback d-flex align-items-center gap-2 mt-2">
                 Label is required
               </div>
             </div>
 
-            <div class="row g-2">
+            <div class="row g-3 mb-4">
               <div class="col-8">
                 <cmdb-icon-picker
                   [iconFormGroup]="childIconForm"
@@ -137,47 +153,10 @@
                 />
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Type Restrictions -->
-    <div class="card mb-4 border">
-      <div class="card-header bg-light border-bottom">
-        <h3 class="h6 mb-0">
-          <i class="fas fa-filter me-2 text-muted"></i>
-          Type Restrictions
-        </h3>
-      </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
             <div class="form-group">
               <label class="form-label fw-semibold">
-                Parent Types <span class="text-danger">*</span>
-              </label>
-              <ng-select
-                formControlName="parent_type_ids"
-                [items]="availableTypes"
-                bindLabel="label"
-                bindValue="public_id"
-                [multiple]="true"
-                placeholder="Select types..."
-                [loading]="isLoadingTypes"
-                [closeOnSelect]="false"
-              >
-              </ng-select>
-              <small class="form-text text-muted mt-1 d-block">
-                Allowed parent types in this relation
-              </small>
-            </div>
-          </div>
-    
-          <div class="col-md-6">
-            <div class="form-group">
-              <label class="form-label fw-semibold">
-                Child Types <span class="text-danger">*</span>
+                Allowed Child Types <span class="text-danger">*</span>
               </label>
               <ng-select
                 formControlName="child_type_ids"
@@ -185,7 +164,7 @@
                 bindLabel="label"
                 bindValue="public_id"
                 [multiple]="true"
-                placeholder="Select types..."
+                placeholder="Select child types..."
                 [loading]="isLoadingTypes"
                 [closeOnSelect]="false"
               >
@@ -200,13 +179,17 @@
     </div>
 
     <!-- Description -->
-
-        <div class="form-group">
-          <h3 class="h6 mb-3">
+    <div class="form-group">
+      <div class="card border-neutral-20 shadow-sm">
+        <div class="card-header bg-neutral-10 border-bottom border-neutral-20 py-3">
+          <h3 class="h6 mb-0 text-neutral-80">
+            <i class="fas fa-align-left me-2"></i>
             Description
           </h3>
+        </div>
+        <div class="card-body">
           <textarea
-            class="form-control"
+            class="form-control border-neutral-20"
             formControlName="description"
             rows="3"
             placeholder="Describe the purpose and usage of this relation..."
@@ -215,13 +198,11 @@
               'is-invalid': description.invalid && (description.dirty || description.touched)
             }"
           ></textarea>
-          <small class="form-text text-muted d-block mt-1">
-            Optional description for documentation purposes
+          <small class="form-text text-muted mt-2 d-block">
+            <i class=" me-1"></i>Optional description for documentation purposes
           </small>
         </div>
-
+      </div>
+    </div>
   </form>
 </div>
-
-<app-loading-popup [isVisible]="isLoading$ | async"
-  message="We're Processing the Data..."></app-loading-popup>
