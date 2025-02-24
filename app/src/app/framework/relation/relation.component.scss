@@ -4,3 +4,14 @@ thead th, thead td {
 tbody th, tbody td {
   text-align: center;
 }
+
+::ng-deep .description-tooltip {
+  max-width: min(500px, 80vw) !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 12px !important;
+  z-index: 1200 !important;
+  overflow-y: auto;
+}

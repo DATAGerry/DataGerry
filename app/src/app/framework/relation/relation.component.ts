@@ -82,7 +82,6 @@ export class RelationComponent implements OnInit, OnDestroy {
     public isLoading$ = this.loaderService.isLoading$;
 
 
-
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     constructor(
@@ -112,7 +111,7 @@ export class RelationComponent implements OnInit, OnDestroy {
                 data: 'relation_name',
                 searchable: true,
                 sortable: true,
-                style: { width: 'auto', 'text-align': 'center' } 
+                style: { width: '50%', 'text-align': 'center' } 
             },
             {
                 display: 'Description',
@@ -121,7 +120,7 @@ export class RelationComponent implements OnInit, OnDestroy {
                 sortable: true,
                 searchable: false,
                 template: this.descriptionTemplate,
-                style: { width: 'auto', 'text-align': 'center' } 
+                style: { width: '50%', 'text-align': 'center' } 
             },
             {
                 display: 'Actions',
