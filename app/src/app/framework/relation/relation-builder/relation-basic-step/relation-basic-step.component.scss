@@ -1,61 +1,79 @@
-#basicForm{
-  small{
-    float: left;
+// Color variables
+$primary-dark: #2c3e50;
+$primary-20: rgba($primary-dark, 0.2);
+$primary-10: rgba($primary-dark, 0.1);
+$secondary-dark: #8e44ad;
+$secondary-20: rgba($secondary-dark, 0.2);
+$secondary-10: rgba($secondary-dark, 0.1);
+$neutral-80: #34495e;
+$neutral-20: #ecf0f1;
+
+#relation-basic-step {
+  .card {
+    position: static !important; 
   }
 
-  div.custom-control-right {
-    padding-right: 24px;
-    padding-left: 0;
-    margin-left: 16px;
-    margin-right: 0;
-  }
-  div.custom-control-right .custom-control-label::before,
-  div.custom-control-right .custom-control-label::after{
-    right: -1.5rem;
-    left: initial;
-  }
+  .modern-form {
+    .form-label {
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
 
-}
+    .form-control {
+      border-width: 2px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+      &:focus {
+        box-shadow: 0 0 0 0.25rem rgba($primary-dark, 0.1);
+      }
+    }
+
 .invalid-feedback, .valid-feedback{
   div{
     float: right;
   }
 }
 
+    .card {
+      border-radius: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-/* relation-basic-step.component.scss */
-#relation-basic-step {
-  .card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        font-size: 0.95rem;
+      }
+    }
+
+    .color-picker-wrapper {
+      input[type="color"] {
+        width: 100%;
+        height: 40px;
+        padding: 3px;
+        border: 2px solid $neutral-20;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: $primary-20;
+        }
+      }
+    }
+
+
+  }
+
+  .hover-shadow {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     
-    .card-header {
-      font-weight: 600;
-      background-color: #f8f9fa;
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     }
   }
 
-  .color-picker-small {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    cursor: pointer;
-    
-    &::-webkit-color-swatch {
-      border: none;
-      border-radius: 3px;
-    }
+  .transition-all {
+    transition: all 0.3s ease;
   }
-
-  .required {
-    color: #dc3545;
-    font-size: 0.8em;
-  }
-
-  ng-select {
-    .ng-control {
-      min-height: 38px;
-    }
-  }
-
-
 }
