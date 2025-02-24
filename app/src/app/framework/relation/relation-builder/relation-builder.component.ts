@@ -73,24 +73,6 @@ export class RelationBuilderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    console.log('relation builder')
-
-
-    // Load existing relations
-    // const relationsParams: CollectionParameters = {
-    //   filter: undefined,
-    //   limit: 0,
-    //   sort: 'public_id',
-    //   order: 1,
-    //   page: 1
-    // };
-    // this.relationService.getRelations(relationsParams)
-    //   .pipe(takeUntil(this.subscriber))
-    //   .subscribe((response: APIGetMultiResponse<CmdbRelation>) => {
-    //     this.relations = response.results;
-    //     this.changeDetector.detectChanges();
-    //   });
-
     // Setup validation state subscriptions
     this.validationService.isSectionHighlighted$.subscribe((highlighted) => {
       setTimeout(() => this.isSectionHighlighted = highlighted);

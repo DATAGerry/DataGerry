@@ -23,6 +23,7 @@ import { Observable, throwError, catchError } from 'rxjs';
 
 import { AuthService } from '../../auth/services/auth.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
+import { environment } from 'src/environments/environment';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Injectable()
@@ -47,7 +48,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 /*                                                     LIFE CYLCLE                                                    */
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-    constructor(private router: Router, private authService: AuthService,private toastService: ToastService) {
+    constructor(
+        private router: Router, 
+        private authService: AuthService,
+        private toastService: ToastService,
+    ) {
 
     }
 
@@ -65,7 +70,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                 //     this.router.navigate(['/error/', statusCode]);
                 // }
                 if (statusCode === this.CONNECTION_REFUSED) {
-                    this.router.navigate(['/connect']);
+                    if(!environment.cloudMode){
+                        this.router.navigate(['/connect']);
+                    }
                     this.toastService.error("The connection to the backend has been refused!");
                 }
                 else if (statusCode === this.INTERNAL_SERVER_ERROR) {

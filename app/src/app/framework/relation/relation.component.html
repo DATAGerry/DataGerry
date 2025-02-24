@@ -3,7 +3,7 @@
 </div>
 <hr />
 
-<cmdb-table [items]="relations" [columns]="columns" [page]="page" [sort]="sort" [id]="id" [stateEnabled]="true"
+<cmdb-table [items]="relations" [columns]="columns" [page]="page" [sort]="sort" [id]="id" 
   [emptyMessage]="'No relations were found!'" [customButtons]="[addTemplate]" [totalItems]="totalRelations"
   [selectEnabled]="selectEnabled" [loading]="loading" [pageSize]="limit" (pageChange)="onPageChange($event)"
   (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
@@ -19,8 +19,12 @@
 <ng-template #descriptionTemplate let-item="item">
   <span *ngIf="item.description?.length <= 120">{{ item.description }}</span>
 
-  <span *ngIf="item.description?.length > 120" matTooltip="{{ item.description }}" matTooltipPosition="above"
-    class="tooltip-text">
+  <span *ngIf="item.description?.length > 120" 
+        matTooltip="{{ item.description }}" 
+        matTooltipPosition="right"
+        matTooltipClass="custom-tooltip"
+        matTooltipShowDelay="300"
+        class="tooltip-text">
     {{ item.description | slice:0:120 }}...
   </span>
 </ng-template>

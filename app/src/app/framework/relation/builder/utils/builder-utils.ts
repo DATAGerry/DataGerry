@@ -77,26 +77,7 @@ export class BuilderUtils {
     static isNewField(field: any, newFields: Array<CmdbTypeSection>): boolean {
         return newFields.indexOf(field) > -1;
     }
-
-    /**
-     * Opens the preview modal.
-     * @param modalService The NgbModal service to open the modal.
-     * @param sections The sections to pass to the modal.
-     */
-    static openPreview(modalService: NgbModal, sections: Array<any>): void {
-        const previewModal = modalService.open(PreviewModalComponent, { scrollable: true });
-        previewModal.componentInstance.sections = sections;
-    }
-
-    /**
-     * Opens the diagnostic modal.
-     * @param modalService The NgbModal service to open the modal.
-     * @param sections The sections to pass to the modal.
-     */
-    static openDiagnostic(modalService: NgbModal, sections: Array<any>): void {
-        const diagnosticModal = modalService.open(DiagnosticModalComponent, { scrollable: true });
-        diagnosticModal.componentInstance.data = sections;
-    }
+    
 
     /**
      * Matches the input type to an icon.

@@ -769,22 +769,6 @@ export class BuilderComponent implements OnDestroy, AfterViewChecked {
 
 
     /**
-     * Opens a preview modal for the current sections.
-     */
-    openPreview(): void {
-        BuilderUtils.openPreview(this.modalService, this.sections);
-    }
-
-
-    /**
-     * Opens a diagnostic modal for the current sections.
-     */
-    openDiagnostic(): void {
-        BuilderUtils.openDiagnostic(this.modalService, this.sections);
-    }
-
-
-    /**
      * Matches a given value to a corresponding type string.
      * @param value - The value to match.
      * @returns The matched type as a string.
