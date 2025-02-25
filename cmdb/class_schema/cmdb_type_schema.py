@@ -30,38 +30,38 @@ def get_cmdb_type_schema() -> dict:
         dict: Schema of the CmdbType
     """
     return {
-        'public_id': {
+        'public_id': { # public_id of the CmdbType
             'type': 'integer'
         },
-        'name': {
+        'name': { # Unique name of the CmdbType
             'type': 'string',
             'required': True,
             'regex': r'(\w+)-*(\w)([\w-]*)'  # kebab case validation,
         },
-        'label': {
+        'label': { # Label of the CmdbType (visible by users)
             'type': 'string',
             'required': False
         },
-        'author_id': {
+        'author_id': { # public_id of the CmdbUser who created this CmdbType
             'type': 'integer',
             'required': True
         },
-        'editor_id': {
+        'editor_id': { # public_id of the CmdbUser who last edited this CmdbType
             'type': 'integer',
             'nullable': True,
             'required': False
         },
-        'creation_time': {
+        'creation_time': { # The datetime when this CmdbType was created
             'type': 'dict',
             'nullable': True,
             'required': False
         },
-        'last_edit_time': {
+        'last_edit_time': { # The datetime when the last editing of this CmdbType occured
             'type': 'dict',
             'nullable': True,
             'required': False
         },
-        'selectable_as_parent': {
+        'selectable_as_parent': { # If True, this location is selectable as a parent location for other locations
             'type': 'boolean',
             'default': True
         },

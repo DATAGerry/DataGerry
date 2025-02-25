@@ -144,7 +144,11 @@ def insert_request_user(func):
                 users_manager = UsersManager(current_app.database_manager, database)
 
             user = users_manager.get_user(user_id)
-            kwargs.update({'request_user': user})
+
+            if user:
+                kwargs.update({'request_user': user})
+            else:
+                return abort(401, "Invalid user!")
         except ValueError:
             return abort(401)
         except Exception as err:
@@ -181,7 +185,10 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
                         set_admin_user(user_instance, user_instance['subscriptions'][0])
                         user_model = retrive_user(user_instance, user_instance['subscriptions'][0]['database'])
 
-                        kwargs.update({'request_user': user_model})
+                        if user_model:
+                            kwargs.update({'request_user': user_model})
+                        else:
+                            return abort(403, "User not found!")
 
                     if not __check_api_level(user_instance, required_api_level):
                         return abort(403, "No permission for this action!")

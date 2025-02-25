@@ -127,7 +127,7 @@ def post_login():
 
             # User does not exist
             if not user:
-                LOGGER.error("Could not retrieve User from database!")
+                LOGGER.error("[post_login] Could not retrieve User from database!")
                 return abort(401, 'Could not login!')
 
             current_app.database_manager.connector.set_database(user_database)

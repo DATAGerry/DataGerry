@@ -44,8 +44,8 @@ get:
                         properties:
                             result:
                                 $ref: "../../components/schemas/CmdbUser.yaml"
-        "404":
-            description: Could not retrive the **CmdbUser**
+        "400":
+            description: Failed to retrieve the requested **CmdbUser**
             content:
                 application/json:
                     schema:
@@ -53,7 +53,17 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrive the user"
+                                example: "Failed to retrieve the requested User from the database"
+        "404":
+            description: The **CmdbUser** was not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "The User was not found"
         "500":
             description: An unexpected error occured
             content:

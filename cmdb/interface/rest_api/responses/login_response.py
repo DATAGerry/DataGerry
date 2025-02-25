@@ -66,7 +66,7 @@ class LoginResponse(BaseAPIResponse):
         """document"""
         #TODO: DOCUMENT-FIX
         return {
-            'user': CmdbUser.to_dict(self.user),
+            'user': CmdbUser.to_json(self.user),
             'token': self.token.decode('UTF-8'),
             'token_issued_at': self.token_issued_at,
             'token_expire': self.token_expire

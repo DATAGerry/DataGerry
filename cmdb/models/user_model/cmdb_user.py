@@ -13,18 +13,35 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Represents a Cmdbuser in DataGerry
+"""
+import logging
+
 from datetime import datetime, timezone
 from dateutil import parser
 
 from cmdb.class_schema.cmdb_user_schema import get_cmdb_user_schema
 from cmdb.models.cmdb_dao import CmdbDAO
+
+from cmdb.errors.models.cmdb_user import (
+    CmdbUserInitError,
+    CmdbUserInitFromDataError,
+    CmdbUserToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
+LOGGER = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                   CmdbUser - CLASS                                                   #
+# -------------------------------------------------------------------------------------------------------------------- #
 class CmdbUser(CmdbDAO):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Implementation of a CmdbUser in DataGerry
+
+    Extends: CmdbDAO
+    """
     COLLECTION = 'management.users'
     MODEL = 'User'
     INDEX_KEYS = [
@@ -42,10 +59,7 @@ class CmdbUser(CmdbDAO):
 
     SCHEMA: dict = get_cmdb_user_schema()
 
-    __slots__ = 'public_id', 'user_name', 'active', 'group_id', 'registration_time', 'password', \
-                'image', 'first_name', 'last_name', 'database', 'email', 'authenticator', 'api_level', \
-                'config_items_limit'
-
+    #pylint: disable=too-many-arguments
     def __init__(self,
                  public_id: int,
                  user_name: str,
@@ -61,105 +75,58 @@ class CmdbUser(CmdbDAO):
                  last_name: str = None,
                  email: str = None,
                  authenticator: str = None):
-
-        self.user_name: str = user_name
-        self.active: bool = active
-
-        self.group_id: int = group_id or CmdbUser.DEFAULT_GROUP
-        self.authenticator: str = authenticator or CmdbUser.DEFAULT_AUTHENTICATOR
-        self.registration_time: datetime = registration_time or datetime.now(timezone.utc)
-
-        self.database = database
-        self.api_level = api_level
-        self.config_items_limit = config_items_limit
-        self.email = email
-        self.password = password
-        self.image = image
-        self.first_name = first_name or None
-        self.last_name = last_name or None
-
-        super().__init__(public_id=public_id)
-
-
-    def get_database(self) -> str:
-        """Retrives the database name of the user
-
-        Returns:
-            str: Name of the database
         """
-        return self.database
+        Initializes a CmdbUser
 
-    def get_display_name(self) -> str:
+        Args:
+            public_id (int): Unique identifier for the CmdbUser
+            user_name (str): Username of the CmdbUser
+            active (bool): Indicates if the CmdbUser is active
+            group_id (int, optional): public_id of the CmdbUser's CmdbUserGroup. Defaults to None
+            registration_time (datetime, optional):When the CmdbUser was created
+            password (str, optional): CmdbUser's password
+            database (str, optional): Name of the database the user belongs to. Defaults to 'test'
+            api_level (int, optional): API access level of the CmdbUser. Defaults to 0
+            config_items_limit (int, optional): Limit of configuration items. Defaults to 1000
+            image (str, optional): URL or path to the CmdbUser's profile image. Defaults to None
+            first_name (str, optional): First name of the CmdbUser. Defaults to None
+            last_name (str, optional): Last name of the CmdbUser. Defaults to None
+            email (str, optional): Email address of the CmdbUser. Defaults to None
+            authenticator (str, optional): Authentication method for the CmdbUser. Defaults to a default authenticator
+
+        Raises:
+            CmdbUserInitError: WHen the initialisation of CmdbUser fails
         """
-        Get the display name of the user.
-        The display is first_name + last_name
+        try:
+            self.user_name = user_name
+            self.active = active
+            self.group_id = group_id or CmdbUser.DEFAULT_GROUP
+            self.authenticator = authenticator or CmdbUser.DEFAULT_AUTHENTICATOR
+            self.registration_time = registration_time or datetime.now(timezone.utc)
+            self.database = database
+            self.api_level = api_level
+            self.config_items_limit = config_items_limit
+            self.email = email
+            self.password = password
+            self.image = image
+            self.first_name = first_name or None
+            self.last_name = last_name or None
 
-        Returns:
-            str: first_name + last_name or user_name if not first- and lastname is set
-        """
-        if self.first_name is None or self.last_name is None:
-            return self.user_name
-
-        return f'{self.first_name} {self.last_name}'
-
-
-    @classmethod
-    def from_data(cls, data: dict) -> "CmdbUser":
-        """document"""
-        #TODO: DOCUMENT-FIX
-        reg_date = data.get('registration_time', None)
-
-        if reg_date and isinstance(reg_date, str):
-            reg_date = parser.parse(reg_date)
-
-        return cls(
-            public_id = data.get('public_id'),
-            user_name = data.get('user_name'),
-            active = data.get('active'),
-            database = data.get('database', None),
-            api_level = data.get('api_level', 0),
-            config_items_limit = data.get('config_items_limit', 1000),
-            group_id = data.get('group_id', None),
-            registration_time = reg_date,
-            authenticator = data.get('authenticator', None),
-            email = data.get('email', None),
-            password = data.get('password', None),
-            image = data.get('image', None),
-            first_name = data.get('first_name', None),
-            last_name = data.get('last_name', None)
-        )
-
-
-    @classmethod
-    def to_data(cls, instance: "CmdbUser") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return cls.to_dict(instance)
-
-
-    @classmethod
-    def to_dict(cls, instance: "CmdbUser") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return {
-            'public_id': instance.public_id,
-            'user_name': instance.user_name,
-            'active': instance.active,
-            'group_id': instance.group_id,
-            'registration_time': instance.registration_time,
-            'authenticator': instance.authenticator,
-            'database': instance.database,
-            'api_level': instance.api_level,
-            'config_items_limit': instance.config_items_limit,
-            'email': instance.email,
-            'password': instance.password,
-            'image': instance.image,
-            'first_name': instance.first_name,
-            'last_name': instance.last_name
-        }
+            super().__init__(public_id=public_id)
+        except Exception as err:
+            raise CmdbUserInitError(err) from err
 
 
     def __str__(self) -> str:
+        """
+        Returns a string representation of the CmdbUser
+
+        The output includes key attributes such as public_id, email,
+        user_name, group_id, authenticator, and database.
+
+        Returns:
+            str: A formatted string representing the CmdbUser
+        """
         return (
             f"User(\n"
             f"public_id: {self.public_id},\n"
@@ -170,3 +137,103 @@ class CmdbUser(CmdbDAO):
             f"database: {self.database}\n"
             f")"
         )
+
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
+
+    @classmethod
+    def from_data(cls, data: dict) -> "CmdbUser":
+        """
+        Initialises a CmdbUser from a dict
+
+        Args:
+            data (dict): Data with which the CmdbUser should be initialised
+
+        Raises:
+            CmdbUserInitFromDataError: If the initialisation with the given data fails
+
+        Returns:
+            CmdbUser: CmdbUser with the given data
+        """
+        try:
+            reg_date = data.get('registration_time', None)
+
+            if reg_date and isinstance(reg_date, str):
+                reg_date = parser.parse(reg_date)
+
+            return cls(
+                public_id = data.get('public_id'),
+                user_name = data.get('user_name'),
+                active = data.get('active'),
+                database = data.get('database', None),
+                api_level = data.get('api_level', 0),
+                config_items_limit = data.get('config_items_limit', 1000),
+                group_id = data.get('group_id', None),
+                registration_time = reg_date,
+                authenticator = data.get('authenticator', None),
+                email = data.get('email', None),
+                password = data.get('password', None),
+                image = data.get('image', None),
+                first_name = data.get('first_name', None),
+                last_name = data.get('last_name', None)
+            )
+        except Exception as err:
+            raise CmdbUserInitFromDataError(err) from err
+
+
+    @classmethod
+    def to_json(cls, instance: "CmdbUser") -> dict:
+        """
+        Converts a CmdbUser into a json compatible dict
+
+        Args:
+            instance (CmdbUser): The CmdbUser which should be converted
+
+        Raises:
+            CmdbUserToJsonError: If the CmdbUser could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the CmdbUser values
+        """
+        try:
+            return {
+                'public_id': instance.public_id,
+                'user_name': instance.user_name,
+                'active': instance.active,
+                'group_id': instance.group_id,
+                'registration_time': instance.registration_time,
+                'authenticator': instance.authenticator,
+                'database': instance.database,
+                'api_level': instance.api_level,
+                'config_items_limit': instance.config_items_limit,
+                'email': instance.email,
+                'password': instance.password,
+                'image': instance.image,
+                'first_name': instance.first_name,
+                'last_name': instance.last_name
+            }
+        except Exception as err:
+            raise CmdbUserToJsonError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def get_database(self) -> str:
+        """
+        Retrives the database name of the CmdbUser
+
+        Returns:
+            str: Name of the database
+        """
+        return self.database
+
+
+    def get_display_name(self) -> str:
+        """
+        Get the display name of the CmdbUser
+
+        Returns:
+            str: Display name of the CmdbUser
+        """
+        if self.first_name and self.last_name:
+            return f'{self.first_name} {self.last_name}'
+
+        return self.user_name
