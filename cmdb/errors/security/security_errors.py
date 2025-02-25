@@ -42,12 +42,6 @@ class AccessDeniedError(SecurityError):
     """
 
 
-class RightNotFoundError(SecurityError):
-    """
-    Raised when a right was not found
-    """
-
-
 class InvalidLevelRightError(SecurityError):
     """
     Raised when a right level is not valid

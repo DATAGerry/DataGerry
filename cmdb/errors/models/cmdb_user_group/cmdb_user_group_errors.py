@@ -14,25 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the GroupsManager
+This module contains the classes of all CmdbUserGroup errors
 """
-from .groups_manager_errors import (
-    GroupsManagerError,
-    GroupsManagerInitError,
-    GroupsManagerInsertError,
-    GroupsManagerGetError,
-    GroupsManagerIterationError,
-    GroupsManagerUpdateError,
-    GroupsManagerDeleteError,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'GroupsManagerError',
-    'GroupsManagerInitError',
-    'GroupsManagerInsertError',
-    'GroupsManagerGetError',
-    'GroupsManagerIterationError',
-    'GroupsManagerUpdateError',
-    'GroupsManagerDeleteError',
-]
+class CmdbUserGroupError(Exception):
+    """
+    Raised to catch all CmdbUserGroup related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbUserGroup related errors
+        """
+        super().__init__(err)
+
+# ----------------------------------------------- CmdbRelation - ERRORS ---------------------------------------------- #
+
+class CmdbUserGroupInitError(CmdbUserGroupError):
+    """
+    Raised when a CmdbUserGroup could not be initialised
+    """
+
+
+class CmdbUserGroupInitFromDataError(CmdbUserGroupError):
+    """
+    Raised when a CmdbUserGroup could not be initialised from a dict
+    """
+
+
+class CmdbUserGroupToJsonError(CmdbUserGroupError):
+    """
+    Raised when a CmdbUserGroup could not be transformed into a json compatible dict
+    """

@@ -36,6 +36,12 @@ class GroupsManagerInsertError(GroupsManagerError):
     """
 
 
+class GroupsManagerInitError(GroupsManagerError):
+    """
+    Raised when GroupsManager could not insert a CmdbUserGroup
+    """
+
+
 class GroupsManagerGetError(GroupsManagerError):
     """
     Raised when GroupsManager could not retrieve a CmdbUserGroup

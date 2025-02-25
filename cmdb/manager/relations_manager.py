@@ -98,9 +98,7 @@ class RelationsManager(BaseManager):
                 relation = CmdbRelation.to_json(relation)
 
             return self.insert(relation)
-        except CmdbRelationToJsonError as err:
-            raise RelationsManagerInsertError(err) from err
-        except BaseManagerInsertError as err:
+        except (BaseManagerInsertError, CmdbRelationToJsonError) as err:
             raise RelationsManagerInsertError(err) from err
         except Exception as err:
             LOGGER.error("[insert_relation] Exception: %s. Type: %s", err, type(err))
