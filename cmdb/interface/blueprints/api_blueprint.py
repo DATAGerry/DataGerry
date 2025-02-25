@@ -58,7 +58,7 @@ class APIBlueprint(Blueprint):
                     if not user_has_right(right, request_user):
                         if excepted:
                             if request_user:
-                                user_dict = CmdbUser.to_dict(request_user)
+                                user_dict = CmdbUser.to_json(request_user)
 
                                 for exe_key, exe_value in excepted.items():
                                     try:
@@ -90,7 +90,7 @@ class APIBlueprint(Blueprint):
                                         database = decrypted_token['DATAGERRY']['value']['user']['database']
                                         users_manager = UsersManager(current_app.database_manager, database)
 
-                                    user_dict: dict = CmdbUser.to_dict(users_manager.get_user(user_id))
+                                    user_dict: dict = CmdbUser.to_json(users_manager.get_user(user_id))
 
 
                                     for exe_key, exe_value in excepted.items():
@@ -104,7 +104,7 @@ class APIBlueprint(Blueprint):
 
                                         if user_dict[exe_key] == route_parameter:
                                             return f(*args, **kwargs)
-                                except UsersManagerGetError:
+                                except (UsersManagerGetError, Exception):
                                     return abort(403, "Could not retrieve user!")
 
                         return abort(403, f'User has not the required right {right}')

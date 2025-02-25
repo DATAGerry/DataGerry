@@ -132,6 +132,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
         try:
             user_instance: CmdbUser = self.users_manager.get_user_by({'user_name': user_name})
+
             if (user_instance.group_id != user_group_id) and group_mapping_active:
                 user_instance.group_id = user_group_id
 
@@ -166,6 +167,9 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
             try:
                 user_instance = self.users_manager.get_user(user_id)
+
+                if not user_instance:
+                    raise AuthenticationError("Invalid user!") from err
             except UsersManagerGetError as error:
                 #TODO: ERROR-FIX
                 LOGGER.debug('[authenticate] %s', error)

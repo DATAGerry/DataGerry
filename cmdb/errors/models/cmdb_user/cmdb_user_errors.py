@@ -14,53 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all UsersManager errors
+This module contains the classes of all CmdbUsers errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class UsersManagerError(Exception):
+class CmdbUserError(Exception):
     """
-    Raised to catch all UsersManager related errors
+    Raised to catch all CmdbUser related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all UsersManager related errors
+        Raised to catch all CmdbUser related errors
         """
         super().__init__(err)
 
-# ----------------------------------------------- UsersManager Errors ------------------------------------------------ #
+# ----------------------------------------------- CmdbRelation - ERRORS ---------------------------------------------- #
 
-class UsersManagerInitError(UsersManagerError):
+class CmdbUserInitError(CmdbUserError):
     """
-    Raised when UsersManager could not be initialised
-    """
-
-
-class UsersManagerGetError(UsersManagerError):
-    """
-    Raised when UsersManager could not retrieve a CmdbUser
+    Raised when a CmdbUser could not be initialised
     """
 
 
-class UsersManagerInsertError(UsersManagerError):
+class CmdbUserInitFromDataError(CmdbUserError):
     """
-    Raised when UsersManager could not create a CmdbUser
-    """
-
-
-class UsersManagerUpdateError(UsersManagerError):
-    """
-    Raised when UsersManager could not update a CmdbUser
+    Raised when a CmdbUser could not be initialised from a dict
     """
 
 
-class UsersManagerDeleteError(UsersManagerError):
+class CmdbUserToJsonError(CmdbUserError):
     """
-    Raised when UsersManager could not delete a CmdbUser
-    """
-
-
-class UsersManagerIterationError(UsersManagerError):
-    """
-    Raised when UsersManager could not iterate CmdbUsers
+    Raised when a CmdbUser could not be transformed into a json compatible dict
     """

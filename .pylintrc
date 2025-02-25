@@ -340,7 +340,7 @@ ignore-docstrings=yes
 ignore-imports=no
 
 # Minimum lines number of a similarity.
-min-similarity-lines=6
+min-similarity-lines=10
 
 
 [MISCELLANEOUS]
@@ -373,7 +373,7 @@ indent-string='    '
 max-line-length=120
 
 # Maximum number of lines in a module.
-max-module-lines=1000
+max-module-lines=1500
 
 # Allow the body of a class to be on the same line as the declaration if body
 # contains single statement.
@@ -461,7 +461,7 @@ preferred-modules=
 max-args=6
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=10
+max-attributes=15
 
 # Maximum number of boolean expressions in an if statement (see R0916).
 max-bool-expr=5

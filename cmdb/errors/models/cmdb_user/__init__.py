@@ -14,25 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the UsersManager
+This module provides all errors for CmdbUsers
 """
-from .users_manager_errors import (
-    UsersManagerError,
-    UsersManagerInitError,
-    UsersManagerGetError,
-    UsersManagerInsertError,
-    UsersManagerUpdateError,
-    UsersManagerDeleteError,
-    UsersManagerIterationError,
+from .cmdb_user_errors import (
+    CmdbUserError,
+    CmdbUserInitError,
+    CmdbUserInitFromDataError,
+    CmdbUserToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'UsersManagerError',
-    'UsersManagerInitError',
-    'UsersManagerGetError',
-    'UsersManagerInsertError',
-    'UsersManagerUpdateError',
-    'UsersManagerDeleteError',
-    'UsersManagerIterationError',
+    'CmdbUserError',
+    'CmdbUserInitError',
+    'CmdbUserInitFromDataError',
+    'CmdbUserToJsonError',
 ]
