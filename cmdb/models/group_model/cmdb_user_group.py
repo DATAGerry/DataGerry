@@ -13,15 +13,20 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Represents a CmdbUserGroup in DataGerry
+"""
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.constants import GLOBAL_RIGHT_IDENTIFIER
 
-from cmdb.errors.security import RightNotFoundError
+from cmdb.errors.models.cmdb_user_group import (
+    CmdbUserGroupInitError,
+    CmdbUserGroupInitFromDataError,
+    CmdbUserGroupToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -30,8 +35,9 @@ LOGGER = logging.getLogger(__name__)
 #                                                 CmdbUserGroup - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbUserGroup(CmdbDAO):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Implementation of CmdbUserGroup. Every CmdbUser is part of a CmdbUserGroup in DataGerry
+    """
     COLLECTION = 'management.groups'
     MODEL = 'Group'
     INDEX_KEYS = [
@@ -58,94 +64,114 @@ class CmdbUserGroup(CmdbDAO):
         }
     }
 
-    __slots__ = 'public_id', 'name', 'label', 'rights'
 
     def __init__(self, public_id: int, name: str, label: str = None, rights: list[BaseRight] = None):
-        self.name: str = name
-        self.label: str = label or name.title()
-        self.rights: list = rights or []
-        super().__init__(public_id=public_id)
+        """
+        Initialises a CmdbUserGroup
 
+        Args:
+            public_id (int): public_id of the CmdbUserGroup
+            name (str): Unique name of the CmdbUserGroup
+            label (str, optional): Displayed label of the CmdbUserGroup. Defaults to None
+            rights (list[BaseRight], optional): CmdbRights given to this CmdbUserGroup. Defaults to None
+
+        Raises:
+            CmdbUserGroupInitError: If the initialisation fails
+        """
+        try:
+            self.name: str = name
+            self.label: str = label or name.title()
+            self.rights: list = rights or []
+            super().__init__(public_id=public_id)
+        except Exception as err:
+            raise CmdbUserGroupInitError(err) from err
+
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
     def from_data(cls, data: dict, rights: list[BaseRight] = None) -> "CmdbUserGroup":
-        """document"""
-        #TODO: DOCUMENT-FIX
-        if rights:
-            rights = [right for right in rights if right['name'] in data.get('rights', [])]
-        else:
-            rights = []
+        """
+        Initialises a CmdbUserGroup from a dict
 
-        return cls(
-            public_id=data.get('public_id'),
-            name=data.get('name'),
-            label=data.get('label', None),
-            rights=rights
-        )
+        Args:
+            data (dict): Data with which the CmdbUserGroup should be initialised
 
+        Raises:
+            CmdbUserGroupInitFromDataError: If the initialisation with the given data fails
 
-    @classmethod
-    def to_dict(cls, instance: "CmdbUserGroup") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return {
-            'public_id': instance.public_id,
-            'name': instance.name,
-            'label': instance.label,
-            'rights': [BaseRight.to_dict(right) for right in instance.rights]
-        }
-
-
-    @classmethod
-    def to_data(cls, instance: "CmdbUserGroup") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return {
-            'public_id': instance.public_id,
-            'name': instance.name,
-            'label': instance.label,
-            'rights': [right.name for right in instance.rights]
-        }
-
-
-    def set_rights(self, rights: list):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        self.rights = rights
-
-
-    def get_rights(self) -> list:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self.rights
-
-
-    def get_right(self, name) -> str:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        Returns:
+            CmdbUserGroup: CmdbUserGroup with the given data
+        """
         try:
-            return next(right for right in self.rights if right.name == name)
+            if rights:
+                rights = [right for right in rights if right['name'] in data.get('rights', [])]
+            else:
+                rights = []
+
+            return cls(
+                public_id=data.get('public_id'),
+                name=data.get('name'),
+                label=data.get('label', None),
+                rights=rights
+            )
         except Exception as err:
-            raise RightNotFoundError(f"Groupname: {self.name} | Rightname: {name}. Error: {err}") from err
+            raise CmdbUserGroupInitFromDataError(err) from err
 
 
-    def has_right(self, right_name) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
+    @classmethod
+    def to_json(cls, instance: "CmdbUserGroup") -> dict:
+        """
+        Converts a CmdbUserGroup into a json compatible dict
+
+        Args:
+            instance (CmdbUserGroup): The CmdbUserGroup which should be converted
+
+        Raises:
+            CmdbUserGroupToJsonError: If the CmdbUserGroup could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the CmdbUserGroup values
+        """
         try:
-            self.get_right(right_name)
-        except RightNotFoundError:
-            return False
+            return {
+                'public_id': instance.public_id,
+                'name': instance.name,
+                'label': instance.label,
+                'rights': [BaseRight.to_dict(right) for right in instance.rights]
+            }
+        except Exception as err:
+            raise CmdbUserGroupToJsonError(err) from err
 
-        return True
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def has_right(self, right_name: str) -> bool:
+        """
+        Check if a CmdbRight exists in the CmdbUserGroup
+
+        Args:
+            right_name (str): The name of the CmdbRight to check
+
+        Returns:
+            bool: True if the right exists, otherwise False
+        """
+        return any(right.name == right_name for right in self.rights)
 
 
     def has_extended_right(self, right_name: str) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Recursively checks if a CmdbUserGroup has an extended right
+
+        Args:
+            right_name (str): The name of the right to check
+
+        Returns:
+            bool: True if the extended right exists, otherwise False
+        """
         parent_right_name: str = right_name.rsplit(".", 1)[0]
+
         if self.has_right(f'{parent_right_name}.{GLOBAL_RIGHT_IDENTIFIER}'):
             return True
+
         if parent_right_name == 'base':
             return self.has_right(f'{parent_right_name}.{GLOBAL_RIGHT_IDENTIFIER}')
 

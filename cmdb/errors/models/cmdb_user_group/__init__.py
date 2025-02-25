@@ -14,25 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the GroupsManager
+This module provides all errors for CmdbUserGroups
 """
-from .groups_manager_errors import (
-    GroupsManagerError,
-    GroupsManagerInitError,
-    GroupsManagerInsertError,
-    GroupsManagerGetError,
-    GroupsManagerIterationError,
-    GroupsManagerUpdateError,
-    GroupsManagerDeleteError,
+from .cmdb_user_group_errors import (
+    CmdbUserGroupError,
+    CmdbUserGroupInitError,
+    CmdbUserGroupInitFromDataError,
+    CmdbUserGroupToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'GroupsManagerError',
-    'GroupsManagerInitError',
-    'GroupsManagerInsertError',
-    'GroupsManagerGetError',
-    'GroupsManagerIterationError',
-    'GroupsManagerUpdateError',
-    'GroupsManagerDeleteError',
+    'CmdbUserGroupError',
+    'CmdbUserGroupInitError',
+    'CmdbUserGroupInitFromDataError',
+    'CmdbUserGroupToJsonError',
 ]
