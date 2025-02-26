@@ -17,7 +17,7 @@
 The schema of a CmdbObjectRelation
 """
 # -------------------------------------------------------------------------------------------------------------------- #
-
+# pylint: disable=R0801
 def get_cmdb_object_relation_schema() -> dict:
     """
     Returns the CmdbObjectRelationSchema

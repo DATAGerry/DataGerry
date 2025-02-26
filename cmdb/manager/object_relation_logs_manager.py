@@ -18,13 +18,14 @@ This module contains the implementation of the ObjectRelationLogsManager
 """
 import logging
 from typing import Optional
+from datetime import datetime, timezone
 
 from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
-from cmdb.models.log_model import CmdbObjectRelationLog
+from cmdb.models.log_model import CmdbObjectRelationLog, LogInteraction
 from cmdb.models.user_model import CmdbUser
 
 from cmdb.framework.results import IterationResult
@@ -38,6 +39,7 @@ from cmdb.errors.manager import (
 )
 from cmdb.errors.manager.object_relation_logs_manager import (
     ObjectRelationLogsManagerInitError,
+    ObjectRelationLogsManagerBuildError,
     ObjectRelationLogsManagerInsertError,
     ObjectRelationLogsManagerGetError,
     ObjectRelationLogsManagerIterationError,
@@ -165,3 +167,111 @@ class ObjectRelationLogsManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise ObjectRelationLogsManagerDeleteError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def build_object_relation_log(
+            self,
+            action: LogInteraction,
+            request_user: CmdbUser,
+            old_object_relation: dict = None,
+            new_object_relation: dict= None) -> None:
+        """
+        Creates a CmdbObjectRelationLog from a CmdbObjectRelation and inserts it into the database
+
+        Args:
+            action (LogInteraction): The action (CREATE / EDIT / DELETE)
+            old_object_relation (dict, optional): The previous version of the CmdbObjectRelation. Defaults to None
+            new_object_relation (dict, optional): The new version of the CmdbObjectRelation. Defaults to None
+
+        Raises:
+            ObjectRelationLogsManagerBuildError: If bulding the log dict failed
+        """
+        try:
+            object_relation = new_object_relation if new_object_relation else old_object_relation
+
+            # Initialize log object with common attributes
+            object_relation_log = {
+                "action": action,
+                "creation_time": datetime.now(timezone.utc),
+                "author_id": request_user.get_public_id(),
+                "author_name": request_user.get_display_name(),
+                "object_relation_parent_id": object_relation.get("relation_parent_id"),
+                "object_relation_child_id": object_relation.get("relation_child_id"),
+                "object_relation_id": object_relation.get("public_id"),
+                "changes": {}
+            }
+
+            # Handle different actions
+            if action == LogInteraction.CREATE:
+                # Example changes:
+                #
+                # {'a': 1, 'b': 2, 'c': 3}
+                object_relation_log["changes"] = {
+                    item['name']: item['value'] for item in new_object_relation.get("field_values", [])
+                }
+            elif action == LogInteraction.EDIT:
+                # Example changes:
+                #
+                # {
+                #     'modified': {'status': {'before': 'active', 'after': 'inactive'}},
+                #     'added': {'assigned_to': 'Bob'},
+                #     'deleted': {'owner': 'Alice'}
+                # }
+                object_relation_log["changes"] = self.get_field_value_changes(
+                    old_object_relation.get("field_values", []),
+                    new_object_relation.get("field_values", [])
+                )
+
+            self.insert(object_relation_log)
+        except Exception as err:
+            raise ObjectRelationLogsManagerBuildError(err) from err
+
+
+    def get_field_value_changes(self, old_fields: list[dict], new_fields: list[dict]) -> dict:
+        """
+        Compare old and new field_values and return changes
+        """
+        # Convert list of dicts to dictionary {name: value}
+        old_dict = {item['name']: item['value'] for item in old_fields}
+        new_dict = {item['name']: item['value'] for item in new_fields}
+
+        changes = {
+            'modified': {},  # Fields that changed values
+            'added': {},     # Newly added fields
+            'deleted': {}    # Removed fields
+        }
+
+        # Find modified values
+        for name in old_dict:
+            if name in new_dict and old_dict[name] != new_dict[name]:
+                changes['modified'][name] = {'before': old_dict[name], 'after': new_dict[name]}
+
+        # Find added fields
+        for name in new_dict:
+            if name not in old_dict:
+                changes['added'][name] = new_dict[name]
+
+        # Find deleted fields
+        for name in old_dict:
+            if name not in new_dict:
+                changes['deleted'][name] = old_dict[name]
+
+        return changes
+
+
+    def check_related_object_changed(self, old_values: dict, new_values: dict) -> bool:
+        """
+        Checks if a parent or child public id changed for the CmdbObjectRelation
+
+        Args:
+            old_values (dict): old data of the CmdbObjectRelation
+            new_values (dict): new data of the CmdbObjectRelation
+
+        Returns:
+            bool: True if either relation_parent_id or relation_child_id changed, else False
+        """
+        parent_id_changed = old_values.get("relation_parent_id") != new_values.get("relation_parent_id")
+        child_id_changed = old_values.get("relation_child_id") != new_values.get("relation_child_id")
+
+        return parent_id_changed or child_id_changed

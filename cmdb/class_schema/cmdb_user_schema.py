@@ -24,7 +24,7 @@ DEFAULT_API_LEVEL = 0
 DEFAULT_CONFIG_ITEMS_LIMIT = 1000
 
 # -------------------------------------------------------------------------------------------------------------------- #
-
+# pylint: disable=R0801
 def get_cmdb_user_schema() -> dict:
     """
     Returns the CmdbUserSchema

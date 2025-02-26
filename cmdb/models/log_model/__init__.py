@@ -13,6 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+Provides all Log relevant classes
+"""
 from .log_interaction_enum import LogInteraction
 from .cmdb_object_relation_log import CmdbObjectRelationLog
 # -------------------------------------------------------------------------------------------------------------------- #

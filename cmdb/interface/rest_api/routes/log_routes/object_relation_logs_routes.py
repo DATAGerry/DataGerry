@@ -55,7 +55,7 @@ object_relation_logs_blueprint = APIBlueprint('object_relation_logs', __name__)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relation_logs_blueprint.protect(auth=True, right='base.framework.objectRelationLog.view')
 @object_relation_logs_blueprint.parse_collection_parameters()
-def get_object_relation_logs(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_object_relation_logs(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting multiple CmdbObjectRelationLogs
 
@@ -88,10 +88,10 @@ def get_object_relation_logs(params: CollectionParameters, request_user: CmdbUse
 
         return api_response.make_response()
     except ObjectRelationLogsManagerIterationError as err:
-        LOGGER.error("[get_object_relation_logs] %s", err, exc_info=True)
-        return abort(400, "Could not retrieve ObjectRelationLogs from database!")
+        LOGGER.error("[get_cmdb_object_relation_logs] %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve ObjectRelationLogs from database!")
     except Exception as err:
-        LOGGER.error("[get_object_relation_logs] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_object_relation_logs] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 
@@ -99,7 +99,7 @@ def get_object_relation_logs(params: CollectionParameters, request_user: CmdbUse
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @object_relation_logs_blueprint.protect(auth=True, right='base.framework.objectRelationLog.view')
-def get_object_relation_log(public_id: int, request_user: CmdbUser):
+def get_cmdb_object_relation_log(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbObjectRelationLog
 
@@ -126,10 +126,10 @@ def get_object_relation_log(public_id: int, request_user: CmdbUser):
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationLogsManagerGetError as err:
-        LOGGER.error("[get_object_relation_log] %s", err, exc_info=True)
+        LOGGER.error("[get_cmdb_object_relation_log] %s", err, exc_info=True)
         return abort(400, f"Failed to retrieve the ObjectRelationLog with ID: {public_id} from the database!")
     except Exception as err:
-        LOGGER.error("[get_object_relation_log] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_cmdb_object_relation_log] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #

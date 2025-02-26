@@ -16,7 +16,7 @@
 """document"""
 #TODO: DOCUMENT-FIX
 import logging
-from flask import abort, jsonify, current_app
+from flask import abort, current_app
 
 from cmdb.framework.exporter.config.exporter_config import ExporterConfig
 from cmdb.framework.exporter.writer.base_export_writer import BaseExportWriter
@@ -80,4 +80,4 @@ def export_objects(params: CollectionParameters, request_user: CmdbUser):
         return abort(400, "Module not found for export!")
     except Exception as err:
         LOGGER.debug("[export_objects] Exception: %s, Type: %s", err, type(err))
-        return abort(404, jsonify(message='Not Found', error='Export objects Exception'))
+        return abort(500, "Internal server error!")

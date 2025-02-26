@@ -97,7 +97,7 @@ class GroupsManager(BaseManager):
         """
         try:
             if isinstance(group, CmdbUserGroup):
-                group = CmdbUserGroup.to_json(group)
+                group = CmdbUserGroup.to_json(group, True)
 
             return self.insert(group)
         except (CmdbUserGroupToJsonError, BaseManagerInsertError) as err:

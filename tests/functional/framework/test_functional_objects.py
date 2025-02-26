@@ -39,8 +39,13 @@ def fixture_example_type():
     """document"""
     #TODO: DOCUMENT-FIX
     return CmdbType(
-        public_id=1, name='test', label='Test', author_id=1, creation_time=datetime.now(),
-        active=True, version=None, description='Test type',
+        public_id=1,
+        name='test',
+        label='Test',
+        author_id=1,
+        creation_time=datetime.now(),
+        active=True,
+        version=None, description='Test type',
         render_meta=TypeRenderMeta(
             sections=[
                 TypeFieldSection(type='section', name='test-section', label='TEST', fields=['test-field'])

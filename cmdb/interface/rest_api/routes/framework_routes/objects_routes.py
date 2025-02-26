@@ -21,7 +21,7 @@ import copy
 import logging
 from datetime import datetime, timezone
 from bson import json_util
-from flask import abort, current_app, jsonify, request
+from flask import abort, current_app, request
 
 from cmdb.database.database_utils import default, object_hook
 from cmdb.database import MongoDBQueryBuilder
@@ -1331,7 +1331,7 @@ def delete_many_objects(public_ids, request_user: CmdbUser):
 
     except ObjectsManagerDeleteError as err:
         #TODO: ERROR-FIX
-        return jsonify(message='Delete Error', error=err)
+        return abort(400, "Failed to delete the object!")
     except Exception:
         #TODO: ERROR-FIX
         return abort(500)

@@ -82,6 +82,7 @@ class CmdbUserGroup(CmdbDAO):
             self.name: str = name
             self.label: str = label or name.title()
             self.rights: list = rights or []
+
             super().__init__(public_id=public_id)
         except Exception as err:
             raise CmdbUserGroupInitError(err) from err
@@ -119,7 +120,7 @@ class CmdbUserGroup(CmdbDAO):
 
 
     @classmethod
-    def to_json(cls, instance: "CmdbUserGroup") -> dict:
+    def to_json(cls, instance: "CmdbUserGroup", insert_mode: bool = False) -> dict:
         """
         Converts a CmdbUserGroup into a json compatible dict
 
@@ -132,12 +133,19 @@ class CmdbUserGroup(CmdbDAO):
         Returns:
             dict: Json compatible dict of the CmdbUserGroup values
         """
+        rights = []
+
+        if insert_mode:
+            rights = [right.name for right in instance.rights]
+        else:
+            rights = [BaseRight.to_dict(right) for right in instance.rights]
+
         try:
             return {
                 'public_id': instance.public_id,
                 'name': instance.name,
                 'label': instance.label,
-                'rights': [BaseRight.to_dict(right) for right in instance.rights]
+                'rights': rights
             }
         except Exception as err:
             raise CmdbUserGroupToJsonError(err) from err
