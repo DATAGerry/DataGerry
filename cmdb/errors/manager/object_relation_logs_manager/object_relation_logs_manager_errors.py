@@ -35,6 +35,13 @@ class ObjectRelationLogsManagerInitError(ObjectRelationLogsManagerError):
     Raised when ObjectRelationLogsManager could not be initialised
     """
 
+
+class ObjectRelationLogsManagerBuildError(ObjectRelationLogsManagerError):
+    """
+    Raised when ObjectRelationLogsManager could not build a CmdbObjectRelationLog
+    """
+
+
 class ObjectRelationLogsManagerInsertError(ObjectRelationLogsManagerError):
     """
     Raised when ObjectRelationLogsManager could not insert a CmdbObjectRelationLog

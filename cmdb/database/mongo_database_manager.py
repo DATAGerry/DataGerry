@@ -26,7 +26,7 @@ from pymongo.collection import Collection
 from pymongo.cursor import Cursor
 from pymongo.results import DeleteResult, UpdateResult
 
-from cmdb.database import MongoConnector
+from cmdb.database.mongo_connector import MongoConnector
 
 from cmdb.models.location_model import get_root_location_data
 from cmdb.framework.section_templates.section_template_creator import SectionTemplateCreator

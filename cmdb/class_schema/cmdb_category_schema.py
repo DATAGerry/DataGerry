@@ -17,7 +17,7 @@
 The schema of a CmdbCategory
 """
 # -------------------------------------------------------------------------------------------------------------------- #
-
+# pylint: disable=R0801
 def get_cmdb_category_schema() -> dict:
     """
     Returns the CmdbCategorySchema

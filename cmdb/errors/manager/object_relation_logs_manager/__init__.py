@@ -19,6 +19,7 @@ This module provides all errors for the ObjectRelationLogsManager
 from .object_relation_logs_manager_errors import (
     ObjectRelationLogsManagerError,
     ObjectRelationLogsManagerInitError,
+    ObjectRelationLogsManagerBuildError,
     ObjectRelationLogsManagerInsertError,
     ObjectRelationLogsManagerGetError,
     ObjectRelationLogsManagerDeleteError,
@@ -29,6 +30,7 @@ from .object_relation_logs_manager_errors import (
 __all__ = [
     'ObjectRelationLogsManagerError',
     'ObjectRelationLogsManagerInitError',
+    'ObjectRelationLogsManagerBuildError',
     'ObjectRelationLogsManagerInsertError',
     'ObjectRelationLogsManagerGetError',
     'ObjectRelationLogsManagerDeleteError',

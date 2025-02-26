@@ -39,8 +39,14 @@ def fixture_example_type():
     """document"""
     #TODO: DOCUMENT-FIX
     return CmdbType(
-        public_id=1, name='test', label='Test', author_id=1, creation_time=datetime.now(),
-        active=True, version=None, description='Test type',
+        public_id=1,
+        name='test',
+        label='Test',
+        author_id=1,
+        creation_time=datetime.now(),
+        active=True,
+        version=None,
+        description='Test type',
         render_meta=TypeRenderMeta(
             sections=[
                 TypeFieldSection(type='section', name='test-section',
@@ -66,14 +72,23 @@ def fixture_example_object():
     """document"""
     #TODO: DOCUMENT-FIX
     return CmdbObject(
-        public_id=1, type_id=1, status=True, creation_time=datetime.now(timezone.utc),
-        author_id=1, active=True, fields=[{
-            "name": "dummy-field-1",
-            "value": 'dummy-value'
-        }, {
-            "name": "dummy-field-2",
-            "value": ''
-        }], version='1.0.0'
+        public_id=1,
+        type_id=1,
+        status=True,
+        creation_time=datetime.now(timezone.utc),
+        author_id=1,
+        active=True,
+        fields=[
+            {
+                "name": "dummy-field-1",
+                "value": 'dummy-value'
+            },
+            {
+                "name": "dummy-field-2",
+                "value": ''
+            }
+        ],
+        version='1.0.0'
     )
 
 
@@ -138,6 +153,7 @@ class TestBulkChangeFrameworkObjects:
             assert access_insert_types_response.status_code != (HTTPStatus.FORBIDDEN or HTTPStatus.UNAUTHORIZED)
 
         assert len(rest_api.get(f'{self.ROUTE_URL}/').get_json()['results']) == 3
+
 
     def test_bulk_change_object_field_value(self, rest_api, change_object, full_access_user):
         """document"""

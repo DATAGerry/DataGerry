@@ -97,17 +97,17 @@ class MongoConnector:
         Checks if database is reachable
 
         Raises:
-            `DatabaseConnectionError`: If the database connection check fails
+            DatabaseConnectionError: If the database connection check fails
 
         Returns:
-            `ConnectionStatus`: The current connection status, indicating success or failure
+            ConnectionStatus: The current connection status, indicating success or failure
         """
         try:
             response = self.client.admin.command('hello')
             if response.get("ok") == 1:
                 return ConnectionStatus(connected=True, message=str(response))
-            else:
-                raise DatabaseConnectionError("Unexpected response from database: " + str(response))
+
+            raise DatabaseConnectionError("Unexpected response from database: " + str(response))
         except Exception as err:
             raise DatabaseConnectionError(err) from err
 
@@ -117,14 +117,14 @@ class MongoConnector:
         Closes the connection to the database
 
         Returns:
-            `ConnectionStatus`: The status indicating the disconnection result
+            ConnectionStatus: The status indicating the disconnection result
         """
         try:
             if self.client:
                 self.client.close()
                 return ConnectionStatus(connected=False, message="Successfully disconnected from the database.")
-            else:
-                return ConnectionStatus(connected=False, message="No active database connection to close.")
+
+            return ConnectionStatus(connected=False, message="No active database connection to close.")
         except Exception as err:
             return ConnectionStatus(connected=False, message=f"Error while disconnecting: {err}")
 

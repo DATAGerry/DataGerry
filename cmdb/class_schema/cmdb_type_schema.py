@@ -21,7 +21,7 @@ The schema of a CmdbType
 DEFAULT_VERSION = '1.0.0'
 
 # -------------------------------------------------------------------------------------------------------------------- #
-
+# pylint: disable=R0801
 def get_cmdb_type_schema() -> dict:
     """
     Returns the CmdbTypeSchema
@@ -65,14 +65,14 @@ def get_cmdb_type_schema() -> dict:
             'type': 'boolean',
             'default': True
         },
-        'global_template_ids':{
+        'global_template_ids':{ # The public_id's of global CmdbSectionTemplates used by this CmdbType
             'type': 'list',
             'required': False,
             'schema': {
                 'type': 'string',
             }
         },
-        'active': {
+        'active': { # If True, this CmdbType is active
             'type': 'boolean',
             'required': False,
             'default': True

@@ -21,12 +21,13 @@ from datetime import datetime, timezone
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import ObjectRelationsManager
+from cmdb.manager import ObjectRelationsManager, ObjectRelationLogsManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_relation_model import CmdbObjectRelation
+from cmdb.models.log_model import LogInteraction
 
 from cmdb.framework.results import IterationResult
 
@@ -48,6 +49,10 @@ from cmdb.errors.manager.object_relations_manager import (
     ObjectRelationsManagerIterationError,
     ObjectRelationsManagerUpdateError,
     ObjectRelationsManagerDeleteError,
+)
+from cmdb.errors.manager.object_relation_logs_manager import (
+    ObjectRelationLogsManagerBuildError,
+    ObjectRelationLogsManagerInsertError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -78,6 +83,9 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
                                                                                ManagerType.OBJECT_RELATIONS_MANAGER,
                                                                                request_user
                                                                            )
+        object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
+                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            request_user)
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
 
@@ -86,6 +94,18 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
         created_object_relation = object_relations_manager.get_object_relation(result_id)
 
         if created_object_relation:
+
+            try:
+                object_relation_logs_manager.build_object_relation_log(
+                                                LogInteraction.CREATE,
+                                                request_user,
+                                                None,
+                                                created_object_relation
+                                            )
+            except (ObjectRelationLogsManagerBuildError, ObjectRelationLogsManagerInsertError) as error:
+                LOGGER.error("[insert_cmdb_object_relation] Failed to create an ObjectRelationLog: %s",error,
+                                                                                                       exc_info=True)
+
             api_response = InsertSingleResponse(created_object_relation, result_id)
 
             return api_response.make_response()
@@ -213,11 +233,45 @@ def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUs
                                                                                ManagerType.OBJECT_RELATIONS_MANAGER,
                                                                                request_user
                                                                            )
+        object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
+                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            request_user)
 
         to_update_object_relation = object_relations_manager.get_object_relation(public_id)
 
         if to_update_object_relation:
             data['last_edit_time'] = datetime.now(timezone.utc)
+
+            try:
+                object_relation_changed = object_relation_logs_manager.check_related_object_changed(
+                                                                            to_update_object_relation,
+                                                                            data,
+                                                                        )
+
+                if not object_relation_changed: # Just field changes
+                    object_relation_logs_manager.build_object_relation_log(
+                                                    LogInteraction.EDIT,
+                                                    request_user,
+                                                    to_update_object_relation,
+                                                    data
+                                                )
+                else: # Only Relation deleted and a new one created
+                    object_relation_logs_manager.build_object_relation_log(
+                                                    LogInteraction.DELETE,
+                                                    request_user,
+                                                    to_update_object_relation,
+                                                    None
+                                                )
+
+                    object_relation_logs_manager.build_object_relation_log(
+                                                    LogInteraction.CREATE,
+                                                    request_user,
+                                                    None,
+                                                    data
+                                                )
+            except (ObjectRelationLogsManagerBuildError, ObjectRelationLogsManagerInsertError) as error:
+                LOGGER.error("[insert_cmdb_object_relation] Failed to create an ObjectRelationLog: %s",error,
+                                                                                                       exc_info=True)
 
             updated_object_relation = CmdbObjectRelation.from_data(data)
 
@@ -262,10 +316,25 @@ def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
                                                                                ManagerType.OBJECT_RELATIONS_MANAGER,
                                                                                request_user
                                                                            )
+        object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
+                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            request_user)
 
         to_delete_object_relation = object_relations_manager.get_object_relation(public_id)
 
         if to_delete_object_relation:
+
+            try:
+                object_relation_logs_manager.build_object_relation_log(
+                                                LogInteraction.DELETE,
+                                                request_user,
+                                                to_delete_object_relation,
+                                                None
+                                            )
+            except (ObjectRelationLogsManagerBuildError, ObjectRelationLogsManagerInsertError) as error:
+                LOGGER.error("[insert_cmdb_object_relation] Failed to create an ObjectRelationLog: %s",error,
+                                                                                                       exc_info=True)
+
             object_relations_manager.delete_object_relation(public_id)
 
             api_response = DeleteSingleResponse(raw=to_delete_object_relation)

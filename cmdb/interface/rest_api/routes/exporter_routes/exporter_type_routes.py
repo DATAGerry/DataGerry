@@ -19,7 +19,7 @@ import json
 import datetime
 import time
 import logging
-from flask import abort, jsonify, Response
+from flask import abort, Response
 
 from cmdb.database.database_utils import default
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -61,7 +61,7 @@ def export_type(request_user: CmdbUser):
     except Exception as err:
         #TODO: ERROR-FIX
         LOGGER.info("Error occured in export_type(): %s", err)
-        return abort(404, jsonify(message='Not Found'))
+        return abort(500, "Internal server error!")
 
     timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d-%H_%M_%S')
 
@@ -103,7 +103,7 @@ def export_type_by_ids(public_ids, request_user: CmdbUser):
     except Exception as err:
         #TODO: ERROR-FIX
         LOGGER.info("[export_type_by_ids] Exception: %s", err)
-        return abort(404, jsonify(message='Not Found'))
+        return abort(500, "Internal server error")
 
     timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d-%H_%M_%S')
 
