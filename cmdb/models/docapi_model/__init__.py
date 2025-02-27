@@ -13,12 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
-from enum import Enum
+"""
+This module provide all classes for the DocapiTemplate logics
+"""
+from .pdf_document_type import PdfDocumentType
+from .docapi_template_type_enum import DocapiTemplateType
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class DocapiTemplateType(Enum):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    OBJECT = 0
+__all__ = [
+    'PdfDocumentType',
+    'DocapiTemplateType',
+]

@@ -13,28 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
-import io
-from xhtml2pdf import pisa
+"""
+This module contains the DocapiTemplateType Enumeration
+"""
+from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class PdfDocumentType:
-    """document"""
-    #TODO: DOCUMENT-FIX
-    FILE_EXTENSION = "pdf"
-    ICON = "file-pdf"
-    LABEL = "PDF"
-
-    def __init__(self):
-        pass
-
-    def create_doc(self, input_data):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        output = io.BytesIO()
-        # create PDF
-        pisa.CreatePDF(input_data, dest=output, encoding='utf8')
-        output.seek(0)
-
-        return output
+class DocapiTemplateType(str, Enum):
+    """
+    The different Types for which the DocapiTemplate is created for
+    """
+    OBJECT = "OBJECT"

@@ -25,6 +25,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                            TemplateManagementBase - CLASS                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
+#TODO: REFACTOR-FIX (CmdbDAO as base for DocapiTemplates instead of this)
 class TemplateManagementBase:
     """document"""
     #TODO: DOCUMENT-FIX

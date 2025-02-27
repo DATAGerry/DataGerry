@@ -89,6 +89,14 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
 
+        parent_id = data.get('relation_parent_id')
+        child_id = data.get('relation_child_id')
+
+        if not parent_id or not child_id:
+            return abort(400, "Both 'relation_parent_id' and 'relation_child_id' must be provided!")
+        if parent_id == child_id:
+            return abort(400, "Parent and child cannot be the same Object in an ObjectRelation!")
+
         result_id: int = object_relations_manager.insert_object_relation(data)
 
         created_object_relation = object_relations_manager.get_object_relation(result_id)
@@ -323,6 +331,7 @@ def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
         to_delete_object_relation = object_relations_manager.get_object_relation(public_id)
 
         if to_delete_object_relation:
+            object_relations_manager.delete_object_relation(public_id)
 
             try:
                 object_relation_logs_manager.build_object_relation_log(
@@ -334,8 +343,6 @@ def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
             except (ObjectRelationLogsManagerBuildError, ObjectRelationLogsManagerInsertError) as error:
                 LOGGER.error("[insert_cmdb_object_relation] Failed to create an ObjectRelationLog: %s",error,
                                                                                                        exc_info=True)
-
-            object_relations_manager.delete_object_relation(public_id)
 
             api_response = DeleteSingleResponse(raw=to_delete_object_relation)
 
