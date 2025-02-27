@@ -54,7 +54,9 @@ class CmdbObjectRelation(CmdbDAO):
                  public_id: int,
                  relation_id: int,
                  relation_parent_id: int,
+                 relation_parent_type_id: int,
                  relation_child_id: int,
+                 relation_child_type_id: int,
                  author_id: int,
                  creation_time: datetime = None,
                  last_edit_time: datetime = None,
@@ -66,7 +68,9 @@ class CmdbObjectRelation(CmdbDAO):
             public_id (int): public_id of CmdbObjectRelation
             relation_id (int): public_id of the CmdbRelation
             relation_parent_id (int): public_id of the parent CmdbObject
+            relation_parent_type_id (int): public_id of the parent CmdbType
             relation_child_id (int): public_id of the child CmdbObject
+            relation_child_type_id (int): public_id of the child CmdbType
             author_id (int): public_id of the CmdbUser who created the CmdbObjectRelation then the last one editing it
             creation_time (datetime, optional): When the CmdbObjectRelation was created. Defaults to None
             last_edit_time (datetime, optional): When the CmdbObjectRelation was last time edited. Defaults to None
@@ -78,7 +82,9 @@ class CmdbObjectRelation(CmdbDAO):
         try:
             self.relation_id = relation_id
             self.relation_parent_id = relation_parent_id
+            self.relation_parent_type_id = relation_parent_type_id
             self.relation_child_id = relation_child_id
+            self.relation_child_type_id = relation_child_type_id
             self.author_id = author_id
             self.creation_time = creation_time or datetime.now(timezone.utc)
             self.last_edit_time = last_edit_time
@@ -119,7 +125,9 @@ class CmdbObjectRelation(CmdbDAO):
                 public_id = data.get('public_id'),
                 relation_id = data.get('relation_id'),
                 relation_parent_id = data.get('relation_parent_id'),
+                relation_parent_type_id = data.get('relation_parent_type_id'),
                 relation_child_id = data.get('relation_child_id'),
+                relation_child_type_id = data.get('relation_child_type_id'),
                 author_id = data.get('author_id'),
                 creation_time = creation_time,
                 last_edit_time = last_edit_time,
@@ -147,7 +155,9 @@ class CmdbObjectRelation(CmdbDAO):
                 'public_id': instance.get_public_id(),
                 'relation_id': instance.relation_id,
                 'relation_parent_id': instance.relation_parent_id,
+                'relation_parent_type_id': instance.relation_parent_type_id,
                 'relation_child_id': instance.relation_child_id,
+                'relation_child_type_id': instance.relation_child_type_id,
                 'author_id': instance.author_id,
                 'creation_time': instance.creation_time,
                 'last_edit_time': instance.last_edit_time,

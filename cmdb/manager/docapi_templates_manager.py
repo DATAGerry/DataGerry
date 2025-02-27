@@ -107,14 +107,14 @@ class DocapiTemplatesManager(BaseManager):
         Retrieve a single DocapiTemplate from the database
 
         Args:
-            `public_id` (int): public_id of the requested DocapiTemplate
+            public_id (int): public_id of the requested DocapiTemplate
 
         Raises:
-            `DocapiTemplatesManagerGetError`: When the DocApiTemplate could not be retrieved
-            `DocapiTemplatesManagerGetError`: When the initialisation of the DocApiTemplate failed
+            DocapiTemplatesManagerGetError: When the DocApiTemplate could not be retrieved
+            DocapiTemplatesManagerGetError: When the initialisation of the DocApiTemplate failed
 
         Returns:
-            `DocapiTemplate`: The requested DocapiTemplate
+            DocapiTemplate: The requested DocapiTemplate
         """
         try:
             result = self.get_one(public_id)
