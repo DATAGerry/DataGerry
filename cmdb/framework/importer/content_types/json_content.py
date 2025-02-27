@@ -13,13 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of JSONContent
+"""
 from cmdb.framework.importer.content_types.base_content import BaseContent
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class JSONContent(BaseContent):
-    """Identifier for JavaScript Object Notation files"""
+    """
+    Identifier for JavaScript Object Notation files
+    """
     ICON = 'fas fa-file-code'
     CONTENT_TYPE = 'application/json'
     FILE_TYPE = 'json'

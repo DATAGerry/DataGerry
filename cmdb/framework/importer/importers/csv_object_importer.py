@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CsvObjectImporter
+"""
 import logging
 from datetime import datetime, timezone
 
@@ -100,7 +101,7 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
         for foreign_entry in foreign_entries:
             LOGGER.debug('[CSV] search for object based on %s', foreign_entry.__dict__)
             try:
-                working_type_id = foreign_entry.get_option()['type_id']
+                working_type_id = foreign_entry.get_options()['type_id']
             except (KeyError, IndexError):
                 continue
 
@@ -110,7 +111,7 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
                     'fields': {
                         '$elemMatch': {
                             '$and': [
-                                {'name': foreign_entry.get_option()['ref_name']},
+                                {'name': foreign_entry.get_options()['ref_name']},
                                 {'value': entry.get(foreign_entry.get_value())},
                             ]
                         }

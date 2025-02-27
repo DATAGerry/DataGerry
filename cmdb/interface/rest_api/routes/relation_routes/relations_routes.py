@@ -200,18 +200,16 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
     try:
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
                                                                           request_user)
-        
-        object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                                ManagerType.OBJECT_RELATIONS_MANAGER,
-                                                                                request_user)
+        # object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
+        #                                                                         ManagerType.OBJECT_RELATIONS_MANAGER,
+        #                                                                         request_user)
 
         to_update_relation = relations_manager.get_relation(public_id)
 
-
-
-
-
         if to_update_relation:
+
+            # handle_deleted_type_ids(to_update_relation, data, object_relations_manager)
+
             relation = CmdbRelation.from_data(data)
 
             relations_manager.update_relation(public_id, relation)
@@ -296,11 +294,22 @@ def handle_deleted_type_ids(old_relation: dict,
         new_relation (dict): new relation data
         object_relations_manager (ObjectRelationsManager): Database interaction for CmdbObjectRelations
     """
-    deleted_parent_ids = get_deleted_ids(old_relation["parent_type_ids "], new_relation["parent_type_ids "])
-    deleted_child_ids = get_deleted_ids(old_relation["child_type_ids"], new_relation["child_type_ids"])
+    deleted_parent_ids = get_deleted_type_ids(old_relation["parent_type_ids"], new_relation["parent_type_ids"])
+
+    if deleted_parent_ids:
+        object_relations_manager.delete_invalidated_object_relations(old_relation["public_id"],
+                                                                     deleted_parent_ids,
+                                                                     True)
+
+    deleted_child_ids = get_deleted_type_ids(old_relation["child_type_ids"], new_relation["child_type_ids"])
+
+    if deleted_child_ids:
+        object_relations_manager.delete_invalidated_object_relations(old_relation["public_id"],
+                                                                     deleted_child_ids,
+                                                                     False)
 
 
-def get_deleted_ids(old_ids: list[int], new_ids: list[int]) -> dict:
+def get_deleted_type_ids(old_ids: list[int], new_ids: list[int]) -> dict:
     """
     Identifies the IDs that have been deleted when comparing two lists
 
@@ -312,23 +321,3 @@ def get_deleted_ids(old_ids: list[int], new_ids: list[int]) -> dict:
         dict: A dictionary containing the list of deleted IDs
     """
     return list(set(old_ids) - set(new_ids))
-
-
-def delete_invalidated_object_relations(
-        relation_id: int,
-        invalid_ids: list,
-        object_relations_manager: ObjectRelationsManager,
-        is_parent_ids: bool) -> None:
-    """TODO"""
-
-    query = {"relation_id": relation_id, "relation_child_type_id": { "$in": invalid_ids }}
-
-    if is_parent_ids:
-        query = {"relation_id": relation_id, "relation_parent_type_id": { "$in": invalid_ids }}
-
-
-    invalid_object_relations = object_relations_manager.find(query)
-
-    invalid_object_relation: CmdbObjectRelation
-    for invalid_object_relation in invalid_object_relations:
-        object_relations_manager.delete({"public_id": invalid_object_relation.get_public_id()})

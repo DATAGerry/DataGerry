@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides all content types for imports
+"""
 from cmdb.framework.importer.content_types.csv_content import CSVContent
 from cmdb.framework.importer.content_types.json_content import JSONContent
 from cmdb.framework.importer.content_types.xlsx_content import XLSXContent

@@ -13,22 +13,23 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-# TODO: DOCUMENT-FIX
+"""
+Implementation of ExporterConfig
+"""
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
-from cmdb.framework.exporter.config.base_exporter_config import BaseExporterConfig
 from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ExporterConfig(BaseExporterConfig):
-    """document"""
-    # TODO: DOCUMENT-FIX
+class ExporterConfig:
+    """
+    Base class for exporter configurations
+    """
     def __init__(self, parameters: CollectionParameters, options: dict = None):
         """
         Args:
-            parameters: Rest API class for parameters passed by a http request on a collection route
-            options: dict of optional parameters for given route function.
+            parameters (CollectionParameters): Filter and sort options for a collection
+            options: dict of optional parameters
         """
         self.parameters = parameters
         self.options = options or None
-        super().__init__(config_type=ExporterConfigType.NATIVE)
+        self.config_type = ExporterConfigType.NATIVE

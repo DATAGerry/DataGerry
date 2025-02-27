@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseExportWriter
+"""
 import logging
 import datetime
 import time
@@ -35,21 +36,25 @@ from cmdb.framework.exporter.format.base_exporter_format import BaseExporterForm
 
 LOGGER = logging.getLogger(__name__)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                               BaseExportWriter - CLASS                                               #
+# -------------------------------------------------------------------------------------------------------------------- #
 class  BaseExportWriter:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    The base class for export writers
+    """
 
     def __init__(self, export_format: BaseExporterFormat, export_config: ExporterConfig):
-        """init of FileExporter
+        """
+        Initialises the BaseExportWriter
 
         Args:
-            export_format: In which format is exported (csv, json, xlsx, xml)
-            export_config: Configuration parameters such as filter or zip export_format
+            export_format (BaseExporterFormat): The format in which data will be exported (CSV, JSON, XLSX, XML)
+            export_config (ExporterConfig): Configuration parameters such as filters or zip settings
         """
         self.export_format = export_format
         self.export_config = export_config
-        self.data: list[RenderResult] = []
+        self.data: list[RenderResult] = [] #Storage for exportable data
 
 
     def from_database(
@@ -57,37 +62,55 @@ class  BaseExportWriter:
             dbm: MongoDatabaseManager,
             user: CmdbUser,
             permission: AccessControlPermission
-        ):
-        """Get all objects from the collection"""
+        ) -> None:
+        """
+        Retrieves all objects from the collection and processes them for export
+
+        Args:
+            dbm (MongoDatabaseManager): The database manager instance
+            user (CmdbUser): The user requesting the data
+            permission (AccessControlPermission): The user's access permissions
+        """
         objects_manager = ObjectsManager(dbm)
-
         export_params = self.export_config.parameters
-        builder_params = BuilderParameters(criteria=export_params.filter,
-                                           sort=export_params.sort,
-                                           order=export_params.order)
+
+        builder_params = BuilderParameters(
+            criteria=export_params.filter,
+            sort=export_params.sort,
+            order=export_params.order
+        )
+
+        # Fetch objects from the database
+        objects: list[CmdbObject] = objects_manager.iterate(builder_params, user, permission).results
+
+        # Process and store exportable data
+        self.data = RenderList(
+            objects,
+            user,
+            True,
+            objects_manager
+        ).render_result_list(raw=False)
 
 
-        tmp_result: list[CmdbObject] = objects_manager.iterate(builder_params, user, permission).results
+    def export(self) -> Response:
+        """
+        Exports the collected data in the specified format and returns a Flask Response
 
-        self.data = RenderList(tmp_result,
-                                user,
-                                True,
-                                objects_manager).render_result_list(raw=False)
-
-
-    def export(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-
+        Returns:
+            Response: A Flask Response object containing the exported data
+        """
         conf_option = self.export_config.options
-        timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d-%H_%M_%S')
-        export = self.export_format.export(self.data, conf_option)
+        timestamp = datetime.datetime.now().strftime('%Y_%m_%d-%H_%M_%S')
+
+        # Generate the export content
+        export_content  = self.export_format.export(self.data, conf_option)
+
+        file_extension = self.export_format.__class__.FILE_EXTENSION
 
         return Response(
-            export,
+            export_content,
             mimetype="text/" + self.export_format.__class__.FILE_EXTENSION,
             headers={
-                "Content-Disposition":
-                    f"attachment; filename={timestamp}.{self.export_format.__class__.FILE_EXTENSION}"
+                "Content-Disposition": f"attachment; filename={timestamp}.{file_extension}"
             }
         )

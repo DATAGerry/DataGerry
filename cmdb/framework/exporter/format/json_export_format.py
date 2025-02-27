@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of JsonExportFormat
+"""
 import logging
 import json
 
@@ -30,7 +31,11 @@ LOGGER = logging.getLogger(__name__)
 #                                               JsonExportFormat - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class JsonExportFormat(BaseExporterFormat):
-    """Extends: BaseExporterFormat"""
+    """
+    The Json export format
+
+    Extends: BaseExporterFormat
+    """
     FILE_EXTENSION = "json"
     LABEL = "JSON"
     MULTITYPE_SUPPORT = True

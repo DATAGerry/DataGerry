@@ -14,39 +14,74 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Mapping module. The connection classes of data to the respective memory areas (e.g. fields) are created here.
+Mapping module for associating data to specific memory areas, such as fields or attributes
+
+This module provides a `MapEntry` class that allows you to create mappings where each entry consists of:
+- A `name` (which can be any data type) representing the key or identifier of the mapping
+- A `value` (which can also be any data type) representing the data associated with the `name`
+- An optional set of configuration `options` that can be used to store additional metadata about the entry
 """
 from typing import Any
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class MapEntry:
-    """document"""
-    #TODO: DOCUMENT-FIX
-    def __init__(self, name: Any, value: str, **options):
+    """
+    Represents an entry in a mapping, where a name is associated with a value
+    and additional options. This class encapsulates the mapping of data to 
+    respective memory areas (e.g., fields)
+    """
+    def __init__(self, name: Any, value: Any, **options: dict):
+        """
+        Initialises the MapEntry
+
+        Args:
+            name (Any): The name or key associated with this mapping entry
+            value (Any): The value or data associated with the name
+            options (Dict[str, Any]): Optional additional configuration options for this entry.
+        """
         self.name: Any = name
         self.value: Any = value
-        self.option: dict = options
+        self.options: dict = options
 
 
     def get_name(self) -> Any:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Get the name of this MapEntry
+
+        Returns:
+            Any: The name associated with this MapEntry
+        """
         return self.name
 
 
     def get_value(self) -> Any:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Get the value of this MapEntry
+
+        Returns:
+            Any: The value associated with this MapEntry
+        """
         return self.value
 
 
     def has_option(self, option: dict) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return option.items() <= self.get_option().items()
+        """
+        Check if the given option is present in the mapping entry's options
+
+        Args:
+            option (dict): A dictionary representing the option to check
+
+        Returns:
+            bool: True if the option is present in the mapping entry's options, otherwise False
+        """
+        return option.items() <= self.get_options().items()
 
 
-    def get_option(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self.option
+    def get_options(self) -> dict:
+        """
+        Get the options associated with this mapping entry.
+
+        Returns:
+            dict: A dictionary of options associated with the entry.
+        """
+        return self.options
