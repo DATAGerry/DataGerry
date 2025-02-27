@@ -1,47 +1,199 @@
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row ml-0 object-view-navbar align-items-center justify-content-center">
-                <!-- Action widget-->
-                <div class="col-xl-4 col-md-6 col-6 pt-1">
-                    <cmdb-object-actions
-                        [acl]="renderResult.type_information.acl"
-                        [renderResult]="renderResult"
-                    />
-                </div>
-                <!-- External links widget-->
-                <div class="col-xl-2 col-md-6 col-6 border-left pt-1">
-                    <cmdb-object-externals [renderResult]="renderResult"/>
-                </div>
-                <!-- Attachments widget-->
-                <div class="col-xl-2 col-md-6 col-6 border-left pt-1">
-                    <cmdb-object-attachments/>
-                </div>
-                <!-- Documents widget-->
-                <div class="docsWidget col-xl-2 col-md-6 col-6 border-left pt-1">
-                    <cmdb-object-docs
-                        *permissionLink="['base.docapi.template.view']"
-                        [renderResult]="renderResult"
-                    />
-                </div>
-                <!-- Cube widget-->
-                <div class="col-xl-2 col-md-6 col-6 border-left pt-1 last-widget">
-                    <div class="d-flex justify-content-center">
-                        <cmdb-object-type-label [typeInformation]="renderResult?.type_information"/>
-                    </div>
-                </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="object-view-navbar">
+        <div class="row align-items-center">
+          <div class="col-xl-4 col-md-6 col-6 pt-1">
+            <cmdb-object-actions
+              [acl]="renderResult.type_information.acl"
+              [renderResult]="renderResult"
+            ></cmdb-object-actions>
+          </div>
+          <div class="col-xl-2 col-md-6 col-6 border-left pt-1">
+            <cmdb-object-externals
+              [renderResult]="renderResult"
+            ></cmdb-object-externals>
+          </div>
+          <div class="col-xl-2 col-md-6 col-6 border-left pt-1">
+            <cmdb-object-attachments></cmdb-object-attachments>
+          </div>
+          <div class="docsWidget col-xl-2 col-md-6 col-6 border-left pt-1">
+            <cmdb-object-docs
+              *permissionLink="['base.docapi.template.view']"
+              [renderResult]="renderResult"
+            ></cmdb-object-docs>
+          </div>
+          <div class="col-xl-2 col-md-6 col-6 border-left pt-1 last-widget">
+            <div class="d-flex justify-content-center">
+              <cmdb-object-type-label
+                [typeInformation]="renderResult?.type_information"
+              ></cmdb-object-type-label>
             </div>
-            <hr>
+          </div>
         </div>
-
-        <div id="object-view" class="col-md-12">
-            <cmdb-object-header [renderResult]="renderResult"/>
-            <cmdb-object-view-render [mode]="mode" [renderResult]="renderResult"/>
+      </div>
+      <hr>
+      <div class="text-right mb-3">
+        <button class="btn btn-primary" (click)="openRelationModal()">
+          <i class="fas fa-plus"></i> New Relation
+        </button>
+      </div>
+      <div id="object-view" class="col-md-12">
+        <cmdb-object-header [renderResult]="renderResult"></cmdb-object-header>
+        <div class="card">
+          <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  data-toggle="tab"
+                  href="#object-tab-attributes"
+                  role="tab"
+                >
+                  Attributes
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body tab-content">
+            <div
+              class="tab-pane fade show active"
+              id="object-tab-attributes"
+              role="tabpanel"
+            >
+              <cmdb-object-view-render
+                [mode]="mode"
+                [renderResult]="renderResult"
+              ></cmdb-object-view-render>
+            </div>
+          </div>
         </div>
-
-        <div id="object-view-footer" class="col-12">
-            <cmdb-object-footer [renderResult]="renderResult"/>
-        </div>
+      </div>
+      <div id="object-view-footer" class="col-12">
+        <cmdb-object-footer [renderResult]="renderResult"></cmdb-object-footer>
+      </div>
     </div>
+  </div>
 </div>
 
+<div class="relation-modal">
+  <div class="modal-backdrop"
+       [class.show]="showRelationModal"
+       [style.display]="showRelationModal ? 'block' : 'none'">
+  </div>
+
+  <div class="modal"
+       [class.show]="showRelationModal"
+       [style.display]="showRelationModal ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Select Relationship</h5>
+          <button
+            type="button"
+            class="close"
+            (click)="closeRelationModal()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div *ngIf="loadingRelations" class="loading-state">
+            <div class="spinner"></div>
+            <span>Loading relationships...</span>
+          </div>
+
+          <div
+            *ngIf="!loadingRelations && extendedRelations?.length"
+            class="table-container"
+          >
+            <table class="relation-table">
+              <thead>
+                <tr>
+                  <th>Relation ID</th>
+                  <th>Parent</th>
+                  <th>Child</th>
+                  <th>Select Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let relation of extendedRelations"
+                  [class.selected]="relation === chosenRelation"
+                >
+                  <td>{{ relation.public_id }}</td>
+                  <td>{{ relation.relation_name_parent }}</td>
+                  <td>{{ relation.relation_name_child }}</td>
+                  <td>
+                    <div class="role-buttons">
+                      <!-- Show "Parent" if canBeParent == true -->
+                      <button
+                        *ngIf="relation.canBeParent"
+                        [class.active]="chosenRole === 'parent' && relation === chosenRelation"
+                        (click)="onSelectRelation(relation, 'parent')"
+                      >
+                        Parent
+                      </button>
+
+                      <!-- Show "Child" if canBeChild == true -->
+                      <button
+                        *ngIf="relation.canBeChild"
+                        [class.active]="chosenRole === 'child' && relation === chosenRelation"
+                        (click)="onSelectRelation(relation, 'child')"
+                      >
+                        Child
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            *ngIf="!loadingRelations && extendedRelations?.length === 0"
+            class="empty-state"
+          >
+            <div class="empty-state-icon">!</div>
+            <h4>No Relationships Found</h4>
+            <p>Start by creating a new relationship type</p>
+            <button class="btn btn-primary" routerLink="/relations/manage">
+              Create New Type
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeRelationModal()">
+            Cancel
+          </button>
+          <div *ngIf="!loadingRelations && extendedRelations?.length !== 0">
+            <button
+              class="btn btn-primary"
+              [disabled]="!chosenRelation"
+              (click)="onConfirmRelationSelection()"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<relation-role-dialog
+  *ngIf="showRelationRoleDialog"
+  [chosenRole]="chosenRole"
+  [parentTypeIDs]="[roleParentTypeIDs]"
+  [childTypeIDs]="roleChildTypeIDs"
+  [currentObjectID]="renderResult?.object_information?.object_id"
+  [relation]="chosenRelation"
+  (onConfirm)="handlePopUp2Confirm($event)"
+  (onCancel)="handlePopUp2Cancel()"
+>
+</relation-role-dialog>

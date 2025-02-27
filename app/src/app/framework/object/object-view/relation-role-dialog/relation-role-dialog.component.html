@@ -1,0 +1,81 @@
+<div class="modal-backdrop show" style="display: block;"></div>
+<div class="modal show" tabindex="-1" style="display: block;">
+  <!-- Make the dialog scrollable if content is large -->
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title">Create Relationship</h4>
+        <button type="button" class="close" (click)="cancel()">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <!-- SINGLE MODAL-BODY => The entire content can scroll -->
+      <div class="modal-body">
+        
+        <!-- 1) Parent/Child Dropdown Form -->
+        <form class="renderForm" [formGroup]="form">
+          <div class="form-group">
+            <label>Parent Object</label>
+            <ng-select
+              [items]="flatParentOptions"
+              [groupBy]="'group'"
+              bindLabel="label"
+              bindValue="value"    
+              formControlName="parent"
+              placeholder="Select Parent"
+              [searchable]="true"
+            >
+              <ng-template ng-notfound-tmp>
+                <div>No parent objects found</div>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <div class="form-group">
+            <label>Child Object</label>
+            <ng-select
+              [items]="flatChildOptions"
+              [groupBy]="'group'"
+              bindLabel="label"
+              bindValue="value"     
+              formControlName="child"
+              placeholder="Select Child"
+              [searchable]="true"
+            >
+              <ng-template ng-notfound-tmp>
+                <div>No child objects found</div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </form>
+
+        <hr />
+
+        <!-- 2) Relation Fields Form -->
+        <form class="renderForm" [formGroup]="relationForm">
+          <fieldset *ngFor="let section of sections">
+            <legend>{{ section?.label }}</legend>
+
+            <!-- Each section.fields => an array of field "names" -->
+            <div *ngFor="let fieldName of section.fields">
+              <cmdb-render-element
+                [mode]="getViewMode()"
+                [parentFormGroup]="relationForm"
+                [data]="getFieldObject(fieldName)"
+              >
+              </cmdb-render-element>
+            </div>
+          </fieldset>
+        </form>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button class="btn btn-primary" (click)="confirm()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
