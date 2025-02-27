@@ -16,12 +16,12 @@
 """document"""
 #TODO: DOCUMENT-FIX
 from cmdb.framework.docapi.docapi_template.docapi_template_base import TemplateManagementBase
-from cmdb.framework.docapi.docapi_template.docapi_template_type_enum import DocapiTemplateType
+from cmdb.models.docapi_model import DocapiTemplateType
 from cmdb.models.cmdb_dao import CmdbDAO
 
 from cmdb.errors.cmdb_object import NoPublicIDError
 # -------------------------------------------------------------------------------------------------------------------- #
-
+#TODO: REFACTOR-FIX (CmdbDAO as base)
 class DocapiTemplate(TemplateManagementBase):
     """
     Docapi Template
@@ -63,7 +63,7 @@ class DocapiTemplate(TemplateManagementBase):
         self.author_id = author_id
         self.template_data = template_data
         self.template_style = template_style
-        self.template_type = template_type or DocapiTemplateType.OBJECT.name
+        self.template_type = template_type or DocapiTemplateType.OBJECT
         self.template_parameters = template_parameters
         super().__init__(**kwargs)
 

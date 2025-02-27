@@ -13,14 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ObjectTemplateData
+"""
 import logging
 
 from cmdb.manager import ObjectsManager
 
 from cmdb.framework.rendering.cmdb_render import CmdbRender
-from cmdb.framework.docapi.abstract_template_data import AbstractTemplateData
 
 from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -30,13 +30,19 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                              ObjectTemplateData - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
-class ObjectTemplateData(AbstractTemplateData):
+class ObjectTemplateData:
     """document"""
     #TODO: DOCUMENT-FIX
     def __init__(self, cmdb_object, objects_manager: ObjectsManager):
         super().__init__()
         self.objects_manager = objects_manager
         self._template_data = self.__get_objectdata(cmdb_object, 3)
+
+
+    def get_template_data(self):
+        """document"""
+        #TODO: DOCUMENT-FIX
+        return self._template_data
 
 
     def __get_objectdata(self, cmdb_object, iteration):

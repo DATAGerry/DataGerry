@@ -27,7 +27,8 @@ from cmdb.manager import (
     ObjectsManager,
 )
 
-from cmdb.framework.docapi.docapi_renderer import DocApiRenderer
+from cmdb.models.user_model import CmdbUser
+from cmdb.models.docapi_model.docapi_renderer import DocApiRenderer
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate
 from cmdb.framework.results import IterationResult
 from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
@@ -35,7 +36,6 @@ from cmdb.interface.rest_api.responses import GetMultiResponse, DefaultResponse
 from cmdb.interface.route_utils import insert_request_user, right_required, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import APIBlueprint, RootBlueprint
-from cmdb.models.user_model import CmdbUser
 
 from cmdb.errors.manager.docapi_templates_manager import (
     DocapiTemplatesManagerInsertError,
@@ -49,6 +49,7 @@ from cmdb.errors.manager.docapi_templates_manager import (
 LOGGER = logging.getLogger(__name__)
 
 docapi_blueprint = RootBlueprint('docapi', __name__, url_prefix='/docapi')
+
 docs_blueprint = APIBlueprint('docs', __name__)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #

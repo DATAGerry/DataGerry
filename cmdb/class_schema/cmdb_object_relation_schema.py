@@ -53,7 +53,19 @@ def get_cmdb_object_relation_schema() -> dict:
             'required': True,
             'empty': False
         },
+        'relation_parent_type_id': { # public_id of the parent CmdbType
+            'type': 'integer',
+            'nullable': False,
+            'required': True,
+            'empty': False
+        },
         'relation_child_id': { # public_id of the child CmdbObject
+            'type': 'integer',
+            'nullable': False,
+            'required': True,
+            'empty': False
+        },
+        'relation_child_type_id': { # public_id of the child CmdbType
             'type': 'integer',
             'nullable': False,
             'required': True,

@@ -279,7 +279,7 @@ class BaseManager:
             raise BaseManagerGetError(err) from err
 
 
-    def get_one_by(self, criteria: dict) -> Optional[dict]:
+    def get_one_by(self, criteria: dict, collection: str = None) -> Optional[dict]:
         """
         Retrieves a single document defined by the given criteria
 
@@ -293,7 +293,9 @@ class BaseManager:
             Optional[dict]: The found document, or None if no document matches the criteria
         """
         try:
-            return self.dbm.find_one_by(self.collection, criteria)
+            target_collection = collection or self.collection
+
+            return self.dbm.find_one_by(target_collection, criteria)
         except DocumentGetError as err:
             raise BaseManagerGetError(err) from err
 
