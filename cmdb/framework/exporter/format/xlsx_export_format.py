@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of XlsxExportFormat
+"""
 import logging
 import json
 import re
@@ -32,7 +33,11 @@ LOGGER = logging.getLogger(__name__)
 #                                               XlsxExportFormat - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class XlsxExportFormat(BaseExporterFormat):
-    """TODO: ducoment"""
+    """
+    The XLSX export format class
+
+    Extends: BaseExporterFormat
+    """
     FILE_EXTENSION = "xlsx"
     LABEL = "XLSX"
     MULTITYPE_SUPPORT = True
@@ -60,7 +65,8 @@ class XlsxExportFormat(BaseExporterFormat):
 
 
     def create_xls_object(self, data: list[RenderResult], args):
-        """TODO: ducoment"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         # create workbook
         workbook = openpyxl.Workbook()
 

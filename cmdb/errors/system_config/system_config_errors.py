@@ -31,7 +31,6 @@ class ConfigFileError(Exception):
 # ------------------------------------------------ CONFIG FILE ERRORS ------------------------------------------------ #
 #TODO: REFACTOR-FIX (better naming convention for all error classes)
 
-
 class ConfigFileSetError(ConfigFileError):
     """
     Raises if values of loaded config file are tryed to get edited

@@ -13,13 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of the BaseExporterFormat
+"""
 from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class BaseExporterFormat:
-    """document"""
+    """
+    Base class for exporter formats
+    """
     #TODO: DOCUMENT-FIX
     FILE_EXTENSION = None
     LABEL = None

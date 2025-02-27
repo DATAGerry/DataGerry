@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ZipExportFormat
+"""
 import logging
 import io
 import zipfile
@@ -30,7 +31,11 @@ LOGGER = logging.getLogger(__name__)
 #                                                ZipExportFormat - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ZipExportFormat(BaseExporterFormat):
-    """Extends: BaseExporterFormat"""
+    """
+    The zip export format class
+
+    Extends: BaseExporterFormat
+    """
     FILE_EXTENSION = "zip"
     LABEL = "ZIP"
     MULTITYPE_SUPPORT = True

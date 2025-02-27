@@ -191,3 +191,36 @@ class ObjectRelationsManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise ObjectRelationsManagerDeleteError(err) from err
+
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def delete_invalidated_object_relations(
+            self,
+            relation_id: int,
+            invalid_ids: list[int],
+            is_parent_ids: bool) -> None:
+        """
+        Deletes invalid CmdbObjectRelations based on the given `relation_id` and `invalid_ids`
+
+        This method checks whether the invalid IDs are related to the parent or child types
+        of the given CmdbRelation. It then constructs a query to find the invalid CmdbObjectRelations
+        and deletes them.
+
+        Args:
+            relation_id (int): The public_id of the CmdbRelation for which invalid\
+                               CmdbObjectRelations should be deleted
+            invalid_ids (list[int]): A list of IDs (either parent or child) that should be invalidated
+            is_parent_ids (bool): A flag indicating whether the invalid IDs belong to parent type relations
+                                  (True) or child type relations (False)
+        """
+        query = {"relation_id": relation_id, "relation_child_type_id": { "$in": invalid_ids }}
+
+        if is_parent_ids:
+            query = {"relation_id": relation_id, "relation_parent_type_id": { "$in": invalid_ids }}
+
+        invalid_object_relations = self.find(query)
+
+        invalid_object_relation: CmdbObjectRelation
+        for invalid_object_relation in invalid_object_relations:
+            self.delete({"public_id": invalid_object_relation.get_public_id()})

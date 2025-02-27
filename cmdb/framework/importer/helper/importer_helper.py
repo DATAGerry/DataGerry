@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of helper functions for the importer workflows
+"""
 from cmdb.framework.importer.parser.csv_object_parser import CsvObjectParser
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser
 from cmdb.framework.importer.importers.csv_object_importer import CsvObjectImporter

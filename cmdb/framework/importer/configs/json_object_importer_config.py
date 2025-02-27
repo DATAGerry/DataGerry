@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of JsonObjectImporterConfig
+"""
 import logging
 
 from cmdb.framework.importer.content_types import JSONContent
@@ -30,6 +31,7 @@ LOGGER = logging.getLogger(__name__)
 class JsonObjectImporterConfig(ObjectImporterConfig, JSONContent):
     """
     Importer configuration for JSON files
+
     Extends: ObjectImporterConfig, JSONContent
     """
 

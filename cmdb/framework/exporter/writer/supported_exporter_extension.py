@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of SupportedExporterExtension
+"""
 import logging
 
 from cmdb.utils.helpers import load_class
@@ -26,32 +27,47 @@ LOGGER = logging.getLogger(__name__)
 #                                          SupportedExporterExtension - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SupportedExporterExtension:
-    """Supported export extensions for exporting (csv, json, xlsx, xml)"""
+    """Maintains a list of supported export formats (CSV, JSON, XLSX, XML)."""
 
+    DEFAULT_EXTENSIONS = [
+        "CsvExportFormat",
+        "JsonExportFormat",
+        "XlsxExportFormat",
+        "XmlExportFormat"
+    ]
 
-    def __init__(self, extensions=None):
+    def __init__(self, extensions: list = None):
         """
-        Constructor of SupportedExporterExtension
+        Initializes the SupportedExporterExtension with a default or custom list of extensions.
+
         Args:
-            extensions: List of export extension
+            extensions (list): Additional export formats to include
         """
-        arguments = extensions if extensions else []
-        self.extensions = [*["CsvExportFormat",
-                             "JsonExportFormat",
-                             "XlsxExportFormat",
-                             "XmlExportFormat"], *arguments]
+        self.extensions = self.DEFAULT_EXTENSIONS + (extensions or [])
 
-    def get_extensions(self):
-        """Get list of supported export extension"""
+
+    def get_extensions(self) -> list:
+        """
+        Retrieve a list of supported export extensions
+
+        Returns:
+            list: A list of file extensions supported for export
+        """
         return self.extensions
 
 
-    def convert_to(self):
-        """Converts the supported export extension inside the list to a passed BaseExporterFormat list."""
+    def convert_to(self) -> list[dict]:
+        """
+        Converts the supported export extensions into a list of dictionaries 
+        that includes relevant information about each format
+
+        Returns:
+            list: A list of dictionaries representing supported export formats
+        """
         extension_list = []
 
         for type_element in self.get_extensions():
-            type_element_class = load_class('cmdb.framework.exporter.format.' + type_element)
+            type_element_class = load_class(f'cmdb.framework.exporter.format.{type_element}')
 
             extension_list.append({
                 'extension': type_element,

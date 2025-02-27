@@ -24,7 +24,7 @@ from cmdb.manager import ObjectsManager
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate
 from cmdb.models.docapi_model.template_engine import TemplateEngine
 from cmdb.models.docapi_model.pdf_document_type import PdfDocumentType
-from cmdb.framework.docapi.object_template_data import ObjectTemplateData
+from cmdb.models.docapi_model.object_template_data import ObjectTemplateData
 from cmdb.framework.rendering.render_result import RenderResult
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -51,7 +51,7 @@ class ObjectDocumentGenerator:
     def __init__(
             self,
             template: DocapiTemplate,
-            cmdb_object: RenderResult,
+            cmdb_render_object: RenderResult,
             doctype: PdfDocumentType,
             objects_manager: ObjectsManager):
         """
@@ -64,7 +64,7 @@ class ObjectDocumentGenerator:
             objects_manager (ObjectsManager): The manager responsible for CmdbObject operations
         """
         self.template = template
-        self.cmdb_object = cmdb_object
+        self.cmdb_render_object = cmdb_render_object
         self.doctype = doctype
         self.objects_manager = objects_manager
 
@@ -79,7 +79,7 @@ class ObjectDocumentGenerator:
         Returns:
             BytesIO: A file-like object containing the generated PDF document
         """
-        template_data = ObjectTemplateData(self.cmdb_object, self.objects_manager).get_template_data()
+        template_data = ObjectTemplateData(self.cmdb_render_object, self.objects_manager).get_template_data()
 
         rendered_template = TemplateEngine().render_template_string(self.template.get_template_data(), template_data)
 

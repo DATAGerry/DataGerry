@@ -13,13 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of the CSVContent
+"""
 from cmdb.framework.importer.content_types.base_content import BaseContent
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class CSVContent(BaseContent):
-    """Identifier for Comma-Separated Values files"""
+    """
+    Identifier for Comma-Separated Values files
+    """
     ICON = 'fas fa-file-csv'
     CONTENT_TYPE = 'text/csv'
     FILE_TYPE = 'csv'
