@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of DateSettingsDAO
+"""
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -24,30 +25,24 @@ LOGGER = logging.getLogger(__name__)
 #                                                DateSettingsDAO - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class DateSettingsDAO:
-    """Regional Date Settings"""
+    """
+    Handles regional date settings, including date format and timezone preferences
+    """
 
-    __DEFAULT_SETTINGS__ = {
+    __DEFAULT_SETTINGS__: dict = {
             'date_format': 'YYYY-MM-DDThh:mm:ssZ',
             'timezone': 'UTC',
         }
 
 
     def __init__(self, date_format: str, timezone: str):
+        """
+        Initializes DateSettingsDAO
+
+        Args:
+            date_format (str): The date format to use
+            timezone (str): The timezone setting
+        """
         self._id: str = 'date'
         self.date_format = date_format
         self.timezone = timezone
-
-
-    def get_id(self) -> str:
-        """Get the database document identifier"""
-        return self._id
-
-
-    def get_format(self) -> str:
-        """Get the current date format"""
-        return self.date_format
-
-
-    def get_timezone(self) -> str:
-        """ Get the current timezone"""
-        return self.timezone

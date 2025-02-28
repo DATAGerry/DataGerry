@@ -21,7 +21,7 @@ from typing import Optional
 
 from cmdb.database import MongoDatabaseManager
 
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.object_relation_model import CmdbObjectRelation

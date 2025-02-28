@@ -30,7 +30,7 @@ from cmdb.models.type_model import (
     TypeRenderMeta,
 )
 
-from cmdb.security.acl.control import AccessControlList
+from cmdb.security.acl.access_control_list import AccessControlList
 from cmdb.security.acl.group_acl import GroupACL
 # -------------------------------------------------------------------------------------------------------------------- #
 

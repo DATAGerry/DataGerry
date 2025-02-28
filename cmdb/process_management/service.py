@@ -57,7 +57,7 @@ class AbstractCmdbService:
         logging_conf = get_logging_conf()
         logging.config.dictConfig(logging_conf)
 
-        LOGGER.info("start %s ...", self._name)
+        LOGGER.info("Starting %s ...", self._name)
 
         # init shutdown handling
         self._event_shutdown = threading.Event()

@@ -21,7 +21,7 @@ from typing import Optional, Union
 
 from cmdb.database import MongoDatabaseManager
 
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.relation_model import CmdbRelation
@@ -192,3 +192,36 @@ class RelationsManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise RelationsManagerDeleteError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def get_added_and_removed_fields(self, old_relation: dict, new_relation: dict) -> dict:
+        """
+        Compares the 'sections' property of two CmdbRelations to identify fields that have been added or removed
+
+        Args:
+        - old_relation (dict): The old CmdbRelation (before changes), which contains the 'sections' field.
+        - new_relation (dict): The new CmdbRelation (after changes), which contains the 'sections' field.
+
+        Returns:
+        - dict: A dictionary with two keys 'added' and 'removed', each containing a list of field unique identifiers
+                that were added or removed, respectively.
+        """
+        old_fields = set()
+        new_fields = set()
+
+        # Extract all field names (unique identifiers) from sections
+        for section in old_relation.get("sections", []):
+            old_fields.update(section.get("fields", []))
+
+        for section in new_relation.get("sections", []):
+            new_fields.update(section.get("fields", []))
+
+        # Compute added and removed fields
+        added_fields = new_fields - old_fields
+        removed_fields = old_fields - new_fields
+
+        return {
+            "added": list(added_fields),
+            "removed": list(removed_fields)
+        }

@@ -16,7 +16,7 @@
 """Access Control helper functions"""
 import logging
 
-from cmdb.security.acl.control import AccessControlList
+from cmdb.security.acl.access_control_list import AccessControlList
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.models.type_model import CmdbType
 from cmdb.models.user_model import CmdbUser

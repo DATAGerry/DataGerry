@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 
 from cmdb.database import MongoDatabaseManager
 
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.log_model import CmdbObjectRelationLog, LogInteraction

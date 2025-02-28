@@ -29,7 +29,7 @@ LOGGER = logging.getLogger(__name__)
 #                                                 BaseImporter - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseImporter:
-    """Superclass for all importer"""
+    """Base class for all importer"""
 
     def __init__(self, file, file_type: str, config: BaseImporterConfig = None):
         """

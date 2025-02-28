@@ -20,7 +20,7 @@ import logging
 from datetime import datetime, timezone
 from dateutil.parser import parse
 
-from cmdb.security.acl.control import AccessControlList
+from cmdb.security.acl.access_control_list import AccessControlList
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.type_model.type_summary import TypeSummary
 from cmdb.models.type_model.type_external_link import TypeExternalLink

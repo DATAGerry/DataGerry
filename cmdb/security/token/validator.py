@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of TokenValidator
+"""
 import logging
 import time
 from typing import Union
@@ -35,27 +36,39 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class TokenValidator:
     """
-    Decodes and validates tokens
+    Decodes and validates JSON Web Tokens (JWTs)
     """
     def __init__(self, dbm: MongoDatabaseManager):
+        """
+        Initializes the TokenValidator with a KeyHolder instance
+
+        Args:
+            dbm (MongoDatabaseManager): Database operations manager
+        """
         self.key_holder = KeyHolder(dbm)
 
 
-    def decode_token(self, token: Union[JsonWebToken, str, dict]):
+    def decode_token(self, token: Union[JsonWebToken, str, dict]) -> dict:
         """
-        Decodes a given token
+        Decodes a given JWT token
 
-        Params:
-            token(JsonWebToken, str, dict): the given token
+        Args:
+            token (Union[JsonWebToken, str, dict]): The JWT token to be decoded
+
         Returns:
-            JWTClaims: decoded token
+            dict: The decoded JWT claims
+
+        Raises:
+            TokenValidationError: If the token is invalid, malformed, or has a bad signature
         """
         try:
-            decoded_token = jwt.decode(s=token, key=self.key_holder.get_public_key())
+            public_key = self.key_holder.get_public_key()
+            decoded_token = jwt.decode(token, key=public_key)
+
+            # LOGGER.debug(f"decoded_token type: {type(decoded_token)}")
+            return decoded_token
         except (BadSignatureError, Exception) as err:
             raise TokenValidationError(err) from err
-
-        return decoded_token
 
 
     def validate_token(self, token: Union[JsonWebToken, str, dict]):
@@ -64,6 +77,7 @@ class TokenValidator:
 
         Params:
             token(JsonWebToken, str, dict): the given token
+
         Returns:
             JWTClaims: decoded token
         """
