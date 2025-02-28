@@ -23,7 +23,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependecy)
 from cmdb.manager.objects_manager import ObjectsManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import (

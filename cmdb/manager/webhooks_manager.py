@@ -24,7 +24,8 @@ import requests
 from cmdb.database import MongoDatabaseManager
 from cmdb.database.database_utils import default
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.manager import BaseManager, WebhooksEventManager
+from cmdb.manager.base_manager import BaseManager
+from cmdb.manager import WebhooksEventManager
 
 from cmdb.models.webhook_model.cmdb_webhook_model import CmdbWebhook
 from cmdb.models.webhook_model.webhook_event_type_enum import WebhookEventType

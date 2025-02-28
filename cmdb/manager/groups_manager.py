@@ -21,7 +21,7 @@ from typing import Union
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights
 from cmdb.models.group_model import CmdbUserGroup

@@ -20,67 +20,115 @@ Manager for handling CMDB processes
 import logging
 import multiprocessing
 import threading
+from time import sleep
 from cmdb.utils.helpers import load_class
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                ProcessManager - CLASS                                                #
+# -------------------------------------------------------------------------------------------------------------------- #
 class ProcessManager:
-    """Handling CMDB processes
+    """
+    Manages the lifecycle of CMDB processes
 
-    The CMDB app consists of multiple processes (e.g. webapp, syncd).
-    The process managers starts and stops theses processes in the
-    correct order.
+    The ProcessManager is responsible for starting, stopping, and managing these
+    processes in the correct order
     """
 
     def __init__(self):
-        """Create a new instance of the ProcessManager"""
-        # service definitions (in correct order)
-        self.__service_defs = []
-        self.__service_defs.append(CmdbProcess("webapp", "cmdb.interface.gunicorn.WebCmdbService"))
+        """
+        Initializes a new instance of ProcessManager
 
-        # processlist
-        self.__process_list = []
+        This sets up the necessary attributes, including service definitions,
+        process tracking lists, and a shutdown event
+        """
+        self.__service_defs: list[CmdbProcess] = self._initialize_service_definitions()
+        self.__process_list: list[multiprocessing.Process] = []
+        self.__process_controllers: list[ProcessController] = []
+        self.__flag_shutdown: threading.Event = threading.Event()
 
-        # process controller
-        self.__process_controllers = []
 
-        # shutdown flag
-        self.__flag_shutdown = threading.Event()
-        self._loaded = False
+    def _initialize_service_definitions(self) -> list:
+        """
+        Initializes the service definitions in the correct order
+
+        Returns:
+            list: A list of CmdbProcess instances defining the services to manage
+        """
+        return [
+            CmdbProcess("webapp", "cmdb.interface.gunicorn.WebCmdbService"),
+        ]
 
 
     def start_app(self) -> bool:
-        """start all services from service definitions"""
+        """
+        Starts all services defined in `__service_defs`
+
+        This method iterates through the list of service definitions, loads
+        the corresponding class, and starts a new process for each service.
+        A ProcessController is also initialized to manage the process lifecycle.
+
+        Returns:
+            bool: True if all services started successfully
+        """
+        if not self.__service_defs:
+            LOGGER.error("No service definitions found. Nothing to start.")
+            return False
+
         for service_def in self.__service_defs:
             service_name = service_def.get_name()
-            service_class = load_class(service_def.get_class())
-            process = multiprocessing.Process(target=service_class().start, name=service_name)
-            process.start()
-            self.__process_list.append(process)
-            # start process controller
-            proc_controller = ProcessController(process, self.__flag_shutdown, self.stop_app)
-            proc_controller.start()
-            self.__process_controllers.append(proc_controller)
+
+            try:
+                service_class = load_class(service_def.get_class())
+                service_instance = service_class()
+
+                process = multiprocessing.Process(target=service_instance.start, name=service_name)
+                process.start()
+                self.__process_list.append(process)
+                # start process controller
+                proc_controller = ProcessController(process, self.__flag_shutdown, self.stop_app)
+                proc_controller.start()
+                self.__process_controllers.append(proc_controller)
+            except Exception as err:
+                LOGGER.error("Failed to start service '%s': %s", service_name, err)
+                return False
+
         return True
 
 
-    def stop_app(self):
-        """stop all services"""
+    def stop_app(self) -> None:
+        """
+        Stops all running services
+
+        This method sets the shutdown flag, notifies process controllers,
+        and ensures all processes are properly terminated
+        """
         self.__flag_shutdown.set()
         # go through processes in different order
         for process in reversed(self.__process_list):
-            process.terminate()
+            if process.is_alive():
+                LOGGER.info("Terminating service: %s (PID: %s)", process.name, process.pid)
+                process.terminate()
 
+        # Ensure processes have time to shut down cleanly
+        sleep(1)
 
-    def get_loading_status(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self._loaded
+        # Confirm processes are stopped
+        for process in reversed(self.__process_list):
+            process.join(timeout=5)  # Give it some time to exit
+            if process.is_alive():
+                LOGGER.warning("Force killing unresponsive service: %s (PID: %s)", process.name, process.pid)
+                process.kill()  # Force kill if terminate() didn't work
+
+        # Clear process lists
+        self.__process_list.clear()
+        self.__process_controllers.clear()
 
 
 class CmdbProcess:
+    #TODO: REFACTOR-FIX
     """Definition of a CmdbProcess"""
 
     def __init__(self, name, classname):
@@ -113,6 +161,7 @@ class CmdbProcess:
 
 
 class ProcessController(threading.Thread):
+    #TODO: REFACTOR-FIX
     """Controlls the state of a process"""
 
     def __init__(self, process, flag_shutdown, cb_shutdown):

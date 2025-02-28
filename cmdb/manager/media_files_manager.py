@@ -21,7 +21,7 @@ from gridfs.grid_file import GridOutCursor, GridOut
 from gridfs.errors import NoFile
 
 from cmdb.database import DatabaseGridFS, MongoDatabaseManager
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 
 from cmdb.interface.rest_api.responses import GridFsResponse
 from cmdb.framework.media_library.media_file import MediaFile
