@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of XmlExportFormat
+"""
 import logging
 import json
 import xml.dom.minidom
@@ -31,7 +32,9 @@ LOGGER = logging.getLogger(__name__)
 #                                                XmlExportFormat - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class XmlExportFormat(BaseExporterFormat):
-    """TODO: ducoment"""
+    """
+    The xml export format class
+    """
     FILE_EXTENSION = "xml"
     LABEL = "XML"
     MULTITYPE_SUPPORT = True

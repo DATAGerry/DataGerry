@@ -20,7 +20,7 @@ import logging
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.reports_model.cmdb_report import CmdbReport
 from cmdb.framework.results import IterationResult

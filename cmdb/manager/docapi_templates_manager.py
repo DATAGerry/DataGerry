@@ -21,7 +21,7 @@ from typing import Union
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.errors.manager.manager_errors import BaseManagerDeleteError, BaseManagerGetError
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate

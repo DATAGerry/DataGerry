@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of GroupACL
+"""
 from typing import TypeVar
 
 from cmdb.security.acl.access_control_list_section import AccessControlListSection
@@ -27,38 +28,71 @@ T = TypeVar('T')
 #                                                   GroupACL - CLASS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 class GroupACL(AccessControlListSection[int]):
-    """Wrapper class for the group section"""
+    """
+    Wrapper class for the group section of an Access Control List (ACL)
 
+    This class enforces that the `includes` dictionary uses integer keys
+    """
     def __init__(self, includes: AccessControlSectionDict[T]):
+        """
+        Initializes the GroupACL
+
+        Args:
+            includes (AccessControlSectionDict[T]): A dictionary mapping integer keys to ACL values
+        """
         super().__init__(includes=includes)
 
 
     @property
     def includes(self) -> dict:
+        """
+        Returns the access control section dictionary with integer keys
+        """
         return self._includes
 
 
     @includes.setter
     def includes(self, value: AccessControlSectionDict):
+        """
+        Sets the includes dictionary, ensuring all keys are integers
+
+        Args:
+            value (AccessControlSectionDict[T]): A dictionary mapping keys to ACL values
+
+        Raises:
+            TypeError: If `value` is not a dictionary
+        """
         if not isinstance(value, dict):
-            raise TypeError('`AccessControlListSection` only takes dict as include structure')
+            raise TypeError("`AccessControlListSection` only accepts dictionaries as an include structure.")
 
-        value = {int(k): v for k, v in value.items()}
-
-        self._includes = value
+        self._includes = {int(k): v for k, v in value.items()}
 
 
     @classmethod
     def from_data(cls, data: dict) -> "GroupACL":
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initialises a GroupACL from a dict
+
+        Args:
+            data (dict): Data with which the GroupACL should be initialised
+
+        Returns:
+            GroupACL: GroupACL with the given data
+        """
         return cls(data.get('includes', set()))
 
 
     @classmethod
     def to_json(cls, section: "AccessControlListSection[T]") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Converts a AccessControlListSection[T] into a json compatible dict
+
+        Args:
+            instance (AccessControlListSection[T]): The AccessControlListSection[T] which should be converted
+
+        Returns:
+            dict: Json compatible dict of the AccessControlListSection[T] values
+        """
         return {
             'includes': {str(k): v for k, v in section.includes.items()}
         }

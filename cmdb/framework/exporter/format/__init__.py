@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+THis module provides all export formats
+"""
 from .csv_export_format import CsvExportFormat
 from .json_export_format import JsonExportFormat
 from .xlsx_export_format import XlsxExportFormat

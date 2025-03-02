@@ -14,18 +14,36 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Response classes. These include already parsed data and additional information based on their types.
+Implementation of BaseParserResponse
 """
+from abc import ABC, abstractmethod
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class BaseParserResponse:
-    """Basic response only includes the number of parsed elements"""
+class BaseParserResponse(ABC):
+    """
+    Base class for parser responses
 
+    Extends: ABC
+    """
     def __init__(self, count: int):
-        self.count: int = count
+        """
+        Initializes the BaseParserResponse with the given count of parsed elements
+
+        Args:
+            count (int): The number of elements that have been parsed
+        """
+        self.count = count
 
 
+    @abstractmethod
     def output(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        raise NotImplementedError
+        """
+        Abstract method to be implemented by subclasses to return specific response data
+        
+        Returns:
+            dict: The response data, typically a dictionary containing details about the parsed elements
+        
+        Raises:
+            NotImplementedError: If this method is not overridden in a subclass
+        """
+        raise NotImplementedError("The output() method must be implemented by subclasses.")

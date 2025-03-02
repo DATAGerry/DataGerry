@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.manager import BaseManager
+from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.cmdb_meta_log import CmdbMetaLog

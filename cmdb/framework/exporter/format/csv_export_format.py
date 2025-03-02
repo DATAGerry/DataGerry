@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of the CsvExportFormat
+"""
 import logging
 import csv
 import io
@@ -31,7 +32,11 @@ LOGGER = logging.getLogger(__name__)
 #                                                CsvExportFormat - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvExportFormat(BaseExporterFormat):
-    """Extends: BaseExporterFormat"""
+    """
+    The csv export format class
+
+    Extends: BaseExporterFormat
+    """
     FILE_EXTENSION = "csv"
     LABEL = "CSV"
     MULTITYPE_SUPPORT = False
@@ -97,7 +102,8 @@ class CsvExportFormat(BaseExporterFormat):
 
 
     def csv_writer(self, header, rows, dialect=csv.excel):
-        """TODO: ducoment"""
+        """document"""
+        #TODO: DOCUMENT-FIX
         csv_file = io.StringIO()
         writer = csv.writer(csv_file, dialect=dialect)
         writer.writerow(header)

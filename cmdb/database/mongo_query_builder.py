@@ -145,7 +145,7 @@ class MongoDBQueryBuilder:
                 target_value = datetime.strptime(value, '%Y-%m-%d')
 
             if (field_name in self.ref_fields or
-                field_name in self.ref_section_fields or 
+                field_name in self.ref_section_fields or
                 field_name in self.number_fields
                ) and value:
                 target_value = int(value)

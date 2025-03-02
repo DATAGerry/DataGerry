@@ -16,7 +16,6 @@
 """
 This module provides all refactored Managers of DataGerry (refactoring still in process)
 """
-from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.categories_manager import CategoriesManager
 from cmdb.manager.docapi_templates_manager import DocapiTemplatesManager
 from cmdb.manager.groups_manager import GroupsManager
@@ -43,7 +42,6 @@ from cmdb.manager.webhooks_manager import WebhooksManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'BaseManager',
     'CategoriesManager',
     'DocapiTemplatesManager',
     'GroupsManager',

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CollectionParameters
+"""
 import logging
 from json import loads
 from typing import Union
@@ -28,8 +29,10 @@ LOGGER = logging.getLogger(__name__)
 #                                             CollectionParameters - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CollectionParameters(APIParameters):
-    """Rest API class for parameters passed by a http request on a collection route"""
-
+    """
+    Rest API class for parameters passed by a http request on a collection route
+    """
+    #TODO: REFACTOR-FIX (replace filter with criteria)
     def __init__(self, query_string: str, limit: int = None, sort: str = None,
                  order: int = None, page: int = None, filter: Union[list[dict], dict] = None, **kwargs):
         """

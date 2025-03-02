@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ExcelObjectImporterConfig
+"""
 import logging
 
 from cmdb.framework.importer.content_types import XLSXContent
