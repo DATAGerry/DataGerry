@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for Type Imports
+"""
 import json
 import logging
 from datetime import datetime, timezone
@@ -32,7 +33,10 @@ from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.blueprints import NestedBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
 
-from cmdb.errors.manager import BaseManagerGetError, BaseManagerInsertError
+from cmdb.errors.manager.types_manager import (
+    TypesManagerInsertError,
+    TypesManagerGetError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 importer_type_blueprint = NestedBlueprint(importer_blueprint, url_prefix='/type')
@@ -57,13 +61,15 @@ def add_type(request_user: CmdbUser):
         try:
             new_type_data['public_id'] = types_manager.get_new_type_public_id()
             new_type_data['creation_time'] = datetime.now(timezone.utc)
-        except TypeError as e:
-            LOGGER.error(e)
+        except Exception as err:
+            #TODO: ERROR-FIX
+            LOGGER.error(err)
             return abort(400)
+
         try:
             type_instance = CmdbType.from_data(new_type_data)
             types_manager.insert_type(type_instance)
-        except (BaseManagerInsertError, Exception) as err:
+        except (TypesManagerInsertError, Exception) as err:
             #TODO: ERROR-FIX
             error_collection.update({"public_id": new_type_data['public_id'], "message": err})
 
@@ -92,7 +98,7 @@ def update_type(request_user: CmdbUser):
         try:
             types_manager.get_type(update_type_instance.public_id)
             types_manager.update_type(update_type_instance.public_id, update_type_instance)
-        except (BaseManagerGetError, Exception) as err:
+        except (TypesManagerGetError, Exception) as err:
             #TODO: ERROR-FIX
             error_collection.update({"public_id": add_data_dump['public_id'], "message": err})
 

@@ -33,7 +33,7 @@ class CollectionParameters(APIParameters):
     Rest API class for parameters passed by a http request on a collection route
     """
     #TODO: REFACTOR-FIX (replace filter with criteria)
-    def __init__(self, query_string: str, limit: int = None, sort: str = None,
+    def __init__(self, query_string: str = None, limit: int = None, sort: str = None,
                  order: int = None, page: int = None, filter: Union[list[dict], dict] = None, **kwargs):
         """
         Constructor of the CollectionParameters.

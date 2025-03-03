@@ -38,23 +38,35 @@ class TypesManagerGetError(TypesManagerError):
 
 class TypesManagerInsertError(TypesManagerError):
     """
-    Raised when TypesManager could not create a type
+    Raised when TypesManager could not create a CmdbType
     """
 
 
 class TypesManagerUpdateError(TypesManagerError):
     """
-    Raised when TypesManager could not update a type
+    Raised when TypesManager could not update a CmdbType
+    """
+
+
+class TypesManagerUpdateMDSError(TypesManagerError):
+    """
+    Raised when TypesManager could not update the MultiDataSections of a CmdbType
     """
 
 
 class TypesManagerDeleteError(TypesManagerError):
     """
-    Raised when TypesManager could not delete a type
+    Raised when TypesManager could not delete a CmdbType
     """
 
 
 class TypesManagerInitError(TypesManagerError):
     """
-    Raised when TypesManager could not initialise a type
+    Raised when TypesManager could not initialise a CmdbType
+    """
+
+
+class TypesManagerIterationError(TypesManagerError):
+    """
+    Raised when TypesManager could not iterate over CmdbTypes
     """

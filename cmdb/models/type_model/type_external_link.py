@@ -19,7 +19,7 @@ This class represents an external link
 import logging
 import re
 
-from cmdb.errors.type import ExternalFillError
+from cmdb.errors.models.cmdb_type import CmdbTypeExternalFillError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -120,5 +120,4 @@ class TypeExternalLink:
         try:
             self.href = self.href.format(*inputs)
         except Exception as err:
-            #TODO: ERROR-FIX
-            raise ExternalFillError(f"Href link do not fit with inputs: {self.href}!") from err
+            raise CmdbTypeExternalFillError(f"Href link do not fit with inputs: {self.href}!") from err

@@ -149,18 +149,18 @@ class LocationsManager(BaseManager):
         Returns:
             list: All locations matching the requirements
         """
-        locations_list = []
-
         try:
+            locations_list = []
+
             locations = self.get_many(**requirements)
 
             for location in locations:
                 locations_list.append(CmdbLocation(**location))
+
+            return locations_list
         except Exception as err:
             #TODO: ERROR-FIX
             raise BaseManagerGetError(err) from err
-
-        return locations_list
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
 

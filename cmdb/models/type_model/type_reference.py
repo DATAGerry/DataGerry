@@ -19,7 +19,7 @@ This class represents a type reference
 import logging
 import re
 
-from cmdb.errors.type import TypeReferenceLineFillError
+from cmdb.errors.models.cmdb_type import CmdbTypeReferenceLineFillError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -137,6 +137,6 @@ class TypeReference:
         try:
             self.line = self.line.format(*inputs)
         except Exception as err:
-            #TODO: ERROR-FIX
-            raise TypeReferenceLineFillError(f"Type reference summary line do not fit \
-                                             with inputs: {self.line}!") from err
+            raise CmdbTypeReferenceLineFillError(
+                f"Type reference summary line do not fit with inputs: {self.line}!"
+            ) from err

@@ -30,8 +30,6 @@ from cmdb.models.type_model import CmdbType
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.blueprints import RootBlueprint
-
-from cmdb.errors.type import TypeNotFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -52,9 +50,6 @@ def export_type(request_user: CmdbUser):
     try:
         type_list = [CmdbType.to_json(type) for type in types_manager.get_all_types()]
         resp = json.dumps(type_list, default=default, indent=2)
-    except TypeNotFoundError:
-        #TODO: ERROR-FIX
-        return abort(400)
     except ModuleNotFoundError:
         #TODO: ERROR-FIX
         return abort(400)
@@ -94,9 +89,6 @@ def export_type_by_ids(public_ids, request_user: CmdbUser):
         type_list_data = json.dumps([CmdbType.to_json(type_) for type_ in
                                     types_manager.get_types_by(sort="public_id", **{'$or': query_list})],
                                     default=default, indent=2)
-    except TypeNotFoundError:
-        #TODO: ERROR-FIX
-        return abort(400)
     except ModuleNotFoundError:
         #TODO: ERROR-FIX
         return abort(400)

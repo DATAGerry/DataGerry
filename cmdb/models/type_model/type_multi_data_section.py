@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This class represents a TypeMultiDataSection
-Extends: TypeSection
+Implementation of a TypeMultiDataSection
 """
 import logging
 import json
@@ -32,6 +31,7 @@ LOGGER = logging.getLogger(__name__)
 class TypeMultiDataSection(TypeSection):
     """
     This class represents a TypeMultiDataSection
+
     Extends: TypeSection
     """
 

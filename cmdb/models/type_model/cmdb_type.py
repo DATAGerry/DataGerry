@@ -14,9 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Represents a CmdbType in DataGerry
+Implementation of CmdbType
 """
 import logging
+from typing import Optional, Union
 from datetime import datetime, timezone
 from dateutil.parser import parse
 
@@ -28,7 +29,12 @@ from cmdb.models.type_model.type_section import TypeSection
 from cmdb.models.type_model.type_render_meta import TypeRenderMeta
 from cmdb.class_schema.cmdb_type_schema import get_cmdb_type_schema
 
-from cmdb.errors.type import FieldNotFoundError, FieldInitError
+from cmdb.errors.models.cmdb_type import (
+    CmdbTypeInitError,
+    CmdbTypeInitFromDataError,
+    CmdbTypeToJsonError,
+    CmdbTypeFieldNotFoundError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -39,17 +45,10 @@ LOGGER = logging.getLogger(__name__)
 #pylint: disable=too-many-instance-attributes
 class CmdbType(CmdbDAO):
     """
-    Model for CmdbType in DataGerry
-    `Extends`: CmdbDAO
-    
-    Attributes:
-        COLLECTION (str): Name of the database collection
-        MODEL (Model): Name of the DAO
-        DEFAULT_VERSION (str): The default "starting" version number
-        SCHEMA (dict): The validation schema for this DAO
-        INDEX_KEYS (list): sList of index keys for the database
-    """
+    Represents a CmdbType in DataGerry
 
+    Extends: CmdbDAO
+    """
     COLLECTION = "framework.types"
     MODEL = 'Type'
     DEFAULT_VERSION = '1.0.0'
@@ -77,6 +76,30 @@ class CmdbType(CmdbDAO):
                  label: str = None,
                  description: str = None,
                  acl: AccessControlList = None):
+        """
+        Initializes a CmdbType
+
+        Args:
+            public_id (int): unique public_id of the CmdbType
+            name (str): The name of the CmdbType
+            author_id (int): The public_id of the CmdbUser who created the CmdbType
+            render_meta (TypeRenderMeta): Metadata related to rendering
+            creation_time (datetime, optional): The time when the CmdbType was created.
+                                                Defaults to the current UTC time if not provided
+            last_edit_time (datetime, optional): The last time the CmdbType was edited
+            editor_id (int, optional): The public_id of the CmdbUser who last edited the CmdbType
+            active (bool): Indicates whether the object is active. Defaults to True
+            selectable_as_parent (bool): Whether this CmdbType can be a parent Location. Defaults to True
+            global_template_ids (list[int]): A list of global template public_ids used by this CmdbType
+            fields (list): A list of fields associated with the CmdbType
+            version (str): The version of the CmdbType. Defaults to 1.0.0
+            label (str): A user-friendly label for the CmdbType. Defaults to a title-cased version of the name
+            description (str, optional): A description of the CmdbType
+            acl (AccessControlList, optional): AccessControlList for the CmdbType. Defaults to none
+
+        Raises:
+            CmdbTypeInitError: If initialization fails due to an error
+        """
         try:
             self.name = name
             self.label = label or self.name.title()
@@ -95,30 +118,31 @@ class CmdbType(CmdbDAO):
 
             super().__init__(public_id=public_id)
         except Exception as err:
-            LOGGER.debug("[__init__] Exception: %s, Type: %s", err, type(err))
-            #TODO: ERROR-FIX (proper error required)
-            raise Exception(err) from err
+            raise CmdbTypeInitError(err) from err
 
-# -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbType":
         """
-        Generates a CmdbType instance from a dict
+        Initialises a CmdbType from a dict
 
         Args:
-            data (dict): Data with which the CmdbType should be instantiated
+            data (dict): Data with which the CmdbType should be initialised
+
+        Raises:
+            CmdbTypeInitFromDataError: If the initialisation with the given data fails
 
         Returns:
-            CmdbType: CmdbType instance with given data
+            CmdbType: CmdbType with the given data
         """
         try:
-            creation_time = data.get('creation_time', None)
-            if creation_time and isinstance(creation_time, str):
+            creation_time = data.get('creation_time')
+            if isinstance(creation_time, str):
                 creation_time = parse(creation_time, fuzzy=True)
 
-            last_edit_time = data.get('last_edit_time', None)
-            if last_edit_time and isinstance(last_edit_time, str):
+            last_edit_time = data.get('last_edit_time')
+            if isinstance(last_edit_time, str):
                 last_edit_time = parse(last_edit_time, fuzzy=True)
 
             return cls(
@@ -139,15 +163,22 @@ class CmdbType(CmdbDAO):
                 acl = AccessControlList.from_data(data.get('acl', {}))
             )
         except Exception as err:
-            #TODO: ERROR-FIX (specific required)
-            LOGGER.debug("[from_data] Exception: %s, Type: %s", err, type(err))
-            raise Exception(err) from err
+            raise CmdbTypeInitFromDataError(err) from err
 
 
     @classmethod
     def to_json(cls, instance: "CmdbType") -> dict:
         """
-        Convert a CmdbType instance to json conform data
+        Converts a CmdbType into a json compatible dict
+
+        Args:
+            instance (CmdbType): The CmdbType which should be converted
+
+        Raises:
+            CmdbTypeToJsonError: If the CmdbType could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the CmdbType values
         """
         try:
             return {
@@ -168,19 +199,29 @@ class CmdbType(CmdbDAO):
                 'acl': AccessControlList.to_json(instance.acl)
             }
         except Exception as err:
-            #TODO: ERROR-FIX (specific required)
-            LOGGER.debug("[to_json] Exception: %s, Type: %s", err, type(err))
-            raise Exception(err) from err
+            raise CmdbTypeToJsonError(err) from err
 
-# ------------------------------------------------- GENERAL FUNCTIONS ------------------------------------------------ #
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
     def get_name(self) -> str:
-        """Get the name of the type"""
+        """
+        Returns the name of the CmdbType
+
+        Returns:
+            str: The name of the CmdbType
+        """
         return self.name
 
 
     def get_label(self) -> str:
-        """Get the display name"""
+        """
+        Returns the display label of the CmdbType
+        
+        If no label is set, it defaults to the title-cased name
+        
+        Returns:
+            str: The display label of the CmdbType
+        """
         if not self.label:
             self.label = self.name.title()
 
@@ -188,70 +229,148 @@ class CmdbType(CmdbDAO):
 
 
     def get_externals(self) -> list[TypeExternalLink]:
-        """Get the render meta values of externals"""
+        """
+        Retrieves the external links from the TypeRenderMeta
+
+        Returns:
+            list[TypeExternalLink]: A list of external links associated with the TypeRenderMeta
+        """
         return self.render_meta.externals
 
 
     def has_externals(self) -> bool:
-        """Check if type has external links"""
-        return len(self.get_externals()) > 0
+        """
+        Checks if the CmdbType has external links
+
+        Returns:
+            bool: True if external links exist, False otherwise
+        """
+        return bool(self.get_externals())
 
 
-    def get_external(self, name) -> TypeExternalLink:
-        """Retrive an external link"""
+    def get_external(self, name: str) -> Optional[TypeExternalLink]:
+        """
+        Retrieves a TypeExternalLink by name
+
+        Args:
+            name (str): The name of the TypeExternalLink to retrieve
+
+        Returns:
+            Optional[TypeExternalLink]: The matching TypeExternalLink if found, otherwise None
+        """
         return next((external for external in self.get_externals() if external.name == name), None)
 
 
     def has_summaries(self) -> bool:
-        """Checks if there are any fields in the render_meta.summary object"""
+        """
+        Checks if there are any fields in the `summary` object of the TypeRenderMeta
+
+        Returns:
+            bool: True if there are fields in the summary, False otherwise
+        """
         return self.render_meta.summary.has_fields()
 
 
-    def get_nested_summaries(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_nested_summaries(self) -> list[dict]:
+        """
+        Retrieves the nested summaries from fields of type 'ref'
+
+        This method searches through the fields and returns any associated 'summaries' 
+        for fields where the type is 'ref' and 'summaries' is present
+
+        Returns:
+            list[dict]: A list of dictionaries representing the nested summaries. 
+                        If no matching fields are found, returns an empty list
+        """
         return next((x['summaries'] for x in self.get_fields() if x['type'] == 'ref' and 'summaries' in x), [])
 
 
-    def has_nested_prefix(self, nested_summaries):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def has_nested_prefix(self, nested_summaries: list[dict]) -> Union[str, bool]:
+        """
+        Checks if any of the nested summaries have a matching prefix for this instance
+
+        This method looks for a nested summary with a matching `type_id` (equal to `self.public_id`)
+        and returns the associated `prefix`. If no matching summary is found, it returns `False`
+
+        Args:
+            nested_summaries (List[dict]): A list of nested summary dictionaries that may contain a `type_id`
+                                            and `prefix` key
+
+        Returns:
+            Union[str, bool]: The `prefix` of the matching nested summary if found, otherwise `False`
+        """
         return next((x['prefix'] for x in nested_summaries if x['type_id'] == self.public_id), False)
 
 
-    def get_nested_summary_fields(self, nested_summaries) -> list[str]:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        _fields = next((x['fields'] for x in nested_summaries if x['type_id'] == self.public_id), [])
+    def get_nested_summary_fields(self, nested_summaries: list[dict]) -> list[str]:
+        """
+        Retrieves the fields from the nested summaries that match the current CmdbType's public_id
+
+        This method looks through the `nested_summaries` to find a matching `type_id` that equals `self.public_id`.
+        Once the matching nested summary is found, it gathers the corresponding field names and fetches their
+        details using `get_field`. The fields are then returned as a list.
+
+        Args:
+            nested_summaries (list[dict]): A list of nested summary dictionaries containing `type_id` and `fields`
+
+        Returns:
+            list[str]: A list of fields corresponding to the nested summaries,
+                       where each field is fetched using `get_field`.
+        """
         complete_field_list = []
+
+        _fields = next((x['fields'] for x in nested_summaries if x['type_id'] == self.public_id), [])
+
         for field_name in _fields:
             complete_field_list.append(self.get_field(field_name))
 
-        return TypeSummary(fields=complete_field_list).fields
+        return TypeSummary(complete_field_list).fields
 
 
-    def get_nested_summary_line(self, nested_summaries):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_nested_summary_line(self, nested_summaries: list[dict]) -> Optional[str]:
+        """
+        Retrieves the 'line' value from the nested summaries that match the current CmdbType's public_id
+
+        This method looks through the `nested_summaries` to find a matching `type_id` that equals `self.public_id`
+        Once the matching nested summary is found, it returns the associated `line` value.
+        If no match is found, it returns `None`
+
+        Args:
+            nested_summaries (list[dict]): A list of nested summary dictionaries containing `type_id` and `line`
+
+        Returns:
+            Optional[str]: The `line` value from the matching nested summary if found, otherwise `None`
+        """
         return next((x['line'] for x in nested_summaries if x['type_id'] == self.public_id), None)
 
 
     def get_summary(self) -> TypeSummary:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        complete_field_list = []
-        for field_name in self.render_meta.summary.fields:
-            complete_field_list.append(self.get_field(field_name))
-        return TypeSummary(fields=complete_field_list)
+        """
+        Retrieves the summary of fields from the TypeRenderMeta
+
+        This method iterates over the fields defined in the `summary` of the TypeRenderMeta,
+        fetches the details of each field using `get_field`, and returns a `TypeSummary` 
+        containing these fields
+
+        Returns:
+            TypeSummary: A `TypeSummary` object containing the list of fields fetched from `get_field`
+        """
+        complete_field_list = [self.get_field(field_name) for field_name in self.render_meta.summary.fields]
+
+        return TypeSummary(complete_field_list)
 
 
     def get_sections(self) -> list[TypeSection]:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves the sections from the TypeRenderMeta
+
+        Returns:
+            List[TypeSection]: A list of `TypeSection` objects defined in the `render_meta.sections`
+        """
         return self.render_meta.sections
 
 
-    def get_section(self, name: str) -> TypeSection:
+    def get_section(self, name: str) -> Optional[TypeSection]:
         """
         Retrieves a section with the given name
 
@@ -259,88 +378,102 @@ class CmdbType(CmdbDAO):
             name (str): Name of the section
 
         Returns:
-            TypeSection: The Typesection with the given name else None
+            Optional[TypeSection]: The Typesection with the given name else None
         """
-        try:
-            return next((section for section in self.get_sections() if section.name == name), None)
-        except IndexError:
-            return None
+        return next((section for section in self.get_sections() if section.name == name), None)
 
 
-    def get_icon(self) -> str:
-        """Retrieves the icon of the current CmdbType"""
-        try:
-            return self.render_meta.icon
-        except IndexError:
-            return None
+
+    def get_icon(self) -> Optional[str]:
+        """
+        Retrieves the icon of the current CmdbType
+
+        This method returns the `icon` from the `render_meta` if available. If not, 
+        it returns `None`
+
+        Returns:
+            Optional[str]: The icon as a string if available, otherwise `None`
+        """
+        return getattr(self.render_meta, 'icon', None)
 
 
     def has_sections(self) -> bool:
         """
         Checks if the CmdbType has any sections
 
+        This method returns True if the CmdbType has one or more sections, otherwise it returns False
+
         Returns:
-            (bool): True if at least one section is present else False
+            bool: True if at least one section is present, False otherwise
         """
-        return self.get_sections() > 0
+        return len(self.get_sections()) > 0
 
 
     def get_fields(self) -> list:
-        """Retuns all fields of the CmdbType"""
+        """
+        Retrieves all fields of the CmdbType
+
+        This method returns the list of fields associated with the current `CmdbType`
+
+        Returns:
+            List: A list of fields for the current `CmdbType`
+        """
         return self.fields
 
 
-    def count_fields(self) -> int:
-        """Returns the number of fields"""
-        return len(self.fields)
+    def get_field(self, name: str) -> dict:
+        """
+        Retrieves a field by its name
 
+        Args:
+            name (str): The name of the field to retrieve
 
-    def get_fields_of_type_with_value(self, input_type: str, _filter: str, value) -> list:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        fields = [x for x in self.fields if
-                  x['type'] == input_type and (value in x.get(_filter, None) if isinstance(x.get(_filter, None), list)
-                                               else x.get(_filter, None) == value)]
-        if fields:
-            return fields
+        Raises:
+            CmdbTypeFieldNotFoundError: If no field with the specified name is found
 
-        raise FieldNotFoundError(f"Field '{value}' was not found!")
+        Returns:
+            dict: The field as a dictionary
+        """
+        field = next((x for x in self.fields if x['name'] == name), None)
 
-
-    def get_field(self, name) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        field = [x for x in self.fields if x['name'] == name]
         if field:
-            try:
-                return field[0]
-            except Exception as err:
-                #TODO: ERROR-FIX
-                raise FieldInitError(f"Field '{name}' could not be initialized") from err
+            return field
 
-        raise FieldNotFoundError(f"Field '{name}' was not found!")
+        raise CmdbTypeFieldNotFoundError(f"Field '{name}' was not found!")
 
 
     def get_all_mds_fields(self) -> list:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves all fields from multi-data sections
+
+        This method searches through the sections in the `render_meta` and collects all
+        fields that belong to sections of type "multi-data-section"
+
+        Returns:
+            list: A list containing all fields from multi-data sections
+        """
         mds_fields = []
 
-        for a_section in self.render_meta.sections:
-            if a_section.type == "multi-data-section":
-                for a_field in a_section.fields:
-                    mds_fields.append(a_field)
+        for section in self.render_meta.sections:
+            if section.type == "multi-data-section":
+                mds_fields.extend(section.fields)
 
         return mds_fields
 
 
-    def get_all_fields_of_type(self, field_type: str) -> list:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        date_fields = []
+    def get_all_fields_of_type(self, field_type: str) -> list[str]:
+        """
+        Retrieves all field names of the specified type
 
-        for a_field in self.fields:
-            if a_field['type'] == field_type:
-                date_fields.append(a_field['name'])
+        This method iterates through the fields and collects the names of fields 
+        that match the given `field_type`
 
-        return date_fields
+        Args:
+            field_type (str): The type of the field to search for
+
+        Returns:
+            list[str]: A list of field names that match the specified field type
+        """
+        field_names = [field["name"] for field in self.fields if field["type"] == field_type]
+
+        return field_names
