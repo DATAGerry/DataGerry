@@ -28,7 +28,7 @@ post:
         Inserts a new CmdbType into the database.
         <br><br>
         The **public_id** and **creation_time** properties will be automatically created and don't need to be provided.
-    operationId: insert_type
+    operationId: insert_cmdb_type
     requestBody:
         required: true
         content:
@@ -73,6 +73,16 @@ post:
                             error:
                                 type: string
                                 example: "Could not retrieve the created CmdbType from database"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                       GET TYPES                                                      #
@@ -110,7 +120,7 @@ get:
                                 type: integer
                                 description: Total amount of returned CmdbTypes
         "400":
-            description: Could not iterate CmdbTypes
+            description: Failed to retrieve CmdbTypes from database
             content:
                 application/json:
                     schema:
@@ -118,9 +128,9 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not iterate CmdbTypes"
-        "404":
-            description: Could not retrieve CmdbTypes from database
+                                example: "Failed to retrieve CmdbTypes from database"
+        "500":
+            description: Internal server error
             content:
                 application/json:
                     schema:
@@ -128,4 +138,4 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve CmdbTypes from database"
+                                example: "Internal server error"

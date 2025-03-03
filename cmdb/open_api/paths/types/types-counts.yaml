@@ -42,8 +42,8 @@ get:
                     schema:
                         type: integer
                         example: 23
-        "404":
-            description: Could not retrive CmdbObjects
+        "400":
+            description: Failed to count the CmdbObjects
             content:
                 application/json:
                     schema:
@@ -51,9 +51,9 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrive CmdbObjects"
+                                example: "Failed to count the CmdbObjects"
         "500":
-            description: Internat server error
+            description: Internal server error
             content:
                 application/json:
                     schema:
@@ -61,4 +61,4 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Internat server error"
+                                example: "Internal server error"

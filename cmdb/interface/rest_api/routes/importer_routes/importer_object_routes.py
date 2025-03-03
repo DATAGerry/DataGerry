@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for Object Imports
+"""
 import json
 import logging
 from flask import request, abort
@@ -29,6 +30,7 @@ from cmdb.manager import (
     LogsManager,
 )
 
+from cmdb.models.type_model.cmdb_type import CmdbType
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.log_action_enum import LogAction
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
@@ -65,6 +67,9 @@ from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.render import InstanceRenderError
 from cmdb.errors.importer import ImportRuntimeError, ParserRuntimeError, ImporterLoadError, ParserLoadError
+from cmdb.errors.manager.types_manager import (
+    TypesManagerGetError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -218,15 +223,18 @@ def import_objects(request_user: CmdbUser):
     # Check if type exists
     try:
         type_ = types_manager.get_type(importer_config_request.get('type_id'))
+        type_ = CmdbType.from_data(type_)
+
         if not type_.active:
             raise AccessDeniedError(f'Objects cannot be created because type `{type_.name}` is deactivated.')
         verify_import_access(request_user, type_, types_manager)
-    except ObjectsManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] %s", err)
-        return abort(404, "Could not import objects !")
     except AccessDeniedError:
         return abort(403, "Access denied for importing objects !")
+    except (TypesManagerGetError, Exception) as err:
+        #TODO: ERROR-FIX
+        LOGGER.debug("[import_objects] %s", err)
+        return abort(400, "Could not import objects !")
+
 
     # Load parser
     try:

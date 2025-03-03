@@ -13,11 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for CmdbTypes
+"""
 import logging
 from datetime import datetime, timezone
 from flask import abort, request
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -26,7 +28,10 @@ from cmdb.manager import (
     LocationsManager,
     ObjectsManager,
     ReportsManager,
+    RelationsManager,
 )
+
+from cmdb.models.relation_model import CmdbRelation
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.type_model import CmdbType
@@ -49,9 +54,16 @@ from cmdb.interface.rest_api.responses import (
 
 from cmdb.errors.manager import (
     BaseManagerGetError,
-    BaseManagerInsertError,
     BaseManagerUpdateError,
-    BaseManagerIterationError,
+)
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
+from cmdb.errors.manager.types_manager import (
+    TypesManagerGetError,
+    TypesManagerInsertError,
+    TypesManagerDeleteError,
+    TypesManagerIterationError,
+    TypesManagerUpdateError,
+    TypesManagerUpdateMDSError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -66,42 +78,46 @@ types_blueprint = APIBlueprint('types', __name__)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.add')
 @types_blueprint.validate(CmdbType.SCHEMA)
-def insert_type(data: dict, request_user: CmdbUser):
+def insert_cmdb_type(data: dict, request_user: CmdbUser):
     """
-    HTTP `POST` route for insert a single type resource
+    HTTP `POST` route to insert a CmdbType into the database
 
     Args:
-        data (CmdbType.SCHEMA): Insert data of a new type
+        data (CmdbType.SCHEMA): Data of the CmdbType which should be inserted
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        InsertSingleResponse: Insert response with the new type and its public_id
+        InsertSingleResponse: The new CmdbType and its public_id
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-
-    data.setdefault('creation_time', datetime.now(timezone.utc))
-    possible_id = data.get('public_id', None)
-
-    if possible_id:
-        try:
-            types_manager.get_type(possible_id)
-        except BaseManagerGetError:
-            pass
-        else:
-            return abort(400, f'Type with PublicID {possible_id} already exists.')
-
     try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+
+        data.setdefault('creation_time', datetime.now(timezone.utc))
+        possible_id = data.get('public_id', None)
+
+        if possible_id:
+            possible_type = types_manager.get_type(possible_id)
+
+            if possible_type:
+                return abort(400, f"Type with PublicID '{possible_id}' already exists!")
+
         result_id = types_manager.insert_type(data)
-        raw_doc = types_manager.get_type(result_id)
-    except BaseManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404, "Can not retrieve the created Type from the database!")
-    except BaseManagerInsertError as err:
-        LOGGER.error("[insert_type] %s", err)
-        return abort(400, "The Type could not be inserted!")
+        created_type = types_manager.get_type(result_id)
 
-    api_response = InsertSingleResponse(result_id=result_id, raw=CmdbType.to_json(raw_doc))
+        if created_type:
+            api_response = InsertSingleResponse(result_id=result_id, raw=created_type)
 
-    return api_response.make_response()
+            return api_response.make_response()
+        return abort(404, "Could not retrieve the created Type from the database!")
+    except HTTPException as http_err:
+        raise http_err
+    except TypesManagerGetError as err:
+        LOGGER.error("[insert_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the created Type from the database!")
+    except TypesManagerInsertError as err:
+        LOGGER.error("[insert_cmdb_type] %s", err)
+        return abort(400, "Failed to insert the Type into the database!")
+
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -110,37 +126,33 @@ def insert_type(data: dict, request_user: CmdbUser):
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.view')
 @types_blueprint.parse_parameters(TypeIterationParameters)
-def get_types(params: TypeIterationParameters, request_user: CmdbUser):
+def get_cmdb_types(params: TypeIterationParameters, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for getting a iterable collection of resources.
+    HTTP `GET`/`HEAD` route for getting multiple CmdbTypes
 
     Args:
-        params (CollectionParameters): Passed parameters over the http query string
+        params (CollectionParameters): Filter for requested CmdbTypes
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        GetMultiResponse: Which includes a IterationResult of the CmdbType.
-
-    Example:
-        You can pass any parameter based on the CollectionParameters.
-        Optional parameters are passed over the function declaration.
-
+        GetMultiResponse: All the CmdbTypes matching the CollectionParameters
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-
-    view = params.active
-
-    if view:
-        if isinstance(params.filter, dict):
-            if params.filter.keys():
-                params.filter.update({'active': view})
-            else:
-                params.filter = [{'$match': {'active': view}}, {'$match': params.filter}]
-        elif isinstance(params.filter, list):
-            params.filter.append({'$match': {'active': view}})
-
-    builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
-
     try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+
+        view = params.active
+
+        if view:
+            if isinstance(params.filter, dict):
+                if params.filter.keys():
+                    params.filter.update({'active': view})
+                else:
+                    params.filter = [{'$match': {'active': view}}, {'$match': params.filter}]
+            elif isinstance(params.filter, list):
+                params.filter.append({'$match': {'active': view}})
+
+        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
+
         iteration_result: IterationResult[CmdbType] = types_manager.iterate(builder_params)
 
         types = [CmdbType.to_json(type) for type in iteration_result.results]
@@ -150,64 +162,81 @@ def get_types(params: TypeIterationParameters, request_user: CmdbUser):
                                         params=params,
                                         url=request.url,
                                         body=request.method == 'HEAD')
-    except BaseManagerIterationError:
-        #TODO: ERROR-FIX
-        return abort(400)
-    except BaseManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
 
-    return api_response.make_response()
-
+        return api_response.make_response()
+    except TypesManagerIterationError as err:
+        LOGGER.error("[get_cmdb_types] TypesManagerIterationError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve CmdbTypes from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_types] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 @types_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @types_blueprint.protect(auth=True, right='base.framework.type.view')
-def get_type(public_id: int, request_user: CmdbUser):
+def get_cmdb_type(public_id: int, request_user: CmdbUser):
     """
-    HTTP `GET`/`HEAD` route for a single type resource.
+    HTTP `GET`/`HEAD` route to retrieve a single CmdbType
 
     Args:
-        public_id (int): Public ID of the type.
+        public_id (int): public_id of the CmdbType
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        GetSingleResponse: Which includes the json data of a CmdbType.
+        GetSingleResponse: The requested CmdbType
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-
     try:
-        type_ = types_manager.get_type(public_id)
-    except BaseManagerGetError:
-        return abort(404)
-    api_response = GetSingleResponse(CmdbType.to_json(type_), body=request.method == 'HEAD')
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
 
-    return api_response.make_response()
+        requested_type = types_manager.get_type(public_id)
+
+        if requested_type:
+            api_response = GetSingleResponse(requested_type, body=request.method == 'HEAD')
+
+            return api_response.make_response()
+        return abort(404, f"The Type with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
+    except TypesManagerGetError as err:
+        LOGGER.error("[get_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @types_blueprint.route('/count_objects/<int:public_id>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.view')
-def count_objects_of_type(public_id: int, request_user: CmdbUser):
+def count_objects_of_cmdb_type(public_id: int, request_user: CmdbUser):
     """
-    Return the number of objects in der database with the given public_id as type_id
+    Counts the number of CmdbObjects in the database with the given public_id as the type_id
+
     Args:
-        public_id (int): public_id of the type
+        public_id (int): The public_id of the CmdbType to count CmdbObjects for
+        request_user (CmdbUser): CmdbUser requesting this data
+
+    Returns:
+        DefaultResponse: An API response containing the count of CmdbObjects for the given type_id
     """
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-
     try:
-        objects_count = objects_manager.count_objects({'type_id':public_id})
-        api_response = DefaultResponse(objects_count)
-    except BaseManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
-    except Exception:
-        #TODO: ERROR-FIX
-        return abort(500)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
 
-    return api_response.make_response()
+        objects_count = objects_manager.count_objects({'type_id':public_id})
+
+        api_response = DefaultResponse(objects_count)
+
+        return api_response.make_response()
+    except ObjectsManagerGetError as err:
+        LOGGER.error("[count_objects_of_cmdb_type] ObjectsManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to count Objects for Type with ID: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[count_objects_of_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
+
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -216,69 +245,84 @@ def count_objects_of_type(public_id: int, request_user: CmdbUser):
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.edit')
 @types_blueprint.validate(CmdbType.SCHEMA)
-def update_type(public_id: int, data: dict, request_user: CmdbUser):
+def update_cmdb_type(public_id: int, data: dict, request_user: CmdbUser):
     """
-    HTTP `PUT`/`PATCH` route for update a single type resource.
+    HTTP `PUT`/`PATCH` route to update a single CmdbType
 
     Args:
-        public_id (int): Public ID of the updatable type
-        data (CmdbType.SCHEMA): New type data to update
+        public_id (int): public_id of the CmdbType which should be updated
+        data (CmdbType.SCHEMA): New CmdbType data
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        UpdateSingleResponse: With update result of the new updated type.
+        UpdateSingleResponse: The new data of the CmdbType
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-
     try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+
         unchanged_type = types_manager.get_type(public_id)
-        data['last_edit_time'] = datetime.now(timezone.utc)
 
-        type_ = CmdbType.from_data(data)
+        if unchanged_type:
+            data['last_edit_time'] = datetime.now(timezone.utc)
 
-        types_manager.update_type(public_id, CmdbType.to_json(type_))
-        api_response = UpdateSingleResponse(result=data)
+            new_type_data = CmdbType.from_data(data)
+
+            types_manager.update_type(public_id, CmdbType.to_json(new_type_data))
+
+            updated_type = types_manager.get_type(public_id)
+            updated_type = CmdbType.from_data(updated_type)
+
+            # when type are updated, update all locations with relevant data from this type
+            locations_with_type = locations_manager.get_locations_by(type_id=public_id)
+
+            loc_data = {
+                'type_label': updated_type.label,
+                'type_icon': updated_type.render_meta.icon,
+                'type_selectable': updated_type.selectable_as_parent
+            }
+
+            location: CmdbLocation
+            for location in locations_with_type:
+                locations_manager.update({'public_id':location.public_id}, loc_data)
+
+            # check and update all multi data sections for the type if required
+            updated_objects = types_manager.handle_mutli_data_sections(CmdbType.from_data(unchanged_type),
+                                                                       data)
+
+            # Update Objects
+            an_object: CmdbObject
+            for an_object in updated_objects:
+                objects_manager.update_object(an_object.public_id, CmdbObject.to_json(an_object))
+
+            api_response = UpdateSingleResponse(result=data)
+
+            return api_response.make_response()
+
+        return abort(404, f"The Type with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
     except BaseManagerGetError as err:
-        LOGGER.error("[update_type] %s", err)
-        #TODO: ERROR-FIX
-        return abort(404, "Could not retrieve the Type which should be updated!")
+        #TODO: ERROR-FIX (need to catch specific CmdbLocation exception)
+        LOGGER.error("[update_cmdb_type] BaseManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Although the Type got updated, the update of Locations failed!")
     except BaseManagerUpdateError as err:
-        LOGGER.error("[update_type] %s", err)
-        return abort(400, f"Type with public_id: {public_id} could not be updated!")
+        #TODO: ERROR-FIX (need to catch specific CmdbObject exception)
+        LOGGER.error("[update_cmdb_type] BaseManagerUpdateError: %s", err, exc_info=True)
+        return abort(400, "Although the Type got updated, the update of Objects failed!")
+    except TypesManagerGetError as err:
+        LOGGER.error("[update_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
+    except TypesManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_type] TypesManagerUpdateError: %s", err, exc_info=True)
+        return abort(400, f"Failed to update the Type with ID: {public_id} from the database!")
+    except TypesManagerUpdateMDSError as err:
+        LOGGER.error("[update_cmdb_type] TypesManagerUpdateMDSError: %s", err, exc_info=True)
+        return abort(400, "Although the Type got updated, the Multi-Data-Section updates failed!")
     except Exception as err:
-        LOGGER.error("[update_type] Update Type Exception: %s", err)
-        return abort(500, f"Type with public_id: {public_id} could not be updated!")
-
-    # when types are updated, update all locations with relevant data from this type
-    updated_type = types_manager.get_type(public_id)
-
-    try:
-        locations_with_type = locations_manager.get_locations_by(type_id=public_id)
-
-        loc_data = {
-            'type_label': updated_type.label,
-            'type_icon': updated_type.render_meta.icon,
-            'type_selectable': updated_type.selectable_as_parent
-        }
-
-        location: CmdbLocation
-        for location in locations_with_type:
-            locations_manager.update({'public_id':location.public_id}, loc_data)
-
-        # check and update all multi data sections for the type if required
-        updated_objects = types_manager.handle_mutli_data_sections(unchanged_type, data)
-    except Exception as err:
-        LOGGER.warning("[update_type] Handle locations Exception: %s", err)
-
-    try:
-        an_object: CmdbObject
-        for an_object in updated_objects:
-            objects_manager.update_object(an_object.public_id, CmdbObject.to_json(an_object))
-    except Exception as err:
-        LOGGER.warning("[update_type] Update objects Exception: %s", err)
-
-    return api_response.make_response()
+        LOGGER.error("[update_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -286,46 +330,83 @@ def update_type(public_id: int, data: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @insert_request_user
 @types_blueprint.protect(auth=True, right='base.framework.type.delete')
-def delete_type(public_id: int, request_user: CmdbUser):
+def delete_cmdb_type(public_id: int, request_user: CmdbUser):
     """
-    HTTP `DELETE` route for delete a single type resource.
+    HTTP `DELETE` route to delete a single CmdbType
 
     Args:
-        public_id (int): Public ID of the deletable type
-
-    Notes:
-        Deleting the type will also delete all objects in this type!
+        public_id (int): public_id of the CmdbType which should be deleted
+        request_user (CmdbUser): CmdbUser requesting this data
 
     Returns:
-        DeleteSingleResponse: Delete result with the deleted type as data.
+        DeleteSingleResponse: The deleted CmdbType data
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
-
     try:
-        objects_count = objects_manager.count_objects({'type_id':public_id})
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER, request_user)
 
-        # Only possible to delete types when there are no objects
-        if objects_count > 0:
-            return abort(403, "Delete not possible if objects of this type exist!")
+        to_delete_type = types_manager.get_type(public_id)
 
-        # Only possible to delete types when there are no reports using it
-        reports_count = reports_manager.count_reports({'type_id':public_id})
+        if to_delete_type:
+            objects_count = objects_manager.count_objects({'type_id':public_id})
 
-        if reports_count > 0:
-            return abort(403, "Delete not possible if reports exist which are using this type!")
+            # Only possible to delete types when there are no objects
+            if objects_count > 0:
+                return abort(403, "Delete not possible if Objects of this Type exist!")
 
-        deleted_type = types_manager.delete_type(public_id)
+            # Only possible to delete types when there are no reports using it
+            reports_count = reports_manager.count_reports({'type_id':public_id})
 
-        api_response = DeleteSingleResponse(raw=CmdbType.to_json(deleted_type))
+            if reports_count > 0:
+                return abort(403, "Delete not possible if Reports exist which are using this Type!")
+
+            types_manager.delete_type(public_id)
+
+            # TODO: REFACTOR-FIX (move in seperate function)
+            try:
+                # Delete this type_id from all relations parent and child ids
+                relevant_relations_filter = {'$or':[
+                                {'parent_type_ids': {'$in': [public_id]}},
+                                {'child_type_ids': {'$in': [public_id]}}
+                            ]}
+
+
+                builder_params = BuilderParameters(criteria=relevant_relations_filter)
+
+                iteration_result: IterationResult[CmdbRelation] = relations_manager.iterate(builder_params)
+
+                relation_list: list[CmdbRelation] = list(iteration_result.results)
+
+                for relation in relation_list:
+                    relation.remove_type_id_from_relation(public_id)
+
+                    relations_manager.update_relation(1, CmdbRelation.to_json(relation))
+            except Exception as error:
+                LOGGER.error("[delete_cmdb_type] Relation Exception: %s. Type: %s", error, type(error), exc_info=True)
+                return abort(400, "Although the Type got deleted, Relations could not be updated!")
+
+            api_response = DeleteSingleResponse(to_delete_type)
+
+            return api_response.make_response()
+
+        return abort(404, f"The Type with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
+    except TypesManagerGetError as err:
+        LOGGER.error("[delete_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the Type with ID: {public_id}!")
+    except ObjectsManagerGetError as err:
+        LOGGER.error("[delete_cmdb_type] ObjectsManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to count Objects for Type with ID: {public_id}!")
     except BaseManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.error("[delete_type] %s", err)
-        return abort(404)
+        #TODO: ERROR-FIX (raise specific reports error)
+        LOGGER.error("[delete_cmdb_type] BaseManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Failed to count Reports with this Type!")
+    except TypesManagerDeleteError as err:
+        LOGGER.error("[delete_cmdb_type] TypesManagerDeleteError: %s", err, exc_info=True)
+        return abort(400, f"Failed to delete the Type with ID: {public_id}!")
     except Exception as err:
-        #TODO: ERROR-FIX
-        LOGGER.error("[delete_type] Exception: %s", err)
-        return abort(400)
-
-    return api_response.make_response()
+        LOGGER.error("[delete_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")

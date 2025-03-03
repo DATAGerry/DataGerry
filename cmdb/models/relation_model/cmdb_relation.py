@@ -175,3 +175,18 @@ class CmdbRelation(CmdbDAO):
             }
         except Exception as err:
             raise CmdbRelationToJsonError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def remove_type_id_from_relation(self, target_type_id: int) -> None:
+        """
+        Removes the CmdbType public_id from the CmdbRelation
+
+        Args:
+            target_type_id (int): public_id of the CmdbType which should be removed from the CmdbRelation
+        """
+        if target_type_id in self.child_type_ids:
+            self.child_type_ids.remove(target_type_id)
+
+        if target_type_id in self.parent_type_ids:
+            self.parent_type_ids.remove(target_type_id)

@@ -29,8 +29,6 @@ from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.models.user_model import CmdbUser
 from cmdb.utils.helpers import load_class
 from cmdb.security.acl.permission import AccessControlPermission
-
-from cmdb.errors.type import TypeNotFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -70,10 +68,6 @@ def export_objects(params: CollectionParameters, request_user: CmdbUser):
         exporter.from_database(current_app.database_manager, request_user, AccessControlPermission.READ)
 
         return exporter.export()
-    except TypeNotFoundError as err:
-        LOGGER.debug("[export_objects] TypeNotFoundError: %s", err)
-        #TODO: ERROR-FIX
-        return abort(400, "Type not found for export!")
     except ModuleNotFoundError as err:
         LOGGER.debug("[export_objects] ModuleNotFoundError: %s", err)
         #TODO: ERROR-FIX

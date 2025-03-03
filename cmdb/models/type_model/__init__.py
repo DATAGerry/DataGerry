@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Provides all CmdbType relevant classes
+"""
 from .cmdb_type import CmdbType
 from .type_reference import TypeReference
 from .type_external_link import TypeExternalLink

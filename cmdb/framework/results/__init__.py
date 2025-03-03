@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides different result classes storing data
+"""
 from .iteration_result import IterationResult
 from .list_result import ListResult
 # -------------------------------------------------------------------------------------------------------------------- #

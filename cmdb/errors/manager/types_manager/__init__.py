@@ -22,7 +22,9 @@ from .types_manager_errors import (
     TypesManagerDeleteError,
     TypesManagerInsertError,
     TypesManagerUpdateError,
+    TypesManagerUpdateMDSError,
     TypesManagerInitError,
+    TypesManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -32,5 +34,7 @@ __all__ = [
     'TypesManagerDeleteError',
     'TypesManagerInsertError',
     'TypesManagerUpdateError',
+    'TypesManagerUpdateMDSError',
     'TypesManagerInitError',
+    'TypesManagerIterationError',
 ]

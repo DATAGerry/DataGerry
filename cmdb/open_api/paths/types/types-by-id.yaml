@@ -33,7 +33,7 @@ get:
           required: true
           schema:
               type: integer
-    operationId: get_type
+    operationId: get_cmdb_type
     responses:
         "200":
             description: Returns the CmdbType with the given **public_id**
@@ -44,8 +44,8 @@ get:
                         properties:
                             result:
                                 $ref: "../../components/schemas/CmdbType.yaml"
-        "404":
-            description: Could not retrive the requested CmdbType
+        "400":
+            description: Failed to retrieve the requested CmdbType
             content:
                 application/json:
                     schema:
@@ -53,7 +53,27 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrive the requested CmdbType"
+                                example: "Failed to retrieve the requested CmdbType"
+        "404":
+            description: The requested CmdbType was not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "The requested CmdbType was not found"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                      UPDATE TYPE                                                     #
@@ -80,7 +100,7 @@ put:
             application/json:
                 schema:
                     $ref: "../../components/schemas/CmdbType.yaml"
-    operationId: update_type
+    operationId: update_cmdb_type
     responses:
         "200":
             description: Returns the updated CmdbType with the given **public_id**
@@ -92,7 +112,7 @@ put:
                             result:
                                 $ref: "../../components/schemas/CmdbType.yaml"
         "400":
-            description: Could not update the requested CmdbType
+            description: Failed to update the requested CmdbType
             content:
                 application/json:
                     schema:
@@ -100,9 +120,9 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Could not update the CmdbType"
+                                example: "Failed to update the requested CmdbType"
         "404":
-            description: Could not retrieve the CmdbType from database
+            description: The requested CmdbType was not found
             content:
                 application/json:
                     schema:
@@ -110,7 +130,17 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve the CmdbType"
+                                example: "The requested CmdbType was not found"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                      DELETE TYPE                                                     #
@@ -143,7 +173,7 @@ delete:
                             raw:
                                 $ref: "../../components/schemas/CmdbType.yaml"
         "400":
-            description: Could not delete the CmdbType
+            description: Failed to delete the CmdbType
             content:
                 application/json:
                     schema:
@@ -151,9 +181,9 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Could not delete the CmdbType"
+                                example: "Failed to delete the CmdbType"
         "404":
-            description: Could not retrieve the CmdbType from database
+            description: The requested CmdbType was not found
             content:
                 application/json:
                     schema:
@@ -161,4 +191,14 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve the CmdbType"
+                                example: "The requested CmdbType was not found"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"

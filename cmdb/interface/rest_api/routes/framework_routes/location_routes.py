@@ -27,6 +27,7 @@ from cmdb.manager import (
     ObjectsManager,
 )
 
+from cmdb.models.type_model.cmdb_type import CmdbType
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.location_model.location_node import LocationNode
 from cmdb.models.location_model.cmdb_location import CmdbLocation
@@ -84,6 +85,7 @@ def create_location(params: dict, request_user: CmdbUser):
     location_creation_params['type_id'] = int(params['type_id'])
 
     object_type = types_manager.get_type(location_creation_params['type_id'])
+    object_type = CmdbType.from_data(object_type)
 
     location_creation_params['type_label'] = object_type.label
     location_creation_params['type_icon'] = object_type.get_icon()

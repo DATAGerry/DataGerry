@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains all error classes for CmdbTypes
+This module contains the classes of all CmdbType errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -28,35 +28,39 @@ class CmdbTypeError(Exception):
         """
         super().__init__(err)
 
-# -------------------------------------------------- CmdbType ERRORS ------------------------------------------------- #
-#TODO: REFACTOR-FIX (move to model errors)
+# ------------------------------------------------- CmdbType - ERRORS ------------------------------------------------ #
 
-
-class TypeNotFoundError(CmdbTypeError):
+class CmdbTypeInitError(CmdbTypeError):
     """
-    Raised when a CmdbType was not found
+    Raised when a CmdbType could not be initialised
     """
 
 
-class ExternalFillError(CmdbTypeError):
+class CmdbTypeInitFromDataError(CmdbTypeError):
+    """
+    Raised when a CmdbType could not be initialised from a dict
+    """
+
+
+class CmdbTypeToJsonError(CmdbTypeError):
+    """
+    Raised when a CmdbType could not be transformed into a json compatible dict
+    """
+
+
+class CmdbTypeExternalFillError(CmdbTypeError):
     """
     Raised if href of TypeExternalLink could not filled with input data
     """
 
 
-class TypeReferenceLineFillError(CmdbTypeError):
+class CmdbTypeReferenceLineFillError(CmdbTypeError):
     """
-    Raised if summary line of TypeReferences could not filled with input data
-    """
-
-
-class FieldNotFoundError(CmdbTypeError):
-    """
-    Raised if field does not exists
+    Raised if summary line of TypeReferences could not be filled with input data
     """
 
 
-class FieldInitError(CmdbTypeError):
+class CmdbTypeFieldNotFoundError(CmdbTypeError):
     """
-    Error if field could not be initialized
+    Raised if a field in the CmdbType does not exist
     """

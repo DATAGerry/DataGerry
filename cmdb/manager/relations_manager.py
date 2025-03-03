@@ -167,7 +167,7 @@ class RelationsManager(BaseManager):
                 data = CmdbRelation.to_json(data)
 
             self.update({'public_id':public_id}, data)
-        except BaseManagerUpdateError as err:
+        except (BaseManagerUpdateError, CmdbRelationToJsonError) as err:
             raise RelationsManagerUpdateError(err) from err
         except Exception as err:
             LOGGER.error("[update_relation] Exception: %s. Type: %s", err, type(err))

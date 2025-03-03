@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ListResult
+"""
 from typing import TypeVar, Generic, Union
 
 from cmdb.models.cmdb_dao import CmdbDAO
@@ -22,25 +23,20 @@ from cmdb.models.cmdb_dao import CmdbDAO
 
 C = TypeVar('C', bound=CmdbDAO)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                  ListResult - CLASS                                                  #
+# -------------------------------------------------------------------------------------------------------------------- #
 class ListResult(Generic[C]):
-    """Framework Result for a list call over a collection."""
-
+    """
+    A class to represent the result of a list query over a collection
+    """
     def __init__(self, results: list[Union[C, dict]]):
         """
-        Constructor of `ListResult`.
+        Initialises a ListResult
 
         Args:
-            results: List of results
+            results (list[Union[C, dict]]): A list of results, either `CmdbDAO` objects
+                                             or dictionaries representing the results
         """
         self.results = results
-        self._total = None
-
-
-    @property
-    def total(self):
-        """Property setter for total lazy calc"""
-        if not self._total:
-            self._total = len(self.results)
-
-        return self._total
+        self.total = len(self.results)
