@@ -75,6 +75,7 @@ import { ObjectBulkChangePreviewComponent } from './object-bulk-change/object-bu
 import { ObjectBulkChangeFailedComponent } from './object-bulk-change/object-bulk-change-complete/object-bulk-change-failed/object-bulk-change-failed.component';
 import { ObjectBulkChangeCompleteComponent } from './object-bulk-change/object-bulk-change-complete/object-bulk-change-complete.component';
 import { CoreModule } from 'src/app/core/core.module';
+import { RelationRoleDialogComponent } from './object-view/relation-role-dialog/relation-role-dialog.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -118,8 +119,9 @@ import { CoreModule } from 'src/app/core/core.module';
         ObjectComponent,
         ObjectReferencesTypeColumnComponent,
         ObjectBulkChangeFailedComponent,
-        ObjectBulkChangeCompleteComponent
-    ],
+        ObjectBulkChangeCompleteComponent,
+        RelationRoleDialogComponent 
+       ],
     imports: [
         CommonModule,
         ObjectRoutingModule,
@@ -138,7 +140,7 @@ import { CoreModule } from 'src/app/core/core.module';
         NgxPaginationModule,
         MatMenuModule,
         MatIconModule,
-        CoreModule
+        CoreModule,
     ],
     exports: [
         ObjectViewRenderComponent,

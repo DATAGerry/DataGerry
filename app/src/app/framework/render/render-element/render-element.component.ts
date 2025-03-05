@@ -1,6 +1,6 @@
 /*
 * DATAGERRY - OpenSource Enterprise CMDB
-* Copyright (C) 2024 becon GmbH
+* Copyright (C) 2025 becon GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -15,16 +15,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, ComponentFactoryResolver, ComponentRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+    Component,
+    ComponentFactoryResolver,
+    ComponentRef,
+    Input,
+    OnInit,
+    ViewChild,
+    ViewContainerRef
+} from '@angular/core';
 import { UntypedFormControl, Validators } from '@angular/forms';
-
 import { ToastService } from '../../../layout/toast/toast.service';
-
 import { fieldComponents } from '../fields/fields.list';
 import { simpleComponents } from '../simple/simple.list';
 import { RenderFieldComponent } from '../fields/components.fields';
 import { CmdbMode } from '../../modes.enum';
-/* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
     selector: 'cmdb-render-element',
@@ -35,25 +40,29 @@ export class RenderElementComponent extends RenderFieldComponent implements OnIn
     @ViewChild('fieldContainer', { read: ViewContainerRef, static: true }) containerField;
 
     @Input() objectID: number;
+    //if true, use the parent's control value as initial value.
+    @Input() useInitialValueFromParent: boolean = false;
 
     public simpleRender: boolean = false;
     private component: any;
     private componentRef: ComponentRef<any>;
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-/*                                                     LIFE CYCLE                                                     */
-/* ------------------------------------------------------------------------------------------------------------------ */
+    /* ------------------------------------------------------------------------------------------------------------------ */
+    /*                                                     LIFE CYCLE                                                     */
+    /* ------------------------------------------------------------------------------------------------------------------ */
 
-    constructor(private resolver: ComponentFactoryResolver, public toast: ToastService) {
+    constructor(
+        private resolver: ComponentFactoryResolver,
+        public toast: ToastService
+    ) {
         super();
     }
-
 
     public ngOnInit(): void {
         this.containerField.clear();
 
         switch (this.mode) {
-            case CmdbMode.View :
+            case CmdbMode.View:
             case CmdbMode.Create:
             case CmdbMode.Edit:
             case CmdbMode.Bulk: {
@@ -67,45 +76,57 @@ export class RenderElementComponent extends RenderFieldComponent implements OnIn
                 this.componentRef.instance.section = this.section;
                 this.componentRef.instance.objectID = this.objectID;
                 this.componentRef.instance.toast = this.toast;
-                const fieldControl = new UntypedFormControl('');
+
+                // Determine the initial value conditionally:
+                let initialValue: any;
+                if (this.useInitialValueFromParent) {
+                    // If flag true, use value from parent's form control if exists; otherwise fallback.
+                    initialValue = this.parentFormGroup.get(this.data.name)
+                        ? this.parentFormGroup.get(this.data.name).value
+                        : this.value;
+                } else {
+                    // Default behavior: use this.value.
+                    initialValue = this.value;
+                }
+
+                // Create the form control with the determined initial value.
+                const fieldControl = new UntypedFormControl(initialValue);
                 const validators = [];
 
-            if (this.mode === CmdbMode.View || CmdbMode.Edit) {
-                fieldControl.patchValue(this.value);
-            }
+                if ((this.mode === CmdbMode.View || this.mode === CmdbMode.Edit) && (initialValue == null)) {
+                    fieldControl.patchValue(this.value);
+                }
 
-            if (this.data.required) {
-                validators.push(Validators.required);
-            }
+                if (this.data.required) {
+                    validators.push(Validators.required);
+                }
 
-            if (this.data.regex) {
-                validators.push(Validators.pattern(this.data.regex));
-            }
+                if (this.data.regex) {
+                    validators.push(Validators.pattern(this.data.regex));
+                }
 
-            fieldControl.setValidators(validators);
+                fieldControl.setValidators(validators);
 
-            if (this.mode === CmdbMode.View) {
-                fieldControl.disable();
-            }
+                if (this.mode === CmdbMode.View) {
+                    fieldControl.disable();
+                }
 
-            if (this.data.disabled) {
-                fieldControl.disable();
-            }
+                if (this.data.disabled) {
+                    fieldControl.disable();
+                }
 
-            this.parentFormGroup.removeControl(this.data.name);
+                this.parentFormGroup.removeControl(this.data.name);
+                this.componentRef.instance.parentFormGroup.addControl(
+                    this.data.name, fieldControl
+                );
 
-            this.componentRef.instance.parentFormGroup.addControl(
-                this.data.name, fieldControl
-            );
-
-            if (CmdbMode.Bulk === this.mode) {
-                this.componentRef.instance.changeForm = this.changeForm;
-            }
-            break;
+                if (this.mode === CmdbMode.Bulk) {
+                    this.componentRef.instance.changeForm = this.changeForm;
+                }
+                break;
             }
             case CmdbMode.Simple: {
-                if(!this.data) break;
-        
+                if (!this.data) break;
                 this.data.value = this.value;
                 this.component = simpleComponents[this.data.type];
                 const factory = this.resolver.resolveComponentFactory(this.component);
