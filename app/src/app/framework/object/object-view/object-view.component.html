@@ -74,7 +74,7 @@
                       <a class="nav-link" [class.active]="activeNestedRelationTabIndex === i"
                         (click)="setNestedRelationTab(i)">
                         <span class="mr-1"><i [class]="group.tabIcon"></i></span>
-                        {{ group.tabLabel }} ({{ group.instances.length }})
+                        {{ group.tabLabel }} ({{ group.total }})
                       </a>
                     </li>
                     <li class="nav-item d-inline-block">
@@ -108,12 +108,26 @@
                       [pageSize]="relationPageSize" [page]="relationPage">
                       </cmdb-table> -->
 
-                      <cmdb-table [items]="group.instances" [columns]="getColumns(group)" [loading]="loadingRelations"
+                      <!-- <cmdb-table [items]="group.instances" [columns]="getColumns(group)" [loading]="loadingRelations"
                         [totalItems]="group.instances.length" [pageSize]="relationPageSize" [page]="relationPage"
                         (pageChange)="onRelationPageChange($event)" 
                         (sortChange)="onRelationSortChange($event)" (searchChange)="onRelationSearchChange($event)"
                         >
-                      </cmdb-table>
+                      </cmdb-table> -->
+
+                      <cmdb-table 
+                      [items]="group.instances" 
+                      [columns]="getColumns(group)" 
+                      [loading]="loadingRelations"
+                      [totalItems]="group.total" 
+                      [pageSize]="group.pageSize" 
+                      [page]="group.page"
+                      (pageChange)="loadGroupInstances(group.relationId, group.isParent, $event, group.pageSize)"
+                      (pageSizeChange)="loadGroupInstances(group.relationId, group.isParent, 1, $event)">
+                    </cmdb-table>
+                    
+                    
+
 
                     </div>
                   </ng-container>
@@ -212,7 +226,7 @@
 
 <!-- Templates for cmdb-table -->
 <ng-template #counterpartIdTemplate let-item="item">
-  <a [routerLink]="['/framework/object/view/', item.counterpart_id]">{{ item.counterpart_id }}</a>
+  <a [routerLink]="['/framework/object/view/', item.counterpart_id] ">{{ item.counterpart_id }}</a>
 </ng-template>
 
 <!-- Actions for cmdb-table -->

@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Subject, takeUntil, forkJoin } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil, forkJoin, switchMap, map } from 'rxjs';
 import { CmdbMode } from 'src/app/framework/modes.enum';
 import { ObjectService } from 'src/app/framework/services/object.service';
 import { ObjectRelationService } from 'src/app/framework/services/object-relation.service';
@@ -52,10 +52,12 @@ interface RelationGroup {
   tabColor: string;
   tabIcon: string;
   instances: ExtendedObjectRelationInstance[];
-  total?: number;    // total number of items for this group
+  total: number;    // total number of items for this group
   page?: number;     // current page for this group
   pageSize?: number; // items per page for this group
 }
+
+
 
 
 @Component({
@@ -106,7 +108,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public relationPage: number = 1;
   public relationPageSize: number = 10;
   public relationSort: string = '';
-  public relationOrder: number = 1;  // 1 for ascending, -1 for descending
+  public relationOrder: number = 1;
 
   constructor(
     public objectService: ObjectService,
@@ -129,6 +131,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (result) => {
         this.renderResult = result;
         this.currentObjectID = result?.object_information?.object_id;
+        this.activeRelationTabIndex = 0;
         if (this.currentObjectID) {
           this.loadObjectRelationInstances(this.currentObjectID);
         }
@@ -136,6 +139,16 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       error: (e) => this.toastService.error(e?.error?.message)
     });
+
+    if (this.relationGroups.length > 0) {
+      // Load the first group's data automatically on page load
+      this.loadGroupInstances(
+        this.relationGroups[0].relationId,
+        this.relationGroups[0].isParent,
+        1, 
+        10 
+      );
+    }
   }
 
   ngAfterViewInit(): void {
@@ -168,20 +181,93 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
-  // filter: {
-  //   $and: [
-  //     { relation_id: relationID },
-  //     { relation_child_id: objectID }
-  //   ]
-  // }
-  // filter: {
-  //   $and: [
-  //     { relation_id: relationID },
-  //     { relation_parent_id: objectID }
-    
-  //   ]
-  // }
 
+
+
+  // private loadGroupInstances(relationId: number, isParent: boolean, page: number, pageSize: number): void {
+  //   const filter = isParent
+  //     ? { $and: [ { relation_id: relationId }, { relation_parent_id: this.currentObjectID } ] }
+  //     : { $and: [ { relation_id: relationId }, { relation_child_id: this.currentObjectID } ] };
+  
+  //   const params = {
+  //     filter,
+  //     limit: pageSize,
+  //     sort: this.relationSort,
+  //     order: this.relationOrder,
+  //     page: page
+  //   };
+  
+  //   this.objectRelationService.getObjectRelations(params)
+  //     .pipe(takeUntil(this.unsubscribe))
+  //     .subscribe({
+  //       next: (response) => {
+  //         const group = this.relationGroups.find(g => g.relationId === relationId && g.isParent === isParent);
+  //         if (group) {
+  //           group.instances = (response.results || []).map(inst => ({
+  //             ...inst,
+  //             // For parent groups, the linked (counterpart) is the child; vice versa.
+  //             counterpart_id: isParent ? inst.relation_child_id : inst.relation_parent_id
+  //           }));
+  //           group.total = response.total || 0;
+  //           group.page = page;
+  //           group.pageSize = pageSize;
+  //         }
+  //         this.changesRef.markForCheck();
+  //       },
+  //       error: (err) => {
+  //         this.toastService.error(err?.error?.message || 'Failed to load group instances');
+  //         this.changesRef.markForCheck();
+  //       }
+  //     });
+  // }
+  
+  private loadGroupInstances(relationId: number, isParent: boolean, page: number, pageSize: number): void {
+    const filter = isParent
+      ? { $and: [{ relation_id: relationId }, { relation_parent_id: this.currentObjectID }] }
+      : { $and: [{ relation_id: relationId }, { relation_child_id: this.currentObjectID }] };
+  
+    const params = {
+      filter,
+      limit: pageSize,
+      sort: this.relationSort,
+      order: this.relationOrder,
+      page: page
+    };
+  
+    // Fetch the relation definition for this relationId first
+    this.relationService.getRelation(relationId).pipe(
+      takeUntil(this.unsubscribe),
+      switchMap(definition => {
+        if (!definition) {
+          throw new Error(`Relation definition not found for ID ${relationId}`);
+        }
+        // Fetch the paginated instances with the definition available
+        return this.objectRelationService.getObjectRelations(params).pipe(
+          map(response => ({ definition, response }))
+        );
+      })
+    ).subscribe({
+      next: ({ definition, response }) => {
+        const group = this.relationGroups.find(g => g.relationId === relationId && g.isParent === isParent);
+        if (group) {
+          group.instances = (response.results || []).map(inst => ({
+            ...inst,
+            counterpart_id: isParent ? inst.relation_child_id : inst.relation_parent_id,
+            type: isParent ? definition.relation_name_parent : definition.relation_name_child,
+            definition // Attach the definition to each instance
+          }));
+          group.total = response.total || group.total;
+          group.pageSize = pageSize;
+        }
+        this.changesRef.markForCheck();
+      },
+      error: (err) => {
+        this.toastService.error(err?.error?.message);
+        this.loadingRelations = false;
+        this.changesRef.markForCheck();
+      }
+    });
+  }
   
 
   /**
@@ -287,7 +373,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     tabLabel: definition.relation_name_parent,
                     tabColor: definition.relation_color_parent,
                     tabIcon: definition.relation_icon_parent,
-                    instances: parentInstances
+                    instances: parentInstances,
+                    total: parentInstances.length
                   });
                   console.log(`[DEBUG] Added parent group for relation ${relationId} with ${parentInstances.length} instances`);
                 }
@@ -299,7 +386,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     tabLabel: definition.relation_name_child,
                     tabColor: definition.relation_color_child,
                     tabIcon: definition.relation_icon_child,
-                    instances: childInstances
+                    instances: childInstances,
+                    total: childInstances.length
                   });
                   console.log(`[DEBUG] Added child group for relation ${relationId} with ${childInstances.length} instances`);
                 }
@@ -420,7 +508,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chosenRelation = null;
     this.chosenRole = null;
 
-    // Force change detection after a short delay so OnPush picks up the updated data.
     setTimeout(() => {
       this.showRelationModal = true;
       this.changesRef.detectChanges();
@@ -492,10 +579,21 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Sets the active nested relation tab index */
+  // public setNestedRelationTab(tabIndex: number): void {
+  //   this.activeNestedRelationTabIndex = tabIndex;
+  //   this.changesRef.markForCheck();
+  // }
+
   public setNestedRelationTab(tabIndex: number): void {
     this.activeNestedRelationTabIndex = tabIndex;
+    const group = this.relationGroups[tabIndex];
+    if (group) {
+      // Use default page 1 and the group's pageSize (or a default value, e.g., 10)
+      this.loadGroupInstances(group.relationId, group.isParent, 1, group.pageSize || 10);
+    }
     this.changesRef.markForCheck();
   }
+  
 
   /** Handles clicking the "+" tab to add a new relation */
   public onClickAddRelationTab(): void {
@@ -508,13 +606,53 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
    * Creates a new relation for an existing relation group.
    * @param group The relation group to create a new instance for
    */
+  // public createNewRelationForGroup(group: RelationGroup): void {
+  //   const definition = group.instances[0].definition;
+  //   if (!definition) {
+  //     this.toastService.error('Relation definition is missing.');
+  //     return;
+  //   }
+
+  //   const safeDefinition = {
+  //     ...definition,
+  //     parent_type_ids: Array.isArray(definition.parent_type_ids) ? definition.parent_type_ids : [],
+  //     child_type_ids: Array.isArray(definition.child_type_ids) ? definition.child_type_ids : [],
+  //     canBeParent: group.isParent,
+  //     canBeChild: !group.isParent
+  //   };
+
+  //   this.chosenRelation = safeDefinition;
+  //   this.chosenRole = group.isParent ? 'parent' : 'child';
+  //   this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition.parent_type_ids;
+  //   this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition.child_type_ids;
+
+  //   if (this.chosenRole === 'parent' && this.roleChildTypeIDs.length === 0) {
+  //     this.toastService.warning('No child types defined for this relation.');
+  //     return;
+  //   }
+  //   if (this.chosenRole === 'child' && this.roleParentTypeIDs.length === 0) {
+  //     this.toastService.warning('No parent types defined for this relation.');
+  //     return;
+  //   }
+
+  //   this.showRelationRoleDialog = true;
+  //   this.dialogMode = CmdbMode.Create;
+  //   this.selectedRelationInstance = null; // Clear any selected instance
+  //   this.changesRef.detectChanges();
+  // }
+
   public createNewRelationForGroup(group: RelationGroup): void {
-    const definition = group.instances[0].definition;
+    // Try to get the definition from the first instance in the group.
+    let definition = group.instances.length > 0 ? group.instances[0].definition : null;
+    // If not found, look for the definition in extendedRelations.
+    if (!definition) {
+      definition = this.extendedRelations.find(rel => rel.public_id === group.relationId);
+    }
     if (!definition) {
       this.toastService.error('Relation definition is missing.');
       return;
     }
-
+  
     const safeDefinition = {
       ...definition,
       parent_type_ids: Array.isArray(definition.parent_type_ids) ? definition.parent_type_ids : [],
@@ -522,12 +660,12 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       canBeParent: group.isParent,
       canBeChild: !group.isParent
     };
-
+  
     this.chosenRelation = safeDefinition;
     this.chosenRole = group.isParent ? 'parent' : 'child';
     this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition.parent_type_ids;
     this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition.child_type_ids;
-
+  
     if (this.chosenRole === 'parent' && this.roleChildTypeIDs.length === 0) {
       this.toastService.warning('No child types defined for this relation.');
       return;
@@ -536,12 +674,14 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.toastService.warning('No parent types defined for this relation.');
       return;
     }
-
+  
     this.showRelationRoleDialog = true;
-    this.dialogMode = CmdbMode.Create;
+    this.dialogMode = CmdbMode.Create; // Set mode to Create
     this.selectedRelationInstance = null; // Clear any selected instance
-    this.changesRef.detectChanges();
+    this.changesRef.markForCheck();
   }
+  
+  
 
   /**
    * Deletes a relation instance.
@@ -694,7 +834,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public onRelationSortChange(event: { sort: string; order: number }): void {
-    // Update sort criteria from the table event and reload data.
     this.relationSort = event.sort;
     this.relationOrder = event.order;
     this.loadObjectRelationInstances(this.currentObjectID);
