@@ -1,18 +1,20 @@
-.object-view-navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1020;
-  background: rgba(255, 255, 255, 0.95);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: 0.5rem 1rem;
+// .object-view-navbar {
+//   position: sticky;
+//   top: 0;
+//   z-index: 1020;
+//   background: rgba(255, 255, 255, 0.95);
+//   -webkit-backdrop-filter: blur(12px);
+//   backdrop-filter: blur(12px);
+//   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+//   padding: 0.5rem 1rem;
   
-  .row {
-    max-width: 1440px;
-    margin: 0 auto;
-  }
-}
+//   .row {
+//     max-width: 1440px;
+//     margin: 0 auto;
+//   }
+// }
+
+
 
 // .relation-modal {
 //   max-width: 820px;
@@ -89,7 +91,7 @@
 
 //   .relation-table {
 //     width: 100%;
-//     --selection-color: #ff6d00;
+//     --selection-color: #e94d18;
 
 //     th {
 //       position: sticky;
@@ -176,3 +178,38 @@
 //   height: 100%;
 //   width: 100%;
 // }
+
+// .nav-link {
+//     max-width: 180px;
+//     display: inline-flex;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     white-space: nowrap;
+//     vertical-align: middle;
+//   }
+  
+//   /* For better mobile experience */
+//   @media (max-width: 768px) {
+//     .nav-link {
+//       max-width: 120px;
+//     }
+//   }
+
+
+.icon-view {
+    color: #007bff; /* Blue */
+    cursor: pointer;
+  }
+  
+  .icon-edit {
+    cursor: pointer;
+  }
+  
+  .icon-copy {
+    color: #17a2b8; /* Teal */
+    cursor: pointer;
+  }
+  
+  .icon-delete {
+    cursor: pointer;
+  }

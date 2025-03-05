@@ -1,80 +1,190 @@
 <div class="modal-backdrop show" style="display: block;"></div>
 <div class="modal show" tabindex="-1" style="display: block;">
-  <!-- Make the dialog scrollable if content is large -->
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
-
       <div class="modal-header">
-        <h4 class="modal-title">Create Relationship</h4>
-        <button type="button" class="close" (click)="cancel()">
-          <span>&times;</span>
+        <h4 class="modal-title">
+          {{ mode === CmdbMode.View ? 'View Relation' : mode === CmdbMode.Edit ? 'Edit Relation' : 'Create Relation' }}
+        </h4>
+        <button type="button" class="close" (click)="back()">
+          <span>×</span>
         </button>
       </div>
 
-      <!-- SINGLE MODAL-BODY => The entire content can scroll -->
       <div class="modal-body">
-        
-        <!-- 1) Parent/Child Dropdown Form -->
-        <form class="renderForm" [formGroup]="form">
-          <div class="form-group">
-            <label>Parent Object</label>
-            <ng-select
-              [items]="flatParentOptions"
-              [groupBy]="'group'"
-              bindLabel="label"
-              bindValue="value"    
-              formControlName="parent"
-              placeholder="Select Parent"
-              [searchable]="true"
-            >
-              <ng-template ng-notfound-tmp>
-                <div>No parent objects found</div>
-              </ng-template>
-            </ng-select>
+        <!-- Loading Indicator -->
+        <div *ngIf="loading" class="text-center">
+          <div class="spinner-border text-primary" role="status"></div>
+          <span class="ml-2">Loading options...</span>
+        </div>
+
+        <!-- 1) Parent/Child Form -->
+        <form class="renderForm" [formGroup]="form" *ngIf="!loading">
+          <!-- When chosenRole is 'parent' -->
+          <div *ngIf="chosenRole === 'parent'" class="relation-section">
+            <div class="form-group">
+              <label>Parent Object (ID)</label>
+              <input
+                class="form-control"
+                [disabled]="true"
+                [value]="'Object #' + form.get('parent')?.value"
+              />
+            </div>
+            <div class="form-group">
+              <label>Child Object</label>
+              <ng-select
+                [items]="flatChildOptions"
+                [groupBy]="'group'"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="child"
+                placeholder="Select Child"
+                [searchable]="true"
+                [readonly]="mode === CmdbMode.View"
+              >
+                <ng-template ng-notfound-tmp>
+                  <div>No child objects found</div>
+                </ng-template>
+              </ng-select>
+              <div class="text-danger mt-2" *ngIf="flatChildOptions.length === 0">
+                No child objects available to select.
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Child Object</label>
-            <ng-select
-              [items]="flatChildOptions"
-              [groupBy]="'group'"
-              bindLabel="label"
-              bindValue="value"     
-              formControlName="child"
-              placeholder="Select Child"
-              [searchable]="true"
-            >
-              <ng-template ng-notfound-tmp>
-                <div>No child objects found</div>
-              </ng-template>
-            </ng-select>
+          <!-- When chosenRole is 'child' -->
+          <div *ngIf="chosenRole === 'child'" class="relation-section">
+            <h5>{{ mode === CmdbMode.View ? 'Child Details' : 'Create/Edit as Child' }}</h5>
+            <div class="form-group">
+              <label>Child Object (ID)</label>
+              <input
+                class="form-control"
+                [disabled]="true"
+                [value]="'Object #' + form.get('child')?.value"
+              />
+            </div>
+            <div class="form-group">
+              <label>Parent Object</label>
+              <ng-select
+                [items]="flatParentOptions"
+                [groupBy]="'group'"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="parent"
+                placeholder="Select Parent"
+                [searchable]="true"
+                [readonly]="mode === CmdbMode.View"
+              >
+                <ng-template ng-notfound-tmp>
+                  <div>No parent objects found</div>
+                </ng-template>
+              </ng-select>
+              <div class="text-danger mt-2" *ngIf="flatParentOptions.length === 0">
+                No parent objects available to select.
+              </div>
+            </div>
+          </div>
+
+          <!-- When chosenRole is 'both' -->
+          <div *ngIf="chosenRole === 'both' && isBidirectional()">
+            <div class="relation-section mb-4">
+              <h5>Current Object as Parent</h5>
+              <div class="form-group">
+                <label>Parent Object (ID)</label>
+                <input
+                  class="form-control"
+                  [disabled]="true"
+                  [value]="'Object #' + currentObjectID"
+                />
+              </div>
+              <div class="form-group">
+                <label>Child Object</label>
+                <ng-select
+                  [items]="flatChildOptions"
+                  [groupBy]="'group'"
+                  bindLabel="label"
+                  bindValue="value"
+                  formControlName="child"
+                  placeholder="Select Child (optional)"
+                  [searchable]="true"
+                  [clearable]="true"
+                  [readonly]="mode === CmdbMode.View"
+                >
+                  <ng-template ng-notfound-tmp>
+                    <div>No child objects found</div>
+                  </ng-template>
+                </ng-select>
+                <div class="text-danger mt-2" *ngIf="flatChildOptions.length === 0">
+                  No child objects available to select.
+                </div>
+              </div>
+            </div>
+
+            <div class="relation-section">
+              <h5>Current Object as Child</h5>
+              <div class="form-group">
+                <label>Child Object (ID)</label>
+                <input
+                  class="form-control"
+                  [disabled]="true"
+                  [value]="'Object #' + currentObjectID"
+                />
+              </div>
+              <div class="form-group">
+                <label>Parent Object</label>
+                <ng-select
+                  [items]="flatParentOptions"
+                  [groupBy]="'group'"
+                  bindLabel="label"
+                  bindValue="value"
+                  formControlName="parent"
+                  placeholder="Select Parent (optional)"
+                  [searchable]="true"
+                  [clearable]="true"
+                  [readonly]="mode === CmdbMode.View"
+                >
+                  <ng-template ng-notfound-tmp>
+                    <div>No parent objects found</div>
+                  </ng-template>
+                </ng-select>
+                <div class="text-danger mt-2" *ngIf="flatParentOptions.length === 0">
+                  No parent objects available to select.
+                </div>
+              </div>
+            </div>
           </div>
         </form>
 
-        <hr />
 
-        <!-- 2) Relation Fields Form -->
-        <form class="renderForm" [formGroup]="relationForm">
+        <!-- 2) Dynamic Relation Fields -->
+        <hr *ngIf="!loading && sections.length > 0" />
+        <form class="renderForm" [formGroup]="relationForm" *ngIf="!loading && (sections.length > 0 || (relationInstance?.field_values && relationInstance.field_values.length > 0))">
+
           <fieldset *ngFor="let section of sections">
             <legend>{{ section?.label }}</legend>
-
-            <!-- Each section.fields => an array of field "names" -->
             <div *ngFor="let fieldName of section.fields">
               <cmdb-render-element
+              [useInitialValueFromParent]="true"
                 [mode]="getViewMode()"
                 [parentFormGroup]="relationForm"
                 [data]="getFieldObject(fieldName)"
-              >
-              </cmdb-render-element>
+              ></cmdb-render-element>
             </div>
           </fieldset>
         </form>
-
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
-        <button class="btn btn-primary" (click)="confirm()">Confirm</button>
+        <button class="btn btn-secondary" (click)="back()">Cancel</button>
+        <button class="btn btn-primary"
+        (click)="confirm()"
+        [disabled]="isConfirmDisabled()"
+        *ngIf="mode !== CmdbMode.View"
+      >
+        {{ mode === CmdbMode.Edit ? 'Update' : 'Confirm' }}
+      </button>
+      
+      
       </div>
     </div>
   </div>

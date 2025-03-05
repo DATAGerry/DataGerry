@@ -102,28 +102,7 @@ export class RelationService<T = CmdbRelation> implements ApiServicePrefix {
       })
     );
   }
-
-
-
-  /**
-   * Finds a single relation by name
-   */
-  public getRelationByName(name: string): Observable<T> {
-    const options = this.options;
-    const filter = { name };
-    let params: HttpParams = new HttpParams();
-    params = params.set('filter', JSON.stringify(filter));
-    options.params = params;
-
-    return this.api.callGet<Array<T>>(this.servicePrefix + '/', options).pipe(
-      map((apiResponse: HttpResponse<APIGetMultiResponse<T>>) => {
-        if (apiResponse.body.count === 0) {
-          return null;
-        }
-        return apiResponse.body.results[0] as T;
-      })
-    );
-  }
+  
 
   /**
    * Insert/create a new relation

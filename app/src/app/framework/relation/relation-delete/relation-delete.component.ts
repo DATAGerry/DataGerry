@@ -152,23 +152,35 @@ export class RelationDeleteComponent implements OnInit {
     /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
     public open(): void {
-
-        const deleteModal = this.modalService.open(RelationDeleteConfirmModalComponent);
-        deleteModal.componentInstance.typeID = this.relationID;
-        deleteModal.componentInstance.typeName = this.relationInstance.relation_name;
-
-        deleteModal.result.then((result) => {
-            if (result === 'delete') {
-                this.relationService.deleteRelation(this.relationID).subscribe(() => {
-                    this.router.navigate(['/framework/relation/']);
-                    this.toast.success(`Relation was successfully Deleted: RelationID: ${this.relationID}`);
-                });
-            }
-        },
-            (reason) => {
-                console.log(reason);
-            });
+        try {
+            const deleteModal = this.modalService.open(RelationDeleteConfirmModalComponent);
+            deleteModal.componentInstance.typeID = this.relationID;
+            deleteModal.componentInstance.typeName = this.relationInstance.relation_name;
+    
+            deleteModal.result.then(
+                (result) => {
+                    if (result === 'delete') {
+                        this.relationService.deleteRelation(this.relationID).subscribe({
+                            next: () => {
+                                this.router.navigate(['/framework/relation/']);
+                                this.toast.success(`Relation was successfully deleted: RelationID: ${this.relationID}`);
+                            },
+                            error: (error) => {
+                                console.error('Error deleting relation:', error);
+                                this.toast.error(error?.error?.message);
+                            }
+                        });
+                    }
+                },
+                (reason) => {
+                    console.warn('Delete modal dismissed:', reason);
+                }
+            );
+        } catch (error) {
+            this.toast.error(error?.error?.message);
+        }
     }
+    
 
     /**
      * Navigates back to the previous page in the browser's history.

@@ -1,454 +1,101 @@
-// import {
-//   ChangeDetectorRef,
-//   Component,
-//   EventEmitter,
-//   Input,
-//   OnDestroy,
-//   OnInit,
-//   Output
-// } from '@angular/core';
-// import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-// import { Subject } from 'rxjs';
-// import { takeUntil } from 'rxjs/operators';
-
-// import { ObjectService } from 'src/app/framework/services/object.service';
-// import { ToastService } from 'src/app/layout/toast/toast.service';
-
-// import { CmdbMode } from 'src/app/framework/modes.enum';
-// import { CmdbRelation } from 'src/app/framework/models/relation.model';
-
-// /** Just adapt to your real object structure. */
-// type ObjectType = any;
-
-// /** Each option in the dropdown must have these fields. */
-// interface FlatOptionItem {
-//   value: number;
-//   label: string;
-//   group: string; // e.g. "Company [2]"
-// }
-
-// @Component({
-//   selector: 'relation-role-dialog',
-//   templateUrl: './relation-role-dialog.component.html',
-//   styleUrls: ['./relation-role-dialog.component.scss']
-// })
-// export class RelationRoleDialogComponent implements OnInit, OnDestroy {
-//   @Input() chosenRole!: 'parent' | 'child';
-//   @Input() parentTypeIDs: number[] = [];
-//   @Input() childTypeIDs: number[] = [];
-//   @Input() currentObjectID!: number;
-
-//   /**
-//    * The chosen relation that contains .sections and .fields,
-//    * e.g.:
-//    * {
-//    *   public_id: 1005,
-//    *   relation_name: 'network',
-//    *   sections: [...],
-//    *   fields: [...]
-//    *   ...
-//    * }
-//    */
-//   @Input() relation: CmdbRelation | null = null;
-
-//   @Output() onConfirm = new EventEmitter<{ parentObjID: number; childObjID: number; relationData?: any }>();
-//   @Output() onCancel = new EventEmitter<void>();
-
-//   /** The form for the parent/child dropdown. */
-//   public form: FormGroup;
-
-//   /** The form for relation fields. */
-//   public relationForm: FormGroup;
-
-//   /** So we can loop easily in the template. */
-//   public sections: any[] = [];
-
-//   // The arrays used by ng-select
-//   public flatParentOptions: FlatOptionItem[] = [];
-//   public flatChildOptions: FlatOptionItem[] = [];
-
-//   public loading = false;
-//   private destroy$ = new Subject<void>();
-
-//   /** For using in the template if needed */
-//   public CmdbMode = CmdbMode;
-
-//   constructor(
-//     private fb: FormBuilder,
-//     private objectService: ObjectService,
-//     private toastService: ToastService,
-//   ) {
-//     // 1) Dropdown form
-//     this.form = this.fb.group({
-//       parent: [{ value: null, disabled: false }],
-//       child:  [{ value: null, disabled: false }]
-//     });
-
-//     // 2) Relation fields form
-//     this.relationForm = this.fb.group({});
-//   }
-
-//   ngOnInit(): void {
-//     console.log('[RelationRoleDialog] OnInit ->', {
-//       chosenRole: this.chosenRole,
-//       parentTypeIDs: this.parentTypeIDs,
-//       childTypeIDs: this.childTypeIDs,
-//       currentObjectID: this.currentObjectID,
-//       relation: this.relation
-//     });
-
-//     // 1) Set up the dropdown form
-//     this.initializeForm();
-//     this.loadOptions();
-
-//     // 2) Extract relation sections for easy looping
-//     if (this.relation?.sections) {
-//       this.sections = this.relation.sections;
-//     }
-//   }
-
-//   ngOnDestroy(): void {
-//     this.destroy$.next();
-//     this.destroy$.complete();
-//   }
-
-//   /**
-//    * If chosenRole == 'parent', disable 'parent' (pre-set to currentObjectID).
-//    * If chosenRole == 'child', disable 'child' (pre-set to currentObjectID).
-//    */
-//   private initializeForm(): void {
-//     if (this.chosenRole === 'parent') {
-//       this.form.get('parent')?.setValue(this.currentObjectID);
-//       this.form.get('parent')?.disable();
-//       this.form.get('child')?.enable();
-//     } else {
-//       this.form.get('child')?.setValue(this.currentObjectID);
-//       this.form.get('child')?.disable();
-//       this.form.get('parent')?.enable();
-//     }
-//   }
-
-//   /** Decide whether to load child or parent options for the dropdown. */
-//   private loadOptions(): void {
-//     if (this.chosenRole === 'parent') {
-//       this.loadChildOptions();
-//     } else {
-//       this.loadParentOptions();
-//     }
-//   }
-
-//   /** Load possible "parent" objects. */
-//   private loadParentOptions(): void {
-//     const validTypeIDs = this.validateTypeIDs(this.parentTypeIDs);
-//     console.log('[Parent] validTypeIDs ->', validTypeIDs);
-
-//     if (!validTypeIDs.length) {
-//       this.toastService.warning('Invalid parent type configuration');
-//       return;
-//     }
-
-//     this.loading = true;
-//     this.objectService.getObjectsByType(validTypeIDs)
-//       .pipe(takeUntil(this.destroy$))
-//       .subscribe({
-//         next: (results: any[]) => {
-//           console.log('[Parent] API Results ->', results);
-//           this.flatParentOptions = this.buildFlatOptions(results);
-//           console.log('[Parent] final flatParentOptions ->', this.flatParentOptions);
-
-//           this.loading = false;
-//           // Force change detection so that ng-select sees the new data
-//           // this.cdRef.detectChanges();
-//         },
-//         error: (err) => {
-//           console.error('Parent Load Error:', err);
-//           this.loading = false;
-//         }
-//       });
-//   }
-
-//   /** Load possible "child" objects. */
-//   private loadChildOptions(): void {
-//     const validTypeIDs = this.validateTypeIDs(this.childTypeIDs);
-//     console.log('[Child] validTypeIDs ->', validTypeIDs);
-
-//     if (!validTypeIDs.length) {
-//       this.toastService.warning('Invalid child type configuration');
-//       return;
-//     }
-
-//     this.loading = true;
-//     this.objectService.getObjectsByType(validTypeIDs)
-//       .pipe(takeUntil(this.destroy$))
-//       .subscribe({
-//         next: (results: any[]) => {
-//           console.log('[Child] API Results ->', results);
-//           this.flatChildOptions = this.buildFlatOptions(results);
-//           console.log('[Child] final flatChildOptions ->', this.flatChildOptions);
-
-//           this.loading = false;
-//           // // Force change detection
-//           // this.cdRef.detectChanges();
-//         },
-//         error: (err) => {
-//           console.error('Child Load Error:', err);
-//           this.loading = false;
-//         }
-//       });
-//   }
-
-//   /** Flatten and parse the type ID arrays. */
-//   private validateTypeIDs(ids: any[]): number[] {
-//     return ids.flat(Infinity).filter((id: any) => Number.isInteger(id) && id > 0);
-//   }
-
-//   /**
-//    * Build an array with `group` string for ng-select grouping.
-//    * Adjust this logic as needed based on your actual data structure.
-//    */
-//   private buildFlatOptions(results: any[]): FlatOptionItem[] {
-//     if (!Array.isArray(results) || results.length === 0) {
-//       console.warn('No results, returning fallback example for debugging grouping...');
-//       // return [
-//       //   { value: 3,  label: 'Company #3 becon | fulda', group: 'Company [2]' },
-//       //   { value: 6,  label: 'Company #6 sasas |',       group: 'Company [2]' },
-//       //   { value: 11, label: 'Country #11',             group: 'Country [1]' },
-//       //   { value: 10, label: 'dsd #10 dsd #10',          group: 'dsd [1]' },
-//       //   { value: 12, label: 'User #12  |',             group: 'User [1]' }
-//       // ];
-//     }
-
-//     // Build a map: typeId -> { label, count }
-//     const typeMap: Record<number, { label: string; count: number }> = {};
-//     for (const obj of results) {
-//       const tId = this.getTypeID(obj);
-//       const tLabel = this.getTypeLabel(obj) || '(no label)';
-//       if (!typeMap[tId]) {
-//         typeMap[tId] = { label: tLabel, count: 0 };
-//       }
-//       typeMap[tId].count++;
-//     }
-
-//     // Transform each item into { value, label, group }
-//     const flat: FlatOptionItem[] = results.map(obj => {
-//       const tId = this.getTypeID(obj);
-//       const { label: tLabel, count } = typeMap[tId];
-//       const groupLabel = `${tLabel} [${count}]`;
-
-//       const objectId = this.getObjectID(obj);
-//       const summary  = this.getSummary(obj);
-//       const itemLabel = summary ? `${tLabel} #${objectId} ${summary}` : `${tLabel} #${objectId}`;
-
-//       return {
-//         value: objectId,
-//         label: itemLabel.trim(),
-//         group: groupLabel
-//       };
-//     });
-
-//     // Sort by group
-//     flat.sort((a, b) => a.group.localeCompare(b.group));
-//     return flat;
-//   }
-
-//   private getTypeID(obj: any): number {
-//     return obj?.type_information?.type_id
-//       ?? obj?.type_id
-//       ?? 0;
-//   }
-
-//   private getObjectID(obj: any): number {
-//     return obj?.object_information?.object_id
-//       ?? obj?.public_id
-//       ?? 0;
-//   }
-
-//   private getSummary(obj: any): string {
-//     return obj?.summary_line ?? '';
-//   }
-
-//   private getTypeLabel(obj: any): string {
-//     return obj?.type_information?.type_label
-//       ?? ('Type ' + (obj?.type_id ?? 'Unknown'));
-//   }
-
-
-//   public getFieldObject(fieldName: string) {
-//     // Return the matching field object from this.relation.fields
-//     return this.relation?.fields?.find((f) => f.name === fieldName);
-//   }
-
-  
-//   /**
-//    * Final confirmation.
-//    * If chosenRole == 'parent', the parent is currentObjectID,
-//    * else we read from form.value.parent, etc.
-//    * Also gather the dynamic relationForm values.
-//    */
-//   confirm(): void {
-//     const parentObjID = (this.chosenRole === 'parent')
-//       ? this.currentObjectID
-//       : this.form.value.parent;
-
-//     const childObjID = (this.chosenRole === 'child')
-//       ? this.currentObjectID
-//       : this.form.value.child;
-
-//     // All dynamic fields from the relation
-//     const relationData = this.relationForm.value;
-
-//     console.log('[RelationRoleDialog] confirm ->', {
-//       parentObjID,
-//       childObjID,
-//       relationData
-//     });
-
-//     // Emit them upwards
-//     this.onConfirm.emit({ parentObjID, childObjID, relationData });
-//   }
-
-//   cancel(): void {
-//     console.log('[RelationRoleDialog] cancel');
-//     this.onCancel.emit();
-//   }
-
-//   // For the <cmdb-render-element> 'mode'
-//   // Adjust to your real logic (Create, Edit, etc.)
-//   getViewMode() {
-//     return CmdbMode.Edit;
-//   }
-// }
-
-
-
 import {
   Component,
   Input,
   Output,
   EventEmitter,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  computed,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-
 import { CmdbMode } from 'src/app/framework/modes.enum';
 import { ObjectService } from 'src/app/framework/services/object.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
-
 import { CmdbRelation } from 'src/app/framework/models/relation.model';
-import { ObjectRelationService, CmdbObjectRelationCreateDto } from 'src/app/framework/services/object-relation.service';
+import {
+  ObjectRelationService,
+  CmdbObjectRelationCreateDto
+} from 'src/app/framework/services/object-relation.service';
+import { UserService } from 'src/app/management/services/user.service';
 
-
-/** For the dropdown items */
 interface FlatOptionItem {
-  value: number;   // the numeric ID
+  value: number;
   label: string;
   group: string;
 }
 
+/**
+ * Component for managing relationships between CMDB objects.
+ * Supports creating, editing, and viewing relationships based on user selection.
+ */
 @Component({
   selector: 'relation-role-dialog',
   templateUrl: './relation-role-dialog.component.html',
-  styleUrls: ['./relation-role-dialog.component.scss']
+  styleUrls: ['./relation-role-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RelationRoleDialogComponent implements OnInit, OnDestroy {
-  /**
-   * E.g. "parent" means the currentObjectID is the parent,
-   * so the user will pick the child from the dropdown.
-   */
-  @Input() chosenRole!: 'parent' | 'child';
-
-  /** 
-   * The type IDs that are valid for "parent" 
-   * or for "child" 
-   */
+  @Input() chosenRole!: 'parent' | 'child' | 'both';
   @Input() parentTypeIDs: number[] = [];
   @Input() childTypeIDs: number[] = [];
-
-  /** 
-   * The ID of the object from your object-view. 
-   * e.g. if user is editing "Object #10," 
-   * you pass in 10 as currentObjectID.
-   */
   @Input() currentObjectID!: number;
+  @Input() currentObjectTypeID!: number;
+  @Input() relation: CmdbRelation = null;
+  @Input() mode: CmdbMode = CmdbMode.Create;
+  @Input() relationInstance: any = null; // Pre-filled relation instance
 
-  /**
-   * The chosen relation definition: 
-   *  - .public_id (the "relation_id")
-   *  - .sections: array of { label, fields: [fieldNames] }
-   *  - .fields: array of { name, type, label, ... }
-   */
-  @Input() relation: CmdbRelation | null = null;
-
-  /**
-   * Fires when the user finishes, returning 
-   * { parentObjID, childObjID, relationData }
-   */
   @Output() onConfirm = new EventEmitter<{
     parentObjID: number;
     childObjID: number;
     relationData?: any;
   }>();
-
-  /**
-   * Fires when the user cancels
-   */
   @Output() onCancel = new EventEmitter<void>();
 
-  /** The form for parent/child dropdown. */
   public form: FormGroup;
-
-  /** The form for dynamic relation fields. */
   public relationForm: FormGroup;
-
-  /** We'll loop over `relation.sections` in the template. */
   public sections: any[] = [];
-
-  // The arrays used by ng-select
   public flatParentOptions: FlatOptionItem[] = [];
   public flatChildOptions: FlatOptionItem[] = [];
-
   public CmdbMode = CmdbMode;
   public loading = false;
+  public showParentSection = false;
+  public showChildSection = false;
 
   private destroy$ = new Subject<void>();
+  private author_id: number;
+
+  /**
+   * Determines if the object can act as both parent and child.
+   */
+  public isBidirectional = computed(() =>
+    this.parentTypeIDs.includes(this.currentObjectTypeID) &&
+    this.childTypeIDs.includes(this.currentObjectTypeID)
+  );
 
   constructor(
     private fb: FormBuilder,
     private objectService: ObjectService,
     private toastService: ToastService,
-    private objectRelationService: ObjectRelationService
+    private objectRelationService: ObjectRelationService,
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
   ) {
-    // 1) Parent/Child dropdown form
     this.form = this.fb.group({
       parent: [null],
       child: [null]
     });
-
-    // 2) Relation fields form
     this.relationForm = this.fb.group({});
+    this.author_id = this.userService.getCurrentUser().public_id;
   }
 
   ngOnInit(): void {
-    console.log('[RelationRoleDialog] OnInit =>', {
-      chosenRole: this.chosenRole,
-      parentTypeIDs: this.parentTypeIDs,
-      childTypeIDs: this.childTypeIDs,
-      currentObjectID: this.currentObjectID,
-      relation: this.relation
-    });
-
-    // Setup which side is fixed to currentObjectID, which side is open to choose
-    this.setupDropdownForm();
-
-    // Load the relevant dropdown data
+    this.initializeForms();
+    this.setupVisibility();
     this.loadOptions();
-
-    // If there's a chosen relation, set up the sections
-    if (this.relation?.sections) {
-      this.sections = this.relation.sections;
-    }
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy(): void {
@@ -457,31 +104,90 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * If chosenRole === 'parent', disable the "parent" field 
-   * and set it to currentObjectID; child is open for selection.
-   * Vice versa for 'child'.
+   * Initializes the form and pre-fills values based on mode.
    */
-  private setupDropdownForm(): void {
-    if (this.chosenRole === 'parent') {
-      this.form.get('parent')?.setValue(this.currentObjectID);
-      this.form.get('parent')?.disable();
-      this.form.get('child')?.enable();
+  private initializeForms(): void {
+    // Initialize relationForm with fields from relation definition
+    this.relationForm = this.fb.group({});
+    if (this.relation?.sections) {
+      this.sections = this.relation.sections;
+      this.relation.fields?.forEach(field => {
+        this.relationForm.addControl(field.name, this.fb.control(''));
+      });
+    }
+
+    // Pre-fill with relationInstance data if available
+    if (this.relationInstance) {
+      this.form.patchValue({
+        parent: this.relationInstance.relation_parent_id,
+        child: this.relationInstance.relation_child_id
+      });
+
+      if (this.relationInstance.field_values && Array.isArray(this.relationInstance.field_values)) {
+        const fieldValues = {};
+        this.relationInstance.field_values.forEach(fv => {
+          if (this.relationForm.contains(fv.name)) {
+            fieldValues[fv.name] = fv.value;
+          } else {
+            console.warn(`[DEBUG] Field '${fv.name}' from instance not found in relation fields`);
+          }
+        });
+
+        setTimeout(() => {
+          this.relationForm.patchValue(fieldValues);
+          this.cdr.detectChanges();
+        }, 0);
+      }
+
+      // Set form state based on mode
+      if (this.mode === CmdbMode.View) {
+        this.form.disable();
+        this.relationForm.disable();
+      } else if (this.mode === CmdbMode.Edit) {
+        if (this.chosenRole === 'parent') {
+          this.form.get('parent')?.disable();
+        } else if (this.chosenRole === 'child') {
+          this.form.get('child')?.disable();
+        }
+      }
     } else {
-      this.form.get('child')?.setValue(this.currentObjectID);
-      this.form.get('child')?.disable();
-      this.form.get('parent')?.enable();
+      // For Create mode without instance
+      if (this.chosenRole === 'parent') {
+        this.form.get('parent')?.setValue(this.currentObjectID);
+        this.form.get('parent')?.disable();
+      } else if (this.chosenRole === 'child') {
+        this.form.get('child')?.setValue(this.currentObjectID);
+        this.form.get('child')?.disable();
+      }
+    }
+
+    this.cdr.detectChanges();
+  }
+
+
+  /**
+   * Determines which sections should be visible based on bidirectionality.
+   */
+  private setupVisibility(): void {
+    if (this.isBidirectional()) {
+      this.showParentSection = this.chosenRole !== 'child';
+      this.showChildSection = this.chosenRole !== 'parent';
+      if (this.chosenRole === 'both') {
+        this.form.get('parent')?.enable();
+        this.form.get('child')?.enable();
+      }
+    } else {
+      this.showParentSection = this.chosenRole === 'child';
+      this.showChildSection = this.chosenRole === 'parent';
     }
   }
 
-  /** 
-   * Based on chosenRole, load either child or parent objects.
+  /**
+   * Loads available parent and child options based on visibility settings.
    */
   private loadOptions(): void {
-    if (this.chosenRole === 'parent') {
-      this.loadChildOptions();
-    } else {
-      this.loadParentOptions();
-    }
+    if (this.showParentSection) this.loadParentOptions();
+    if (this.showChildSection) this.loadChildOptions();
   }
 
   private loadParentOptions(): void {
@@ -490,24 +196,23 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
       this.toastService.warning('No valid parent type configuration');
       return;
     }
-
     this.loading = true;
+    this.cdr.detectChanges();
     this.objectService.getObjectsByType(validTypeIDs)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (results: any[]) => {
-          // Filter out the "currentObjectID"
-          // so we don't show it in the counterpart dropdown
           const filtered = results.filter(
             obj => this.getObjectID(obj) !== this.currentObjectID
           );
-
           this.flatParentOptions = this.buildFlatOptions(filtered);
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: err => {
-          console.error('Parent load error:', err);
+          this.toastService.error(err?.error?.message)
           this.loading = false;
+          this.cdr.detectChanges();
         }
       });
   }
@@ -518,154 +223,244 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
       this.toastService.warning('No valid child type configuration');
       return;
     }
-
     this.loading = true;
+    this.cdr.detectChanges();
     this.objectService.getObjectsByType(validTypeIDs)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (results: any[]) => {
-          // Filter out the "currentObjectID" from the child side
           const filtered = results.filter(
             obj => this.getObjectID(obj) !== this.currentObjectID
           );
-
           this.flatChildOptions = this.buildFlatOptions(filtered);
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: err => {
-          console.error('Child load error:', err);
+          this.toastService.error(err?.error?.message)
           this.loading = false;
+          this.cdr.detectChanges();
         }
       });
   }
 
-  private validateTypeIDs(ids: any[]): number[] {
-    // Flatten deeply, keep only positive integers
-    return ids.flat(Infinity).filter((id: any) => Number.isInteger(id) && id > 0);
+
+
+  public noCounterpartOptions(): boolean {
+    if (this.isBidirectional()) {
+      return (this.showParentSection && this.flatChildOptions.length === 0) &&
+        (this.showChildSection && this.flatParentOptions.length === 0);
+    }
+    return this.chosenRole === 'parent'
+      ? this.flatChildOptions.length === 0
+      : this.flatParentOptions.length === 0;
   }
 
   /**
-   * Transforms API results => FlatOptionItem[] for ng-select,
-   * grouping them by typeLabel [count].
-   */
-  private buildFlatOptions(results: any[]): FlatOptionItem[] {
-    if (!Array.isArray(results) || results.length === 0) {
-      return [];
-    }
-
-    // Map typeId => { label, count }
-    const typeMap: Record<number, { label: string; count: number }> = {};
-
-    for (const obj of results) {
-      const tId = this.getTypeID(obj);
-      const tLabel = this.getTypeLabel(obj) || '(no label)';
-      if (!typeMap[tId]) {
-        typeMap[tId] = { label: tLabel, count: 0 };
-      }
-      typeMap[tId].count++;
-    }
-
-    // Build final array
-    const flat: FlatOptionItem[] = results.map(obj => {
-      const tId = this.getTypeID(obj);
-      const { label: tLabel, count } = typeMap[tId];
-      const groupLabel = `${tLabel} [${count}]`;
-
-      const objectId = this.getObjectID(obj);
-      const summary = this.getSummary(obj);
-      const itemLabel = summary
-        ? `${tLabel} #${objectId} ${summary}`
-        : `${tLabel} #${objectId}`;
-
-      return {
-        value: objectId,
-        label: itemLabel.trim(),
-        group: groupLabel
-      };
-    });
-
-    flat.sort((a, b) => a.group.localeCompare(b.group));
-    return flat;
-  }
-
-  /** Looks up the actual field object in .relation.fields by name */
-  public getFieldObject(fieldName: string) {
-    return this.relation?.fields?.find((f) => f.name === fieldName);
-  }
-
-  /** For your existing structure */
-  private getTypeID(obj: any): number {
-    return obj?.type_information?.type_id ?? obj?.type_id ?? 0;
-  }
-  private getObjectID(obj: any): number {
-    return obj?.object_information?.object_id ?? obj?.public_id ?? 0;
-  }
-  private getSummary(obj: any): string {
-    return obj?.summary_line ?? '';
-  }
-  private getTypeLabel(obj: any): string {
-    return obj?.type_information?.type_label ?? (`Type ` + (obj?.type_id ?? 'Unknown'));
-  }
-
-  // For <cmdb-render-element>, we want an edit or create mode
-  public getViewMode() {
-    return CmdbMode.Edit;
-  }
-
-  /**
-   * On Confirm => 
-   * 1) figure out final parent/child IDs 
-   * 2) build the field_values array 
-   * 3) call /object_relations
+   * Handles confirmation action by emitting selected relation data.
    */
   confirm(): void {
-    // If chosenRole == 'parent', the parent is currentObjectID,
-    // else we read from form.value.parent
-    const parentObjID = (this.chosenRole === 'parent')
-      ? this.currentObjectID
-      : this.form.value.parent;
+    const parentObjID = this.form.get('parent')?.value ?? this.currentObjectID;
+    const childObjID = this.form.get('child')?.value ?? this.currentObjectID;
 
-    // If chosenRole == 'child', the child is currentObjectID,
-    // else from form.value.child
-    const childObjID = (this.chosenRole === 'child')
-      ? this.currentObjectID
-      : this.form.value.child;
+    if (this.isBidirectional() && this.chosenRole === 'both') {
+      if (!parentObjID && !childObjID) {
+        this.toastService.error('Please select at least one relation');
+        return;
+      }
+    }
 
-    // Gather the user-entered fields
-    const formValue = this.relationForm.value; 
-    // Convert { key: val, ... } => [{ name, value }, ...]
+    let parentTypeID = this.currentObjectTypeID;
+    let childTypeID = this.currentObjectTypeID;
+
+    if (this.form.value.parent) {
+      const selectedParent = this.flatParentOptions.find(opt => opt.value === this.form.value.parent);
+      parentTypeID = selectedParent ? this.parseTypeIdFromGroup(selectedParent.group) : parentTypeID;
+    }
+
+    if (this.form.value.child) {
+      const selectedChild = this.flatChildOptions.find(opt => opt.value === this.form.value.child);
+      childTypeID = selectedChild ? this.parseTypeIdFromGroup(selectedChild.group) : childTypeID;
+    }
+
+    const formValue = this.relationForm.value;
     const field_values = Object.entries(formValue).map(([key, val]) => ({
       name: key,
-      value: val
+      value: val != null ? val : ''
     }));
 
-    // Build the final request body
     const dto: CmdbObjectRelationCreateDto = {
       relation_id: this.relation.public_id,
       relation_parent_id: parentObjID,
       relation_child_id: childObjID,
+      relation_parent_type_id: parentTypeID,
+      relation_child_type_id: childTypeID,
+      author_id: this.author_id,
       field_values
-    };
+    } as any;
 
-    console.log('[RelationRoleDialog] confirm => Final payload:', dto);
-
-    // POST /object_relations
-    this.objectRelationService.postObjectRelation(dto).subscribe({
-      next: (res) => {
-        this.toastService.success(
-          `Relation created successfully: parent=${parentObjID}, child=${childObjID}`
-        );
-        // Also emit if parent component wants to do something
-        this.onConfirm.emit({ parentObjID, childObjID, relationData: res });
-      },
-      error: (err) => {
-        console.error('Create relation failed:', err);
-        this.toastService.error(err?.error?.message || 'Failed to create relation');
-      }
-    });
+    if (this.mode === CmdbMode.Edit && this.relationInstance) {
+      (dto as any).public_id = this.relationInstance.public_id;
+      this.objectRelationService.putObjectRelation(this.relationInstance.public_id, dto).subscribe({
+        next: (res) => {
+          this.toastService.success(`Relation updated successfully`);
+          this.onConfirm.emit({
+            parentObjID,
+            childObjID,
+            relationData: res
+          });
+        },
+        error: (err) => {
+          this.toastService.error(err?.error?.message);
+        }
+      });
+    } else {
+      this.objectRelationService.postObjectRelation(dto).subscribe({
+        next: (res) => {
+          this.toastService.success(`Relation created successfully`);
+          this.onConfirm.emit({
+            parentObjID,
+            childObjID,
+            relationData: res
+          });
+        },
+        error: (err) => {
+          this.toastService.error(err?.error?.message);
+        }
+      });
+    }
   }
 
-  cancel(): void {
+
+  /**
+   * Determines whether the confirm button should be disabled.
+   */
+  public isConfirmDisabled(): boolean {
+    if (this.loading || this.mode === CmdbMode.View) {
+      return true;
+    }
+    if (this.chosenRole === 'parent') {
+      const childValue = this.form.get('child')?.value;
+      return !childValue || childValue === this.currentObjectID;
+    } else if (this.chosenRole === 'child') {
+      const parentValue = this.form.get('parent')?.value;
+      return !parentValue || parentValue === this.currentObjectID;
+    }
+    return false;
+  }
+
+  /**
+   * Emits a cancel event to close the dialog.
+   */
+  back(): void {
     this.onCancel.emit();
   }
+
+
+  /* ------------------------------------------------ HELPER FUNCTIONS ------------------------------------------------ */
+
+  /**
+   * Validates and extracts type IDs, ensuring they are positive integers.
+   * @param ids - The array of IDs to validate.
+   * @returns An array of valid type IDs.
+   */
+  private validateTypeIDs(ids: any[]): number[] {
+    return ids.flat(Infinity).filter((id: any) => Number.isInteger(id) && id > 0);
+  }
+
+  /**
+   * Builds a list of formatted options from object results.
+   * @param results - The array of objects to process.
+   * @returns An array of flat option items.
+   */
+  private buildFlatOptions(results: any[]): FlatOptionItem[] {
+    if (!Array.isArray(results) || results.length === 0) return [];
+    const typeMap: Record<number, { label: string; count: number }> = {};
+
+    for (const obj of results) {
+      const tId = this.getTypeID(obj);
+      const tLabel = this.getTypeLabel(obj);
+      typeMap[tId] = typeMap[tId] || { label: tLabel, count: 0 };
+      typeMap[tId].count++;
+    }
+
+    return results.map(obj => {
+      const tId = this.getTypeID(obj);
+      const groupLabel = `${typeMap[tId].label} [${tId}]`;
+      const objectId = this.getObjectID(obj);
+      const summary = this.getSummary(obj);
+
+      return {
+        value: objectId,
+        label: summary ? `${typeMap[tId].label} #${objectId} ${summary}` : `${typeMap[tId].label} #${objectId}`,
+        group: groupLabel
+      };
+    }).sort((a, b) => a.group.localeCompare(b.group));
+  }
+
+  /* ------------------------------------------------ GETTERS------------------------------------------------ */
+
+  /**
+   * Retrieves a field object by name from the relation definition.
+   * @param fieldName - The name of the field to retrieve.
+   * @returns The field object if found, otherwise undefined.
+   */
+  public getFieldObject(fieldName: string) {
+    return this.relation?.fields?.find(f => f.name === fieldName);
+  }
+
+  /**
+   * Extracts the type ID from a formatted group label.
+   * @param groupStr - The group string containing the type ID.
+   * @returns The parsed type ID or 0 if not found.
+   */
+  private parseTypeIdFromGroup(groupStr: string): number {
+    const match = groupStr.match(/\[(\d+)\]/);
+    return match ? parseInt(match[1], 10) : 0;
+  }
+
+  /**
+   * Retrieves the type ID of an object.
+   * @param obj - The object to extract the type ID from.
+   * @returns The type ID or 0 if not found.
+   */
+  private getTypeID(obj: any): number {
+    return obj?.type_information?.type_id ?? obj?.type_id ?? 0;
+  }
+
+  /**
+   * Retrieves the object ID from an object.
+   * @param obj - The object to extract the ID from.
+   * @returns The object ID or 0 if not found.
+   */
+  private getObjectID(obj: any): number {
+    return obj?.object_information?.object_id ?? obj?.public_id ?? 0;
+  }
+
+  /**
+   * Retrieves the summary of an object.
+   * @param obj - The object to extract the summary from.
+   * @returns The summary string or an empty string if not found.
+   */
+  private getSummary(obj: any): string {
+    return obj?.summary_line ?? '';
+  }
+
+  /**
+   * Retrieves the type label of an object.
+   * @param obj - The object to extract the label from.
+   * @returns The type label or a default label if not found.
+   */
+  private getTypeLabel(obj: any): string {
+    return obj?.type_information?.type_label ?? ('Type ' + (obj?.type_id ?? 'Unknown'));
+  }
+
+  /**
+   * Determines the current view mode.
+   * @returns The current mode (View or Edit).
+   */
+  public getViewMode(): CmdbMode {
+    return this.mode === CmdbMode.View ? CmdbMode.View : CmdbMode.Edit;
+  }
+
 }

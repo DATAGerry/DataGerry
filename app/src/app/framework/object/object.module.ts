@@ -120,8 +120,8 @@ import { RelationRoleDialogComponent } from './object-view/relation-role-dialog/
         ObjectReferencesTypeColumnComponent,
         ObjectBulkChangeFailedComponent,
         ObjectBulkChangeCompleteComponent,
-        RelationRoleDialogComponent
-    ],
+        RelationRoleDialogComponent 
+       ],
     imports: [
         CommonModule,
         ObjectRoutingModule,
