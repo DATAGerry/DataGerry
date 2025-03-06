@@ -1,0 +1,91 @@
+<div class="modal-backdrop show" (click)="close.emit()"></div>
+
+<div class="modal show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Relation Log Details</h5>
+        <button type="button" class="close" (click)="close.emit()" aria-label="Close">
+          <span aria-hidden="true" style="color: #e94d18">&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div *ngIf="log" class="log-details">
+          <div class="row mb-3">
+            <div class="col-6">
+              <div class="detail-item">
+                <label>Public ID:</label>
+                <div>{{ log.public_id }}</div>
+              </div>
+              <div class="detail-item">
+                <label>Action:</label>
+                <div>{{ log.action }}</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="detail-item">
+                <label>Log Time:</label>
+                <div>{{ log.log_time | dateFormatter }}</div>
+              </div>
+              <div class="detail-item">
+                <label>Author:</label>
+                <div>{{ log.author_name }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="changes-section">
+            <div *ngIf="log.action === 'CREATE'">
+              <h6 class="section-title">Initial Values</h6>
+              <div *ngIf="hasCreateChanges(); else noCreate">
+                <div class="change-item" *ngFor="let field of objectKeys(log.changes)">
+                  <div class="field-name">{{ field }}</div>
+                  <div class="change-value">
+                    {{ log.changes[field] || 'Not set' }}
+                  </div>
+                </div>
+              </div>
+              <ng-template #noCreate>
+                <div class="no-changes">No initial values recorded</div>
+              </ng-template>
+            </div>
+
+            <div *ngIf="log.action === 'EDIT'">
+              <h6 class="section-title">Modifications</h6>
+              <div *ngIf="hasEditChanges(); else noEdit">
+                <div class="change-item" *ngFor="let field of objectKeys(log.changes?.modified || {})">
+                  <div class="field-name">{{ field }}</div>
+                  <div class="change-details">
+                    <div class="change-before">
+                      <span class="badge before">Before</span>
+                      <div class="value">{{ log.changes.modified[field].before || 'Empty' }}</div>
+                    </div>
+                    <div class="change-after">
+                      <span class="badge after">After</span>
+                      <div class="value">{{ log.changes.modified[field].after || 'Empty' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-template #noEdit>
+                <div class="no-changes">No modifications recorded</div>
+              </ng-template>
+            </div>
+
+            <div *ngIf="log.action === 'DELETE'">
+              <div class="delete-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                This relation was permanently deleted
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn close-btn" (click)="close.emit()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
