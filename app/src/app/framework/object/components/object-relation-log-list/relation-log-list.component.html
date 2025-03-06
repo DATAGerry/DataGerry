@@ -38,12 +38,12 @@
 <!-- The combined 'Actions' column template: view + delete -->
 <ng-template #actionsTemplate let-item="item">
   <span>
-    <i class="far fa-eye spacing-right icon-view" 
+    <i class="far fa-eye spacing-right icon-view actionbtn" 
        (click)="onViewClick(item)" title="View Relation Log"></i>
   </span>
   <span>
-    <i class="far fa-trash-alt btn-delete icon-delete ml-2" 
-       (click)="deleteLog(item)" title="Delete Relation Log"></i>
+    <i class="far fa-trash-alt btn-delete icon-delete ml-2 actionbtn" 
+       (click)="onDeleteLog(item)" title="Delete Relation Log"></i>
   </span>
 </ng-template>
 
