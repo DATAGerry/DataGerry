@@ -76,6 +76,8 @@ import { ObjectBulkChangeFailedComponent } from './object-bulk-change/object-bul
 import { ObjectBulkChangeCompleteComponent } from './object-bulk-change/object-bulk-change-complete/object-bulk-change-complete.component';
 import { CoreModule } from 'src/app/core/core.module';
 import { RelationRoleDialogComponent } from './object-view/relation-role-dialog/relation-role-dialog.component';
+import { RelationLogListComponent } from './components/object-relation-log-list/relation-log-list.component';
+import { ChangesModalComponent } from './modals/object-relation-changes-modal/changes-modal.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -120,7 +122,9 @@ import { RelationRoleDialogComponent } from './object-view/relation-role-dialog/
         ObjectReferencesTypeColumnComponent,
         ObjectBulkChangeFailedComponent,
         ObjectBulkChangeCompleteComponent,
-        RelationRoleDialogComponent 
+        RelationRoleDialogComponent,
+        RelationLogListComponent,
+        ChangesModalComponent
        ],
     imports: [
         CommonModule,
