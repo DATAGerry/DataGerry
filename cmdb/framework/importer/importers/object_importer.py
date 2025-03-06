@@ -24,7 +24,7 @@ from cmdb.manager import ObjectsManager
 from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.framework.results import IterationResult
 from cmdb.framework.importer.importers.base_importer import BaseImporter
 from cmdb.framework.importer.configs.object_importer_config import ObjectImporterConfig
@@ -131,6 +131,7 @@ class ObjectImporter(BaseImporter):
             # Insert data
             try:
                 existing = self.objects_manager.get_object(current_public_id)
+                existing = CmdbObject.from_data(existing)
                 current_import_object['creation_time'] = existing.creation_time
                 current_import_object['last_edit_time'] = datetime.now(timezone.utc)
             except ObjectsManagerGetError as err:

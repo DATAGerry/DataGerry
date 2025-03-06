@@ -37,7 +37,7 @@ delete:
           schema:
               type: string
               example: "7,14"
-    operationId: delete_many_objects
+    operationId: delete_many_cmdb_objects
     responses:
         "200":
             description: Returns a true for each CmdbObject that was deleted

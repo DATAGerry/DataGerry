@@ -58,3 +58,21 @@ class ObjectsManagerInitError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not initialise a CmdbObject
     """
+
+
+class ObjectsManagerIterationError(ObjectsManagerError):
+    """
+    Raised when ObjectsManager could not iterate over CmdbObjects
+    """
+
+
+class ObjectsManagerMdsReferencesError(ObjectsManagerError):
+    """
+    Raised when ObjectsManager could not merge MDS references
+    """
+
+
+class ObjectsManagerCheckError(ObjectsManagerError):
+    """
+    Raised when ObjectsManager fails a class internal check
+    """

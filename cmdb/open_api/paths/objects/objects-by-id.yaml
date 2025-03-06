@@ -33,10 +33,10 @@ get:
           required: true
           schema:
               type: integer
-    operationId: get_object
+    operationId: get_cmdb_object
     responses:
         "200":
-            description: Returns the CmdbObject with the given **public_id**
+            description: Returns the **CmdbObject with render information** with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -102,6 +102,16 @@ put:
                                 $ref: "../../components/schemas/CmdbObject.yaml"
         "403":
             $ref: '../../components/responses.yaml#/Forbidden'
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                     DELETE OBJECT                                                    #

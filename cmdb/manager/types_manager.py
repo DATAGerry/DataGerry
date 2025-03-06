@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Handles interaction between API and CmdbTypes
+Handles interaction between the database and CmdbTypes
 """
 import json
 import logging
@@ -28,7 +28,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.type_model import CmdbType, TypeFieldSection
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 
 from cmdb.framework.results import IterationResult, ListResult
 

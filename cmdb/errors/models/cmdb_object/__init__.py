@@ -14,29 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the ObjectsManager
+This module provides all errors for CmdbObjects
 """
-from .objects_manager_errors import (
-    ObjectsManagerError,
-    ObjectsManagerInsertError,
-    ObjectsManagerDeleteError,
-    ObjectsManagerUpdateError,
-    ObjectsManagerGetError,
-    ObjectsManagerInitError,
-    ObjectsManagerIterationError,
-    ObjectsManagerMdsReferencesError,
-    ObjectsManagerCheckError,
+from .cmdb_object_errors import (
+    CmdbObjectError,
+    CmdbObjectInitError,
+    CmdbObjectInitFromDataError,
+    CmdbObjectToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ObjectsManagerError',
-    'ObjectsManagerInsertError',
-    'ObjectsManagerDeleteError',
-    'ObjectsManagerUpdateError',
-    'ObjectsManagerGetError',
-    'ObjectsManagerInitError',
-    'ObjectsManagerIterationError',
-    'ObjectsManagerMdsReferencesError',
-    'ObjectsManagerCheckError',
+    'CmdbObjectError',
+    'CmdbObjectInitError',
+    'CmdbObjectInitFromDataError',
+    'CmdbObjectToJsonError',
 ]

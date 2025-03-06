@@ -15,6 +15,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """document"""
 #TODO: DOCUMENT-FIX
+import logging
 import copy
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -22,7 +23,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from pytest import fixture
 
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.type_model import (
     CmdbType,
     TypeFieldSection,
@@ -32,6 +33,10 @@ from cmdb.models.type_model import (
 
 from cmdb.security.acl.access_control_list import AccessControlList
 from cmdb.security.acl.group_acl import GroupACL
+# -------------------------------------------------------------------------------------------------------------------- #
+
+LOGGER = logging.getLogger(__name__)
+
 # -------------------------------------------------------------------------------------------------------------------- #
 
 @fixture(scope='module', name="example_type")
@@ -107,8 +112,7 @@ def fixture_change_object() -> dict:
                 "name": "dummy-field-2",
                 "value": "dummy-change"
             }
-        ],
-        "views": 0
+        ]
     }
 
 

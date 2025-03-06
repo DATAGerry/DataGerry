@@ -184,7 +184,7 @@ export class ObjectService<T = CmdbObject | RenderResult> implements ApiServiceP
         const options = this.options;
         options.params = new HttpParams();
         if (native === true) {
-            return this.api.callGet<CmdbObject[]>(`${this.servicePrefix}/${publicID}/native`, options).pipe(
+            return this.api.callGet<CmdbObject[]>(`${this.servicePrefix}/native/${publicID}`, options).pipe(
                 map((apiResponse) => {
                     return apiResponse.body;
                 })

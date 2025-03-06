@@ -47,6 +47,8 @@ paths:
         $ref: "./paths/objects/objects.yaml"
     /objects/{public_id}:
         $ref: "./paths/objects/objects-by-id.yaml"
+    /objects/native/{public_id}:
+        $ref: "./paths/objects/objects-native.yaml"
     /objects/delete/{public_ids}:
         $ref: "./paths/objects/objects-many.yaml"
     /objects/state/{public_id}:

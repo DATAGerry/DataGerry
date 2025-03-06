@@ -55,7 +55,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class RelationsManager(BaseManager):
     """
-    The RelationsManager handles the interaction between the CmdbRelations-API and the database
+    The RelationsManager manages the interaction between CmdbRelations and the database
 
     Extends: BaseManager
     """

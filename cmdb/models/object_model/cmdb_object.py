@@ -15,13 +15,21 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 This module contains the implementation of CmdbObject, which is representing
-an object in DataGerry.
+an object in DataGerry
 """
 import logging
-from typing import Union
+from typing import Optional
+from datetime import datetime
 from dateutil.parser import parse
 
+from cmdb.class_schema.cmdb_object_schema import get_cmdb_object_schema
 from cmdb.models.cmdb_dao import CmdbDAO
+
+from cmdb.errors.models.cmdb_object import (
+    CmdbObjectInitError,
+    CmdbObjectInitFromDataError,
+    CmdbObjectToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -32,101 +40,79 @@ LOGGER = logging.getLogger(__name__)
 
 class CmdbObject(CmdbDAO):
     """
-    The CMDB object is the basic data wrapper for storing and
-    holding the pure objects within the CMDB.
+    The CmdbObject is the basic data wrapper for storing and holding the pure objects within the CMDB
 
-    Attributes:
-        COLLECTION (str):    Name of the database collection.
-        MODEL (Model):              Name of the DAO.
-        DEFAULT_VERSION (str):      The default "starting" version number.
-        SCHEMA (dict):              The validation schema for this DAO.
-        INDEX_KEYS (list):          List of index keys for the database.
+    Extends CmdbDAO
     """
-
     COLLECTION = 'framework.objects'
     MODEL = 'Object'
     DEFAULT_VERSION = '1.0.0'
     REQUIRED_INIT_KEYS = ['type_id', 'creation_time', 'author_id', 'active', 'fields', 'version']
-    SCHEMA: dict = {
-        'public_id': {
-            'type': 'integer'
-        },
-        'type_id': {
-            'type': 'integer'
-        },
-        'version': {
-            'type': 'string',
-            'default': DEFAULT_VERSION
-        },
-        'author_id': {
-            'type': 'integer',
-            'required': True
-        },
-        'creation_time': {
-            'type': 'dict',
-            'nullable': True,
-            'required': False
-        },
-        'last_edit_time': {
-            'type': 'dict',
-            'nullable': True,
-            'required': False
-        },
-        'active': {
-            'type': 'boolean',
-            'required': False,
-            'default': True
-        },
-        'fields': {
-            'type': 'list',
-            'required': True,
-            'default': [],
-        },
-        'multi_data_sections': {
-            'type': 'list',
-            'required': False,
-            'default': [],
-        }
-    }
+    SCHEMA: dict = get_cmdb_object_schema()
 
-
+    #pylint: disable=too-many-arguments
     def __init__(self,
                  type_id: int,
-                 creation_time,
-                 author_id,
-                 active,
+                 creation_time: datetime,
+                 author_id: int,
+                 active: bool,
                  fields: list,
                  multi_data_sections: list = None,
-                 last_edit_time=None,
+                 last_edit_time: datetime = None,
                  editor_id: int = None,
                  version: str = '1.0.0',
                  **kwargs):
-        """init of object
+        """
+        Initialises a CmdbObject
 
         Args:
-            type_id: public input_type id which implements the object
-            version: current version of object
-            creation_time: date of object creation
-            author_id: public id of author
-            last_edit_time: last date of editing
-            editor_id: id of the last editor
-            active: object activation status
-            fields: data inside fields
+            type_id (int): public_id of the CmdbType
+            version (str): current version of the CmdbObject
+            creation_time (datetime): date of CmdbObject creation
+            author_id (int): public_id of the CmdbUser which created this CmdbObject
+            last_edit_time (datetime): date when this CmdbObject was edited the last time
+            editor_id (int): public_id of the CmdbUser which edited this CmdbObject the last time
+            active (bool): activation status of the CmdbObject (True = active, False = inactive)
+            fields (list): Fields with values for his CmdbObject
+            multi_data_sections (list): MDS with values for this CmdbObject
             **kwargs: additional data
+
+        Raises:
+            CmdbObjectInitError: If the initialisation failed
         """
-        self.type_id = type_id
-        self.version = version
-        self.creation_time = creation_time
-        self.author_id = author_id
-        self.last_edit_time = last_edit_time
-        self.editor_id = editor_id
-        self.active = active
-        self.fields = fields
-        self.multi_data_sections = multi_data_sections or []
-        super().__init__(**kwargs)
+        try:
+            self.type_id = type_id
+            self.version = version
+            self.creation_time = creation_time
+            self.author_id = author_id
+            self.last_edit_time = last_edit_time
+            self.editor_id = editor_id
+            self.active = active
+            self.fields = fields
+            self.multi_data_sections = multi_data_sections or []
+
+            super().__init__(**kwargs)
+        except Exception as err:
+            raise CmdbObjectInitError(err) from err
 
 
     def __truediv__(self, other):
+        """
+        Compares the 'fields' of two CmdbObjects of the same class and returns a dictionary with differences
+
+        This method is called when the '/' (division) operator is used between two objects of the same class
+
+        Args:
+            other (object): The CmdbObject to compare with the current CmdbObject
+
+        Returns:
+            dict: A dictionary with two keys:
+                - 'old': A list of fields present in `self.fields` but not in `other.fields`.
+                - 'new': A list of fields present in `other.fields` but not in `self.fields`.
+
+        Raises:
+            TypeError: If the `other` object is not of the same class as `self`.
+        """
         if not isinstance(other, self.__class__):
             raise TypeError("Not the same class")
         return {**{'old': [i for i in self.fields if i not in other.fields]},
@@ -135,87 +121,112 @@ class CmdbObject(CmdbDAO):
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbObject":
-        """document"""
-        #TODO: DOCUMENT-FIX
-        creation_time = data.get('creation_time', None)
-        last_edit_time = data.get('last_edit_time', None)
+        """
+        Initialises a CmdbObject from a dict
 
-        if creation_time and isinstance(creation_time, str):
-            creation_time = parse(creation_time, fuzzy=True)
+        Args:
+            data (dict): Data with which the CmdbObject should be initialised
 
-        if last_edit_time and isinstance(last_edit_time, str):
-            last_edit_time = parse(last_edit_time, fuzzy=True)
+        Raises:
+            CmdbObjectInitFromDataError: If the initialisation with the given data fails
 
-        return cls(
-            public_id=data.get('public_id'),
-            type_id=data.get('type_id'),
-            version=data.get('version'),
-            creation_time=creation_time,
-            author_id=data.get('author_id'),
-            last_edit_time=last_edit_time,
-            editor_id=data.get('editor_id', None),
-            active=data.get('active'),
-            fields=data.get('fields', []),
-            multi_data_sections=data.get('multi_data_sections', [])
-        )
+        Returns:
+            CmdbObject: CmdbObject with the given data
+        """
+        try:
+            creation_time = data.get('creation_time', None)
+            last_edit_time = data.get('last_edit_time', None)
+
+            if isinstance(creation_time, str):
+                creation_time = parse(creation_time, fuzzy=True)
+
+            if isinstance(last_edit_time, str):
+                last_edit_time = parse(last_edit_time, fuzzy=True)
+
+            return cls(
+                public_id = data.get('public_id'),
+                type_id = data.get('type_id'),
+                version = data.get('version'),
+                creation_time = creation_time,
+                author_id = data.get('author_id'),
+                last_edit_time = last_edit_time,
+                editor_id = data.get('editor_id', None),
+                active = data.get('active'),
+                fields = data.get('fields', []),
+                multi_data_sections = data.get('multi_data_sections', [])
+            )
+        except Exception as err:
+            raise CmdbObjectInitFromDataError(err) from err
 
 
     @classmethod
     def to_json(cls, instance: "CmdbObject") -> dict:
-        """Convert a type instance to json conform data"""
-        return {
-            'public_id': instance.get_public_id(),
-            'type_id': instance.get_type_id(),
-            'version': instance.version,
-            'creation_time': instance.creation_time,
-            'author_id': instance.author_id,
-            'last_edit_time': instance.last_edit_time,
-            'editor_id': instance.editor_id,
-            'active': instance.active,
-            'fields': instance.fields,
-            'multi_data_sections': instance.multi_data_sections
-        }
+        """
+        Converts a CmdbObject into a json compatible dict
+
+        Args:
+            instance (CmdbObject): The CmdbObject which should be converted
+
+        Raises:
+            CmdbObjectToJsonError: If the CmdbObject could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the CmdbObject values
+        """
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'type_id': instance.get_type_id(),
+                'version': instance.version,
+                'creation_time': instance.creation_time,
+                'author_id': instance.author_id,
+                'last_edit_time': instance.last_edit_time,
+                'editor_id': instance.editor_id,
+                'active': instance.active,
+                'fields': instance.fields,
+                'multi_data_sections': instance.multi_data_sections
+            }
+        except Exception as err:
+            raise CmdbObjectToJsonError(err) from err
 
 
     def get_type_id(self) -> int:
-        """get input_type if of this object
+        """
+        Returns the public_id of the CmdbType which is used as a blueprint for the CmdbObject
 
         Returns:
-            int: public id of input_type
+            int: public_id of the CmdbType of this CmdbObject
         """
         return self.type_id
 
 
     def get_all_fields(self) -> list:
-        """ Get all fields with key value pair
+        """
+        Reutns all fields of the CmdbObject
 
         Returns:
-            all fields
+            list: All fields of the CmdbObject
         """
         return self.fields
 
 
-    def has_field(self, name) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        field = next(iter([x for x in self.fields if x.get('name') == name]), None)
-        if field is None:
-            return False
+    def get_value(self, field: dict) -> Optional[str]:
+        """
+        Retrieves the value of a field by its name
 
-        return True
-
-
-    def get_value(self, field) -> Union[str, None]:
-        """Get value of a field
+        This method searches for a field by its name and returns its associated value
 
         Args:
-            field: Name of field
+            field (str): The name of the field whose value is to be retrieved
+
+        Raises:
+            ValueError: If no field with the specified name is found
 
         Returns:
-            Value of field
+            Optional[str]: The value of the field if found
         """
         for f in self.fields:
-            if f['name'] == field:
-                return f['value']
-            continue
+            if f.get('name') == field:
+                return f.get('value', None)
+
         raise ValueError(field)

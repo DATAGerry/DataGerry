@@ -14,29 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the ObjectsManager
+This module contains the classes of all CmdbObject errors
 """
-from .objects_manager_errors import (
-    ObjectsManagerError,
-    ObjectsManagerInsertError,
-    ObjectsManagerDeleteError,
-    ObjectsManagerUpdateError,
-    ObjectsManagerGetError,
-    ObjectsManagerInitError,
-    ObjectsManagerIterationError,
-    ObjectsManagerMdsReferencesError,
-    ObjectsManagerCheckError,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'ObjectsManagerError',
-    'ObjectsManagerInsertError',
-    'ObjectsManagerDeleteError',
-    'ObjectsManagerUpdateError',
-    'ObjectsManagerGetError',
-    'ObjectsManagerInitError',
-    'ObjectsManagerIterationError',
-    'ObjectsManagerMdsReferencesError',
-    'ObjectsManagerCheckError',
-]
+class CmdbObjectError(Exception):
+    """
+    Raised to catch all CmdbObject related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbObject related errors
+        """
+        super().__init__(err)
+
+# ------------------------------------------------ CmdbObject - ERRORS ----------------------------------------------- #
+
+class CmdbObjectInitError(CmdbObjectError):
+    """
+    Raised when a CmdbObject could not be initialised
+    """
+
+
+class CmdbObjectInitFromDataError(CmdbObjectError):
+    """
+    Raised when a CmdbObject could not be initialised from a dict
+    """
+
+
+class CmdbObjectToJsonError(CmdbObjectError):
+    """
+    Raised when a CmdbObject could not be transformed into a json compatible dict
+    """

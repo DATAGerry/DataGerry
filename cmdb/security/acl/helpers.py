@@ -28,22 +28,22 @@ LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def has_access_control(model: CmdbType, user: CmdbUser, permission: AccessControlPermission) -> bool:
+def has_access_control(target_type: CmdbType, user: CmdbUser, permission: AccessControlPermission) -> bool:
     """Check if a user has access to object/objects for a given permission"""
-    acl: AccessControlList = model.acl
+    acl: AccessControlList = target_type.acl
 
     if acl and acl.activated:
         return acl.verify_access(user.group_id, permission)
 
     return True
 
-
-def verify_access(model: CmdbType, user: CmdbUser = None, permission: AccessControlPermission = None):
+#TODO: REFACTOR-FIX (return a bool value for this functionality)
+def verify_access(target_type: CmdbType, user: CmdbUser = None, permission: AccessControlPermission = None):
     """Validate if a user has access to objects of this type."""
     if not user or not permission:
         return
 
-    verify = has_access_control(model, user, permission)
+    verify = has_access_control(target_type, user, permission)
 
     if not verify:
         #TODO: ERROR-FIX

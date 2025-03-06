@@ -224,3 +224,37 @@ class ObjectRelationsManager(BaseManager):
         invalid_object_relation: CmdbObjectRelation
         for invalid_object_relation in invalid_object_relations:
             self.delete({"public_id": invalid_object_relation.get_public_id()})
+
+
+    def update_changed_fields(self, relation_id: int, changed_fields: dict) -> None:
+        """
+        Updates all CmdbObjectRelations that reference the given CmdbRelation
+
+        - **Removes** any fields that have been deleted
+        - **Adds** new fields with an empty value
+
+        Args:
+            relation_id (int): The public_id of the CmdbRelation whose fields were changed
+            changed_fields (dict): A dictionary with two keys:
+                - "added" (list[str]): Field names that were newly introduced
+                - "removed" (list[str]): Field names that should be removed
+        """
+        affected_object_relations = self.find_all(filter={'relation_id':relation_id})
+
+        for obj_relation in affected_object_relations:
+            updated_field_values = []
+
+            # Remove fields that are in 'removed'
+            for field in obj_relation['field_values']:
+                if field['name'] not in changed_fields['removed']:
+                    updated_field_values.append(field)
+
+            # Add new fields from 'added' with an empty value
+            for new_field in changed_fields['added']:
+                updated_field_values.append({'name': new_field, 'value': None})
+
+            # Update object relation
+            obj_relation['field_values'] = updated_field_values
+
+            # Save the updated object relation
+            self.update_object_relation(obj_relation['public_id'], obj_relation)

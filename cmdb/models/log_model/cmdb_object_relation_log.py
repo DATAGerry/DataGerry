@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from dateutil.parser import parse
 
 from cmdb.models.cmdb_dao import CmdbDAO
-from cmdb.models.log_model import LogInteraction
+from cmdb.models.log_model.log_interaction_enum import LogInteraction
 
 from cmdb.errors.models.cmdb_object_relation_log import (
     CmdbObjectRelationLogInitError,
