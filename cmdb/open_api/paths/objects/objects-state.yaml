@@ -40,7 +40,7 @@ put:
                 schema:
                     type: boolean
                     example: true
-    operationId: update_object_state
+    operationId: update_cmdb_object_state
     responses:
         "200":
             description: Returns the updated CmdbObject with the given **public_id**
@@ -74,7 +74,7 @@ put:
                                 type: string
                                 example: "Could not retrieve the object!"
         "500":
-            description: Could not render the object
+            description: Internal server error
             content:
                 application/json:
                     schema:
@@ -82,7 +82,7 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Could not render the object"
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                   GET OBJECT STATE                                                   #
@@ -103,7 +103,7 @@ get:
           required: true
           schema:
               type: integer
-    operationId: get_object_state
+    operationId: get_cmdb_object_state
     responses:
         "200":
             description: Returns the state of the CmdbObject with the given **public_id**
@@ -122,3 +122,13 @@ get:
                             error:
                                 type: string
                                 example: "Could not retrive the requested object"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"

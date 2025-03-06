@@ -121,3 +121,9 @@ class AccessControlList:
             self.groups.revoke_access(key, permission)
         else:
             raise ValueError(f'No ACL section with name: {section}')
+
+
+        def verify_access(self, key: T, permission: AccessControlPermission) -> bool:
+            """document"""
+            #TODO: DOCUMENT-FIX
+            return self.groups.verify_access(key, permission)

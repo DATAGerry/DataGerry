@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser
 from cmdb.framework.importer.content_types import CSVContent
 from cmdb.framework.importer.importers.object_importer import ObjectImporter

@@ -124,7 +124,6 @@ def get_cmdb_relations(params: CollectionParameters, request_user: CmdbUser):
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
         iteration_result: IterationResult[CmdbRelation] = relations_manager.iterate(builder_params)
-
         relation_list = [CmdbRelation.to_json(relation) for relation in iteration_result.results]
 
         api_response = GetMultiResponse(relation_list,
@@ -200,15 +199,19 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
     try:
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
                                                                           request_user)
-        # object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-        #                                                                         ManagerType.OBJECT_RELATIONS_MANAGER,
-        #                                                                         request_user)
+        object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
+                                                                                ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                                request_user)
 
         to_update_relation = relations_manager.get_relation(public_id)
 
         if to_update_relation:
 
             # handle_deleted_type_ids(to_update_relation, data, object_relations_manager)
+
+            # changed_fields: dict = relations_manager.get_added_and_removed_fields(to_update_relation, data)
+
+            # object_relations_manager.update_changed_fields(public_id, changed_fields)
 
             relation = CmdbRelation.from_data(data)
 

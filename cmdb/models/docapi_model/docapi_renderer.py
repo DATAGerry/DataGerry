@@ -24,6 +24,7 @@ from cmdb.manager import (
     DocapiTemplatesManager,
 )
 
+from cmdb.models.object_model import CmdbObject
 from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.models.docapi_model.object_document_generator import ObjectDocumentGenerator
 from cmdb.models.docapi_model.pdf_document_type import PdfDocumentType
@@ -75,6 +76,7 @@ class DocApiRenderer:
         """
         template = self.docapi_manager.get_template(doctpl_id)
         cmdb_object = self.objects_manager.get_object(object_id)
+        cmdb_object = CmdbObject.from_data(cmdb_object)
         type_instance = self.objects_manager.get_object_type(cmdb_object.get_type_id())
 
         cmdb_render_object = CmdbRender(cmdb_object,

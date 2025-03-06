@@ -27,6 +27,7 @@ from cmdb.manager import (
     ObjectsManager,
 )
 
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.type_model.cmdb_type import CmdbType
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.location_model.location_node import LocationNode
@@ -95,6 +96,7 @@ def create_location(params: dict, request_user: CmdbUser):
 
     if params['name'] == '' or params['name'] is None:
         current_object = objects_manager.get_object(int(params['object_id']))
+        current_object = CmdbObject.from_data(current_object)
 
         if current_app.cloud_mode:
             current_app.database_manager.connector.set_database(request_user.database)
@@ -359,7 +361,7 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
 
         if params['name'] == '' or params['name'] is None:
             current_object = objects_manager.get_object(object_id)
-
+            current_object = CmdbObject.from_data(current_object)
             if current_app.cloud_mode:
                 current_app.database_manager.connector.set_database(request_user.database)
 

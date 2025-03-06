@@ -27,7 +27,7 @@ from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.object_link_model import CmdbObjectLink
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
 

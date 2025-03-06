@@ -26,7 +26,7 @@ from cmdb.manager import (
 
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.rendering.render_result import RenderResult
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.type_model import (
     CmdbType,
     TypeReference,
@@ -281,7 +281,9 @@ class CmdbRender:
                             field['value'] = reference_id
 
                             if field['type'] == 'ref':
-                                reference_object: CmdbObject = self.objects_manager.get_object(reference_id)
+                                reference_object = self.objects_manager.get_object(reference_id)
+                                reference_object: CmdbObject = CmdbObject.from_data(reference_object)
+
                                 ref_type: CmdbType = self.objects_manager.get_object_type(
                                                                                 reference_object.get_type_id()
                                                                            )
@@ -332,7 +334,8 @@ class CmdbRender:
                 try:
                     reference_id: int = self.object_instance.get_value(ref_field_name)
                     ref_field['value'] = reference_id
-                    reference_object: CmdbObject = self.objects_manager.get_object(reference_id)
+                    reference_object: dict = self.objects_manager.get_object(reference_id)
+                    reference_object = CmdbObject.from_data(reference_object)
                 except (ObjectsManagerGetError, ValueError, KeyError):
                     reference_object = None
 
@@ -383,6 +386,7 @@ class CmdbRender:
         if ref_section_field and ref_section_field.get('type', '') == 'ref-section-field':
             try:
                 instance = self.objects_manager.get_object(ref_section_field.get('value'))
+                instance = CmdbObject.from_data(instance)
                 reference_type: CmdbType = self.objects_manager.get_object_type(instance.get_type_id())
                 render = CmdbRender(instance, ref_type, self.render_user, True, self.dbm)
                 fields = render.result(level).fields
@@ -413,6 +417,7 @@ class CmdbRender:
                 ref_object = self.objects_manager.get_object(int(current_field['value']),
                                                              self.render_user,
                                                              AccessControlPermission.READ)
+                ref_object = CmdbObject.from_data(ref_object)
             except AccessDeniedError as err:
                 #TODO: ERROR-FIX
                 return err

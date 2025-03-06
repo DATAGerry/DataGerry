@@ -13,14 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of RenderList
+"""
 import logging
 from typing import Union
 
 from cmdb.manager import ObjectsManager
 
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.user_model import CmdbUser
 from cmdb.framework.rendering.render_result import RenderResult
 from cmdb.framework.rendering.cmdb_render import CmdbRender

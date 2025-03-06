@@ -22,7 +22,7 @@ from pytest import fixture
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.type_model import (
     CmdbType,
     TypeFieldSection,
@@ -229,7 +229,7 @@ class TestFrameworkObjects:
     def test_get_object(self, rest_api, example_object, full_access_user, none_access_user):
         """document"""
         #TODO: DOCUMENT-FIX
-        default_response = rest_api.get(f'{self.ROUTE_URL}/{example_object.public_id}/{"native"}')
+        default_response = rest_api.get(f'{self.ROUTE_URL}/{"native"}/{example_object.public_id}')
         assert default_response.status_code == HTTPStatus.OK
 
         # Response parsable
@@ -265,7 +265,7 @@ class TestFrameworkObjects:
                                         json=CmdbObject.to_json(example_object))
         assert default_response.status_code == HTTPStatus.ACCEPTED
 
-        validate_response = rest_api.get(f'{self.ROUTE_URL}/{example_object.public_id}/{"native"}')
+        validate_response = rest_api.get(f'{self.ROUTE_URL}/{"native"}/{example_object.public_id}')
         assert validate_response.status_code == HTTPStatus.OK
 
         response_dict = validate_response.get_json()

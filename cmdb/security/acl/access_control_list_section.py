@@ -149,3 +149,12 @@ class AccessControlListSection(ABC, Generic[T]):
             self.includes[key].remove(permission)
         except KeyError as err:
             raise ValueError(f"The permission {permission} is not granted to key {key}.") from err
+
+
+    def verify_access(self, key: T, permission: AccessControlPermission) -> bool:
+        """document"""
+        #TODO: DOCUMENT-FIX
+        try:
+            return permission.value in self.includes[key]
+        except KeyError:
+            return False

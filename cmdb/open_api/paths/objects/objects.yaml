@@ -28,7 +28,7 @@ post:
         Inserts a new CmdbObject into the database.
         <br><br>
         The **public_id**, **author_id** and **creation_time** properties will be automatically created and don't need to be provided.
-    operationId: insert_object
+    operationId: insert_cmdb_object
     requestBody:
         required: true
         content:
@@ -95,10 +95,10 @@ get:
           required: false
           schema:
             $ref: '../../components/schemas/CollectionParameters.yaml'
-    operationId: get_objects
+    operationId: get_cmdb_objects
     responses:
         "200":
-            description: Returns a **list of CmdbObjects** matching the filter criteria
+            description: Returns a **list of CmdbObjects with render information** matching the filter criteria
             content:
                 application/json:
                     schema:
@@ -135,3 +135,13 @@ get:
                             error:
                                 type: string
                                 example: "Could not retrive objects"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"

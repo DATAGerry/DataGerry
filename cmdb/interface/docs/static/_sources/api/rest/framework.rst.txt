@@ -246,8 +246,7 @@ Overview of all GET routes to get objects from the database.
                      "name": "example",
                      "value": "value"
                   }
-               ],
-               "views":0
+               ]
             }
 
         :reqheader Accept: application/json
@@ -375,8 +374,7 @@ Create / Update (POST / PUT) - Operation
                         "name" : "dummy-field",
                         "value" : null
                     }
-                ],
-                "views": 0
+                ]
             }
 
         **Example response**
@@ -423,8 +421,7 @@ Create / Update (POST / PUT) - Operation
                         "value": "update"
                     }
                 ],
-                "public_id": 1,
-                "views": 0
+                "public_id": 1
             }
 
         **Example response**

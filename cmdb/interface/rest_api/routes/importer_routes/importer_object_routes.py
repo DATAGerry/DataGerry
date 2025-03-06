@@ -30,6 +30,7 @@ from cmdb.manager import (
     LogsManager,
 )
 
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.type_model.cmdb_type import CmdbType
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.log_model.log_action_enum import LogAction
@@ -283,6 +284,7 @@ def import_objects(request_user: CmdbUser):
             # get object state of every imported object
             current_type_instance = objects_manager.get_object_type(importer_config_request.get('type_id'))
             current_object = objects_manager.get_object(message.public_id)
+            current_object = CmdbObject.from_data(current_object)
 
             current_object_render_result = CmdbRender(current_object,
                                                       current_type_instance,

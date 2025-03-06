@@ -18,7 +18,6 @@ Implementation of BaseExportWriter
 """
 import logging
 import datetime
-import time
 from flask import Response
 
 from cmdb.database import MongoDatabaseManager
@@ -26,7 +25,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager import ObjectsManager
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.object_model.cmdb_object import CmdbObject
+from cmdb.models.object_model import CmdbObject
 from cmdb.framework.rendering.render_list import RenderList
 from cmdb.framework.rendering.render_result import RenderResult
 from cmdb.security.acl.permission import AccessControlPermission

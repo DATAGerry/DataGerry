@@ -32,6 +32,8 @@ from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.security.acl.permission import AccessControlPermission
+
+from cmdb.errors.manager.objects_manager import ObjectsManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -60,7 +62,7 @@ def quick_search_result_counter(request_user: CmdbUser):
 
     try:
         result = list(objects_manager.aggregate_objects(pipeline=pipeline))
-    except Exception as err:
+    except ObjectsManagerIterationError as err:
         LOGGER.error('[Search count]: %s',err)
         return abort(400)
 
@@ -121,6 +123,7 @@ def search_framework(request_user: CmdbUser):
 
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 
+#TODO: REFACTOR-FIX (move to helper file since identical method in objects_routes.py)
 def _fetch_only_active_objs():
     """
         Checking if request have cookie parameter for object active state

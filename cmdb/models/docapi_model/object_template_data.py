@@ -20,6 +20,7 @@ import logging
 
 from cmdb.manager import ObjectsManager
 
+from cmdb.models.object_model import CmdbObject
 from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.framework.rendering.render_result import RenderResult
 
@@ -85,6 +86,7 @@ class ObjectTemplateData:
                 if field_type in ("ref", "location") and field_value and depth > 0:
                     # resolve type
                     related_object = self.objects_manager.get_object(field_value)
+                    related_object = CmdbObject.from_data(related_object)
                     object_type = self.objects_manager.get_object_type(related_object.get_type_id())
 
                     related_render = CmdbRender(related_object, object_type, None, False, self.objects_manager.dbm)
