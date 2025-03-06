@@ -24,16 +24,36 @@
     border: 1px solid #ddd;
   }
   
-  .modal-header {
+
+
+.modal-header {
+    background: #e94d18;
     padding: 12px 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: none;
+    
     .modal-title {
-      color: #333;
+      color: white;
       font-size: 18px;
       font-weight: 600;
     }
+    
+    .close {
+      color: white;
+      text-shadow: none;
+      opacity: 0.9;
+      
+      &:hover {
+        color: white;
+        opacity: 1;
+      }
+      
+      span {
+        font-size: 28px;
+        line-height: 0.8;
+      }
+    }
   }
-  
+
   .modal-body {
     padding: 15px;
     max-height: 70vh;
