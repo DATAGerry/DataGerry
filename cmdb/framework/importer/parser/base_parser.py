@@ -27,26 +27,48 @@ LOGGER = logging.getLogger(__name__)
 #                                                  BaseParser - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseParser:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A base class for parsers that handle file parsing with configurable settings
+
+    Attributes:
+        DEFAULT_CONFIG (dict): Default configuration settings for the parser
+    """
     DEFAULT_CONFIG = {}
 
-    def __new__(cls, *args, **kwargs):
-        return super(BaseParser, cls).__new__(cls)
-
-
     def __init__(self, parser_config: dict = None):
+        """
+        Initializes the BaseParser with a given configuration
+
+        Args:
+            parser_config (dict, optional): A dictionary containing parser-specific settings.
+                                            If not provided, DEFAULT_CONFIG is used
+        """
         _parser_config = parser_config or self.DEFAULT_CONFIG
         self.parser_config: dict = {**self.DEFAULT_CONFIG, **_parser_config}
 
 
     def get_config(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves the current parser configuration
+
+        Returns:
+            dict: The parser's configuration settings
+        """
         return self.parser_config
 
 
+    #TODO: DOCUMENT-FIX (add type annotation for "file")
     def parse(self, file) -> BaseParserResponse:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        raise NotImplementedError
+        """
+        Parses the given file
+
+        Args:
+            file: The file to be parsed
+
+        Returns:
+            BaseParserResponse: The result of the parsing process
+
+        Raises:
+            NotImplementedError: This method must be implemented in a subclass
+        """
+        raise NotImplementedError("Subclasses must implement the `parse` method!")

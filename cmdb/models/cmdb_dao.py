@@ -13,13 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CmdbDAO
+"""
 import logging
+import pprint
 from pymongo import IndexModel
 
 from cmdb.models.cmdb_versioning import Versioning
-from cmdb.utils.helpers import debug_print
 
 from cmdb.errors.cmdb_object import NoPublicIDError, NoVersionError, RequiredInitKeyNotFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -73,6 +74,7 @@ class CmdbDAO:
     def __init__(self, public_id, **kwargs):
         """
         All parameters inside *kwargs will be auto convert to attributes
+
         Args:
             **kwargs: list of parameters
         """
@@ -94,11 +96,11 @@ class CmdbDAO:
             the child class object will inherit this function
             SHOULD NOT BE OVERWRITTEN!
 
-        Returns:
-            int: public id
-
         Raises:
             NoPublicIDError: if `public_id` is zero or not set
+
+        Returns:
+            int: public id
         """
         if self.public_id == 0 or self.public_id is None:
             raise NoPublicIDError("No public_id assigned!")
@@ -112,7 +114,6 @@ class CmdbDAO:
         checks if all required keys for cmdb usage are present
         @deprecated_implementation
         if not all(key in key_list for key in cls.REQUIRED_INIT_KEYS):
-        raise InitKeyNotFoundError()
 
         Returns:
             Instance of the object
@@ -136,14 +137,13 @@ class CmdbDAO:
 
     @classmethod
     def get_index_keys(cls):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        index_list = []
+        """
+        Retrieves a list of index models based on class-defined index keys
 
-        for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS:
-            index_list.append(IndexModel(**index))
-
-        return index_list
+        Returns:
+            list: A list of IndexModel instances created from `INDEX_KEYS` and `SUPER_INDEX_KEYS`
+        """
+        return [IndexModel(**index) for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS]
 
 
     def update_version(self, update) -> str:
@@ -194,4 +194,4 @@ class CmdbDAO:
 
 
     def __repr__(self):
-        return debug_print(self)
+        return f'Class: {self.__class__.__name__} \nDict:\n{pprint.pformat(self.__dict__)}'

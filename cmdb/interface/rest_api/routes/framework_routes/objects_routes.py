@@ -1645,21 +1645,20 @@ def delete_invalid_object_relations(public_id: int,
         ObjectRelationLogsManagerBuildError: If creating a CmdbObjectRelationLog fails
     """
     relations_query = {"$or": [{"relation_parent_id": public_id}, {"relation_child_id": public_id}]}
-
     builder_params = BuilderParameters(criteria=relations_query)
 
     iteration_result: IterationResult[CmdbObjectRelation] = object_relations_manager.iterate(builder_params)
-
     object_relation_list: list[CmdbObjectRelation] = list(iteration_result.results)
+
 
     for object_relation in object_relation_list:
         try:
-            object_relations_manager.delete_object_relation(object_relation['public_id'])
+            object_relations_manager.delete_object_relation(object_relation.public_id)
 
             object_relation_logs_manager.build_object_relation_log(
                                             LogInteraction.DELETE,
                                             request_user,
-                                            object_relation,
+                                            CmdbObjectRelation.to_json(object_relation),
                                             None
                                         )
         except ObjectRelationsManagerDeleteError as error:

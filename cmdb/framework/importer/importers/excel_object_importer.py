@@ -59,6 +59,8 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
 
 
     def generate_object(self, entry: dict, *args, **kwargs) -> dict:
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             possible_fields: list[dict] = kwargs['fields']
         except (KeyError, IndexError, ValueError) as err:
@@ -99,6 +101,8 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
 
 
     def start_import(self) -> ImporterObjectResponse:
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             parsed_response: ExcelObjectParserResponse = self.parser.parse(self.file)
         except ParserRuntimeError as err:

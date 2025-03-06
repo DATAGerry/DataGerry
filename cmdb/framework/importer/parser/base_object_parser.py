@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseObjectParser
+"""
 import logging
 
 from cmdb.framework.importer.responses.object_parser_response import ObjectParserResponse
@@ -27,14 +28,34 @@ LOGGER = logging.getLogger(__name__)
 #                                               BaseObjectParser - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseObjectParser(BaseParser):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A base class for object parsers
 
-    DEFAULT_CONFIG = {}
+    Extends: BaseParser
+    """
 
     def __init__(self, parser_config: dict):
+        """
+        Initializes the BaseObjectParser with a given configuration
+
+        Args:
+            parser_config (dict): A dictionary containing parser-specific settings
+        """
         super().__init__(parser_config)
 
 
+    #TODO: DOCUMENT-FIX (add type annotation for "file")
     def parse(self, file) -> ObjectParserResponse:
-        raise NotImplementedError
+        """
+        Parses the given file
+
+        Args:
+            file: The file to be parsed
+
+        Raises:
+            NotImplementedError: This method must be implemented in a subclass
+
+        Returns:
+            ObjectParserResponse: The result of the parsing process
+        """
+        raise NotImplementedError("Subclasses must implement the `parse` method.")

@@ -382,7 +382,7 @@ def delete_cmdb_type(public_id: int, request_user: CmdbUser):
                 for relation in relation_list:
                     relation.remove_type_id_from_relation(public_id)
 
-                    relations_manager.update_relation(1, CmdbRelation.to_json(relation))
+                    relations_manager.update_relation(relation.public_id, CmdbRelation.to_json(relation))
             except Exception as error:
                 LOGGER.error("[delete_cmdb_type] Relation Exception: %s. Type: %s", error, type(error), exc_info=True)
                 return abort(400, "Although the Type got deleted, Relations could not be updated!")

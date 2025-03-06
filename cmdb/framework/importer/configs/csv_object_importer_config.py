@@ -28,12 +28,32 @@ LOGGER = logging.getLogger(__name__)
 #                                            CsvObjectImporterConfig - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectImporterConfig(ObjectImporterConfig, CSVContent):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Configuration class for importing CmdbObjects from a CSV file
 
+    Attributes:
+        MANUALLY_MAPPING (bool): Indicates if manual mapping is required
+    """
     MANUALLY_MAPPING = True
 
-    def __init__(self, type_id: int, mapping: list = None, start_element: int = 0, max_elements: int = 0,
-                 overwrite_public: bool = True, *args, **kwargs):
-        super().__init__(type_id=type_id, mapping=mapping, start_element=start_element,
-                                                      max_elements=max_elements, overwrite_public=overwrite_public)
+    def __init__(self,
+                 type_id: int,
+                 start_element: int = 0,
+                 max_elements: int = 0,
+                 mapping: list = None,
+                 overwrite_public: bool = True):
+        """
+        Initializes a CsvObjectImporterConfig
+
+        Args:
+            type_id (int): public_id of the CmdbType
+            start_element (int, optional): The starting index for processing records. Defaults to 0
+            max_elements (int, optional): The maximum number of records to process. Defaults to 0 (no limit)
+            mapping (list, optional): A list defining the mapping of CSV columns to object fields
+            overwrite_public (bool, optional): Whether to overwrite public data. Defaults to True
+        """
+        super().__init__(type_id=type_id,
+                         mapping=mapping,
+                         start_element=start_element,
+                         max_elements=max_elements,
+                         overwrite_public=overwrite_public)

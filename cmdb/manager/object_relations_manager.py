@@ -214,10 +214,10 @@ class ObjectRelationsManager(BaseManager):
             is_parent_ids (bool): A flag indicating whether the invalid IDs belong to parent type relations
                                   (True) or child type relations (False)
         """
-        query = {"relation_id": relation_id, "relation_child_type_id": { "$in": invalid_ids }}
+        query = {"$and": [{"relation_id": relation_id}, {"relation_child_type_id": { "$in": invalid_ids }}]}
 
         if is_parent_ids:
-            query = {"relation_id": relation_id, "relation_parent_type_id": { "$in": invalid_ids }}
+            query = {"$and": [{"relation_id": relation_id}, {"relation_parent_type_id": { "$in": invalid_ids }}]}
 
         invalid_object_relations = self.find(query)
 
@@ -239,7 +239,7 @@ class ObjectRelationsManager(BaseManager):
                 - "added" (list[str]): Field names that were newly introduced
                 - "removed" (list[str]): Field names that should be removed
         """
-        affected_object_relations = self.find_all(filter={'relation_id':relation_id})
+        affected_object_relations = self.get_many(filter={'relation_id':relation_id})
 
         for obj_relation in affected_object_relations:
             updated_field_values = []

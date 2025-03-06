@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CsvObjectParserResponse
+"""
 import logging
 
 from cmdb.framework.importer.responses.object_parser_response import ObjectParserResponse
@@ -26,22 +27,41 @@ LOGGER = logging.getLogger(__name__)
 #                                            CsvObjectParserResponse - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectParserResponse(ObjectParserResponse):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Represents the response of a CSV object parser
 
+    Extends: ObjectParserResponse
+    """
     def __init__(self, count: int, entries: list, entry_length: int, header: dict = None):
+        """
+        Initializes a CsvObjectParserResponse instance
+
+        Args:
+            count (int): The total number of parsed entries
+            entries (list): A list of parsed entries
+            entry_length (int): The number of fields in each entry
+            header (dict, optional): A dictionary representing the CSV header mapping. Defaults to an empty dictionary
+        """
         self.entry_length: int = entry_length
         self.header: dict = header or {}
         super().__init__(count=count, entries=entries)
 
 
     def get_entry_length(self) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves the number of fields in each entry
+
+        Returns:
+            int: The number of fields per entry
+        """
         return self.entry_length
 
 
     def get_header_list(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves the header mapping
+
+        Returns:
+            dict: The CSV header as a dictionary
+        """
         return self.header

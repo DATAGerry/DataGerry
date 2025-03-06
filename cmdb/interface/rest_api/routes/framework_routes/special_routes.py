@@ -13,10 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for DataGerry Assistant
+"""
 import logging
 from flask import abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
@@ -32,6 +34,9 @@ from cmdb.interface.blueprints import RootBlueprint
 from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.framework.datagerry_assistant.profile_assistant import ProfileAssistant
 
+from cmdb.errors.manager.categories_manager import CategoriesManagerGetError
+from cmdb.errors.manager.types_manager import TypesManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.dg_assistant.dg_assistant_errors import ProfileCreationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -41,36 +46,35 @@ special_blueprint = RootBlueprint('special_rest', __name__, url_prefix='/special
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-@special_blueprint.route('intro', methods=['GET'])
 @special_blueprint.route('/intro', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
-def get_intro_starter(request_user: CmdbUser):
+def show_datagerry_assistant(request_user: CmdbUser):
     """
-    Creates steps for intro and checks if there are any objects, categories or types in the DB
+    Checks if the DataGerry assistant should be displayed when starting DataGerry
 
     Returns:
-        _type_: Steps and if there are any objects, types and categories in the database
+        DefaultResponse: True if there are no types, categories and objects in the database else False
     """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-
     try:
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+
         categories_total = categories_manager.count_categories()
         types_total = types_manager.count_types()
         objects_total = objects_manager.count_objects()
 
-        intro_instance = {'execute': (types_total > 0 or categories_total > 0 or objects_total > 0)}
+        show_assistant = types_total == 0 and categories_total == 0 and objects_total == 0
 
-        api_response = DefaultResponse(intro_instance)
-
-        resp = api_response.make_response()
-    except Exception:
-        #TODO: ERROR-FIX
-        return abort(400)
-
-    return resp
+        return DefaultResponse(show_assistant).make_response()
+    except (CategoriesManagerGetError, TypesManagerGetError, ObjectsManagerGetError) as err:
+        LOGGER.error("[show_datagerry_assistant] Error: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Failed to check prerequisites to display DataGerry Assistant!")
+    except Exception as err:
+        LOGGER.error("[show_datagerry_assistant] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @special_blueprint.route('/profiles', methods=['POST'])
@@ -87,27 +91,34 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
     Returns:
         _type_: list of created public_ids of types
     """
-    categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-
-    profiles = data['data'].split('#')
-
-    categories_total = categories_manager.count_categories()
-    types_total = types_manager.count_types()
-    objects_total = objects_manager.count_objects()
-
-    # Only execute if there are no categories, types and objects in the database
-    if categories_total > 0 or types_total > 0 or objects_total > 0:
-        return abort(400, "There exists either objects, types or categories in the DB")
-
     try:
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+                                                                            request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+
+        profiles = data['data'].split('#')
+
+        categories_total = categories_manager.count_categories()
+        types_total = types_manager.count_types()
+        objects_total = objects_manager.count_objects()
+
+        # Only execute if there are no categories, types and objects in the database
+        if categories_total > 0 or types_total > 0 or objects_total > 0:
+            return abort(400, "There are objects, types, or categories in the database which prevents this action!")
+
         profile_assistant = ProfileAssistant(categories_manager)
         created_ids = profile_assistant.create_profiles(profiles)
+
+        return DefaultResponse(created_ids).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except ProfileCreationError as err:
-        LOGGER.debug("[create_initial_profiles] %s", err)
-        return abort(400, "Could not create initial profiles!")
-
-    api_response = DefaultResponse(created_ids)
-
-    return api_response.make_response()
+        LOGGER.error("[create_initial_profiles] Error: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Failed to create initial profiles!")
+    except (CategoriesManagerGetError, TypesManagerGetError, ObjectsManagerGetError) as err:
+        LOGGER.error("[create_initial_profiles] Error: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Failed to check prerequisites if the DataGerry Assistant can be executed!")
+    except Exception as err:
+        LOGGER.error("[create_initial_profiles] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
