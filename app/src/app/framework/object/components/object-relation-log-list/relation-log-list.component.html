@@ -1,0 +1,61 @@
+<!-- CMDB Table with pagination, search, sorting -->
+<cmdb-table
+  [items]="logs"
+  [columns]="columns"
+  [totalItems]="totalLogs"
+  [loading]="loading"
+  [pageSize]="limit"
+  [page]="page"
+  [sort]="sort"
+  [sortable]="true"
+  [searchEnabled]="true"          
+  
+  (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)"
+  (sortChange)="onSortChange($event)"
+  (searchChange)="onSearchChange($event)" 
+  
+>
+</cmdb-table>
+
+<!-- Columns Templates -->
+<ng-template #publicIdTemplate let-data="data">
+  {{ data }}
+</ng-template>
+
+<ng-template #logTimeTemplate let-data="data">
+  {{ data | dateFormatter }}
+</ng-template>
+
+<ng-template #actionTemplate let-data="data">
+  {{ data }}
+</ng-template>
+
+<ng-template #authorTemplate let-data="data">
+  {{ data }}
+</ng-template>
+
+<!-- The combined 'Actions' column template: view + delete -->
+<ng-template #actionsTemplate let-item="item">
+  <span>
+    <i class="far fa-eye spacing-right icon-view" 
+       (click)="onViewClick(item)" title="View Relation Log"></i>
+  </span>
+  <span>
+    <i class="far fa-trash-alt btn-delete icon-delete ml-2" 
+       (click)="deleteLog(item)" title="Delete Relation Log"></i>
+  </span>
+</ng-template>
+
+<!-- Changes Popup -->
+<app-changes-modal
+  *ngIf="showChangesModal"
+  [log]="selectedLog"
+  (close)="closeChangesModal()"
+></app-changes-modal>
+
+<!-- Show the loading popup -->
+<app-loading-popup 
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+></app-loading-popup>

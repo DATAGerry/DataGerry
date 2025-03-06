@@ -410,7 +410,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
               console.log('[DEBUG] loadObjectRelationInstances completed');
             },
             error: (err) => {
-              this.toastService.error(err?.error?.message || 'Failed to fetch relation definitions');
+              this.toastService.error(err?.error?.message);
               this.loadingRelations = false;
               this.changesRef.markForCheck();
               console.error('[DEBUG] Error fetching relation definitions:', err);
@@ -425,7 +425,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
   }
-
 
 
   /**
@@ -484,7 +483,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
           this.changesRef.detectChanges();
         },
         error: (err) => {
-          this.toastService.error(err?.error?.message || 'Failed to load available relations');
+          this.toastService.error(err?.error?.message);
           this.loadingRelations = false;
           this.changesRef.detectChanges();
         }
@@ -744,6 +743,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
               next: () => {
                 this.toastService.success('Relation instance deleted successfully');
                 this.loadObjectRelationInstances(this.currentObjectID);
+                this.loadRelationsForNewRelation()
               },
               error: (err) => {
                 this.toastService.error(err?.error?.message);
@@ -840,10 +840,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public onRelationSearchChange(searchTerm: string): void {
-    // If your API supports search filtering, update your filter here.
-    // For example, you might store the term and include it in your filter params.
     console.log('[DEBUG] Relation search term:', searchTerm);
-    // Then re-call your data loading method.
     this.loadObjectRelationInstances(this.currentObjectID);
   }
 
