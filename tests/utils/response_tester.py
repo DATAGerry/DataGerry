@@ -13,13 +13,23 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Module for testing API responses
+
+Provides utility functions to validate HTTP responses
+"""
 from flask import Response
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def default_response_tests(response: Response):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Performs basic validation checks on a Flask Response object
+
+    Args:
+        response (Response): The Flask response object to be tested
+
+    Raises:
+        AssertionError: If the response status code is not 200 or if the content type is not 'application/json'
+    """
     assert response.status_code == 200
     assert response.content_type == 'application/json'

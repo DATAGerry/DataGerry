@@ -18,7 +18,7 @@ Implementation of the CsvExportFormat
 """
 import logging
 import csv
-import io
+from io import StringIO
 import json
 
 from cmdb.framework.exporter.format.base_exporter_format import BaseExporterFormat
@@ -101,13 +101,25 @@ class CsvExportFormat(BaseExporterFormat):
         return self.csv_writer([*header, *columns], rows)
 
 
-    def csv_writer(self, header, rows, dialect=csv.excel):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        csv_file = io.StringIO()
+    def csv_writer(self, header: list, rows: list, dialect=csv.excel) -> StringIO:
+        """
+        Generates a CSV file in memory
+
+        Args:
+            header (list): A list representing the CSV header row
+            rows (list): A list of lists, where each inner list represents a row of data
+            dialect (str, optional): The CSV dialect to use. Defaults to `csv.excel`
+
+        Returns:
+            StringIO: A file-like object containing the CSV data
+        """
+        csv_file = StringIO()
         writer = csv.writer(csv_file, dialect=dialect)
         writer.writerow(header)
-        for row in rows:
-            writer.writerow(row)
-        csv_file.seek(0)
+        writer.writerows(rows)  # More efficient than looping manually
+        # for row in rows:
+        #     writer.writerow(row)
+
+        csv_file.seek(0) # Reset pointer to the beginning of the file
+
         return csv_file

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ObjectParserResponse
+"""
 from cmdb.framework.importer.responses.base_parser_response import BaseParserResponse
 # -------------------------------------------------------------------------------------------------------------------- #
 

@@ -19,7 +19,6 @@ Collection of different helper classes and functions
 import re
 import sys
 import importlib
-import pprint
 import inspect
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -27,23 +26,11 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def debug_print(self):
-    """
-    pretty formatting of error/debug output
-    Args:
-        self: access the instance attribute
-
-    Returns:
-        (str): pretty formatted string of debug informations
-    """
-    return f'Class: {self.__class__.__name__} \nDict:\n{pprint.pformat(self.__dict__)}'
-
 
 def load_class(classname):
     """ load and return the class with the given classname """
     # extract class from module
-    #TODO: check if this regex is correct
-    pattern = re.compile("(.*)\.(.*)")
+    pattern = re.compile(r"(.*)\.(.*)")
     match = pattern.fullmatch(classname)
 
     if match is None:
@@ -69,38 +56,69 @@ def get_module_classes(module_name):
     return class_list
 
 
-def str_to_bool(s):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    if s in ('True', 'true'):
-        return True
+def str_to_bool(s) -> bool:
+    """
+    Converts a string or boolean value to a corresponding boolean
 
-    if s in ('False', 'false'):
-        return False
+    Args:
+        s (str or bool): The input value to be converted. This can be:
+            - A string, which is either 'True', 'true', 'False', 'false' (case-insensitive)
+            - A boolean value (`True` or `False`)
 
-    if s is True:
-        return True
+    Returns:
+        bool: `True` or `False` depending on the input value
 
-    if s is False:
-        return False
+    Raises:
+        ValueError: If the input is not a valid boolean string or boolean value
+    """
+    # Check if input is a string and convert based on known truthy or falsy values
+    if isinstance(s, str):
+        s = s.strip().lower()
+        if s == 'true':
+            return True
+        if s == 'false':
+            return False
 
-    raise ValueError
+    # Check if input is already a boolean
+    if isinstance(s, bool):
+        return s
+
+    # If input is not a valid string or boolean, raise an error
+    raise ValueError("Invalid value for conversion to boolean")
 
 
 def process_bar(name, total, progress):
     """
-    Displays or updates a console progress bar.
+    Displays or updates a console progress bar to visualize the progress of a task.
+
     Args:
-        name: Process bar name
-        total: max. processes
-        progress: current process
+        name (str): The name of the process being tracked.
+        total (int): The total number of steps or tasks to complete.
+        progress (int): The current progress (steps or tasks completed).
+
+    Example:
+        >>> process_bar('Task', 100, 45)
+        Task:[####################--------------------] 45%   [45/100]
     """
-    through_of = f"\t| [{progress}/{total}]"
-    bar_length, status = 50, ""
+    # Ensure progress is a float for accurate calculation and prevent division by zero
     progress = float(progress) / float(total)
-    if progress >= 1.:
-        progress, status = 1, "\r\n"
+
+    # Set progress to 1 when it's equal to or greater than the total
+    if progress >= 1.0:
+        progress = 1.0
+        status = "\r\n"  # New line after completion
+    else:
+        status = ""  # Keep same line for progress
+
+    # Define the bar's length and calculate the number of blocks
+    bar_length = 50
     block = int(round(bar_length * progress))
-    text = f'\r{name}:[{"#" * block + "-" * (bar_length - block)}] {progress * 100:.0f}% {through_of} {status} \n'
-    sys.stdout.write(text)
+
+    # Construct the progress bar text
+    progress_percentage = f"{progress * 100:.0f}%"
+    through_of = f"[{progress}/{total}]"
+    progress_bar = f'[{ "#" * block + "-" * (bar_length - block)}] {progress_percentage} {through_of}'
+
+    # Print or update the progress bar on the same line
+    sys.stdout.write(f'\r{name}: {progress_bar}{status}')
     sys.stdout.flush()

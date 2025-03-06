@@ -217,8 +217,8 @@ export class AuthService<T = any> implements ApiServicePrefix {
     /* -------------------------------------------------- INTRO SECTION ------------------------------------------------- */
 
     public showIntro(triggered: boolean = false) {
-        this.specialService.getIntroStarter().subscribe(value => {
-            if (!value['execute']) {
+        this.specialService.getIntroStarter().subscribe(showAssistant => {
+            if (showAssistant) {
                 this.startIntroModal = this.introService.open(IntroComponent, this.getModalOptions());
 
                 this.startIntroModal.result.then((result) => {

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of DocapiTemplate
+"""
 from cmdb.framework.docapi.docapi_template.docapi_template_base import TemplateManagementBase
 from cmdb.models.docapi_model import DocapiTemplateType
 from cmdb.models.cmdb_dao import CmdbDAO

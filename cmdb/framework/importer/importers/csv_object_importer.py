@@ -137,6 +137,8 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
 
 
     def start_import(self) -> ImporterObjectResponse:
+        """document"""
+        #TODO: DOCUMENT-FIX
         try:
             parsed_response: CsvObjectParserResponse = self.parser.parse(self.file)
         except ParserRuntimeError as err:

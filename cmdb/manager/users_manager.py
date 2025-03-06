@@ -150,6 +150,8 @@ class UsersManager(BaseManager):
                 return None
 
             return CmdbUser.from_data(requested_user)
+        except IndexError: # No user found
+            return None
         except (BaseManagerGetError, CmdbUserInitFromDataError) as err:
             raise UsersManagerGetError(err) from err
         except Exception as err:

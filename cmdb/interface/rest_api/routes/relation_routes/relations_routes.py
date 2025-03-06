@@ -207,11 +207,11 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
 
         if to_update_relation:
 
-            # handle_deleted_type_ids(to_update_relation, data, object_relations_manager)
+            handle_deleted_type_ids(to_update_relation, data, object_relations_manager)
 
-            # changed_fields: dict = relations_manager.get_added_and_removed_fields(to_update_relation, data)
+            changed_fields: dict = relations_manager.get_added_and_removed_fields(to_update_relation, data)
 
-            # object_relations_manager.update_changed_fields(public_id, changed_fields)
+            object_relations_manager.update_changed_fields(public_id, changed_fields)
 
             relation = CmdbRelation.from_data(data)
 
