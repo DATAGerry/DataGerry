@@ -219,7 +219,7 @@ class ObjectRelationsManager(BaseManager):
         if is_parent_ids:
             query = {"$and": [{"relation_id": relation_id}, {"relation_parent_type_id": { "$in": invalid_ids }}]}
 
-        invalid_object_relations = self.find(query)
+        invalid_object_relations = self.find_all(criteria=query)
 
         invalid_object_relation: CmdbObjectRelation
         for invalid_object_relation in invalid_object_relations:

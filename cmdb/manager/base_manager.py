@@ -245,7 +245,7 @@ class BaseManager:
             list[dict]: A list of documents matching the search criteria
         """
         try:
-            found_documents = self.find(collection=self.collection, *args, **kwargs)
+            found_documents = self.find(*args, **kwargs)
 
             try:
                 return list(found_documents)
@@ -274,7 +274,7 @@ class BaseManager:
             if criteria is None:
                 criteria = {}
 
-            return self.dbm.find(self.collection, filter=criteria, *args, **kwargs)
+            return self.dbm.find(collection=self.collection, filter=criteria, *args, **kwargs)
         except DocumentGetError as err:
             raise BaseManagerGetError(err) from err
 
