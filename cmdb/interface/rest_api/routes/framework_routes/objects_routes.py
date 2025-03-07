@@ -100,7 +100,7 @@ def insert_cmdb_object(request_user: CmdbUser):
     """
     try:
         #TODO: REFACTOR-FIX (pass the data same way as on other routes and add schema validation)
-        add_data_dump = json.dumps(request.json) # New data of the CmdbObject
+        new_object_json = json.dumps(request.json)
 
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
         logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
@@ -110,7 +110,7 @@ def insert_cmdb_object(request_user: CmdbUser):
             if check_config_item_limit_reached(request_user):
                 return abort(400, "The maximum amout of objects is reached!")
 
-        new_object_data = json.loads(add_data_dump, object_hook=json_util.object_hook)
+        new_object_data = json.loads(new_object_json, object_hook=json_util.object_hook)
 
         if 'public_id' not in new_object_data:
             new_object_data['public_id'] = objects_manager.get_new_object_public_id()
@@ -131,7 +131,7 @@ def insert_cmdb_object(request_user: CmdbUser):
         current_type_instance = objects_manager.get_object_type(new_object_data['type_id'])
 
         current_object = objects_manager.get_object(new_object_id)
-
+        LOGGER.debug(f"current_object: {current_object}")
         if not current_object:
             return abort(404, "Could not retrieve the created object from the database!")
 

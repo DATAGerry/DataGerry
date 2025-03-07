@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import ObjectRelationsManager, ObjectRelationLogsManager
+from cmdb.manager import ObjectRelationsManager, ObjectRelationLogsManager, RelationsManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
@@ -86,6 +86,15 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
                                                             ManagerType.OBJECT_RELATION_LOGS_MANAGER,
                                                             request_user)
+        relations_manager: RelationsManager = ManagerProvider.get_manager(
+                                                            ManagerType.RELATIONS_MANAGER,
+                                                            request_user)
+
+        relation_id = data.get('relation_id')
+        target_relation = relations_manager.get_relation(relation_id)
+
+        if not target_relation:
+            return abort(400, f"The Relation with ID:{relation_id} does not exist anymore!")
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
 
@@ -244,6 +253,15 @@ def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUs
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
                                                             ManagerType.OBJECT_RELATION_LOGS_MANAGER,
                                                             request_user)
+        relations_manager: RelationsManager = ManagerProvider.get_manager(
+                                                            ManagerType.RELATIONS_MANAGER,
+                                                            request_user)
+
+        relation_id = data.get('relation_id')
+        target_relation = relations_manager.get_relation(relation_id)
+
+        if not target_relation:
+            return abort(400, f"The Relation with ID:{relation_id} does not exist anymore!")
 
         to_update_object_relation = object_relations_manager.get_object_relation(public_id)
 

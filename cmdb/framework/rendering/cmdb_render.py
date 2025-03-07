@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Object/Type render"""
+"""document"""
+# TODO: DOCUMENT-FIX
 import logging
 from dateutil.parser import parse
 
@@ -43,6 +44,7 @@ from cmdb.errors.manager.users_manager import UsersManagerGetError
 from cmdb.errors.manager.types_manager import (
     TypesManagerGetError,
 )
+from cmdb.errors.models.cmdb_object import CmdbObjectInitFromDataError
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.render import ObjectInstanceError, TypeInstanceError, InstanceRenderError
 from cmdb.errors.models.cmdb_type import (
@@ -62,7 +64,8 @@ class CmdbRender:
 
     AUTHOR_ANONYMOUS_NAME = 'unknown'
 
-    def __init__(self, object_instance: CmdbObject,
+    def __init__(self,
+                 object_instance: CmdbObject,
                  type_instance: CmdbType,
                  render_user: CmdbUser,
                  ref_render=False,
@@ -70,9 +73,9 @@ class CmdbRender:
         """document"""
         #TODO: DOCUMENT-FIX
         self.dbm = dbm
-        self.object_instance: CmdbObject = object_instance
-        self.type_instance: CmdbType = type_instance
-        self.render_user: CmdbUser = render_user
+        self.object_instance = object_instance
+        self.type_instance = type_instance
+        self.render_user = render_user
 
         if dbm:
             self.objects_manager = ObjectsManager(self.dbm)
@@ -151,6 +154,8 @@ class CmdbRender:
 
 
     def _generate_result(self, level: int) -> RenderResult:
+        """document"""
+        # TODO: DOCUMENT-FIX
         render_result = RenderResult()
 
         try:
@@ -168,12 +173,16 @@ class CmdbRender:
 
 
     def __set_multi_data_sections(self, render_result: RenderResult) -> RenderResult:
+        """document"""
+        # TODO: DOCUMENT-FIX
         render_result.multi_data_sections = self.object_instance.multi_data_sections
 
         return render_result
 
 
     def __generate_object_information(self, render_result: RenderResult) -> RenderResult:
+        """document"""
+        # TODO: DOCUMENT-FIX
         try:
             author_name = self.users_manager.get_user(self.object_instance.author_id).get_display_name()
         except UsersManagerGetError:
@@ -202,6 +211,8 @@ class CmdbRender:
 
 
     def __generate_type_information(self, render_result: RenderResult) -> RenderResult:
+        """document"""
+        # TODO: DOCUMENT-FIX
         try:
             author_name = self.users_manager.get_user(self.type_instance.author_id).get_display_name()
         except UsersManagerGetError:
@@ -230,11 +241,15 @@ class CmdbRender:
 
 
     def __set_fields(self, render_result: RenderResult, level: int) -> RenderResult:
+        """document"""
+        # TODO: DOCUMENT-FIX
         render_result.fields = self.__merge_fields_value(level-1)
         return render_result
 
 
     def __set_sections(self, render_result: RenderResult) -> RenderResult:
+        """document"""
+        # TODO: DOCUMENT-FIX
         try:
             render_result.sections = [section.to_json(section) for section in
                                       self.type_instance.render_meta.sections]
@@ -244,6 +259,8 @@ class CmdbRender:
 
 
     def __merge_field_content_section(self, field: dict, object_: CmdbObject):
+        """document"""
+        # TODO: DOCUMENT-FIX
         curr_field = [x for x in object_.fields if x['name'] == field['name']][0]
         if curr_field['name'] == field['name'] and field.get('value'):
             field['default'] = field['value']
@@ -282,7 +299,7 @@ class CmdbRender:
 
                             if field['type'] == 'ref':
                                 reference_object = self.objects_manager.get_object(reference_id)
-                                reference_object: CmdbObject = CmdbObject.from_data(reference_object)
+                                reference_object = CmdbObject.from_data(reference_object)
 
                                 ref_type: CmdbType = self.objects_manager.get_object_type(
                                                                                 reference_object.get_type_id()
@@ -316,7 +333,7 @@ class CmdbRender:
                                     'summaries': []
                                 }
 
-                    except (ValueError, IndexError, FileNotFoundError,
+                    except (ValueError, IndexError, FileNotFoundError, CmdbObjectInitFromDataError,
                             ObjectsManagerGetError, CmdbTypeFieldNotFoundError):
                         field['value'] = None
 
@@ -383,6 +400,8 @@ class CmdbRender:
 
 
     def __merge_reference_section_fields(self, ref_section_field, ref_type, ref_section_fields, level):
+        """document"""
+        # TODO: DOCUMENT-FIX
         if ref_section_field and ref_section_field.get('type', '') == 'ref-section-field':
             try:
                 instance = self.objects_manager.get_object(ref_section_field.get('value'))
@@ -408,7 +427,8 @@ class CmdbRender:
 
 
     def __merge_references(self, current_field):
-        # Initialise TypeReference
+        """document"""
+        # TODO: DOCUMENT-FIX
         reference = TypeReference(type_id=0, object_id=0, type_label='', line='')
 
         if current_field['value']:
@@ -474,7 +494,8 @@ class CmdbRender:
 
 
     def __set_summaries(self, render_result: RenderResult) -> RenderResult:
-        # global summary list
+        """document"""
+        # TODO: DOCUMENT-FIX
         summary_list = []
         summary_line = ''
         default_line = f'{self.type_instance.label} #{self.object_instance.public_id}'
