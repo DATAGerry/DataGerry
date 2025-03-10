@@ -29,6 +29,8 @@ import { RelationBuilderStepComponent } from '../relation-builder-step.component
 import { CmdbRelation } from 'src/app/framework/models/relation.model';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { alphanumericValidator } from 'src/app/framework/type/type-builder/type-basic-step/alphanumeric-validator';
+import { CmdbMode } from 'src/app/framework/modes.enum';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'cmdb-relation-basic-step',
@@ -37,12 +39,15 @@ import { alphanumericValidator } from 'src/app/framework/type/type-builder/type-
 })
 export class RelationBasicStepComponent
   extends RelationBuilderStepComponent
-  implements OnInit, OnDestroy 
-{
+  implements OnInit, OnDestroy {
+  @Input() public relationInstance!: CmdbRelation;
+  @Input() public mode: CmdbMode;
+
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
 
   /** Main form with all fields, including parent/child icons by your chosen names */
   public form: FormGroup;
+  public CmdbMode = CmdbMode; 
 
   /** Separate mini-form for the parent icon */
   public parentIconForm: FormGroup;
@@ -52,9 +57,6 @@ export class RelationBasicStepComponent
   public isLoadingTypes = false;
   public availableTypes: any[] = [];
   public isLoading$ = this.loaderService?.isLoading$;
-
-
-  @Input() public relationInstance!: CmdbRelation;
 
   constructor(private typeService: TypeService, private loaderService: LoaderService) {
     super();
@@ -72,7 +74,7 @@ export class RelationBasicStepComponent
       relation_color_parent: new FormControl(''),
 
       relation_name_child: new FormControl('', Validators.required),
-      relation_icon_child: new FormControl('', ),
+      relation_icon_child: new FormControl('',),
       relation_color_child: new FormControl(''),
 
       parent_type_ids: new FormControl<number[]>([], Validators.required),
@@ -118,7 +120,7 @@ export class RelationBasicStepComponent
   ngOnInit(): void {
     this.loadTypes();
     this.initFormListeners();
-        this.emitValidationState();
+    this.emitValidationState();
 
     // Sync existing relation data
     if (this.relationInstance) {
@@ -128,10 +130,7 @@ export class RelationBasicStepComponent
     //Keep each mini-form in sync with the main form’s icon fields
     this.syncIconForms();
 
-    if (this.relationInstance) {
-      this.patchFormValues();
-  }  }
-
+  }
 
   private loadTypes(): void {
     this.loaderService?.show();
@@ -144,7 +143,7 @@ export class RelationBasicStepComponent
         order: 1,
         page: 1
       })
-      .pipe(takeUntil(this.subscriber), finalize(()=> this.loaderService?.hide()))
+      .pipe(takeUntil(this.subscriber), finalize(() => this.loaderService?.hide()))
       .subscribe({
         next: resp => {
           this.availableTypes = resp.results || [];
@@ -160,12 +159,12 @@ export class RelationBasicStepComponent
   /**
  * Ensures the validation state is emitted immediately on page load.
  */
-private emitValidationState(): void {
-  setTimeout(() => {
+  private emitValidationState(): void {
+    setTimeout(() => {
       this.validateChange.emit(this.form.valid);
       this.valid = this.form.valid;
-  });
-}
+    });
+  }
 
   private initFormListeners(): void {
     // Whenever main form values change, push them to your model
@@ -177,7 +176,7 @@ private emitValidationState(): void {
     this.form.statusChanges
       .pipe(takeUntil(this.subscriber))
       .subscribe(() => {
-        this.validateChange.emit(this.form.valid); 
+        this.validateChange.emit(this.form.valid);
         this.valid = this.form.valid;
       });
   }

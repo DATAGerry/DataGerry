@@ -10,7 +10,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { finalize, Subject, takeUntil } from 'rxjs';
 import { CmdbMode } from 'src/app/framework/modes.enum';
 import { ObjectService } from 'src/app/framework/services/object.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
@@ -20,6 +20,7 @@ import {
   CmdbObjectRelationCreateDto
 } from 'src/app/framework/services/object-relation.service';
 import { UserService } from 'src/app/management/services/user.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 interface FlatOptionItem {
   value: number;
@@ -67,6 +68,9 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private author_id: number;
 
+  public isLoading$ = this.loaderService.isLoading$;
+
+
   /**
    * Determines if the object can act as both parent and child.
    */
@@ -81,7 +85,8 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private objectRelationService: ObjectRelationService,
     private userService: UserService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loaderService: LoaderService
   ) {
     this.form = this.fb.group({
       parent: [null],
@@ -196,10 +201,12 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
       this.toastService.warning('No valid parent type configuration');
       return;
     }
+
+   this.loaderService.show();
     this.loading = true;
     this.cdr.detectChanges();
     this.objectService.getObjectsByType(validTypeIDs)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$),  finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (results: any[]) => {
           const filtered = results.filter(
@@ -223,10 +230,11 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
       this.toastService.warning('No valid child type configuration');
       return;
     }
+    this.loaderService.show();
     this.loading = true;
     this.cdr.detectChanges();
     this.objectService.getObjectsByType(validTypeIDs)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$),  finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (results: any[]) => {
           const filtered = results.filter(
@@ -300,8 +308,9 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
     } as any;
 
     if (this.mode === CmdbMode.Edit && this.relationInstance) {
+      this.loaderService.show();
       (dto as any).public_id = this.relationInstance.public_id;
-      this.objectRelationService.putObjectRelation(this.relationInstance.public_id, dto).subscribe({
+      this.objectRelationService.putObjectRelation(this.relationInstance.public_id, dto).pipe( finalize(() => this.loaderService.hide())).subscribe({
         next: (res) => {
           this.toastService.success(`Relation updated successfully`);
           this.onConfirm.emit({
@@ -315,7 +324,8 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.objectRelationService.postObjectRelation(dto).subscribe({
+      this.loaderService.show();
+      this.objectRelationService.postObjectRelation(dto).pipe( finalize(() => this.loaderService.hide())).subscribe({
         next: (res) => {
           this.toastService.success(`Relation created successfully`);
           this.onConfirm.emit({

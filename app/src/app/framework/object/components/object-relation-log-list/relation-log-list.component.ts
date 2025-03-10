@@ -93,7 +93,7 @@ export class RelationLogListComponent implements OnInit, OnChanges {
         searchable: true,
         sortable: true,
         template: this.publicIdTemplate,
-        style: { width: '80px', 'text-align': 'center' }
+        style: { width: '120px', 'text-align': 'center' }
       },
       {
         display: 'Log Time',

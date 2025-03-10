@@ -86,15 +86,49 @@
   }
   
   .change-item {
-    background: #f8f8f8;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 10px;
-    .field-name {
-      color: #333;
-      font-size: 13px;
-      font-weight: 500;
-      text-transform: capitalize;
+    &.create-item {
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      background: #f8f8f8;
+      border-radius: 4px;
+      
+      .field-line {
+        display: grid;
+        grid-template-columns: minmax(120px, max-content) 1fr;
+        gap: 15px;
+        align-items: baseline;
+        
+        @media (max-width: 480px) {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+      }
+  
+      .field-name {
+        color: #e94d18;
+        font-weight: 500;
+        word-break: break-word;
+        hyphens: auto;
+        padding-right: 8px;
+        position: relative;
+        
+        &::after {
+          content: ':';
+          position: absolute;
+          right: 0;
+        }
+      }
+  
+      .change-value {
+        color: #444;
+        font-size: 14px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        min-height: 24px; // Maintain vertical alignment
+      }
     }
   }
   

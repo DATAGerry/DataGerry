@@ -23,3 +23,25 @@
 .back-button {
   margin-right: 10px;
 }
+
+
+.deletion-warning {
+  --warning-color: #e94d18;
+  --warning-bg: rgba(233, 77, 24, 0.08);
+  
+  background: var(--warning-bg);
+  border: 1px solid rgba(233, 77, 24, 0.15);
+  color: var(--warning-color);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  
+  i {
+    font-size: 1.1em;
+    margin-right: 3px;
+  }
+}

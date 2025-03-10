@@ -28,6 +28,7 @@ import { Location } from '@angular/common';
 
 import { RelationService } from '../../services/relaion.service';
 import { CmdbRelation } from '../../models/relation.model';
+import { ObjectRelationService } from '../../services/object-relation.service';
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
@@ -120,7 +121,7 @@ export class RelationDeleteConfirmModalComponent {
 export class RelationDeleteComponent implements OnInit {
     public relationID: number;
     public relationInstance: CmdbRelation;
-    public numberOfObjects: number;
+    public relationObjectsCounter: number;
 
     /* ------------------------------------------------------------------------------------------------------------------ */
     /*                                                     LIFE CYCLE                                                     */
@@ -134,7 +135,7 @@ export class RelationDeleteComponent implements OnInit {
         private modalService: NgbModal,
         private toast: ToastService,
         private location: Location,
-
+        private objectRelation: ObjectRelationService
     ) {
         this.route.params.subscribe((id) => {
             this.relationID = id.publicID;
@@ -143,20 +144,51 @@ export class RelationDeleteComponent implements OnInit {
 
 
     public ngOnInit(): void {
+        this.loadRelationObjectCount();
         this.relationService.getRelation(this.relationID).subscribe((relationInstanceResp: CmdbRelation) => {
-
             this.relationInstance = relationInstanceResp;
         });
     }
 
     /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
+    /*
+     * Fetches the count of related objects for a given relation.
+     */
+    loadRelationObjectCount(): void {
+        const filter = { 'relation_id': Number(this.relationID) };
+        const params = {
+            filter,
+            limit: 0,
+            sort: '',
+            order: 1,
+            page: 1
+        };
+
+        this.objectRelation.getObjectRelations(params).subscribe({
+            next: (response) => {
+                this.relationObjectsCounter = Number(response?.count);
+            },
+            error: (error) => {
+               this.toast.error(error?.error?.message)
+            }
+        })
+    }
+
+
+    /*
+     * Opens the delete confirmation modal and handles deletion logic.
+     * Prevents deletion if related objects exist.
+     */
     public open(): void {
+        if (this.relationObjectsCounter > 0) {
+            this.toast.error('Deletion is only possible if there are no relation objects of this relation!')
+            return;
+        }
         try {
             const deleteModal = this.modalService.open(RelationDeleteConfirmModalComponent);
             deleteModal.componentInstance.typeID = this.relationID;
             deleteModal.componentInstance.typeName = this.relationInstance.relation_name;
-    
             deleteModal.result.then(
                 (result) => {
                     if (result === 'delete') {
@@ -180,7 +212,7 @@ export class RelationDeleteComponent implements OnInit {
             this.toast.error(error?.error?.message);
         }
     }
-    
+
 
     /**
      * Navigates back to the previous page in the browser's history.

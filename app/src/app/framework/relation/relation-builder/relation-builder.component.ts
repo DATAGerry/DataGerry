@@ -16,8 +16,8 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { finalize, Observable, ReplaySubject, Subscription, takeUntil } from 'rxjs';
 
@@ -61,15 +61,21 @@ export class RelationBuilderComponent implements OnInit, OnDestroy {
   public isSectionValid$: Observable<boolean>;
 
   public isLoading$ = this.loaderService.isLoading$;
+  public readonly isEditMode = this.route.snapshot.routeConfig?.path?.startsWith('edit') ?? false;
 
   constructor(
     private router: Router,
     private relationService: RelationService,
     private toast: ToastService,
     private validationService: ValidationService,
-    private changeDetector: ChangeDetectorRef,
-    private loaderService: LoaderService
-  ) { }
+    private loaderService: LoaderService,
+    private route: ActivatedRoute
+  ) { 
+    if(this.isEditMode){
+      this.mode = CmdbMode.Edit
+    }
+
+  }
 
   ngOnInit(): void {
 

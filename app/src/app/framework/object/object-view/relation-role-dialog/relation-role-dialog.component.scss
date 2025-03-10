@@ -1,26 +1,259 @@
-// .modal {
-//     position: fixed;
-//     top: 50%;
-//     left: 50%;
-//     transform: translate(-50%, -50%);
-//   }
+$dg-primary-color: #e94d18;
+$dg-selected-background-color: #cccccc;
+$dg-hover-background-color: #bfbfbf;
+$dg-error-message-color: #dc3545;
+
+.modal-backdrop.show {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.modal.show .modal-dialog {
+  max-width: 1200px;
+  margin: 2rem auto;
+  height: calc(100vh - 4rem);
+
+  .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+
+    .modal-header {
+      background: linear-gradient(195deg, darken($dg-primary-color, 5%), $dg-primary-color);
+      color: white;
+      border-radius: 16px 16px 0 0;
+      padding: 1.5rem 2rem;
+      border-bottom: none;
+
+      .modal-title {
+        font-weight: 600;
+        letter-spacing: -0.25px;
+        font-size: 1.25rem;
+      }
+
+      .close {
+        color: rgba(white, 0.9);
+        text-shadow: none;
+        transition: opacity 0.2s ease;
+        font-size: 1.75rem;
+        
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: 0;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      height: calc(100% - 140px);
+
+      .modal-layout {
+        display: contents;
+      }
+
+      /* Left Sidebar - Dropdowns */
+      .modal-sidebar {
+        padding: 2rem;
+        background: rgba(#f8f9fa, 0.8);
+        border-right: 1px solid rgba(#dee2e6, 0.3);
+        overflow-y: auto;
+
+        .config-section {
+          margin-bottom: 2rem;
+          padding: 1.5rem;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+          .config-heading {
+            color: $dg-primary-color;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            i {
+              font-size: 1.1rem;
+              color: rgba($dg-primary-color, 0.8);
+            }
+          }
+
+          .form-group {
+            margin-bottom: 1.5rem;
+
+            .input-label {
+              font-weight: 500;
+              color: #4a4a4a;
+              font-size: 0.9rem;
+              margin-bottom: 0.5rem;
+            }
+
+            .form-control {
+              background: white;
+              border: 1px solid rgba(#dee2e6, 0.5);
+              border-radius: 8px;
+              padding: 0.75rem 1rem;
+              font-size: 0.9rem;
+              transition: border-color 0.2s ease;
+
+              &:disabled {
+                background: #f8f9fa;
+                color: #6c757d;
+              }
+            }
+
+            .selection-error {
+              color: $dg-error-message-color;
+              font-size: 0.85rem;
+              margin-top: 0.5rem;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+
+              i {
+                font-size: 0.9rem;
+              }
+            }
+          }
+
+          ng-select {
+            .ng-select-container {
+              border-radius: 8px;
+              border: 1px solid rgba(#dee2e6, 0.5);
+              min-height: 42px;
+              transition: all 0.2s ease;
+
+              &:hover {
+                border-color: $dg-primary-color;
+              }
+            }
+
+            .ng-dropdown-panel {
+              border: 1px solid rgba($dg-primary-color, 0.1);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+          }
+          
+        }
+      }
+
+      /* Right Content - Basic Structure Only */
+      .modal-content-main {
+        padding: 2rem;
+        overflow-y: auto;
+        background: white;
+        /* No additional styling for fields */
+      }
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(#dee2e6, 0.3);
+      padding: 1.25rem 2rem;
+      background: white;
+    }
+  }
+}
+
+/* Custom Scrollbars */
+.modal-sidebar::-webkit-scrollbar,
+.modal-content-main::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(#dee2e6, 0.1);
+}
+
+.modal-sidebar::-webkit-scrollbar-thumb,
+.modal-content-main::-webkit-scrollbar-thumb {
+  background: rgba($dg-primary-color, 0.2);
+  border-radius: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .modal.show .modal-dialog {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+
+    .modal-content {
+      .modal-body {
+        grid-template-columns: 1fr;
+
+        .modal-sidebar {
+          border-right: none;
+          border-bottom: 1px solid rgba(#dee2e6, 0.3);
+          max-height: 50vh;
+        }
+
+        .modal-content-main {
+          max-height: 50vh;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .modal.show .modal-dialog {
+    .modal-content {
+      border-radius: 12px;
+
+      .modal-header {
+        padding: 1.25rem;
+      }
+
+      .modal-body {
+        .modal-sidebar,
+        .modal-content-main {
+          padding: 1.5rem;
+        }
+      }
+
+      .modal-footer {
+        padding: 1rem;
+        
+        .btn {
+          padding: 0.75rem 1.25rem;
+        }
+      }
+    }
+  }
+}
+
+.empty-attributes-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(white, 0.9);
+    border-radius: 8px;
+    margin: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
   
-//   .modal-backdrop {
-//     position: fixed;
-//     top: 0;
-//     left: 0;
-//     width: 100%;
-//     height: 100%;
-//     background-color: rgba(0,0,0,0.5);
-//     z-index: 1040;
-//   }
-
-
-// .modal-body{
-//   overflow-y: scroll;
-// }
-
-// .modal-content {
-//   max-height: 80vh; /* For example */
-//   overflow-y: auto;
-// }
+    .empty-icon {
+      font-size: 2.5rem;
+      color: #808080;
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+  
+    h4 {
+      color: #808080;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+  
+    .text-muted {
+      color: #808080;
+      font-size: 0.95rem;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+  }
