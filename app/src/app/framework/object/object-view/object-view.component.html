@@ -94,7 +94,8 @@
                 <cmdb-table [items]="group.instances" [columns]="getColumns(group)" [loading]="loadingRelations"
                   [totalItems]="group.total" [pageSize]="group.pageSize" [page]="group.page"
                   (pageChange)="loadGroupInstances(group.relationId, group.isParent, $event, group.pageSize)"
-                  (pageSizeChange)="loadGroupInstances(group.relationId, group.isParent, 1, $event)">
+                  (pageSizeChange)="loadGroupInstances(group.relationId, group.isParent, 1, $event)"
+                  [searchEnabled]="false">
                 </cmdb-table>
               </div>
             </ng-container>
