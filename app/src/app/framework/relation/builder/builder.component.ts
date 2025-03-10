@@ -19,18 +19,14 @@ import {
     AfterViewChecked,
     ChangeDetectionStrategy,
     Component,
-    ElementRef,
     EventEmitter,
     Input,
-    OnChanges,
     OnDestroy,
     Output,
-    Renderer2
 } from '@angular/core';
 
 import { ReplaySubject } from 'rxjs';
 
-import { v4 as uuidv4 } from 'uuid';
 import { DndDropEvent, DropEffect } from 'ngx-drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -53,7 +49,6 @@ import { SectionIdentifierService } from '../../type/services/SectionIdentifierS
 import { ValidationService } from '../../type/services/validation.service';
 import { FieldIdentifierValidationService } from '../../type/services/field-identifier-validation.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
-declare var $: any;
 
 @Component({
     selector: 'cmdb-builder',
@@ -62,31 +57,9 @@ declare var $: any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuilderComponent implements OnDestroy, AfterViewChecked {
-    private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
-    public MODES: typeof CmdbMode = CmdbMode;
-
-    private eventIndex: number;
-    private onSectionMoveIndex: number;
-    private activeIndex: number | null = null;
-
-    public sections: RelationSection[] = [];
-    public relationInstance: CmdbRelation;
-    public sectionIdenfier: Array<String> = [];
-    public initialIdentifier: string = '';
-    public newSections: Array<RelationSection> = [];
-    public newFields: Array<RelationSection> = [];
-
-    private activeDuplicateField: { sectionIndex: number; fieldIndex: number } | null = null;
-    public disableFields: boolean = false;
-
-    // Flags to store previous highlight states
-    private prevSectionHighlighted: boolean = false;
-    private prevFieldHighlighted: boolean = false;
 
     @Input() public mode = CmdbMode.View;
     @Input() public valid: boolean = true;
-
-
     @Input('relationInstance')
     public set RelationInstance(instance: CmdbRelation) {
         this.relationInstance = instance;
@@ -109,6 +82,26 @@ export class BuilderComponent implements OnDestroy, AfterViewChecked {
 
     @Output() public validChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+    private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
+    public MODES: typeof CmdbMode = CmdbMode;
+
+    private eventIndex: number;
+    private onSectionMoveIndex: number;
+    private activeIndex: number | null = null;
+
+    public sections: RelationSection[] = [];
+    public relationInstance: CmdbRelation;
+    public sectionIdenfier: Array<String> = [];
+    public initialIdentifier: string = '';
+    public newSections: Array<RelationSection> = [];
+    public newFields: Array<RelationSection> = [];
+
+    private activeDuplicateField: { sectionIndex: number; fieldIndex: number } | null = null;
+    public disableFields: boolean = false;
+
+    // Flags to store previous highlight states
+    private prevSectionHighlighted: boolean = false;
+    private prevFieldHighlighted: boolean = false;
 
     public structureControls = [
         new Controller('section', new SectionControl()),

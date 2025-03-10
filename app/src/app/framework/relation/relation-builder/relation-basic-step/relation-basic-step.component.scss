@@ -38,9 +38,9 @@ $neutral-20: #ecf0f1;
       border-radius: 12px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-      &:hover {
-        transform: translateY(-2px);
-      }
+      // &:hover {
+      //   transform: translateY(-2px);
+      // }
 
       .card-header {
         border-radius: 12px 12px 0 0 !important;
@@ -65,13 +65,6 @@ $neutral-20: #ecf0f1;
 
   }
 
-  .hover-shadow {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    
-    &:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-  }
 
   .transition-all {
     transition: all 0.3s ease;

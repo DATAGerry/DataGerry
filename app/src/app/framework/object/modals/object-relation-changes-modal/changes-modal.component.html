@@ -15,8 +15,8 @@
           <div class="row mb-3">
             <div class="col-6">
               <div class="detail-item">
-                <label>Public ID:</label>
-                <div>{{ log.public_id }}</div>
+                <label>Object Relation ID:</label>
+                <div>{{ log.object_relation_id }}</div>
               </div>
               <div class="detail-item">
                 <label>Action:</label>
@@ -37,12 +37,12 @@
 
           <div class="changes-section">
             <div *ngIf="log.action === 'CREATE'">
-              <h6 class="section-title">Initial Values</h6>
+              <h6 class="section-title">Relation Attributes</h6>
               <div *ngIf="hasCreateChanges(); else noCreate">
-                <div class="change-item" *ngFor="let field of objectKeys(log.changes)">
-                  <div class="field-name">{{ field }}</div>
-                  <div class="change-value">
-                    {{ log.changes[field] || 'Not set' }}
+                <div class="change-item create-item" *ngFor="let field of objectKeys(log.changes)">
+                  <div class="field-line">
+                    <span class="field-name">{{ field }}:</span>
+                    <span class="change-value">{{ log.changes[field] || 'Not set' }}</span>
                   </div>
                 </div>
               </div>
@@ -52,7 +52,7 @@
             </div>
 
             <div *ngIf="log.action === 'EDIT'">
-              <h6 class="section-title">Modifications</h6>
+              <h6 class="section-title">Attribute Modifications</h6>
               <div *ngIf="hasEditChanges(); else noEdit">
                 <div class="change-item" *ngFor="let field of objectKeys(log.changes?.modified || {})">
                   <div class="field-name">{{ field }}</div>
@@ -69,7 +69,7 @@
                 </div>
               </div>
               <ng-template #noEdit>
-                <div class="no-changes">No modifications recorded</div>
+                <div class="no-changes">No attribute modifications recorded</div>
               </ng-template>
             </div>
 

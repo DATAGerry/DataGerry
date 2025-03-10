@@ -39,12 +39,20 @@ import { ReportService } from 'src/app/reporting/services/report.service';
     template: `
     <div class="modal-header">
         <h4 class="modal-title" id="modal-title">Type deletion</h4>
-            <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
-                <span aria-hidden="true">&times;</span>
-            </button>
+        <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
     <div class="modal-body">
         <strong>Are you sure you want to delete <span class="text-primary">{{typeLabel}}</span> type?</strong>
+    
+        <div class="relation-impact-warning">
+            <i class="fas fa-exclamation-triangle warning-icon"></i>
+            <div class="warning-text">
+                This action will remove the type's ID from all relations where it's used in parent/child types.
+            </div>
+        </div>
+    
         <form id="deleteTypeModalForm" [formGroup]="deleteTypeModalForm" class="needs-validation" novalidate autocomplete="off">
             <div class="form-group">
                 <label for="typeNameInput">Type the name: {{typeName}} <span class="required">*</span></label>
@@ -52,8 +60,10 @@ import { ReportService } from 'src/app/reporting/services/report.service';
                     type="text"
                     formControlName="name"
                     class="form-control"
-                    [ngClass]="{ 'is-valid': name.valid && (name.dirty || name.touched),
-                                 'is-invalid': name.invalid && (name.dirty || name.touched)}"
+                    [ngClass]="{ 
+                        'is-valid': name.valid && (name.dirty || name.touched),
+                        'is-invalid': name.invalid && (name.dirty || name.touched)
+                    }"
                     id="typeNameInput"
                     required
                 >
@@ -61,10 +71,10 @@ import { ReportService } from 'src/app/reporting/services/report.service';
                     Type in the name of the type to confirm the deletion.
                 </small>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="invalid-feedback">
-                    <div class="float-right" *ngIf="name.errors.required">
+                    <div class="float-right" *ngIf="name.errors?.required">
                         Name is required
                     </div>
-                    <div class="float-right" *ngIf="name.errors.notequal">
+                    <div class="float-right" *ngIf="name.errors?.notequal">
                         Your answer is not equal!
                     </div>
                 </div>

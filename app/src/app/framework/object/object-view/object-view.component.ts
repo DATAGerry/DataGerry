@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Subject, takeUntil, forkJoin, switchMap, map } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil, forkJoin, switchMap, map, finalize } from 'rxjs';
 import { CmdbMode } from 'src/app/framework/modes.enum';
 import { ObjectService } from 'src/app/framework/services/object.service';
 import { ObjectRelationService } from 'src/app/framework/services/object-relation.service';
@@ -21,42 +21,9 @@ import { CmdbRelation } from 'src/app/framework/models/relation.model';
 import { RelationService } from '../../services/relaion.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
-
-// Interface for ExtendedRelation used in relation selection modal
-interface ExtendedRelation extends CmdbRelation {
-  canBeParent: boolean;
-  canBeChild: boolean;
-}
-
-// Interface for raw relation instances from the API
-interface ObjectRelationInstance {
-  public_id: number;
-  relation_id: number;
-  relation_parent_id: number;
-  relation_child_id: number;
-  field_values: Array<{ name: string; value: any }>;
-  definition?: CmdbRelation;
-}
-
-// Extended interface for table data
-interface ExtendedObjectRelationInstance extends ObjectRelationInstance {
-  counterpart_id: number;
-  type: string;
-}
-
-// Interface for grouped relation instances under each tab
-interface RelationGroup {
-  relationId: number;
-  isParent: boolean;
-  tabLabel: string;
-  tabColor: string;
-  tabIcon: string;
-  instances: ExtendedObjectRelationInstance[];
-  total: number;    // total number of items for this group
-  page?: number;     // current page for this group
-  pageSize?: number; // items per page for this group
-}
-
+import { CmdbObject } from '../../models/cmdb-object';
+import { ExtendedRelation, RelationGroup, ExtendedObjectRelationInstance, ObjectRelationInstance } from '../../models/object.model';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 
 
@@ -68,9 +35,12 @@ interface RelationGroup {
 })
 export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  /* --------------------------------------------------- MEMBER FIELDS -------------------------------------------------- */
+
   // Table templates
   @ViewChild('counterpartIdTemplate', { static: true }) counterpartIdTemplate: TemplateRef<any>;
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
+  @ViewChild('counterpartTypeTemplate', { static: true }) counterpartTypeTemplate: TemplateRef<any>;
 
   public mode: CmdbMode = CmdbMode.View;
   public renderResult: RenderResult;
@@ -83,7 +53,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public loadingRelations = false;
   public showRelationRoleDialog = false;
 
-  // Relation selection properties
+  // Relation selection
   public availableRelations: CmdbRelation[] = [];
   public extendedRelations: ExtendedRelation[] = [];
   public chosenRelation: ExtendedRelation = null;
@@ -96,19 +66,26 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public activeRelationTabIndex = 0;
   public activeNestedRelationTabIndex = 0; // Tracks the active tab within Object Relations
 
-  // Action-specific properties
+  // Action properties
   public dialogMode: CmdbMode = CmdbMode.Create;
   public selectedRelationInstance: ExtendedObjectRelationInstance | null = null;
 
   // Tracks whether a relation is already used as parent/child by this object
   private usedRolesMap = new Map<number, { parentUsed: boolean; childUsed: boolean }>();
 
-  // Pagination & Sorting properties for relation instances
+  // Summaries of related objects
+  private relatedObjectsMap: { [id: number]: RenderResult | CmdbObject } = {};
+
+  // Pagination & Sorting
   public totalRelations: number = 0;
   public relationPage: number = 1;
   public relationPageSize: number = 10;
   public relationSort: string = '';
   public relationOrder: number = 1;
+
+  public isLoading$ = this.loaderService.isLoading$;
+
+  /* --------------------------------------------------- LIFECYCLE METHODS -------------------------------------------------- */
 
   constructor(
     public objectService: ObjectService,
@@ -118,7 +95,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private activateRoute: ActivatedRoute,
     private toastService: ToastService,
     private changesRef: ChangeDetectorRef,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private loaderService: LoaderService
   ) {
     this.activateRoute.data.subscribe({
       next: (data: any) => this.objectViewSubject.next(data.object as RenderResult),
@@ -139,16 +117,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       error: (e) => this.toastService.error(e?.error?.message)
     });
-
-    if (this.relationGroups.length > 0) {
-      // Load the first group's data automatically on page load
-      this.loadGroupInstances(
-        this.relationGroups[0].relationId,
-        this.relationGroups[0].isParent,
-        1, 
-        10 
-      );
-    }
   }
 
   ngAfterViewInit(): void {
@@ -168,113 +136,281 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     dialog[0].classList.toggle('shadow', document.body.scrollTop > 20);
   }
 
+  /* --------------------------------------------------- UI / EVENT HANDLERS -------------------------------------------------- */
+
+  /** Sets the active tab index */
+  public setActiveTab(tabIndex: number): void {
+    this.activeRelationTabIndex = tabIndex;
+    if (tabIndex !== 1) {
+      this.activeNestedRelationTabIndex = 0; // Reset nested tab when switching away from Object Relations
+    }
+
+    if (tabIndex > 0) {
+      const groupIndex = tabIndex - 1;
+      const group = this.relationGroups[groupIndex];
+      // if there are more than 10 items in the a rel table then execute this for the pagination stuff
+      group.total > 10 ? this.loadGroupInstances(group.relationId, group.isParent, 1, 10) : null
+    }
+    this.changesRef.markForCheck();
+  }
+
+
+  /** Handles clicking the "+" tab to add a new relation */
+  public onClickAddRelationTab(): void {
+    this.openRelationModal();
+    this.setActiveTab(1); // Ensure Object Relations is active
+    this.setNestedRelationTab(this.relationGroups.length); // Highlight the "+" tab
+  }
+
+
   /**
- * Returns columns for the cmdb-table based on group properties.
- * @param group The relation group
+ * Creates a new relation for an existing relation group.
+ * @param group The relation group to create a new instance for
  */
-  public getColumns(group: RelationGroup): any[] {
-    return [
-      { display: 'ID', name: 'public_id', data: 'public_id', searchable: true, sortable: true, style: { width: '120px', 'text-align': 'center' } },
-      { display: 'Linked Object', name: 'counterpart_id', data: 'counterpart_id', sortable: true, template: this.counterpartIdTemplate, style: { width: 'auto', 'text-align': 'center' } },
-      // { display: group.isParent ? 'Type Parent' : 'Type Child', name: 'type', data: 'type', sortable: false },
-      { display: 'Actions', name: 'actions', template: this.actionsTemplate, sortable: false, style: { width: '150px', 'text-align': 'center' } }
-    ];
-  }
+  public createNewRelationForGroup(group: RelationGroup): void {
+    // Try to get the definition from the first instance in the group.
+    let definition = group.instances.length > 0 ? group.instances[0].definition : null;
+    // If not found, look for the definition in extendedRelations.
+    if (!definition) {
+      definition = this.extendedRelations.find(rel => rel.public_id === group.relationId);
+    }
+    if (!definition) {
+      this.toastService.error('Relation definition is missing.');
+      return;
+    }
 
-
-
-
-  // private loadGroupInstances(relationId: number, isParent: boolean, page: number, pageSize: number): void {
-  //   const filter = isParent
-  //     ? { $and: [ { relation_id: relationId }, { relation_parent_id: this.currentObjectID } ] }
-  //     : { $and: [ { relation_id: relationId }, { relation_child_id: this.currentObjectID } ] };
-  
-  //   const params = {
-  //     filter,
-  //     limit: pageSize,
-  //     sort: this.relationSort,
-  //     order: this.relationOrder,
-  //     page: page
-  //   };
-  
-  //   this.objectRelationService.getObjectRelations(params)
-  //     .pipe(takeUntil(this.unsubscribe))
-  //     .subscribe({
-  //       next: (response) => {
-  //         const group = this.relationGroups.find(g => g.relationId === relationId && g.isParent === isParent);
-  //         if (group) {
-  //           group.instances = (response.results || []).map(inst => ({
-  //             ...inst,
-  //             // For parent groups, the linked (counterpart) is the child; vice versa.
-  //             counterpart_id: isParent ? inst.relation_child_id : inst.relation_parent_id
-  //           }));
-  //           group.total = response.total || 0;
-  //           group.page = page;
-  //           group.pageSize = pageSize;
-  //         }
-  //         this.changesRef.markForCheck();
-  //       },
-  //       error: (err) => {
-  //         this.toastService.error(err?.error?.message || 'Failed to load group instances');
-  //         this.changesRef.markForCheck();
-  //       }
-  //     });
-  // }
-  
-  private loadGroupInstances(relationId: number, isParent: boolean, page: number, pageSize: number): void {
-    const filter = isParent
-      ? { $and: [{ relation_id: relationId }, { relation_parent_id: this.currentObjectID }] }
-      : { $and: [{ relation_id: relationId }, { relation_child_id: this.currentObjectID }] };
-  
-    const params = {
-      filter,
-      limit: pageSize,
-      sort: this.relationSort,
-      order: this.relationOrder,
-      page: page
+    const safeDefinition = {
+      ...definition,
+      parent_type_ids: Array.isArray(definition.parent_type_ids) ? definition.parent_type_ids : [],
+      child_type_ids: Array.isArray(definition.child_type_ids) ? definition.child_type_ids : [],
+      canBeParent: group.isParent,
+      canBeChild: !group.isParent
     };
-  
-    // Fetch the relation definition for this relationId first
-    this.relationService.getRelation(relationId).pipe(
-      takeUntil(this.unsubscribe),
-      switchMap(definition => {
-        if (!definition) {
-          throw new Error(`Relation definition not found for ID ${relationId}`);
-        }
-        // Fetch the paginated instances with the definition available
-        return this.objectRelationService.getObjectRelations(params).pipe(
-          map(response => ({ definition, response }))
-        );
-      })
-    ).subscribe({
-      next: ({ definition, response }) => {
-        const group = this.relationGroups.find(g => g.relationId === relationId && g.isParent === isParent);
-        if (group) {
-          group.instances = (response.results || []).map(inst => ({
-            ...inst,
-            counterpart_id: isParent ? inst.relation_child_id : inst.relation_parent_id,
-            type: isParent ? definition.relation_name_parent : definition.relation_name_child,
-            definition // Attach the definition to each instance
-          }));
-          group.total = response.total || group.total;
-          group.pageSize = pageSize;
-        }
-        this.changesRef.markForCheck();
-      },
-      error: (err) => {
-        this.toastService.error(err?.error?.message);
-        this.loadingRelations = false;
-        this.changesRef.markForCheck();
-      }
-    });
+
+    this.chosenRelation = safeDefinition;
+    this.chosenRole = group.isParent ? 'parent' : 'child';
+    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition.parent_type_ids;
+    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition.child_type_ids;
+
+    if (this.chosenRole === 'parent' && this.roleChildTypeIDs.length === 0) {
+      this.toastService.warning('No child types defined for this relation.');
+      return;
+    }
+    if (this.chosenRole === 'child' && this.roleParentTypeIDs.length === 0) {
+      this.toastService.warning('No parent types defined for this relation.');
+      return;
+    }
+
+    this.showRelationRoleDialog = true;
+    this.dialogMode = CmdbMode.Create; // Set mode to Create
+    this.selectedRelationInstance = null; // Clear any selected instance
+    this.changesRef.markForCheck();
   }
-  
+
+  private setChosenRelationAndRole(
+    instance: ExtendedObjectRelationInstance,
+    mode: CmdbMode
+  ): void {
+    // 1) Mark which side is parent/child
+    const isParent = instance.relation_parent_id === this.currentObjectID;
+
+    // 2) Build the final definition
+    const definition = instance.definition || {} as CmdbRelation;
+    this.chosenRelation = {
+      ...definition,
+      canBeParent: isParent,
+      canBeChild: !isParent
+    };
+
+    // 3) Set chosenRole accordingly
+    this.chosenRole = isParent ? 'parent' : 'child';
+
+    // 4) Parent/Child type IDs
+    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : definition.parent_type_ids || [];
+    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : definition.child_type_ids || [];
+
+    // 5) Mode and selected instance
+    this.dialogMode = mode;
+    this.selectedRelationInstance = instance;
+  }
+
+  public viewRelationInstance(instance: ExtendedObjectRelationInstance): void {
+    this.setChosenRelationAndRole(instance, CmdbMode.View);
+    this.showRelationRoleDialog = true;
+    this.changesRef.detectChanges();
+  }
+
+  public editRelationInstance(instance: ExtendedObjectRelationInstance): void {
+    this.setChosenRelationAndRole(instance, CmdbMode.Edit);
+    this.showRelationRoleDialog = true;
+    this.changesRef.detectChanges();
+  }
+
+  public copyRelationInstance(instance: ExtendedObjectRelationInstance): void {
+    this.setChosenRelationAndRole(instance, CmdbMode.Create);
+    this.showRelationRoleDialog = true;
+    this.changesRef.detectChanges();
+  }
+
+
 
   /**
-   * Loads and groups object relation instances by relation type and role.
-   * @param objectID The ID of the current object
+  * Deletes a relation instance using a reusable core delete modal.
+  * @param instance The relation instance to delete.
+  */
+  public deleteRelationInstance(instance: ExtendedObjectRelationInstance): void {
+    const modalRef = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
+    modalRef.componentInstance.title = 'Delete Object Relation';
+    modalRef.componentInstance.item = instance;
+    modalRef.componentInstance.itemType = 'Object Relation';
+    modalRef.componentInstance.itemName = instance.public_id;
+
+    // Check if this is the last instance in the group
+    const group = this.relationGroups.find(
+      g => g.relationId === instance.relation_id &&
+        g.isParent === (instance.relation_parent_id === this.currentObjectID)
+    );
+    const isLastInstanceInGroup = group?.instances?.length === 1;
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmed') {
+          this.loadingRelations = true;
+          this.objectRelationService.deleteObjectRelation(instance.public_id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe({
+              next: () => {
+                this.toastService.success('Relation instance deleted successfully');
+                this.loadObjectRelationInstances(this.currentObjectID);
+                if (isLastInstanceInGroup) {
+                  this.loadRelationsForNewRelation();
+                }
+              },
+              error: (err) => {
+                this.toastService.error(err?.error?.message);
+                this.loadingRelations = false;
+                this.changesRef.markForCheck();
+              }
+            });
+        }
+      },
+      () => { }
+    );
+  }
+
+
+  /**
+   * Opens the relation selection modal 
    */
+  public openRelationModal(): void {
+    // Refresh used relations and available relations.
+    this.loadObjectRelationInstances(this.currentObjectID);
+    this.loadRelationsForNewRelation();
+
+    // Reset current selection.
+    this.chosenRelation = null;
+    this.chosenRole = null;
+
+    setTimeout(() => {
+      this.showRelationModal = true;
+      this.changesRef.detectChanges();
+    }, 10);
+  }
+
+
+  /** Closes the relation selection modal */
+  public closeRelationModal(): void {
+    this.showRelationModal = false;
+  }
+
+
+  /** Selects a relation and role in the modal */
+  public onSelectRelation(relation: ExtendedRelation, role: 'parent' | 'child'): void {
+    if ((role === 'parent' && !relation.canBeParent) || (role === 'child' && !relation.canBeChild)) {
+      return;
+    }
+    this.chosenRelation = relation;
+    this.chosenRole = role;
+  }
+
+
+  /** Confirms relation selection and opens role dialog */
+  public onConfirmRelationSelection(): void {
+    if (!this.chosenRelation || !this.chosenRole) return;
+    this.closeRelationModal();
+    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : this.chosenRelation.parent_type_ids;
+    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : this.chosenRelation.child_type_ids;
+
+    this.showRelationRoleDialog = true;
+    this.dialogMode = CmdbMode.Create; // Ensure Create mode for new relations
+    this.selectedRelationInstance = null; // Clear any selected instance
+    this.changesRef.detectChanges();
+  }
+
+
+  /** Handles confirmation from the relation role dialog */
+  public onRelationRoleDialogConfirm(selection: { parentObjID?: number; childObjID?: number }): void {
+    this.showRelationRoleDialog = false;
+    this.selectedRelationInstance = null;
+    this.dialogMode = CmdbMode.Create; // Reset to default mode
+    if (this.currentObjectID) {
+      this.loadObjectRelationInstances(this.currentObjectID);
+    }
+    this.changesRef.markForCheck();
+  }
+
+
+  /** Handles cancellation from the relation role dialog */
+  public onRelationRoleDialogCancel(): void {
+    this.showRelationRoleDialog = false;
+    this.selectedRelationInstance = null;
+    this.dialogMode = CmdbMode.Create; // Reset to default mode
+    this.toastService.info('Operation cancelled');
+    this.changesRef.markForCheck();
+  }
+
+
+  // Table changes
+  public onRelationPageChange(newPage: number): void {
+    this.relationPage = newPage;
+    this.loadObjectRelationInstances(this.currentObjectID);
+  }
+
+
+  public onRelationPageSizeChange(newLimit: number): void {
+    this.relationPageSize = newLimit;
+    this.relationPage = 1; // Reset to first page
+    this.loadObjectRelationInstances(this.currentObjectID);
+  }
+
+
+  public onRelationSortChange(event: { sort: string; order: number }): void {
+    this.relationSort = event.sort;
+    this.relationOrder = event.order;
+    this.loadObjectRelationInstances(this.currentObjectID);
+  }
+
+
+  public onRelationSearchChange(searchTerm: string): void {
+    this.loadObjectRelationInstances(this.currentObjectID);
+  }
+
+
+  /* --------------------------------------------------- API / DATA METHODS -------------------------------------------------- */
+
+  /**
+* Loads and groups object relation instances by relation type and role.
+* @param objectID The ID of the current object
+*/
   private loadObjectRelationInstances(objectID: number): void {
+
+    if (!objectID) {
+      this.toastService.error('Invalid object ID');
+      return;
+    }
+
+    this.loaderService.show();
+
     const params = {
       filter: {
         $or: [
@@ -290,14 +426,12 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.loadingRelations = true;
     this.objectRelationService.getObjectRelations(params)
-      .pipe(takeUntil(this.unsubscribe))
+      .pipe(takeUntil(this.unsubscribe), finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (response) => {
-          console.log('objectRelationService ####', response)
           this.totalRelations = response.total;
-          const rawInstances: ObjectRelationInstance[] = response.results || [];
-          console.log(`[DEBUG] Received ${rawInstances.length} raw instances`);
-          if (!rawInstances.length) {
+          const relationInstances: ObjectRelationInstance[] = response.results || [];
+          if (!relationInstances.length) {
             this.relationGroups = [];
             this.loadingRelations = false;
             this.changesRef.markForCheck();
@@ -306,7 +440,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           this.usedRolesMap = new Map<number, { parentUsed: boolean; childUsed: boolean }>();
-          rawInstances.forEach(inst => {
+          relationInstances.forEach(inst => {
             let roles = this.usedRolesMap.get(inst.relation_id);
             if (!roles) {
               roles = { parentUsed: false, childUsed: false };
@@ -320,18 +454,16 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
             this.usedRolesMap.set(inst.relation_id, roles);
           });
 
-          const relationIds = [...new Set(rawInstances.map(inst => inst.relation_id))];
-          console.log(`[DEBUG] Fetching definitions for ${relationIds.length} unique relation IDs: ${relationIds}`);
+          const relationIds = [...new Set(relationInstances.map(inst => inst.relation_id))];
           const relationObservables = relationIds.map(id => this.relationService.getRelation(id));
           const oldTabIndex = this.activeRelationTabIndex;
 
           forkJoin(relationObservables).pipe(takeUntil(this.unsubscribe)).subscribe({
             next: (definitions: CmdbRelation[]) => {
-              console.log(`[DEBUG] Received ${definitions.length} relation definitions`);
               const relationMap = new Map<number, CmdbRelation>();
               definitions.forEach(def => relationMap.set(def.public_id, def));
 
-              const groupedInstances = rawInstances.reduce((acc, instance) => {
+              const groupedInstances = relationInstances.reduce((acc, instance) => {
                 const key = instance.relation_id;
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(instance);
@@ -376,7 +508,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     instances: parentInstances,
                     total: parentInstances.length
                   });
-                  console.log(`[DEBUG] Added parent group for relation ${relationId} with ${parentInstances.length} instances`);
                 }
 
                 if (childInstances.length > 0) {
@@ -389,12 +520,21 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     instances: childInstances,
                     total: childInstances.length
                   });
-                  console.log(`[DEBUG] Added child group for relation ${relationId} with ${childInstances.length} instances`);
                 }
               }
 
               this.relationGroups = groups;
-              console.log(`[DEBUG] Total relationGroups created: ${this.relationGroups.length}`);
+
+              const allIDs: number[] = [];
+              this.relationGroups.forEach((g) => {
+                g.instances?.forEach((inst) => {
+                  if (!allIDs.includes(inst.counterpart_id)) {
+                    allIDs.push(inst.counterpart_id);
+                  }
+                });
+              });
+
+              this.loadCounterpartObjects(allIDs);
 
               if (this.activeRelationTabIndex === 1 && this.activeNestedRelationTabIndex > this.relationGroups.length) {
                 this.activeNestedRelationTabIndex = 0;
@@ -407,23 +547,72 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
               this.loadingRelations = false;
               this.changesRef.markForCheck();
-              console.log('[DEBUG] loadObjectRelationInstances completed');
             },
             error: (err) => {
               this.toastService.error(err?.error?.message);
               this.loadingRelations = false;
               this.changesRef.markForCheck();
-              console.error('[DEBUG] Error fetching relation definitions:', err);
             }
           });
         },
         error: (err) => {
-          this.toastService.error(err?.error?.message || 'Failed to load object relations');
+          this.toastService.error(err?.error?.message);
           this.loadingRelations = false;
           this.changesRef.markForCheck();
-          console.error('[DEBUG] Error loading object relations:', err);
         }
       });
+  }
+
+
+  private loadGroupInstances(relationId: number, isParent: boolean, page: number, pageSize: number): void {
+    const filter = isParent
+      ? { $and: [{ relation_id: relationId }, { relation_parent_id: this.currentObjectID }] }
+      : { $and: [{ relation_id: relationId }, { relation_child_id: this.currentObjectID }] };
+
+      finalize(() => this.loaderService.show())
+
+    const params = {
+      filter,
+      limit: pageSize,
+      sort: this.relationSort,
+      order: this.relationOrder,
+      page: page
+    };
+
+    // Fetch the relation definition for this relationId first
+    this.relationService.getRelation(relationId).pipe(
+      finalize(() => this.loaderService.hide()),
+      takeUntil(this.unsubscribe),
+      switchMap(definition => {
+        if (!definition) {
+          throw new Error(`Relation definition not found for ID ${relationId}`);
+        }
+        // Fetch the paginated instances with the definition available
+        return this.objectRelationService.getObjectRelations(params).pipe(
+          map(response => ({ definition, response }))
+        );
+      })
+    ).subscribe({
+      next: ({ definition, response }) => {
+        const group = this.relationGroups.find(g => g.relationId === relationId && g.isParent === isParent);
+        if (group) {
+          group.instances = (response.results || []).map(inst => ({
+            ...inst,
+            counterpart_id: isParent ? inst.relation_child_id : inst.relation_parent_id,
+            type: isParent ? definition.relation_name_parent : definition.relation_name_child,
+            definition // Attach the definition to each instance
+          }));
+          group.total = response.total;
+          group.pageSize = pageSize;
+        }
+        this.changesRef.markForCheck();
+      },
+      error: (err) => {
+        this.toastService.error(err?.error?.message);
+        this.loadingRelations = false;
+        this.changesRef.markForCheck();
+      }
+    });
   }
 
 
@@ -446,7 +635,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
           { child_type_ids: { $in: [typeId] } }
         ]
       },
-      limit: 40,
+      limit: 0,
       sort: '',
       order: 1,
       page: 1
@@ -490,91 +679,76 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  /** Opens the relation selection modal */
-  // public openRelationModal(): void {
-  //   this.showRelationModal = true;
-  //   this.chosenRelation = null;
-  //   this.chosenRole = null;
-  //   this.loadRelationsForNewRelation();
-  // }
-
-  public openRelationModal(): void {
-    // Refresh used relations and available relations.
-    this.loadObjectRelationInstances(this.currentObjectID);
-    this.loadRelationsForNewRelation();
-
-    // Reset current selection.
-    this.chosenRelation = null;
-    this.chosenRole = null;
-
-    setTimeout(() => {
-      this.showRelationModal = true;
-      this.changesRef.detectChanges();
-    }, 10);
-  }
-
-
-  /** Closes the relation selection modal */
-  public closeRelationModal(): void {
-    this.showRelationModal = false;
-  }
-
-  /** Selects a relation and role in the modal */
-  public onSelectRelation(relation: ExtendedRelation, role: 'parent' | 'child'): void {
-    if ((role === 'parent' && !relation.canBeParent) || (role === 'child' && !relation.canBeChild)) {
-      return;
+  private loadCounterpartObjects(ids: number[]): void {
+    // Remove duplicates, if necessary:
+    const uniqueIDs = Array.from(new Set(ids));
+    if (!uniqueIDs.length) {
+      return; // Nothing to fetch
     }
-    this.chosenRelation = relation;
-    this.chosenRole = role;
+
+    finalize(() => this.loaderService.show())
+
+    // Prepare filter with $in
+    const params = {
+      filter: { public_id: { $in: uniqueIDs } },
+      limit: 0,
+      sort: this.relationSort,
+      order: this.relationOrder,
+      page: this.relationPage
+    };
+
+    // Single request to fetch all IDs in one go
+    this.objectService.getObjects(params)
+      .pipe(takeUntil(this.unsubscribe), finalize(() => this.loaderService.hide()))
+      .subscribe({
+        next: (apiResponse) => {
+          // (Re)initialize the map each time you fetch
+          this.relatedObjectsMap = {};
+
+          // Populate the map: object_id -> RenderResult (or union type)
+          (apiResponse.results || []).forEach((obj) => {
+            if (this.isRenderResult(obj)) {
+              const id = obj.object_information.object_id;
+              // now TS knows it's a RenderResult
+
+              if (id) {
+                this.relatedObjectsMap[id] = obj;
+              }
+            }
+          });
+
+          // Manually trigger CD if needed
+          this.changesRef.markForCheck();
+        },
+        error: (err) => {
+          this.toastService.error(err?.error?.message || 'Failed to load objects');
+          this.changesRef.markForCheck();
+        }
+      });
   }
 
-  /** Confirms relation selection and opens role dialog */
-  public onConfirmRelationSelection(): void {
-    if (!this.chosenRelation || !this.chosenRole) return;
-    this.closeRelationModal();
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : this.chosenRelation.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : this.chosenRelation.child_type_ids;
-    console.log('[DEBUG] Dialog inputs:', {
-      chosenRole: this.chosenRole,
-      currentObjectTypeID: this.renderResult.type_information.type_id,
-      parentTypeIDs: this.roleParentTypeIDs,
-      childTypeIDs: this.roleChildTypeIDs,
-      currentObjectID: this.currentObjectID,
-      relation: this.chosenRelation
-    });
-    this.showRelationRoleDialog = true;
-    this.dialogMode = CmdbMode.Create; // Ensure Create mode for new relations
-    this.selectedRelationInstance = null; // Clear any selected instance
-    this.changesRef.detectChanges();
-  }
 
-  /** Handles confirmation from the relation role dialog */
-  public handlePopUp2Confirm(selection: { parentObjID?: number; childObjID?: number }): void {
-    this.showRelationRoleDialog = false;
-    this.selectedRelationInstance = null;
-    this.dialogMode = CmdbMode.Create; // Reset to default mode
-    if (this.currentObjectID) {
-      this.loadObjectRelationInstances(this.currentObjectID);
-    }
-    this.changesRef.markForCheck();
-  }
+  /* --------------------------------------------------- HELPER & UTILITY METHODS -------------------------------------------- */
 
-  /** Handles cancellation from the relation role dialog */
-  public handlePopUp2Cancel(): void {
-    this.showRelationRoleDialog = false;
-    this.selectedRelationInstance = null;
-    this.dialogMode = CmdbMode.Create; // Reset to default mode
-    this.toastService.info('Operation cancelled');
-    this.changesRef.markForCheck();
-  }
 
-  /** Sets the active tab index */
-  public setActiveTab(tabIndex: number): void {
-    this.activeRelationTabIndex = tabIndex;
-    if (tabIndex !== 1) {
-      this.activeNestedRelationTabIndex = 0; // Reset nested tab when switching away from Object Relations
-    }
-    this.changesRef.markForCheck();
+  /**
+   * Returns columns for the cmdb-table based on group properties.
+   * @param group The relation group
+   */
+  public getColumns(group: RelationGroup): any[] {
+    return [
+      { display: 'Object Relation ID', name: 'public_id', data: 'public_id', searchable: true, sortable: true, style: { width: '180px', 'text-align': 'center' } },
+      {
+        display: 'Type',
+        name: 'type_label',
+        data: 'type_label',
+        template: this.counterpartTypeTemplate,
+        style: { width: 'auto', 'text-align': 'center' }
+      },
+      { display: 'Relation Object', name: 'counterpart_id', data: 'counterpart_id', sortable: true, template: this.counterpartIdTemplate, style: { width: 'auto', 'text-align': 'center' } },
+      // { display: group.isParent ? 'Type Parent' : 'Type Child', name: 'type', data: 'type', sortable: false },
+      { display: 'Actions', name: 'actions', template: this.actionsTemplate, sortable: false, style: { width: '150px', 'text-align': 'center' } }
+    ];
   }
 
   /** Sets the active nested relation tab index */
@@ -592,256 +766,16 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.changesRef.markForCheck();
   }
-  
 
-  /** Handles clicking the "+" tab to add a new relation */
-  public onClickAddRelationTab(): void {
-    this.openRelationModal();
-    this.setActiveTab(1); // Ensure Object Relations is active
-    this.setNestedRelationTab(this.relationGroups.length); // Highlight the "+" tab
-  }
-
-  /**
-   * Creates a new relation for an existing relation group.
-   * @param group The relation group to create a new instance for
-   */
-  // public createNewRelationForGroup(group: RelationGroup): void {
-  //   const definition = group.instances[0].definition;
-  //   if (!definition) {
-  //     this.toastService.error('Relation definition is missing.');
-  //     return;
-  //   }
-
-  //   const safeDefinition = {
-  //     ...definition,
-  //     parent_type_ids: Array.isArray(definition.parent_type_ids) ? definition.parent_type_ids : [],
-  //     child_type_ids: Array.isArray(definition.child_type_ids) ? definition.child_type_ids : [],
-  //     canBeParent: group.isParent,
-  //     canBeChild: !group.isParent
-  //   };
-
-  //   this.chosenRelation = safeDefinition;
-  //   this.chosenRole = group.isParent ? 'parent' : 'child';
-  //   this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition.parent_type_ids;
-  //   this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition.child_type_ids;
-
-  //   if (this.chosenRole === 'parent' && this.roleChildTypeIDs.length === 0) {
-  //     this.toastService.warning('No child types defined for this relation.');
-  //     return;
-  //   }
-  //   if (this.chosenRole === 'child' && this.roleParentTypeIDs.length === 0) {
-  //     this.toastService.warning('No parent types defined for this relation.');
-  //     return;
-  //   }
-
-  //   this.showRelationRoleDialog = true;
-  //   this.dialogMode = CmdbMode.Create;
-  //   this.selectedRelationInstance = null; // Clear any selected instance
-  //   this.changesRef.detectChanges();
-  // }
-
-  public createNewRelationForGroup(group: RelationGroup): void {
-    // Try to get the definition from the first instance in the group.
-    let definition = group.instances.length > 0 ? group.instances[0].definition : null;
-    // If not found, look for the definition in extendedRelations.
-    if (!definition) {
-      definition = this.extendedRelations.find(rel => rel.public_id === group.relationId);
-    }
-    if (!definition) {
-      this.toastService.error('Relation definition is missing.');
-      return;
-    }
-  
-    const safeDefinition = {
-      ...definition,
-      parent_type_ids: Array.isArray(definition.parent_type_ids) ? definition.parent_type_ids : [],
-      child_type_ids: Array.isArray(definition.child_type_ids) ? definition.child_type_ids : [],
-      canBeParent: group.isParent,
-      canBeChild: !group.isParent
-    };
-  
-    this.chosenRelation = safeDefinition;
-    this.chosenRole = group.isParent ? 'parent' : 'child';
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition.child_type_ids;
-  
-    if (this.chosenRole === 'parent' && this.roleChildTypeIDs.length === 0) {
-      this.toastService.warning('No child types defined for this relation.');
-      return;
-    }
-    if (this.chosenRole === 'child' && this.roleParentTypeIDs.length === 0) {
-      this.toastService.warning('No parent types defined for this relation.');
-      return;
-    }
-  
-    this.showRelationRoleDialog = true;
-    this.dialogMode = CmdbMode.Create; // Set mode to Create
-    this.selectedRelationInstance = null; // Clear any selected instance
-    this.changesRef.markForCheck();
-  }
-  
-  
-
-  /**
-   * Deletes a relation instance.
-   * @param instance The relation instance to delete
-   */
-  // public deleteRelationInstance(instance: ExtendedObjectRelationInstance): void {
-  //   if (confirm('Are you sure you want to delete this relation instance?')) {
-  //     this.loadingRelations = true;
-  //     this.objectRelationService.deleteObjectRelation(instance.public_id)
-  //       .pipe(takeUntil(this.unsubscribe))
-  //       .subscribe({
-  //         next: () => {
-  //           this.toastService.success('Relation instance deleted successfully');
-
-  //           // Refresh the usedRolesMap after deletion
-  //           const roles = this.usedRolesMap.get(instance.relation_id);
-  //           if (roles) {
-  //             if (instance.relation_parent_id === this.currentObjectID) {
-  //               roles.parentUsed = false;
-  //             }
-  //             if (instance.relation_child_id === this.currentObjectID) {
-  //               roles.childUsed = false;
-  //             }
-  //             this.usedRolesMap.set(instance.relation_id, roles);
-  //           }
-
-  //           // Reload relations to ensure the modal updates correctly
-  //           this.loadObjectRelationInstances(this.currentObjectID);
-  //           this.loadRelationsForNewRelation();
-
-  //           this.changesRef.markForCheck();
-  //         },
-  //         error: (err) => {
-  //           this.toastService.error(err?.error?.message);
-  //           this.loadingRelations = false;
-  //           this.changesRef.detectChanges();
-  //         }
-  //       });
-  //   }
-  // }
-
-  /**
- * Deletes a relation instance using a reusable core delete modal.
- * @param instance The relation instance to delete.
- */
-  public deleteRelationInstance(instance: ExtendedObjectRelationInstance): void {
-    const modalRef = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
-    modalRef.componentInstance.title = 'Delete Object Relation';
-    modalRef.componentInstance.item = instance;
-    modalRef.componentInstance.itemType = 'Object Relation';
-    modalRef.componentInstance.itemName = instance.public_id;
-
-    modalRef.result.then(
-      (result) => {
-        if (result === 'confirmed') {
-          this.loadingRelations = true;
-          this.objectRelationService.deleteObjectRelation(instance.public_id)
-            .pipe(takeUntil(this.unsubscribe))
-            .subscribe({
-              next: () => {
-                this.toastService.success('Relation instance deleted successfully');
-                this.loadObjectRelationInstances(this.currentObjectID);
-                this.loadRelationsForNewRelation()
-              },
-              error: (err) => {
-                this.toastService.error(err?.error?.message);
-                this.loadingRelations = false;
-                this.changesRef.markForCheck();
-              }
-            });
-        }
-      },
-      () => { }
+  private isRenderResult(obj: CmdbObject | RenderResult): obj is RenderResult {
+    return (
+      obj != null &&
+      typeof obj === 'object' &&
+      'object_information' in obj
     );
   }
-
-
-  /**
-   * Views a relation instance in read-only mode.
-   * @param instance The relation instance to view
-   */
-  public viewRelationInstance(instance: ExtendedObjectRelationInstance): void {
-    this.chosenRelation = {
-      ...instance.definition,
-      canBeParent: instance.relation_parent_id === this.currentObjectID,
-      canBeChild: instance.relation_child_id === this.currentObjectID
-    };
-    this.chosenRole = instance.relation_parent_id === this.currentObjectID ? 'parent' : 'child';
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : instance.definition.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : instance.definition.child_type_ids;
-    this.dialogMode = CmdbMode.View;
-    this.selectedRelationInstance = instance;
-    this.showRelationRoleDialog = true;
-    this.changesRef.detectChanges();
-  }
-
-
-  /**
-   * Edits an existing relation instance.
-   * @param instance The relation instance to edit
-   */
-  public editRelationInstance(instance: ExtendedObjectRelationInstance): void {
-    this.chosenRelation = {
-      ...instance.definition,
-      canBeParent: instance.relation_parent_id === this.currentObjectID,
-      canBeChild: instance.relation_child_id === this.currentObjectID
-    };
-    this.chosenRole = instance.relation_parent_id === this.currentObjectID ? 'parent' : 'child';
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : instance.definition.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : instance.definition.child_type_ids;
-    this.dialogMode = CmdbMode.Edit;
-    this.selectedRelationInstance = instance;
-    this.showRelationRoleDialog = true;
-    this.changesRef.detectChanges();
-  }
-
-
-  /**
-   * Copies an existing relation instance for creating a new one.
-   * @param instance The relation instance to copy
-   */
-  public copyRelationInstance(instance: ExtendedObjectRelationInstance): void {
-    this.chosenRelation = {
-      ...instance.definition,
-      canBeParent: instance.relation_parent_id === this.currentObjectID,
-      canBeChild: instance.relation_child_id === this.currentObjectID
-    };
-    this.chosenRole = instance.relation_parent_id === this.currentObjectID ? 'parent' : 'child';
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : instance.definition.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : instance.definition.child_type_ids;
-    this.dialogMode = CmdbMode.Create;
-    this.selectedRelationInstance = instance;
-    this.showRelationRoleDialog = true;
-    this.changesRef.detectChanges();
-  }
-
 
   trackByRelationId(index: number, group: RelationGroup): number {
     return group.relationId;
   }
-
-  public onRelationPageChange(newPage: number): void {
-    this.relationPage = newPage;
-    this.loadObjectRelationInstances(this.currentObjectID);
-  }
-
-  public onRelationPageSizeChange(newLimit: number): void {
-    this.relationPageSize = newLimit;
-    this.relationPage = 1; // Reset to first page
-    this.loadObjectRelationInstances(this.currentObjectID);
-  }
-
-  public onRelationSortChange(event: { sort: string; order: number }): void {
-    this.relationSort = event.sort;
-    this.relationOrder = event.order;
-    this.loadObjectRelationInstances(this.currentObjectID);
-  }
-
-  public onRelationSearchChange(searchTerm: string): void {
-    console.log('[DEBUG] Relation search term:', searchTerm);
-    this.loadObjectRelationInstances(this.currentObjectID);
-  }
-
 }

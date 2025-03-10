@@ -20,6 +20,7 @@ import { ReplaySubject } from 'rxjs';
 
 import { CmdbRelation } from '../../../models/relation.model';
 import { RelationBuilderStepComponent } from '../relation-builder-step.component';
+import { CmdbMode } from 'src/app/framework/modes.enum';
 
 @Component({
   selector: 'cmdb-relation-fields-step',
@@ -28,12 +29,15 @@ import { RelationBuilderStepComponent } from '../relation-builder-step.component
 })
 export class RelationFieldsStepComponent extends RelationBuilderStepComponent implements OnInit, DoCheck, OnDestroy {
 
+  @Input() public relationInstance!: CmdbRelation;
+  @Input() public mode: CmdbMode;
+
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
   private relationInstanceDiffer: KeyValueDiffer<string, any>;
 
   public builderValid: boolean = true;
-
-  @Input() public relationInstance!: CmdbRelation;
+  public CmdbMode = CmdbMode;
+  public initialFieldsPresent: boolean = false;
 
   constructor(
     private differs: KeyValueDiffers,
@@ -43,8 +47,12 @@ export class RelationFieldsStepComponent extends RelationBuilderStepComponent im
 
   public ngOnInit(): void {
     if (this.relationInstance) {
+      this.initialFieldsPresent = this.relationInstance.fields.length > 0; // Set initial state
       this.relationInstanceDiffer = this.differs.find(this.relationInstance).create();
+      console.log('relationInstanceDiffer', this.relationInstanceDiffer)
     }
+
+    console.log('relation instance', this.relationInstance)
   }
 
   public ngDoCheck(): void {

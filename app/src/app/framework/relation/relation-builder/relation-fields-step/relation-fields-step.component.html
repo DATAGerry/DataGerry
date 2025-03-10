@@ -1,3 +1,13 @@
+
+<div *ngIf="mode === CmdbMode.Edit && initialFieldsPresent" class="structural-warning-alert">
+    <div class="alert-content">
+      <i class="fas fa-exclamation-circle warning-icon"></i>
+      <div class="warning-text">
+        <strong>Structural Change Advisory:</strong> Removing fields will permanently 
+        delete these elements from all existing Object Relations.
+      </div>
+    </div>
+  </div>
 <cmdb-builder 
     [relationInstance]="relationInstance"
     [mode]="mode"
