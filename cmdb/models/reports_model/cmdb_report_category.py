@@ -15,11 +15,17 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 This module contains the implementation of CmdbReportCategory, which is representing
-a category of a report in Datagarry
+a category of a CmdbReport in DataGarry
 """
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
+
+from cmdb.errors.models.cmdb_report_category import (
+    CmdbReportCategoryInitError,
+    CmdbReportCategoryInitFromDataError,
+    CmdbReportCategoryToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -28,8 +34,11 @@ LOGGER = logging.getLogger(__name__)
 #                                              CmdbReportCategory - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbReportCategory(CmdbDAO):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Implementation of a CmdbReportCategory in DataGerry
+
+    Extends: CmdbDAO
+    """
     COLLECTION = 'framework.reportCategories'
     MODEL = 'Report_Category'
     DEFAULT_VERSION: str = '1.0.0'
@@ -42,6 +51,7 @@ class CmdbReportCategory(CmdbDAO):
         'name': {
             'type': 'string',
             'required': True,
+            'empty': False,
         },
         'predefined': {
             'type': 'boolean',
@@ -52,42 +62,69 @@ class CmdbReportCategory(CmdbDAO):
 # ---------------------------------------------------- CONSTRUCTOR --------------------------------------------------- #
 
     def __init__(self, name: str, predefined: bool = False, **kwargs):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        self.name = name
-        self.predefined = predefined
-        super().__init__(**kwargs)
+        """
+        Initialises a CmdbReportCategory
+
+        Args:
+            name (str): name of the CmdbReportCategory
+            predefined (bool, optional): If True then the CmdbReportCategory is provided by DataGerry. Defaults to False
+
+        Raises:
+            CmdbReportCategoryInitError: If the CmdbReportCategory could not be initialised
+        """
+        try:
+            self.name = name
+            self.predefined = predefined
+
+            super().__init__(**kwargs)
+        except Exception as err:
+            raise CmdbReportCategoryInitError(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbReportCategory":
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return cls(
-            public_id = data.get('public_id'),
-            name = data.get('name'),
-            predefined = data.get('predefined', False),
-        )
+        """
+        Initialises a CmdbReportCategory from a dict
+
+        Args:
+            data (dict): Data with which the CmdbReportCategory should be initialised
+
+        Raises:
+            CmdbReportCategoryInitFromDataError: If the initialisation with the given data fails
+
+        Returns:
+            CmdbReportCategory: CmdbReportCategory with the given data
+        """
+        try:
+            return cls(
+                public_id = data.get('public_id'),
+                name = data.get('name'),
+                predefined = data.get('predefined', False),
+            )
+        except Exception as err:
+            raise CmdbReportCategoryInitFromDataError(err) from err
 
 
     @classmethod
     def to_json(cls, instance: "CmdbReportCategory") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return {
-            'public_id': instance.get_public_id(),
-            'name': instance.name,
-            'predefined': instance.predefined,
-        }
+        """
+        Converts a CmdbReportCategory into a json compatible dict
 
+        Args:
+            instance (CmdbReportCategory): The CmdbReportCategory which should be converted
 
-    @classmethod
-    def to_data(cls, instance: "CmdbReportCategory") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return {
-            'public_id': instance['public_id'],
-            'name': instance['name'],
-            'predefined': instance['predefined'],
-        }
+        Raises:
+            CmdbReportCategoryToJsonError: If the CmdbReportCategory could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the CmdbReportCategory values
+        """
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'name': instance.name,
+                'predefined': instance.predefined,
+            }
+        except Exception as err:
+            raise CmdbReportCategoryToJsonError(err) from err

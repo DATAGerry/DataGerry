@@ -163,9 +163,7 @@ def get_cmdb_relation(public_id: int, request_user: CmdbUser):
         requested_relation = relations_manager.get_relation(public_id)
 
         if requested_relation:
-            api_response = GetSingleResponse(requested_relation, body = request.method == 'HEAD')
-
-            return api_response.make_response()
+            return GetSingleResponse(requested_relation, body = request.method == 'HEAD').make_response()
 
         return abort(404, f"The Relation with ID:{public_id} was not found!")
     except HTTPException as http_err:
@@ -206,7 +204,6 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
         to_update_relation = relations_manager.get_relation(public_id)
 
         if to_update_relation:
-
             handle_deleted_type_ids(to_update_relation, data, object_relations_manager)
 
             changed_fields: dict = relations_manager.get_added_and_removed_fields(to_update_relation, data)
@@ -217,9 +214,7 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
 
             relations_manager.update_relation(public_id, relation)
 
-            api_response = UpdateSingleResponse(result=data)
-
-            return api_response.make_response()
+            return UpdateSingleResponse(data).make_response()
 
         return abort(404, f"The Relation with ID:{public_id} was not found!")
     except HTTPException as http_err:
