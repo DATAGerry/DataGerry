@@ -47,12 +47,10 @@ export class RelationFieldsStepComponent extends RelationBuilderStepComponent im
 
   public ngOnInit(): void {
     if (this.relationInstance) {
-      this.initialFieldsPresent = this.relationInstance.fields.length > 0; // Set initial state
+      this.initialFieldsPresent = this.relationInstance.fields.length > 0;
       this.relationInstanceDiffer = this.differs.find(this.relationInstance).create();
-      console.log('relationInstanceDiffer', this.relationInstanceDiffer)
     }
 
-    console.log('relation instance', this.relationInstance)
   }
 
   public ngDoCheck(): void {

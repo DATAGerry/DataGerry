@@ -452,7 +452,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
             this.relationGroups = [];
             this.loadingRelations = false;
             this.changesRef.markForCheck();
-            console.log('[DEBUG] No instances found, relationGroups cleared');
             return;
           }
 
