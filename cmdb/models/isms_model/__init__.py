@@ -14,13 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides the ManagerProvider
+Provides all ISMS relevant classes
 """
-from .manager_provider import ManagerProvider
-from .manager_type_enum import ManagerType
+from .isms_risk_class import IsmsRiskClass
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ManagerProvider',
-    'ManagerType',
+    'IsmsRiskClass',
 ]

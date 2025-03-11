@@ -44,7 +44,7 @@ LOGGER = logging.getLogger(__name__)
 def get_date_settings(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                         request_user)
 
     try:
@@ -71,9 +71,9 @@ def update_date_settings(request_user: CmdbUser):
     #TODO: DOCUMENT-FIX
     new_auth_settings_values = request.get_json()
 
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
-    settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER_MANAGER,
+    settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER,
                                                                                request_user)
 
     if not new_auth_settings_values:

@@ -70,7 +70,7 @@ def create_report(params: dict, request_user: CmdbUser):
     Returns:
         int: public_id of the created CmdbReport
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
     try:
         params['public_id'] = reports_manager.get_next_public_id()
@@ -112,7 +112,7 @@ def get_report(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbReport which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbReport
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
     try:
         requested_report = reports_manager.get_report(public_id)
@@ -139,7 +139,7 @@ def get_reports(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         (GetMultiResponse): All CmdbReports considering the params
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
     try:
         builder_params: BuilderParameters = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -169,7 +169,7 @@ def count_reports_of_type(public_id: int, request_user: CmdbUser):
     Args:
         public_id (int): public_id of the type
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
     try:
         reports_count = reports_manager.count_reports({'type_id':public_id})
@@ -197,8 +197,8 @@ def run_report_query(public_id: int, request_user: CmdbUser):
         (DefaultResponse): Dict of the query result
     """
     try:
-        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         requested_report = reports_manager.get_report(public_id)
 
@@ -241,7 +241,7 @@ def update_report(params: dict, request_user: CmdbUser):
     Returns:
         UpdateSingleResponse: Response with UpdateResult
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
     try:
         params['public_id'] = int(params['public_id'])
@@ -296,7 +296,7 @@ def delete_report(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbReport which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbReport
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
     try:
         report_instance: CmdbReport = reports_manager.get_report(public_id)

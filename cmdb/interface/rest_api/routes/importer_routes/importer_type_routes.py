@@ -51,7 +51,7 @@ LOGGER = logging.getLogger(__name__)
 def add_type(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
     error_collection = {}
     upload = request.form.get('uploadFile')
@@ -83,7 +83,7 @@ def add_type(request_user: CmdbUser):
 def update_type(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
     error_collection = {}
     upload = request.form.get('uploadFile')

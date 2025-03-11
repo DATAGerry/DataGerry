@@ -90,7 +90,7 @@ def insert_cmdb_type(data: dict, request_user: CmdbUser):
         InsertSingleResponse: The new CmdbType and its public_id
     """
     try:
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
         possible_id = data.get('public_id', None)
@@ -138,7 +138,7 @@ def get_cmdb_types(params: TypeIterationParameters, request_user: CmdbUser):
         GetMultiResponse: All the CmdbTypes matching the CollectionParameters
     """
     try:
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         view = params.active
 
@@ -187,7 +187,7 @@ def get_cmdb_type(public_id: int, request_user: CmdbUser):
         GetSingleResponse: The requested CmdbType
     """
     try:
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         requested_type = types_manager.get_type(public_id)
 
@@ -222,7 +222,7 @@ def count_objects_of_cmdb_type(public_id: int, request_user: CmdbUser):
         DefaultResponse: An API response containing the count of CmdbObjects for the given type_id
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         objects_count = objects_manager.count_objects({'type_id':public_id})
 
@@ -258,9 +258,9 @@ def update_cmdb_type(public_id: int, data: dict, request_user: CmdbUser):
         UpdateSingleResponse: The new data of the CmdbType
     """
     try:
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         unchanged_type = types_manager.get_type(public_id)
 
@@ -342,10 +342,10 @@ def delete_cmdb_type(public_id: int, request_user: CmdbUser):
         DeleteSingleResponse: The deleted CmdbType data
     """
     try:
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
-        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS, request_user)
 
         to_delete_type = types_manager.get_type(public_id)
 

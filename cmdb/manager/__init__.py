@@ -39,6 +39,7 @@ from cmdb.manager.users_manager import UsersManager
 from cmdb.manager.users_settings_manager import UsersSettingsManager
 from cmdb.manager.webhooks_event_manager import WebhooksEventManager
 from cmdb.manager.webhooks_manager import WebhooksManager
+from cmdb.manager.isms_manager.risk_class_manager import RiskClassManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -65,4 +66,5 @@ __all__ = [
     'UsersSettingsManager',
     'WebhooksEventManager',
     'WebhooksManager',
+    'RiskClassManager',
 ]

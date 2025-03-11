@@ -75,8 +75,8 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
     """
     #TODO: REFATOR-FIX (reduce complexity)
     try:
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-        security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
+        security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY, request_user)
 
         user_password = data['password']
         data['password'] = security_manager.generate_hmac(data['password'])
@@ -166,7 +166,7 @@ def get_cmdb_users(params: CollectionParameters, request_user: CmdbUser):
         GetMultiResponse: The CmdbUsers matching the given filter
     """
     try:
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
@@ -203,7 +203,7 @@ def get_cmdb_user(public_id: int, request_user: CmdbUser):
         GetSingleResponse: Raw data of the requested CmdbUser
     """
     try:
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
 
         requested_user = users_manager.get_user(public_id)
 
@@ -241,7 +241,7 @@ def update_cmdb_user(public_id: int, data: dict, request_user: CmdbUser):
         UpdateSingleResponse: The updated raw data of the CmdbUser
     """
     try:
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
 
         to_update_user = users_manager.get_user(public_id)
 
@@ -280,8 +280,8 @@ def change_cmdb_user_password(public_id: int, request_user: CmdbUser):
         UpdateSingleResponse:  The CmdbUser with new password
     """
     try:
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
-        security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
+        security_manager: SecurityManager = ManagerProvider.get_manager(ManagerType.SECURITY, request_user)
 
         to_update_user = users_manager.get_user(public_id)
 
@@ -324,7 +324,7 @@ def delete_cmdb_user(public_id: int, request_user: CmdbUser):
         DeleteSingleResponse: Raw data of the deleted CmdbUser
     """
     try:
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
 
         to_delete_user = users_manager.get_user(public_id)
 

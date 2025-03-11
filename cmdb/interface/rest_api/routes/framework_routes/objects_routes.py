@@ -102,9 +102,9 @@ def insert_cmdb_object(request_user: CmdbUser):
         #TODO: REFACTOR-FIX (pass the data same way as on other routes and add schema validation)
         new_object_json = json.dumps(request.json)
 
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
-        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
         if current_app.cloud_mode:
             if check_config_item_limit_reached(request_user):
@@ -230,7 +230,7 @@ def get_cmdb_object(public_id, request_user: CmdbUser):
         DefaultResponse: The requested CmdbObject with render information
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         requested_object = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
 
@@ -285,7 +285,7 @@ def get_cmdb_objects(params: CollectionParameters, request_user: CmdbUser):
         GetMultiResponse: All the CmdbObjects matching the CollectionParameters
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         view = params.optional.get('view', 'native')
 
@@ -345,7 +345,7 @@ def get_native_cmdb_object(public_id: int, request_user: CmdbUser):
         DefaultResponse: The requested CmdbObject
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         object_instance = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
 
@@ -383,7 +383,7 @@ def group_cmdb_objects_by_type_id(value: str, request_user: CmdbUser):
         DefaultResponse: A JSON response containing grouped CmdbObjects
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         filter_state = {'active': {'$eq': True}} if _fetch_only_active_objs() else None
 
@@ -428,7 +428,7 @@ def get_cmdb_object_mds_reference(public_id: int, request_user: CmdbUser):
         DefaultResponse: A JSON response containing the MDS reference of the object
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         referenced_object = objects_manager.get_object(public_id,
                                                        request_user,
@@ -480,7 +480,7 @@ def get_cmdb_object_mds_references(public_id: int, request_user: CmdbUser):
         DefaultResponse: A JSON response containing the MDS references of the objects, or an error message
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         summary_lines = {}
 
@@ -542,7 +542,7 @@ def get_cmdb_object_references(public_id: int, params: CollectionParameters, req
         GetMultiResponse: A JSON response containing the referenced CmdbObjects
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         view = params.optional.get('view', 'native')
 
@@ -617,7 +617,7 @@ def get_cmdb_object_state(public_id: int, request_user: CmdbUser):
         DefaultResponse: API response indicating whether the object is active or not.
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         target_object_data = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
         target_object: CmdbObject = CmdbObject.from_data(target_object_data)
@@ -657,7 +657,7 @@ def get_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
         GetListResponse: Which includes the json data of multiple Objects
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         type_instance = objects_manager.get_object_type(public_id)
 
@@ -714,9 +714,9 @@ def update_cmdb_object(public_id: int, data: dict, request_user: CmdbUser):
         UpdateMultiResponse: A JSON response indicating the result of the update operation
     """
     try:
-        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
         object_ids = request.args.getlist('objectIDs')
 
@@ -859,9 +859,9 @@ def update_cmdb_object_state(public_id: int, request_user: CmdbUser):
         UpdateSingleResponse: The updated CmdbObject as JSON or False if the given state equals the current state
     """
     try:
-        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
         if isinstance(request.json, bool):
             state = request.json
@@ -967,8 +967,8 @@ def update_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
         UpdateMultiResponse: Which includes the json data of multiple updated objects.
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
         update_type_instance = objects_manager.get_object_type(public_id)
 
@@ -1085,15 +1085,15 @@ def delete_cmdb_object(public_id: int, request_user: CmdbUser):
         Response: Acknowledgment of database 
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
-        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATIONS,
                                                                             request_user)
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                                             request_user)
 
         current_location = None
@@ -1224,13 +1224,13 @@ def delete_cmdb_object_with_child_locations(public_id: int, request_user: CmdbUs
         DefaultResponse: A JSON response indicating success or failure
     """
     try:
-        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATIONS,
                                                                             request_user)
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                                             request_user)
 
         # check if object exists
@@ -1324,14 +1324,14 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
         (int): Success of this operation
     """
     try:
-        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATIONS,
                                                                             request_user)
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                                             request_user)
 
         # check if object exists
@@ -1446,15 +1446,15 @@ def delete_many_cmdb_objects(public_ids, request_user: CmdbUser):
         Response: A JSON response indicating the success or failure of the operation
     """
     try:
-        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
-        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATIONS,
                                                                             request_user)
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                                             request_user)
 
         ids = []
@@ -1584,7 +1584,7 @@ def delete_object_links(public_id: int, request_user: CmdbUser) -> None:
     Args:
         public_id (int): public_id of the object which is deleted
     """
-    object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+    object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS,
                                                                            request_user)
 
     object_link_filter: dict = {'$or': [{'primary': public_id}, {'secondary': public_id}]}
@@ -1614,7 +1614,7 @@ def check_config_item_limit_reached(request_user: CmdbUser) -> bool:
 #TODO: REFACTOR-FIX (use the count_documents method instead)
 def get_objects_count(request_user: CmdbUser) -> int:
     """document not needed since will be refactored"""
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
     builder_params = BuilderParameters({})
     iteration_result: IterationResult[CmdbObject] = objects_manager.iterate(builder_params,

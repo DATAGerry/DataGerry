@@ -61,7 +61,7 @@ def create_webhook(params: dict, request_user: CmdbUser):
     Returns:
         int: public_id of the created CmdbWebhook
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
     try:
         params['public_id'] = webhooks_manager.get_next_public_id()
@@ -93,7 +93,7 @@ def get_webhook(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbWebhook which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbWebhook
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
     try:
         requested_webhook = webhooks_manager.get_webhook(public_id)
@@ -120,7 +120,7 @@ def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         (GetMultiResponse): All CmdbWebhooks considering the params
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
     try:
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -155,7 +155,7 @@ def update_webhook(params: dict, request_user: CmdbUser):
     Returns:
         UpdateSingleResponse: Response with UpdateResult
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
     try:
         params['public_id'] = int(params['public_id'])
@@ -202,7 +202,7 @@ def delete_webhook(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbWebhook which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbWebhook
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_MANAGER, request_user)
+    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
     try:
         webhook_instance: CmdbWebhook = webhooks_manager.get_webhook(public_id)

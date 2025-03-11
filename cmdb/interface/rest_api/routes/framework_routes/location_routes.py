@@ -75,9 +75,9 @@ def create_location(params: dict, request_user: CmdbUser):
     Returns:
         int: public_id of the created location
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
     location_creation_params= {}
 
@@ -139,7 +139,7 @@ def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         (Response): All locations considering the params
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     try:
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -176,7 +176,7 @@ def get_locations_tree(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         list: locations as a tree
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     try:
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -229,7 +229,7 @@ def get_location(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of location
         request_user (CmdbUser): User which is requesting the data
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     try:
         location_instance = locations_manager.get_location(public_id)
@@ -254,7 +254,7 @@ def get_location_for_object(object_id: int, request_user: CmdbUser):
         object_id (int): object_id of object 
         request_user (CmdbUser): User which is requesting the data
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     try:
         location_instance = locations_manager.get_location_for_object(object_id)
@@ -279,7 +279,7 @@ def get_location_parent(object_id: int, request_user: CmdbUser):
         object_id (int): object_id of object 
         request_user (CmdbUser): User which is requesting the data
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     parent = None
 
@@ -313,7 +313,7 @@ def get_children(object_id: int, request_user: CmdbUser):
     Returns:
         (Response): All children of next level for the given object_id
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     children = []
 
@@ -351,8 +351,8 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
     """
     LOGGER.debug("update_location_for_object() called")
     try:
-        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         location_update_params = {}
 
@@ -404,7 +404,7 @@ def delete_location_for_object(object_id: int, request_user: CmdbUser):
     Returns:
         bool: Confirmation for deletion
     """
-    locations_manager:LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS_MANAGER, request_user)
+    locations_manager:LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
     try:
         current_location_instance = locations_manager.get_location_for_object(object_id)

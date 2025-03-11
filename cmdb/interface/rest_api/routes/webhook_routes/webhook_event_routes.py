@@ -55,7 +55,7 @@ def get_webhook_event(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbWebhookEvent which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbWebhookEvent
     """
-    webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT_MANAGER,
+    webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT,
                                                                                request_user)
 
     try:
@@ -83,7 +83,7 @@ def get_webhook_events(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         (GetMultiResponse): All CmdbWebhookEvents considering the params
     """
-    webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT_MANAGER,
+    webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT,
                                                                                request_user)
 
     try:
@@ -117,7 +117,7 @@ def delete_webhook_event(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbWebhookEvent which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbWebhookEvent
     """
-    webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT_MANAGER,
+    webhook_events_manager: WebhooksEventManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS_EVENT,
                                                                                request_user)
 
     try:

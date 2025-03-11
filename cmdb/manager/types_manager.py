@@ -198,7 +198,7 @@ class TypesManager(BaseManager):
 
     def count_types(self) -> int:
         """
-        Counts the total number of types in the collection
+        Counts the total number of CmdbTypes in the collection
 
         Raises:
             TypesManagerGetError: If counting CmdbTypes failed
@@ -207,7 +207,7 @@ class TypesManager(BaseManager):
             int: The number of CmdbTypes
         """
         try:
-            return self.count_documents(CmdbType.COLLECTION)
+            return self.count_documents(self.collection)
         except BaseManagerGetError as err:
             raise TypesManagerGetError(err) from err
 

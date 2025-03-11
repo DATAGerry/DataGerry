@@ -71,7 +71,7 @@ def create_cmdb_object_link(request_user: CmdbUser):
         except KeyError:
             return abort(400, "The 'primary' or 'secondary' key does not exist in the request data!")
 
-        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS,
                                                                                request_user)
 
         # Confirm that this exact link does not exist
@@ -125,7 +125,7 @@ def get_cmdb_object_links(params: CollectionParameters, request_user: CmdbUser):
         GetMultiResponse: Retrived CmdbObjectLinks based on the given 'params'
     """
     try:
-        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS,
                                                                                request_user)
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -165,7 +165,7 @@ def delete_cmdb_object_link(public_id: int, request_user: CmdbUser):
         `DeleteSingleResponse`: CmdbObjectLink instance which was deleted
     """
     try:
-        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS_MANAGER,
+        object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS,
                                                                                request_user)
 
 

@@ -45,7 +45,7 @@ type_export_blueprint = RootBlueprint('type_export_rest', __name__, url_prefix='
 def export_type(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
     try:
         type_list = [CmdbType.to_json(type) for type in types_manager.get_all_types()]
@@ -76,7 +76,7 @@ def export_type(request_user: CmdbUser):
 def export_type_by_ids(public_ids, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
     try:
         query_list = []

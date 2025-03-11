@@ -63,7 +63,7 @@ def insert_setting(user_id: int, data: dict, request_user: CmdbUser):
     Returns:
         InsertSingleResponse: Insert response with the new user and its identifier.
     """
-    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS_MANAGER,
+    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS,
                                                                                request_user)
 
     try:
@@ -99,7 +99,7 @@ def get_user_settings(user_id: int, request_user: CmdbUser):
     Notes:
         Calling the route over HTTP HEAD method will result in an empty body.
     """
-    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS_MANAGER,
+    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS,
                                                                                request_user)
 
     try:
@@ -132,7 +132,7 @@ def get_user_setting(user_id: int, resource: str, request_user: CmdbUser):
     Returns:
         GetSingleResponse: Which includes the json data of a UserSettingModel.
     """
-    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS_MANAGER,
+    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS,
                                                                                request_user)
 
     try:
@@ -163,7 +163,7 @@ def update_setting(user_id: int, resource: str, data: dict, request_user: CmdbUs
     Returns:
         UpdateSingleResponse: With update result of the new updated user setting.
     """
-    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS_MANAGER,
+    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS,
                                                                                request_user)
 
     try:
@@ -206,7 +206,7 @@ def delete_setting(user_id: int, resource: str, request_user: CmdbUser):
     Returns:
         DeleteSingleResponse: Delete result with the deleted setting as data.
     """
-    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS_MANAGER,
+    users_settings_manager: UsersSettingsManager = ManagerProvider.get_manager(ManagerType.USERS_SETTINGS,
                                                                                request_user)
 
     try:

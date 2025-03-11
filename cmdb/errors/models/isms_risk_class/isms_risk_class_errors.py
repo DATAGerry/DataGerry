@@ -14,13 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides the ManagerProvider
+This module contains the classes of all IsmsRiskClass errors
 """
-from .manager_provider import ManagerProvider
-from .manager_type_enum import ManagerType
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'ManagerProvider',
-    'ManagerType',
-]
+class IsmsRiskClassError(Exception):
+    """
+    Raised to catch all IsmsRiskClass related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all IsmsRiskClass related errors
+        """
+        super().__init__(err)
+
+# ---------------------------------------------- IsmsRiskClass - ERRORS ---------------------------------------------- #
+
+class IsmsRiskClassInitError(IsmsRiskClassError):
+    """
+    Raised when a IsmsRiskClass could not be initialised
+    """
+
+
+class IsmsRiskClassInitFromDataError(IsmsRiskClassError):
+    """
+    Raised when a IsmsRiskClass could not be initialised from a dict
+    """
+
+
+class IsmsRiskClassToJsonError(IsmsRiskClassError):
+    """
+    Raised when a IsmsRiskClass could not be transformed into a json compatible dict
+    """

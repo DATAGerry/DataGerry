@@ -201,7 +201,7 @@ def post_login():
 def get_auth_settings(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
 
     auth_settings = settings_reader.get_all_values_from_section('auth', default=AuthModule.__DEFAULT_SETTINGS__)
@@ -220,7 +220,7 @@ def get_installed_providers(request_user: CmdbUser):
     #TODO: DOCUMENT-FIX
     provider_names: list[dict] = []
 
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
 
     auth_module = AuthModule(
@@ -241,7 +241,7 @@ def get_installed_providers(request_user: CmdbUser):
 def get_provider_config(provider_class: str, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
 
     auth_module = AuthModule(
@@ -267,9 +267,9 @@ def update_auth_settings(request_user: CmdbUser):
     #TODO: DOCUMENT-FIX
     new_auth_settings_values = request.get_json()
 
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
-    settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER_MANAGER,
+    settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER,
                                                                                request_user)
 
     if not new_auth_settings_values:

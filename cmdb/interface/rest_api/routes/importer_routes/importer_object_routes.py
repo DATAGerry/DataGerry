@@ -217,9 +217,9 @@ def import_objects(request_user: CmdbUser):
     if not importer_config_request:
         return abort(400, 'No import config was provided')
 
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     # Check if type exists
     try:

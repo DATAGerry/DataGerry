@@ -73,7 +73,7 @@ def insert_cmdb_category(data: dict, request_user: CmdbUser):
         InsertSingleResponse: The new CmdbCategory and its public_id
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
@@ -119,7 +119,7 @@ def get_cmdb_categories(params: CollectionParameters, request_user: CmdbUser):
         GetMultiResponse: All the CmdbCategories matching the CollectionParameters
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
 
         body = request.method == 'HEAD'
@@ -175,7 +175,7 @@ def get_cmdb_category(public_id: int, request_user: CmdbUser):
         GetSingleResponse: The requested CmdbCategory
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
 
         requested_category = categories_manager.get_category(public_id)
@@ -214,7 +214,7 @@ def update_cmdb_category(public_id: int, data: dict, request_user: CmdbUser):
         UpdateSingleResponse: The new data of the CmdbCategory
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
 
         category = CmdbCategory.from_data(data)
@@ -259,7 +259,7 @@ def delete_cmdb_category(public_id: int, request_user: CmdbUser):
         DeleteSingleResponse: The deleted CmdbCategory data
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
 
         to_delete_category = categories_manager.get_category(public_id)

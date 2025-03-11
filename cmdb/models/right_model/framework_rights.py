@@ -13,15 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of base classes of rights for the Framework section used in Datagerry
+"""
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class FrameworkRight(BaseRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for general Framework rights
+    """
     MIN_LEVEL = Levels.PERMISSION
     PREFIX = f'{BaseRight.PREFIX}.framework'
 
@@ -30,8 +32,9 @@ class FrameworkRight(BaseRight):
 
 
 class ObjectRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbObject rights
+    """
     MIN_LEVEL = Levels.PERMISSION
     MAX_LEVEL = Levels.SECURE
     PREFIX = f'{FrameworkRight.PREFIX}.object'
@@ -41,8 +44,9 @@ class ObjectRight(FrameworkRight):
 
 
 class SectionTemplateRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbSectionTemplate rights
+    """
     MIN_LEVEL = Levels.PERMISSION
     MAX_LEVEL = Levels.SECURE
     PREFIX = f'{FrameworkRight.PREFIX}.sectionTemplate'
@@ -52,8 +56,9 @@ class SectionTemplateRight(FrameworkRight):
 
 
 class TypeRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbType rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.CRITICAL
     PREFIX = f'{FrameworkRight.PREFIX}.type'
@@ -63,8 +68,9 @@ class TypeRight(FrameworkRight):
 
 
 class CategoryRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbCategory rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.SECURE
     PREFIX = f'{FrameworkRight.PREFIX}.category'
@@ -74,8 +80,9 @@ class CategoryRight(FrameworkRight):
 
 
 class LogRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbLog rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.log'
@@ -85,8 +92,9 @@ class LogRight(FrameworkRight):
 
 
 class WebhookRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbWebhook rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.webhook'
@@ -96,8 +104,9 @@ class WebhookRight(FrameworkRight):
 
 
 class RelationRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbRelation rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.relation'
@@ -107,8 +116,9 @@ class RelationRight(FrameworkRight):
 
 
 class ObjectRelationRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbObjectRelation rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.objectRelation'
@@ -118,8 +128,9 @@ class ObjectRelationRight(FrameworkRight):
 
 
 class ObjectRelationLogRight(FrameworkRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for CmdbObjectRelationLog rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.objectRelationLog'

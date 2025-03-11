@@ -46,7 +46,7 @@ with current_app.app_context():
 def get_settings_from_section(section: str, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
 
     section_settings = settings_reader.get_all_values_from_section(section=section)
@@ -67,7 +67,7 @@ def get_settings_from_section(section: str, request_user: CmdbUser):
 def get_value_from_section(section: str, name: str, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
 
     section_settings = settings_reader.get_value(name=name, section=section)
