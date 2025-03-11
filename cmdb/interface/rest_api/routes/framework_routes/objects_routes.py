@@ -106,8 +106,10 @@ def insert_cmdb_object(request_user: CmdbUser):
         logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
         webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
+        objects_count = objects_manager.count_objects()
+
         if current_app.cloud_mode:
-            if check_config_item_limit_reached(request_user):
+            if check_config_item_limit_reached(request_user, objects_count):
                 return abort(400, "The maximum amout of objects is reached!")
 
         new_object_data = json.loads(new_object_json, object_hook=json_util.object_hook)
@@ -131,7 +133,7 @@ def insert_cmdb_object(request_user: CmdbUser):
         current_type_instance = objects_manager.get_object_type(new_object_data['type_id'])
 
         current_object = objects_manager.get_object(new_object_id)
-        LOGGER.debug(f"current_object: {current_object}")
+
         if not current_object:
             return abort(404, "Could not retrieve the created object from the database!")
 
@@ -164,7 +166,7 @@ def insert_cmdb_object(request_user: CmdbUser):
 
         try:
             if current_app.cloud_mode:
-                objects_count = get_objects_count(request_user)
+                objects_count = objects_manager.count_objects()
 
                 success = sync_config_items(request_user.email, request_user.database, objects_count)
 
@@ -1173,7 +1175,7 @@ def delete_cmdb_object(public_id: int, request_user: CmdbUser):
 
         try:
             if current_app.cloud_mode:
-                objects_count = get_objects_count(request_user)
+                objects_count = objects_manager.count_objects()
 
                 sync_config_items(request_user.email, request_user.database, objects_count)
         except Exception as err:
@@ -1274,7 +1276,7 @@ def delete_cmdb_object_with_child_locations(public_id: int, request_user: CmdbUs
 
             try:
                 if current_app.cloud_mode:
-                    objects_count = get_objects_count(request_user)
+                    objects_count = objects_manager.count_objects()
 
                     sync_config_items(request_user.email, request_user.database, objects_count)
             except Exception as error:
@@ -1402,7 +1404,7 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
 
             try:
                 if current_app.cloud_mode:
-                    objects_count = get_objects_count(request_user)
+                    objects_count = objects_manager.count_objects()
 
                     sync_config_items(request_user.email, request_user.database, objects_count)
             except Exception as error:
@@ -1525,7 +1527,7 @@ def delete_many_cmdb_objects(public_ids, request_user: CmdbUser):
 
             try:
                 if current_app.cloud_mode:
-                    objects_count = get_objects_count(request_user)
+                    objects_count = objects_manager.count_objects()
 
                     sync_config_items(request_user.email, request_user.database, objects_count)
             except Exception as error:
@@ -1596,32 +1598,17 @@ def delete_object_links(public_id: int, request_user: CmdbUser) -> None:
         object_links_manager.delete({'public_id':link.public_id})
 
 
-def check_config_item_limit_reached(request_user: CmdbUser) -> bool:
+def check_config_item_limit_reached(request_user: CmdbUser, objects_count: int) -> bool:
     """
     Checks if the configuration item limit for the user has been reached
 
     Args:
         request_user (CmdbUser): The user whose configuration item limit is being checked
-
+        objects_count (int): Amount of current CmdbObjects
     Returns:
         bool: True if the user has reached or exceeded their config item limit, False otherwise
     """
-    objects_count = get_objects_count(request_user)
-
     return objects_count >= request_user.config_items_limit
-
-
-#TODO: REFACTOR-FIX (use the count_documents method instead)
-def get_objects_count(request_user: CmdbUser) -> int:
-    """document not needed since will be refactored"""
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
-
-    builder_params = BuilderParameters({})
-    iteration_result: IterationResult[CmdbObject] = objects_manager.iterate(builder_params,
-                                                                            request_user,
-                                                                            AccessControlPermission.READ)
-
-    return iteration_result.total
 
 
 def delete_invalid_object_relations(public_id: int,

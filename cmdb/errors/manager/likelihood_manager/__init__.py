@@ -14,20 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of RegexConverter
+This module provides all errors for the LikelihoodManager
 """
-import logging
-from werkzeug.routing import BaseConverter
+from .likelihood_manager_errors import (
+    LikelihoodManagerError,
+    LikelihoodManagerInitError,
+    LikelihoodManagerInsertError,
+    LikelihoodManagerGetError,
+    LikelihoodManagerUpdateError,
+    LikelihoodManagerDeleteError,
+    LikelihoodManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-LOGGER = logging.getLogger(__name__)
-
-# -------------------------------------------------------------------------------------------------------------------- #
-#                                                RegexConverter - CLASS                                                #
-# -------------------------------------------------------------------------------------------------------------------- #
-class RegexConverter(BaseConverter):
-    """
-    RegexConverter extends BaseConverter to allow regex-based URL matching
-    """
-    def __init__(self, url_map):
-        super().__init__(url_map)
+__all__ = [
+    'LikelihoodManagerError',
+    'LikelihoodManagerInitError',
+    'LikelihoodManagerInsertError',
+    'LikelihoodManagerGetError',
+    'LikelihoodManagerUpdateError',
+    'LikelihoodManagerDeleteError',
+    'LikelihoodManagerIterationError',
+]

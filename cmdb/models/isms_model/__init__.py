@@ -17,8 +17,10 @@
 Provides all ISMS relevant classes
 """
 from .isms_risk_class import IsmsRiskClass
+from .isms_likelihood import IsmsLikelihood
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
     'IsmsRiskClass',
+    'IsmsLikelihood',
 ]

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseCmdbApp
+"""
 import logging
 
 from flask import Flask
@@ -29,12 +30,19 @@ LOGGER = logging.getLogger(__name__)
 #                                                  BaseCmdbApp - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseCmdbApp(Flask):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A base class for the CMDB application, extending Flask
+    """
     def __init__(self, import_name: str, database_manager: MongoDatabaseManager = None):
-        #TODO: REFACTOR-FIX (replace self.database_manager with self.dbm)
-        self.database_manager: MongoDatabaseManager = database_manager
-        self.temp_folder: str = '/tmp/'
+        """
+        Initializes the BaseCmdbApp instance
+
+        Args:
+            import_name (str): The name of the application module
+            database_manager (MongoDatabaseManager | None, optional): Database interaction manager. Defaults to None
+        """
+        self.database_manager = database_manager
+        self.temp_folder = '/tmp/'
         self.cloud_mode = __CLOUD_MODE__
         self.local_mode = __LOCAL_MODE__
 

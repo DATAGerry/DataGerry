@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of SystemEnvironmentReader
+"""
 import os
 import re
 
@@ -23,10 +24,16 @@ from cmdb.utils.system_reader import SystemReader
 
 class SystemEnvironmentReader(SystemReader):
     """
-    Settings reader loads settings from environment variables
+    Reads configuration settings from environment variables
+
+    Extends: SystemReader
     """
+
     def __init__(self):
-        # get all environment variables and store them in config dict
+        """
+        Initializes the SystemEnvironmentReader instance by loading environment variables
+        that match the DATAGERRY_<SECTION>_<NAME> pattern
+        """
         self.__config = {}
         pattern = re.compile("DATAGERRY_(.*)_(.*)")
 
@@ -40,30 +47,56 @@ class SystemEnvironmentReader(SystemReader):
                 # save value in config dict
                 if section not in self.__config:
                     self.__config[section] = {}
+
                 self.__config[section][name] = value
 
         super().__init__()
 
 
-    def get_value(self, name, section):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_value(self, name: str, section: str) -> str:
+        """
+        Retrieves a specific configuration value
+
+        Args:
+            name (str): The name of the configuration key
+            section (str): The section under which the key is stored
+
+        Returns:
+            str: The corresponding configuration value
+        """
         return self.__config[section][name]
 
 
-    def get_sections(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_sections(self) -> list:
+        """
+        Retrieves all available configuration sections
+
+        Returns:
+            list: A list of section names
+        """
         return self.__config.keys()
 
 
-    def get_all_values_from_section(self, section):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_all_values_from_section(self, section: str) -> dict:
+        """
+        Retrieves all configuration values from a specific section
+
+        Args:
+            section (str): The section from which to retrieve values
+
+        Returns:
+            dict: A dictionary of key-value pairs from the specified section
+        """
         return self.__config[section]
 
 
     def setup(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Placeholder method for setup functionality
+
+        This method is intended to be overridden in subclasses where additional setup is required
+
+        Raises:
+            NotImplementedError: This method is not implemented
+        """
         raise NotImplementedError

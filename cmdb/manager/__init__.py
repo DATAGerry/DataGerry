@@ -40,6 +40,7 @@ from cmdb.manager.users_settings_manager import UsersSettingsManager
 from cmdb.manager.webhooks_event_manager import WebhooksEventManager
 from cmdb.manager.webhooks_manager import WebhooksManager
 from cmdb.manager.isms_manager.risk_class_manager import RiskClassManager
+from cmdb.manager.isms_manager.likelihood_manager import LikelihoodManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -67,4 +68,5 @@ __all__ = [
     'WebhooksEventManager',
     'WebhooksManager',
     'RiskClassManager',
+    'LikelihoodManager',
 ]

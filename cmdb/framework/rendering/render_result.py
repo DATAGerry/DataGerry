@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of RenderResult
+"""
 import logging
 from datetime import datetime, timezone
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -25,8 +26,21 @@ LOGGER = logging.getLogger(__name__)
 #                                                 RenderResult - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RenderResult:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Represents the result of rendering a CmdbObject
+
+    Attributes:
+        current_render_time (datetime): Timestamp of when the render operation occurred
+        object_information (dict): Information related to the rendered object
+        type_information (dict): Metadata about the object's type
+        fields (list): List of fields associated with the rendered object
+        sections (list): List of sections present in the rendered result
+        summaries (list): Summary details of the rendered object
+        summary_line (str): A single-line summary representation
+        externals (list): External references related to the object
+        multi_data_sections (list): Sections containing multiple data entries
+    """
+
     def __init__(self):
         self.current_render_time = datetime.now(timezone.utc)
         self.object_information: dict = {}
@@ -37,15 +51,3 @@ class RenderResult:
         self.summary_line: str = ''
         self.externals: list = []
         self.multi_data_sections: list = []
-
-
-    def get_object_information(self, idx):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self.object_information[idx]
-
-
-    def get_type_information(self, idx):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self.type_information[idx]

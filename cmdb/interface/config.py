@@ -13,12 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of different configuration classes for the Flask App
+"""
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class Config:
-    """Parent configuration class."""
+    """
+    Parent configuration class
+    """
     TESTING = False
     DEBUG = False
     ENV = 'production'
@@ -26,20 +29,26 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    """Configurations for Development."""
+    """
+    Configurations for Development
+    """
     DEBUG = True
     ENV = 'development'
 
 
 class ProductionConfig(Config):
-    """Configurations for Production."""
+    """
+    Configurations for Production
+    """
     DEBUG = False
     TESTING = False
     ENV = 'production'
 
 
 class TestingConfig(Config):
-    """Configurations for Production."""
+    """
+    Configurations for Testing
+    """
     DEBUG = True
     TESTING = True
     ENV = 'testing'
