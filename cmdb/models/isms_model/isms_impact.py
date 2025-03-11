@@ -14,32 +14,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of IsmsLikelihood in DataGerry - ISMS
+Implementation of IsmsImpact in DataGerry - ISMS
 """
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
 
-from cmdb.errors.models.isms_likelihood import (
-    IsmsLikelihoodInitError,
-    IsmsLikelihoodInitFromDataError,
-    IsmsLikelihoodToJsonError,
+from cmdb.errors.models.isms_impact import (
+    IsmsImpactInitError,
+    IsmsImpactInitFromDataError,
+    IsmsImpactToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                IsmsLikelihood - CLASS                                                #
+#                                                  IsmsImpact - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
-class IsmsLikelihood(CmdbDAO):
+class IsmsImpact(CmdbDAO):
     """
-    Implementation of IsmsLikelihood which represents the likelihood of events of the ISMS general configuration
+    Implementation of IsmsImpact which represents the impact of events
 
     Extends: CmdbDAO
     """
-    COLLECTION = "isms.likelihood"
-    MODEL = 'Likelihood'
+    COLLECTION = "isms.impact"
+    MODEL = 'Impact'
 
     SCHEMA: dict = {
         'public_id': {
@@ -65,16 +65,16 @@ class IsmsLikelihood(CmdbDAO):
     #pylint: disable=too-many-positional-arguments
     def __init__(self, public_id: int, name: str, calculation_basis: str, description: str = None):
         """
-        Initialises an IsmsLikelihood
+        Initialises an IsmsImpact
 
         Args:
-            public_id (int): public_id of the IsmsLikelihood
-            name (str): The name of the IsmsLikelihood
-            calculation_basis (float): The calculation_basis of the IsmsLikelihood
-            description (str): The description of the IsmsLikelihood
+            public_id (int): public_id of the IsmsImpact
+            name (str): The name of the IsmsImpact
+            calculation_basis (float): The calculation_basis of the IsmsImpact
+            description (str): The description of the IsmsImpact
 
         Raises:
-            IsmsLikelihoodInitError: When the IsmsLikelihood could not be initialised
+            IsmsImpactInitError: When the IsmsImpact could not be initialised
         """
         try:
             self.name = name
@@ -83,23 +83,23 @@ class IsmsLikelihood(CmdbDAO):
 
             super().__init__(public_id=public_id)
         except Exception as err:
-            raise IsmsLikelihoodInitError(err) from err
+            raise IsmsImpactInitError(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
     @classmethod
-    def from_data(cls, data: dict) -> "IsmsLikelihood":
+    def from_data(cls, data: dict) -> "IsmsImpact":
         """
-        Initialises a IsmsLikelihood from a dict
+        Initialises a IsmsImpact from a dict
 
         Args:
-            data (dict): Data with which the IsmsLikelihood should be initialised
+            data (dict): Data with which the IsmsImpact should be initialised
 
         Raises:
-            IsmsLikelihoodInitFromDataError: If the initialisation with the given data fails
+            IsmsImpactInitFromDataError: If the initialisation with the given data fails
 
         Returns:
-            IsmsLikelihood: IsmsLikelihood with the given data
+            IsmsImpact: IsmsImpact with the given data
         """
         try:
             return cls(
@@ -109,21 +109,21 @@ class IsmsLikelihood(CmdbDAO):
                 description = data.get('description'),
             )
         except Exception as err:
-            raise IsmsLikelihoodInitFromDataError(err) from err
+            raise IsmsImpactInitFromDataError(err) from err
 
     @classmethod
-    def to_json(cls, instance: "IsmsLikelihood") -> dict:
+    def to_json(cls, instance: "IsmsImpact") -> dict:
         """
-        Converts a IsmsLikelihood into a json compatible dict
+        Converts a IsmsImpact into a json compatible dict
 
         Args:
-            instance (IsmsLikelihood): The IsmsLikelihood which should be converted
+            instance (IsmsImpact): The IsmsImpact which should be converted
 
         Raises:
-            IsmsLikelihoodToJsonError: If the IsmsLikelihood could not be converted to a json compatible dict
+            IsmsImpactToJsonError: If the IsmsImpact could not be converted to a json compatible dict
 
         Returns:
-            dict: Json compatible dict of the IsmsLikelihood values
+            dict: Json compatible dict of the IsmsImpact values
         """
         try:
             return {
@@ -133,4 +133,4 @@ class IsmsLikelihood(CmdbDAO):
                 'description': instance.description,
             }
         except Exception as err:
-            raise IsmsLikelihoodToJsonError(err) from err
+            raise IsmsImpactToJsonError(err) from err

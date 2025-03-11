@@ -47,3 +47,4 @@ class ManagerType(Enum):
     #ISMS Managers
     RISK_CLASS = 'RiskClassManager'
     LIKELIHOOD = 'LikelihoodManager'
+    IMPACT = 'ImpactManager'
