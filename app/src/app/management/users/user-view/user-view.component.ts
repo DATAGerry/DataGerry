@@ -53,12 +53,26 @@ export class UserViewComponent implements OnInit, OnDestroy {
     this.group = this.route.snapshot.data.group as Group;
   }
 
+  /**
+   * Update the current user's profile.
+   * Sends a PUT request with the updated user data.
+   * Displays a success message on success or an error message on failure.
+   *
+   * @param user The updated user data
+   */
   public save(user: User): void {
     const editUser = Object.assign(this.user, user);
-    this.userService.putUser(this.user.public_id, editUser).pipe(takeUntil(this.subscriber)).subscribe((apiUser: User) => {
-      this.toastService.success('Your profile was updated!');
-    });
-  }
+    this.userService.putUser(this.user.public_id, editUser)
+      .pipe(takeUntil(this.subscriber))
+      .subscribe({
+        next: (apiUser: User) => {
+          this.toastService.success('Your profile was updated!');
+        },
+        error: (err) => {
+          this.toastService.error(err?.error?.message);
+        }
+      });
+  }  
 
 
   public ngOnInit(): void {
