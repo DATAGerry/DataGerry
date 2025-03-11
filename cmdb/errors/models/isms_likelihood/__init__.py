@@ -14,20 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of RegexConverter
+This module provides all errors for IsmsLikelihoods
 """
-import logging
-from werkzeug.routing import BaseConverter
+from .isms_likelihood_errors import (
+    IsmsLikelihoodError,
+    IsmsLikelihoodInitError,
+    IsmsLikelihoodInitFromDataError,
+    IsmsLikelihoodToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-LOGGER = logging.getLogger(__name__)
-
-# -------------------------------------------------------------------------------------------------------------------- #
-#                                                RegexConverter - CLASS                                                #
-# -------------------------------------------------------------------------------------------------------------------- #
-class RegexConverter(BaseConverter):
-    """
-    RegexConverter extends BaseConverter to allow regex-based URL matching
-    """
-    def __init__(self, url_map):
-        super().__init__(url_map)
+__all__ = [
+    'IsmsLikelihoodError',
+    'IsmsLikelihoodInitError',
+    'IsmsLikelihoodInitFromDataError',
+    'IsmsLikelihoodToJsonError',
+]

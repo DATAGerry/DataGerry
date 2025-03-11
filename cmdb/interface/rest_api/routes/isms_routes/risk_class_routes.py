@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of all API routes for RiskClasses
+Implementation of all API routes for IsmsRiskClasses
 """
 import logging
 from flask import request, abort

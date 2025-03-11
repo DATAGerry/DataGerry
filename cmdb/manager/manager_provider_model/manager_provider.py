@@ -44,6 +44,7 @@ from cmdb.manager import (
     WebhooksManager,
     WebhooksEventManager,
     RiskClassManager,
+    LikelihoodManager,
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -116,6 +117,7 @@ class ManagerProvider:
             ManagerType.OBJECT_RELATIONS: ObjectRelationsManager,
             ManagerType.OBJECT_RELATION_LOGS: ObjectRelationLogsManager,
             ManagerType.RISK_CLASS: RiskClassManager,
+            ManagerType.LIKELIHOOD: LikelihoodManager,
         }
 
         return manager_classes.get(manager_type)

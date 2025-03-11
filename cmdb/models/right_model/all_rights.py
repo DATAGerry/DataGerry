@@ -36,6 +36,7 @@ from cmdb.models.right_model.framework_rights import (
 from cmdb.models.right_model.isms_rights import (
     IsmsRight,
     RiskClassRight,
+    LikelihoodRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -140,13 +141,20 @@ FRAMEWORK_RIGHTS = (
 ISMS_RIGHTS = (
     IsmsRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage ISMS rights'),
     (
-        RiskClassRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage risk classes of ISMS'),
+        RiskClassRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage RiskClasses of ISMS'),
         (
             RiskClassRight('view', description='View ISMS RiskClasses'),
             RiskClassRight('add', description='Add ISMS RiskClasses'),
             RiskClassRight('edit', Levels.PROTECTED, description='Edit ISMS RiskClasses'),
             RiskClassRight('delete', Levels.SECURE, description='Delete ISMS RiskClasses'),
-        )
+        ),
+        LikelihoodRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage Likelihoods of ISMS'),
+        (
+            LikelihoodRight('view', description='View ISMS Likelihoods'),
+            LikelihoodRight('add', description='Add ISMS Likelihoods'),
+            LikelihoodRight('edit', Levels.PROTECTED, description='Edit ISMS Likelihoods'),
+            LikelihoodRight('delete', Levels.SECURE, description='Delete ISMS Likelihoods'),
+        ),
     ),
 )
 

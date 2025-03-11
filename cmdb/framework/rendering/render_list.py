@@ -33,24 +33,39 @@ LOGGER = logging.getLogger(__name__)
 #                                                  RenderList - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RenderList:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A class responsible for rendering a list of CmdbObjects
+    """
     def __init__(self,
                  object_list: list[CmdbObject],
                  request_user: CmdbUser,
-                 ref_render=False,
+                 ref_render: bool = False,
                  objects_manager: ObjectsManager = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        self.object_list: list[CmdbObject] = object_list
+        """
+        Initializes a RenderList
+
+        Args:
+            object_list (list[CmdbObject]): The list of CmdbObjects
+            request_user (CmdbUser): The user making the request
+            ref_render (bool, optional): Enables reference rendering. Defaults to False
+            objects_manager (ObjectsManager | None, optional): Manager for handling CmdbObjects. Defaults to None
+        """
+        self.object_list = object_list
         self.request_user = request_user
         self.ref_render = ref_render
         self.objects_manager = objects_manager
 
 
     def render_result_list(self, raw: bool = False) -> list[Union[RenderResult, dict]]:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Renders the list of CmdbObjects and returns the processed results
+
+        Args:
+            raw (bool, optional): If True, returns raw dictionary representations. Defaults to False
+
+        Returns:
+            list[Union[RenderResult, dict]]: A list of rendered results, either as RenderResult objects or dictionaries
+        """
         preparation_objects: list[RenderResult] = []
 
         for passed_object in self.object_list:
@@ -60,10 +75,7 @@ class RenderList:
                                     self.ref_render,
                                     self.objects_manager.dbm)
 
-            if raw:
-                current_render_result = tmp_render.result().__dict__
-            else:
-                current_render_result = tmp_render.result()
-            preparation_objects.append(current_render_result)
+            current_render_result = tmp_render.result()
+            preparation_objects.append(current_render_result.__dict__ if raw else current_render_result)
 
         return preparation_objects

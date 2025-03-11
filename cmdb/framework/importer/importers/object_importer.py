@@ -137,14 +137,14 @@ class ObjectImporter(BaseImporter):
             except ObjectsManagerGetError as err:
                 try:
                     if current_app.cloud_mode:
-                        if self.check_config_item_limit_reached(self.request_user, self.objects_manager):
+                        if self.check_config_item_limit_reached(self.request_user):
                             raise ObjectsManagerInsertError("Config item limit reached!") from err
 
                     self.objects_manager.insert_object(current_import_object)
 
                     try:
                         if current_app.cloud_mode:
-                            objects_count = self.get_objects_count(self.request_user, self.objects_manager)
+                            objects_count = self.objects_manager.count_objects()
 
                             success = sync_config_items(self.request_user.email,
                                                         self.request_user.database,
@@ -170,14 +170,14 @@ class ObjectImporter(BaseImporter):
                 else:
                     try:
                         if current_app.cloud_mode:
-                            if self.check_config_item_limit_reached(self.request_user, self.objects_manager):
+                            if self.check_config_item_limit_reached(self.request_user):
                                 raise ObjectsManagerInsertError("Config item limit reached")
 
                         self.objects_manager.insert_object(current_import_object)
 
                         try:
                             if current_app.cloud_mode:
-                                objects_count = self.get_objects_count(self.request_user, self.objects_manager)
+                                objects_count = self.objects_manager.count_objects()
 
                                 success = sync_config_items(self.request_user.email,
                                                             self.request_user.database,
@@ -213,20 +213,17 @@ class ObjectImporter(BaseImporter):
         raise NotImplementedError
 
 
-    def check_config_item_limit_reached(self, request_user: CmdbUser, objects_manager: ObjectsManager) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        objects_count = self.get_objects_count(request_user, objects_manager)
+    def check_config_item_limit_reached(self, request_user: CmdbUser) -> bool:
+        """
+        Checks if the ConfigItem Limit of the User has been reached
+
+        Args:
+            request_user (CmdbUser): User requesting this operation
+            objects_manager (ObjectsManager): Manager for CmdbObjects
+
+        Returns:
+            bool: True if the limit has been reached, else False
+        """
+        objects_count = self.objects_manager.count_objects()
 
         return objects_count >= request_user.config_items_limit
-
-
-    def get_objects_count(self, request_user: CmdbUser, objects_manager: ObjectsManager) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        builder_params = BuilderParameters({})
-        iteration_result: IterationResult[CmdbObject] = objects_manager.iterate(builder_params,
-                                                                                request_user,
-                                                                                AccessControlPermission.READ)
-
-        return iteration_result.total

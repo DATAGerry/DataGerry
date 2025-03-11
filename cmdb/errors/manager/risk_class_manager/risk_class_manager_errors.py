@@ -14,52 +14,52 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all IsmsRiskClassManager errors
+This module contains the classes of all RiskClassManager errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class RiskClassManagerError(Exception):
     """
-    Raised to catch all IsmsRiskClassManager related errors
+    Raised to catch all RiskClassManager related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all IsmsRiskClassManager related errors
+        Raised to catch all RiskClassManager related errors
         """
         super().__init__(err)
 
-# ------------------------------------------- IsmsRiskClassManager - ERRORS ------------------------------------------ #
+# --------------------------------------------- RiskClassManager - ERRORS -------------------------------------------- #
 
 class RiskClassManagerInitError(RiskClassManagerError):
     """
-    Raised when IsmsRiskClassManager could not be initialised
+    Raised when RiskClassManager could not be initialised
     """
 
 class RiskClassManagerInsertError(RiskClassManagerError):
     """
-    Raised when IsmsRiskClassManager could not insert a IsmsRiskClass
+    Raised when RiskClassManager could not insert an IsmsRiskClass
     """
 
 
 class RiskClassManagerGetError(RiskClassManagerError):
     """
-    Raised when IsmsRiskClassManager could not retrieve a IsmsRiskClass
+    Raised when RiskClassManager could not retrieve an IsmsRiskClass
     """
 
 
 class RiskClassManagerUpdateError(RiskClassManagerError):
     """
-    Raised when IsmsRiskClassManager could not update a IsmsRiskClass
+    Raised when RiskClassManager could not update an IsmsRiskClass
     """
 
 
 class RiskClassManagerDeleteError(RiskClassManagerError):
     """
-    Raised when IsmsRiskClassManager could not delete a IsmsRiskClass
+    Raised when RiskClassManager could not delete an IsmsRiskClass
     """
 
 
 class RiskClassManagerIterationError(RiskClassManagerError):
     """
-    Raised when IsmsRiskClassManager could not iterate over IsmsRiskClasses
+    Raised when RiskClassManager could not iterate over IsmsRiskClasses
     """

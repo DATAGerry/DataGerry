@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of SearchResultMap
+"""
 import logging
 from typing import TypeVar, Generic
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -27,12 +28,16 @@ R = TypeVar('R')
 #                                                SearchResultMap - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SearchResultMap(Generic[R]):
-    """Result mapper for Result/Match binding"""
+    """
+    Result mapper for Result/Match binding
+    """
     def __init__(self, result: R, matches: list[str] = None):
         self.result = result
         self.matches: list[str] = matches
 
 
     def to_json(self) -> dict:
-        """Quick convert for the database"""
+        """
+        Quick convert for the database
+        """
         return {'result': self.result.__dict__, 'matches': self.matches}

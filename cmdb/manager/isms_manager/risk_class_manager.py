@@ -24,7 +24,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
-from cmdb.models.isms_model.isms_risk_class import IsmsRiskClass
+from cmdb.models.isms_model import IsmsRiskClass
 
 from cmdb.framework.results import IterationResult
 
@@ -51,7 +51,7 @@ from cmdb.errors.manager.risk_class_manager import (
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                               RelationsManager - CLASS                                               #
+#                                               RiskClassManager - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RiskClassManager(BaseManager):
     """
@@ -88,7 +88,7 @@ class RiskClassManager(BaseManager):
             risk_class (dict): Raw data of the IsmsRiskClass
 
         Raises:
-            RelationsManagerInsertError: When a IsmsRiskClass could not be inserted into the database
+            RiskClassManagerInsertError: When a IsmsRiskClass could not be inserted into the database
 
         Returns:
             int: The public_id of the created IsmsRiskClass

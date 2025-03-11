@@ -37,6 +37,7 @@ from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
 from cmdb.models.relation_model import CmdbRelation
 from cmdb.models.object_relation_model import CmdbObjectRelation
 from cmdb.models.log_model import CmdbObjectRelationLog
+from cmdb.models.isms_model import IsmsRiskClass, IsmsLikelihood
 # -------------------------------------------------------------------------------------------------------------------- #
 
 CmdbLog.register_log_type(CmdbObjectLog.__name__, CmdbObjectLog)
@@ -57,4 +58,6 @@ __COLLECTIONS__ = [
     CmdbRelation,
     CmdbObjectRelation,
     CmdbObjectRelationLog,
+    IsmsRiskClass,
+    IsmsLikelihood,
 ]
