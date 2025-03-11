@@ -51,10 +51,22 @@ export class UserDeleteComponent implements OnDestroy {
     this.subscriber.complete();
   }
 
+  /**
+   * Delete the current user.
+   * Shows a success message and navigates to the user list on success.
+   * Displays an error message if the deletion fails.
+   */
   public delete(): void {
-    this.userService.deleteUser(this.user.public_id).pipe(takeUntil(this.subscriber)).subscribe((user: User) => {
-      this.toastService.success(`User ${user.user_name} was deleted`);
-      this.router.navigate(['/', 'management', 'users']);
-    });
-  }
+    this.userService.deleteUser(this.user.public_id)
+      .pipe(takeUntil(this.subscriber))
+      .subscribe({
+        next: (user: User) => {
+          this.toastService.success(`User ${user.user_name} was deleted`);
+          this.router.navigate(['/', 'management', 'users']);
+        },
+        error: (err) => {
+          this.toastService.error(err?.error?.message);
+        }
+      });
+  }  
 }

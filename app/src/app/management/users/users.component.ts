@@ -33,6 +33,7 @@ import { UserSetting } from '../user-settings/models/user-setting';
 import { convertResourceURL, UserSettingsService } from '../user-settings/services/user-settings.service';
 import { UserSettingsDBService } from '../user-settings/services/user-settings-db.service';
 import { environment } from 'src/environments/environment';
+import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Component({
   selector: 'cmdb-users',
@@ -137,7 +138,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   constructor(private userService: UserService, private groupService: GroupService, private modalService: NgbModal,
     private router: Router, private route: ActivatedRoute,
     private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>,
-    private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>) {
+    private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>, private toastService: ToastService) {
     this.route.data.pipe(takeUntil(this.subscriber)).subscribe((data: Data) => {
       if (data.userSetting) {
         const userSettingPayloads = (data.userSetting as UserSetting<TableStatePayload>).payloads
@@ -241,21 +242,42 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  /**
+   * Load users from the API.
+   * Updates the user list, total count, and loading state.
+   */
   private loadUsersFromApi(): void {
     this.loading = true;
-    this.userService.getUsers(this.params).pipe(takeUntil(this.subscriber)).subscribe((response: APIGetMultiResponse<User>) => {
-      this.users = response.results as Array<User>;
-      this.totalUsers = response.total;
-      this.apiUsersResponse = response;
-      this.loading = false;
-    });
+    this.userService.getUsers(this.params)
+      .pipe(takeUntil(this.subscriber))
+      .subscribe({
+        next: (response: APIGetMultiResponse<User>) => {
+          this.users = response.results as Array<User>;
+          this.totalUsers = response.total;
+          this.apiUsersResponse = response;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.toastService.error(err?.error?.message);
+          this.loading = false;
+        }
+      });
   }
+  
 
+  /**
+   * Open password change modal.
+   * Passes the selected user to the modal component.
+   *
+   * @param user The user whose password should be changed
+   */
   public onPasswordChange(user: User): void {
     this.modalRef = this.modalService.open(UsersPasswdModalComponent, { size: 'lg' });
     this.modalRef.componentInstance.user = user;
   }
 
+  
   /**
    * On table page change.
    * Reload all users.
@@ -267,6 +289,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.loadUsersFromApi();
   }
 
+
   /**
    * On table State change.
    * Update state.
@@ -274,6 +297,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   public onStateChange(state: TableState): void {
     this.tableStateSubject.next(state);
   }
+
 
   /**
    * On table state reset.
@@ -288,6 +312,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.tableStateSubject.next(undefined);
     this.loadUsersFromApi();
   }
+
 
   /**
    * On State Select.

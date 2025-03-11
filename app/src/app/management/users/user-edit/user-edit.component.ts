@@ -86,11 +86,26 @@ export class UserEditComponent implements OnInit, OnDestroy {
 
 /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
+    /**
+     * Update an existing user.
+     * Sends a PUT request with the modified user data.
+     * Displays a success message and navigates to the user list on success.
+     * Shows an error message if the update fails.
+     *
+     * @param user The updated user data
+     */
     public save(user: User): void {
         const editUser = Object.assign(this.user, user);
-        this.userService.putUser(this.user.public_id, editUser).pipe(takeUntil(this.subscriber)).subscribe((apiUser: User) => {
-            this.toastService.success(`User ${ apiUser.user_name } was updated`);
-            this.router.navigate(['/', 'management', 'users']);
-        });
+        this.userService.putUser(this.user.public_id, editUser)
+            .pipe(takeUntil(this.subscriber))
+            .subscribe({
+                next: (apiUser: User) => {
+                    this.toastService.success(`User ${apiUser.user_name} was updated`);
+                    this.router.navigate(['/', 'management', 'users']);
+                },
+                error: (err) => {
+                    this.toastService.error(err?.error?.message);
+                }
+            });
     }
 }
