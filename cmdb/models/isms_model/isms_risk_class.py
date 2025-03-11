@@ -65,7 +65,7 @@ class IsmsRiskClass(CmdbDAO):
 
 
     #pylint: disable=too-many-positional-arguments
-    def __init__(self, public_id: int, name: str, color: str, sort: int = None, descrption: str = None):
+    def __init__(self, public_id: int, name: str, color: str, sort: int = None, description: str = None):
         """
         Initialises an IsmsRiskClass
 
@@ -74,7 +74,7 @@ class IsmsRiskClass(CmdbDAO):
             name (str): The name of the IsmsRiskClass
             color (float): The color of the IsmsRiskClass
             sort (int): The sort order of the IsmsRiskClass
-            descrption (str): The description of the IsmsRiskClass
+            description (str): The description of the IsmsRiskClass
 
         Raises:
             IsmsRiskClassInitError: When the IsmsRiskClass could not be initialised
@@ -83,7 +83,7 @@ class IsmsRiskClass(CmdbDAO):
             self.name = name
             self.color = color
             self.sort = sort
-            self.description = descrption
+            self.description = description
 
             super().__init__(public_id=public_id)
         except Exception as err:

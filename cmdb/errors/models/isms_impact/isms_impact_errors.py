@@ -14,15 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant classes
+This module contains the classes of all IsmsImpact errors
 """
-from .isms_risk_class import IsmsRiskClass
-from .isms_likelihood import IsmsLikelihood
-from .isms_impact import IsmsImpact
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'IsmsRiskClass',
-    'IsmsLikelihood',
-    'IsmsImpact',
-]
+class IsmsImpactError(Exception):
+    """
+    Raised to catch all IsmsImpact related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all IsmsImpact related errors
+        """
+        super().__init__(err)
+
+# ------------------------------------------------ IsmsImpact - ERRORS ----------------------------------------------- #
+
+class IsmsImpactInitError(IsmsImpactError):
+    """
+    Raised when a IsmsImpact could not be initialised
+    """
+
+
+class IsmsImpactInitFromDataError(IsmsImpactError):
+    """
+    Raised when a IsmsImpact could not be initialised from a dict
+    """
+
+
+class IsmsImpactToJsonError(IsmsImpactError):
+    """
+    Raised when a IsmsImpact could not be transformed into a json compatible dict
+    """
