@@ -80,14 +80,14 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                               ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                               ManagerType.OBJECT_RELATIONS,
                                                                                request_user
                                                                            )
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                             request_user)
         relations_manager: RelationsManager = ManagerProvider.get_manager(
-                                                            ManagerType.RELATIONS_MANAGER,
+                                                            ManagerType.RELATIONS,
                                                             request_user)
 
         relation_id = data.get('relation_id')
@@ -162,7 +162,7 @@ def get_cmdb_object_relations(params: CollectionParameters, request_user: CmdbUs
         body = request.method == 'HEAD'
 
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                               ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                               ManagerType.OBJECT_RELATIONS,
                                                                                request_user
                                                                            )
 
@@ -205,7 +205,7 @@ def get_cmdb_object_relation(public_id: int, request_user: CmdbUser):
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                               ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                               ManagerType.OBJECT_RELATIONS,
                                                                                request_user
                                                                            )
 
@@ -247,14 +247,14 @@ def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUs
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                               ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                               ManagerType.OBJECT_RELATIONS,
                                                                                request_user
                                                                            )
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                             request_user)
         relations_manager: RelationsManager = ManagerProvider.get_manager(
-                                                            ManagerType.RELATIONS_MANAGER,
+                                                            ManagerType.RELATIONS,
                                                             request_user)
 
         relation_id = data.get('relation_id')
@@ -339,11 +339,11 @@ def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
     """
     try:
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                               ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                               ManagerType.OBJECT_RELATIONS,
                                                                                request_user
                                                                            )
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                             request_user)
 
         to_delete_object_relation = object_relations_manager.get_object_relation(public_id)

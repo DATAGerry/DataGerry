@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Init module for rest routes
+Registration of all REST API Routes for the FlaskApp
 """
+import logging
 from flask_cors import CORS
 
 from cmdb.database import MongoDatabaseManager
@@ -25,20 +26,32 @@ from cmdb.interface.cmdb_app import BaseCmdbApp
 from cmdb.interface.config import app_config
 from cmdb.interface.custom_converters import RegexConverter
 
-from cmdb.interface.rest_api.responses.error_handlers import internal_server_error,\
-                                                              page_gone,\
-                                                              not_acceptable,\
-                                                              method_not_allowed,\
-                                                              page_not_found,\
-                                                              forbidden,\
-                                                              unauthorized,\
-                                                              bad_request,\
-                                                              service_unavailable
+from cmdb.interface.rest_api.responses.error_handlers import (
+    internal_server_error,
+    page_gone,
+    not_acceptable,
+    method_not_allowed,
+    page_not_found,
+    forbidden,
+    unauthorized,
+    bad_request,
+    service_unavailable,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def create_rest_api(database_manager: MongoDatabaseManager):
-    """document"""
-    #TODO: DOCUMENT-FIX
+LOGGER = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+def create_rest_api(database_manager: MongoDatabaseManager) -> BaseCmdbApp:
+    """
+    Initialisation of the Flask App
+
+    Args:
+        database_manager (MongoDatabaseManager): Manager which handles the Database connection
+
+    Returns:
+        BaseCmdbApp: The Flask App
+    """
     app = BaseCmdbApp(__name__, database_manager=database_manager)
     app.url_map.strict_slashes = True
 
@@ -64,14 +77,25 @@ def create_rest_api(database_manager: MongoDatabaseManager):
 
 
 def register_converters(app: BaseCmdbApp):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Registers a Regex converter in the Flask App
+
+    Args:
+        app (BaseCmdbApp): The Flask App
+    """
     app.url_map.converters['regex'] = RegexConverter
 
 
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-statements
 def register_blueprints(app: BaseCmdbApp):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Registers API routes for the app
+
+    Params:
+        app (BaseCmdbApp): Flask app where the API routes will be registered
+    """
+    #pylint: disable=import-outside-toplevel
     from cmdb.interface.rest_api.routes.auth_routes import auth_blueprint
     from cmdb.interface.rest_api.routes.system_routes.setup_routes import setup_blueprint
     from cmdb.interface.rest_api.routes.settings_routes.date_routes import date_blueprint
@@ -102,6 +126,9 @@ def register_blueprints(app: BaseCmdbApp):
     from cmdb.interface.rest_api.routes.relation_routes.relations_routes import relations_blueprint
     from cmdb.interface.rest_api.routes.relation_routes.object_relation_routes import object_relations_blueprint
     from cmdb.interface.rest_api.routes.log_routes.object_relation_logs_routes import object_relation_logs_blueprint
+    from cmdb.interface.rest_api.routes.isms_routes.risk_class_routes import (
+        risk_class_blueprint,
+    )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(setup_blueprint, url_prefix='/setup')
@@ -135,6 +162,9 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(object_relations_blueprint, url_prefix='/object_relations')
     app.register_blueprint(object_relation_logs_blueprint, url_prefix='/object_relation_logs')
 
+    # ISMS Blueprints
+    app.register_blueprint(risk_class_blueprint, url_prefix='/isms/risk_classes')
+
     if cmdb.__MODE__ == 'DEBUG':
         from cmdb.interface.rest_api.routes.debug_routes import debug_blueprint
         app.register_blueprint(debug_blueprint)
@@ -145,7 +175,7 @@ def register_error_pages(app: BaseCmdbApp):
     Registers error handlers for the app
 
     Params:
-        app (BaseCmdbApp): app where to register the error handlers
+        app (BaseCmdbApp): Flask app where the error handlers will be registered
     """
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)

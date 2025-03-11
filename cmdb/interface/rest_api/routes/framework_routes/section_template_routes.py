@@ -64,7 +64,7 @@ def create_section_template(params: dict, request_user: CmdbUser):
     Returns:
         int: public_id of the created CmdbSectionTemplate
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
+    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
     try:
@@ -103,7 +103,7 @@ def get_all_section_templates(params: CollectionParameters, request_user: CmdbUs
     Returns:
         (GetMultiResponse): All CmdbSectionTemplates considering the params
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
+    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
     try:
@@ -140,7 +140,7 @@ def get_section_template(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbSectionTemplate which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbSectionTemplate
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
+    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
     try:
@@ -170,7 +170,7 @@ def get_global_section_template_count(public_id: int, request_user: CmdbUser):
     Returns:
         dict: Dict with counts of types and objects using this global CmdbSectionTemplate
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
+    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
     try:
@@ -205,7 +205,7 @@ def update_section_template(params: dict, request_user: CmdbUser):
     Returns:
         _type_: _description_
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
+    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
     try:
@@ -252,7 +252,7 @@ def update_section_template(params: dict, request_user: CmdbUser):
 def delete_section_template(public_id: int, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES_MANAGER,
+    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
     try:

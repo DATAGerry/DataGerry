@@ -72,7 +72,7 @@ def insert_cmdb_relation(data: dict, request_user: CmdbUser):
         InsertSingleResponse: The new CmdbRelation and its public_id
     """
     try:
-        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS,
                                                                            request_user)
 
         result_id: int = relations_manager.insert_relation(data)
@@ -118,7 +118,7 @@ def get_cmdb_relations(params: CollectionParameters, request_user: CmdbUser):
     try:
         body = request.method == 'HEAD'
 
-        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS,
                                                                           request_user)
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -157,7 +157,7 @@ def get_cmdb_relation(public_id: int, request_user: CmdbUser):
         GetSingleResponse: The requested CmdbRelation
     """
     try:
-        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS,
                                                                           request_user)
 
         requested_relation = relations_manager.get_relation(public_id)
@@ -195,10 +195,10 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
         UpdateSingleResponse: The new data of the CmdbRelation
     """
     try:
-        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS,
                                                                           request_user)
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-                                                                                ManagerType.OBJECT_RELATIONS_MANAGER,
+                                                                                ManagerType.OBJECT_RELATIONS,
                                                                                 request_user)
 
         to_update_relation = relations_manager.get_relation(public_id)
@@ -220,7 +220,7 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
     except HTTPException as http_err:
         raise http_err
     except RelationsManagerGetError as err:
-        LOGGER.error("[get_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
+        LOGGER.error("[update_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
         return abort(400, f"Failed to retrieve the Relation with ID: {public_id} from the database!")
     except RelationsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_relation] RelationsManagerUpdateError: %s", err, exc_info=True)
@@ -247,24 +247,21 @@ def delete_cmdb_relation(public_id: int, request_user: CmdbUser):
         DeleteSingleResponse: The deleted CmdbRelation data
     """
     try:
-        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS_MANAGER,
+        relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS,
                                                                            request_user)
 
         to_delete_relation = relations_manager.get_relation(public_id)
 
-        if to_delete_relation:
+        if not to_delete_relation:
+            return abort(404, f"The Relation with ID:{public_id} was not found!")
 
-            # Check if the CmdbRelation is currently used
-            if relations_manager.get_one_by({"relation_id": public_id}, CmdbObjectRelation.COLLECTION):
-                return abort(403, f"The Relation with ID:{public_id} is currently in use and cannot be deleted!")
+        # Check if the CmdbRelation is currently used
+        if relations_manager.get_one_by({"relation_id": public_id}, CmdbObjectRelation.COLLECTION):
+            return abort(403, f"The Relation with ID:{public_id} is currently in use and cannot be deleted!")
 
-            relations_manager.delete_relation(public_id)
+        relations_manager.delete_relation(public_id)
 
-            api_response = DeleteSingleResponse(raw=to_delete_relation)
-
-            return api_response.make_response()
-
-        return abort(404, f"The Relation with ID:{public_id} was not found!")
+        return DeleteSingleResponse(raw=to_delete_relation).make_response()
     except HTTPException as http_err:
         raise http_err
     except RelationsManagerDeleteError as err:

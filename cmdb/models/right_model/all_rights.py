@@ -33,6 +33,10 @@ from cmdb.models.right_model.framework_rights import (
     ObjectRelationRight,
     ObjectRelationLogRight,
 )
+from cmdb.models.right_model.isms_rights import (
+    IsmsRight,
+    RiskClassRight,
+)
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -133,6 +137,20 @@ FRAMEWORK_RIGHTS = (
 )
 
 
+ISMS_RIGHTS = (
+    IsmsRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage ISMS rights'),
+    (
+        RiskClassRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage risk classes of ISMS'),
+        (
+            RiskClassRight('view', description='View ISMS RiskClasses'),
+            RiskClassRight('add', description='Add ISMS RiskClasses'),
+            RiskClassRight('edit', Levels.PROTECTED, description='Edit ISMS RiskClasses'),
+            RiskClassRight('delete', Levels.SECURE, description='Delete ISMS RiskClasses'),
+        )
+    ),
+)
+
+
 EXPORT_RIGHTS = (
     ExportRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage exports'),
     (
@@ -199,7 +217,8 @@ __all__ = (
     EXPORT_RIGHTS,
     IMPORT_RIGHTS,
     USER_MANAGEMENT_RIGHTS,
-    DOCAPI_RIGHTS
+    DOCAPI_RIGHTS,
+    ISMS_RIGHTS,
 )
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #

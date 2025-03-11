@@ -66,7 +66,7 @@ def create_cmdb_report_category(params: dict, request_user: CmdbUser):
     """
     try:
         report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
-                                                                                ManagerType.REPORT_CATEGORIES_MANAGER,
+                                                                                ManagerType.REPORT_CATEGORIES,
                                                                                 request_user)
 
         # It is not possible to create a predefined CmdbReportCategory
@@ -102,7 +102,7 @@ def get_cmdb_report_category(public_id: int, request_user: CmdbUser):
     """
     try:
         report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
-                                                                            ManagerType.REPORT_CATEGORIES_MANAGER,
+                                                                            ManagerType.REPORT_CATEGORIES,
                                                                             request_user)
 
         report_category = report_categories_manager.get_report_category(public_id)
@@ -137,7 +137,7 @@ def get_cmdb_report_categories(params: CollectionParameters, request_user: CmdbU
         GetMultiResponse: All the CmdbReportCategories matching the CollectionParameters
     """
     report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
-                                                                            ManagerType.REPORT_CATEGORIES_MANAGER,
+                                                                            ManagerType.REPORT_CATEGORIES,
                                                                             request_user)
 
     try:
@@ -181,7 +181,7 @@ def update_cmdb_report_category(public_id: int, params: dict, request_user: Cmdb
     """
     try:
         report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
-                                                                            ManagerType.REPORT_CATEGORIES_MANAGER,
+                                                                            ManagerType.REPORT_CATEGORIES,
                                                                             request_user)
         params['public_id'] = int(params['public_id'])
         params['predefined'] = params['predefined'] in ["True", "true"]
@@ -221,7 +221,7 @@ def delete_cmdb_report_category(public_id: int, request_user: CmdbUser):
     """
     try:
         report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
-                                                                            ManagerType.REPORT_CATEGORIES_MANAGER,
+                                                                            ManagerType.REPORT_CATEGORIES,
                                                                             request_user)
 
 

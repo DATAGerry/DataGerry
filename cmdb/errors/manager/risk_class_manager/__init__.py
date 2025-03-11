@@ -14,13 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides the ManagerProvider
+This module provides all errors for the IsmsRiskClassManager
 """
-from .manager_provider import ManagerProvider
-from .manager_type_enum import ManagerType
+from .risk_class_manager_errors import (
+    RiskClassManagerError,
+    RiskClassManagerInitError,
+    RiskClassManagerInsertError,
+    RiskClassManagerGetError,
+    RiskClassManagerUpdateError,
+    RiskClassManagerDeleteError,
+    RiskClassManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ManagerProvider',
-    'ManagerType',
+    'RiskClassManagerError',
+    'RiskClassManagerInitError',
+    'RiskClassManagerInsertError',
+    'RiskClassManagerGetError',
+    'RiskClassManagerUpdateError',
+    'RiskClassManagerDeleteError',
+    'RiskClassManagerIterationError',
 ]

@@ -103,6 +103,7 @@ class RelationsManager(BaseManager):
         except Exception as err:
             LOGGER.error("[insert_relation] Exception: %s. Type: %s", err, type(err))
             raise RelationsManagerInsertError(err) from err
+
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def get_relation(self, public_id: int) -> Optional[dict]:

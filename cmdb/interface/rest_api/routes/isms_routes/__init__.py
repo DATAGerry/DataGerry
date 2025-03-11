@@ -14,13 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides the ManagerProvider
+This module prove all APIBluerpints for ISMS
 """
-from .manager_provider import ManagerProvider
-from .manager_type_enum import ManagerType
+from .risk_class_routes import risk_class_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'ManagerProvider',
-    'ManagerType',
+    'risk_class_blueprint',
 ]

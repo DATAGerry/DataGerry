@@ -70,7 +70,7 @@ def get_cmdb_object_relation_logs(params: CollectionParameters, request_user: Cm
         body = request.method == 'HEAD'
 
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                             request_user)
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -112,7 +112,7 @@ def get_cmdb_object_relation_log(public_id: int, request_user: CmdbUser):
     """
     try:
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                             request_user)
 
         requested_object_relation_log = object_relation_logs_manager.get_object_relation_log(public_id)
@@ -151,7 +151,7 @@ def delete_object_relation_log(public_id: int, request_user: CmdbUser):
     """
     try:
         object_relation_logs_manager: ObjectRelationLogsManager = ManagerProvider.get_manager(
-                                                            ManagerType.OBJECT_RELATION_LOGS_MANAGER,
+                                                            ManagerType.OBJECT_RELATION_LOGS,
                                                             request_user)
 
         to_delete_object_relation_log = object_relation_logs_manager.get_object_relation_log(public_id)

@@ -50,7 +50,7 @@ search_blueprint = APIBlueprint('search_rest', __name__, url_prefix='/search')
 def quick_search_result_counter(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
     search_term = request.args.get('searchValue', SearcherFramework.DEFAULT_REGEX, str)
     builder = QuickSearchPipelineBuilder()
@@ -78,7 +78,7 @@ def quick_search_result_counter(request_user: CmdbUser):
 def search_framework(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+    objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
     try:
         limit = request.args.get('limit', SearcherFramework.DEFAULT_LIMIT, int)

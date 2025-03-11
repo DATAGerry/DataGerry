@@ -44,7 +44,7 @@ system_blueprint = NestedBlueprint(settings_blueprint, url_prefix='/system')
 def get_datagerry_information(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER_MANAGER,
+    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
                                                                                request_user)
 
     try:

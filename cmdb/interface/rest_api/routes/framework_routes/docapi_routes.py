@@ -71,7 +71,7 @@ def create_template(request_user: CmdbUser):
         `DefaultResponse`: True if insertion was succesful
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                              request_user)
 
         add_data_dump = json.dumps(request.json)
@@ -114,7 +114,7 @@ def get_templates(params: CollectionParameters, request_user: CmdbUser):
         `GetMultiResponse`: All the DocapiTemplates matching the CollectionParameters
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                              request_user)
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
@@ -156,7 +156,7 @@ def get_template_list_filtered(searchfilter: str, request_user: CmdbUser):
         `DefaultResponse`: All DocapiTemplates matching the searchfilter
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                              request_user)
         filterdict = json.loads(searchfilter)
 
@@ -191,7 +191,7 @@ def get_template(public_id: int, request_user: CmdbUser):
         `DefaultResponse`: The requested DocapiTemplate
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                              request_user)
 
         tpl = docapi_manager.get_template(public_id)
@@ -225,7 +225,7 @@ def get_template_by_name(name: str, request_user: CmdbUser):
         `DefaultResponse`: The requested DocapiTemplate
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                                 request_user)
 
         tpl = docapi_manager.get_template_by_name(name=name)
@@ -259,11 +259,11 @@ def render_object_template(public_id: int, object_id: int, request_user: CmdbUse
         `Response`: The rendered DocapiTemplate with the CmdbObject as a PDF-file
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                                 request_user)
 
         #TODO: DEPENDENCY-FIX (Remove dependency on ObjectsManager)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         docapi_renderer = DocApiRenderer(objects_manager, docapi_manager)
         output = docapi_renderer.render_object_template(public_id, object_id)
@@ -298,7 +298,7 @@ def update_template(request_user: CmdbUser):
         `DefaultResponse`: The updated DocapiTemplate
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                              request_user)
 
         new_tpl_data = None
@@ -339,7 +339,7 @@ def delete_template(public_id: int, request_user: CmdbUser):
         `DefaultResponse`: True if deletion was successful
     """
     try:
-        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES_MANAGER,
+        docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                              request_user)
 
         ack = docapi_manager.delete_template(public_id)

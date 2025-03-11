@@ -76,8 +76,7 @@ def get_file_list(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         list of files
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES_MANAGER,
-                                                                         request_user)
+    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES, request_user)
 
     try:
         metadata = generate_collection_parameters(params=params)
@@ -127,7 +126,7 @@ def add_new_file(request_user: CmdbUser):
     Returns:
         New MediaFile.
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES_MANAGER,
+    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
     try:
@@ -196,7 +195,7 @@ def update_file(request_user: CmdbUser):
     Returns: MediaFile as JSON
 
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES_MANAGER,
+    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
     try:
@@ -244,7 +243,7 @@ def get_file(filename: str, request_user: CmdbUser):
 
     Returns: MediaFile as JSON
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES_MANAGER,
+    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
     try:
@@ -281,7 +280,7 @@ def download_file(filename: str, request_user: CmdbUser):
 
     Returns: File
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES_MANAGER,
+    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
     try:
@@ -321,7 +320,7 @@ def delete_file(public_id: int, request_user: CmdbUser):
     Returns:
          Delete result with the deleted File as JSON.
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES_MANAGER,
+    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
     try:

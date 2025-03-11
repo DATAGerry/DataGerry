@@ -80,7 +80,7 @@ def insert_cmdb_user_group(data: dict, request_user: CmdbUser):
         InsertSingleResponse: The public_id and the newly created CmdbUserGroup
     """
     try:
-        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS, request_user)
 
         result_id = groups_manager.insert_group(data)
 
@@ -122,7 +122,7 @@ def get_cmdb_user_groups(params: CollectionParameters, request_user: CmdbUser):
         GetMultiResponse: All the CmdbUserGroups matching the CollectionParameters
     """
     try:
-        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS, request_user)
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
@@ -159,7 +159,7 @@ def get_cmdb_user_group(public_id: int, request_user: CmdbUser):
         GetSingleResponse: The requested CmdbUserGroup
     """
     try:
-        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS, request_user)
 
         requested_group = groups_manager.get_group(public_id)
 
@@ -198,7 +198,7 @@ def update_cmdb_user_group(public_id: int, data: dict, request_user: CmdbUser):
         UpdateSingleResponse: The new version of the CmdbUserGroup
     """
     try:
-        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS, request_user)
 
         to_update_group = groups_manager.get_group(public_id)
 
@@ -245,8 +245,8 @@ def delete_cmdb_user_group(public_id: int, params: GroupDeletionParameters, requ
         DeleteSingleResponse: The deleted CmdbUserGroup
     """
     try:
-        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS_MANAGER, request_user)
-        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS_MANAGER, request_user)
+        groups_manager: GroupsManager = ManagerProvider.get_manager(ManagerType.GROUPS, request_user)
+        users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
 
         to_delete_group = groups_manager.get_group(public_id)
 

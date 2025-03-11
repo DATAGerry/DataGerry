@@ -13,32 +13,36 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Enumeration of all avaiable Managers
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ManagerType(Enum):
     """Enum of the different Managers which are used by the API routes"""
-    CATEGORIES_MANAGER = 'CategoriesManager'
-    OBJECTS_MANAGER = 'ObjectsManager'
-    LOGS_MANAGER = 'LogsManager'
-    DOCAPI_TEMPLATES_MANAGER = 'DocapiTemplatesManager'
-    USERS_MANAGER = 'UsersManager'
-    USERS_SETTINGS_MANAGER = 'UsersSettingsManager'
-    GROUPS_MANAGER = 'GroupsManager'
-    MEDIA_FILES_MANAGER = 'MediaFilesManager'
-    TYPES_MANAGER = 'TypesManager'
-    LOCATIONS_MANAGER = 'LocationsManager'
-    SECTION_TEMPLATES_MANAGER = 'SectionTemplatesManager'
-    OBJECT_LINKS_MANAGER = 'ObjectLinksManager'
-    SETTINGS_READER_MANAGER = 'SettingsReaderManager'
-    SETTINGS_WRITER_MANAGER = 'SettingsWriterManager'
-    SECURITY_MANAGER = 'SecurityManager'
-    REPORT_CATEGORIES_MANAGER = 'ReportCategoriesManager'
-    REPORTS_MANAGER = 'ReportsManager'
-    WEBHOOKS_MANAGER = 'WebhooksManager'
-    WEBHOOKS_EVENT_MANAGER = 'WebhooksEventManager'
-    RELATIONS_MANAGER = 'RelationsManager'
-    OBJECT_RELATIONS_MANAGER = 'ObjectRelationsManager'
-    OBJECT_RELATION_LOGS_MANAGER = 'ObjectRelationLogsManager'
+    CATEGORIES = 'CategoriesManager'
+    OBJECTS = 'ObjectsManager'
+    LOGS = 'LogsManager'
+    DOCAPI_TEMPLATES = 'DocapiTemplatesManager'
+    USERS = 'UsersManager'
+    USERS_SETTINGS = 'UsersSettingsManager'
+    GROUPS = 'GroupsManager'
+    MEDIA_FILES = 'MediaFilesManager'
+    TYPES = 'TypesManager'
+    LOCATIONS = 'LocationsManager'
+    SECTION_TEMPLATES = 'SectionTemplatesManager'
+    OBJECT_LINKS = 'ObjectLinksManager'
+    SETTINGS_READER = 'SettingsReaderManager'
+    SETTINGS_WRITER = 'SettingsWriterManager'
+    SECURITY = 'SecurityManager'
+    REPORT_CATEGORIES = 'ReportCategoriesManager'
+    REPORTS = 'ReportsManager'
+    WEBHOOKS = 'WebhooksManager'
+    WEBHOOKS_EVENT = 'WebhooksEventManager'
+    RELATIONS = 'RelationsManager'
+    OBJECT_RELATIONS = 'ObjectRelationsManager'
+    OBJECT_RELATION_LOGS = 'ObjectRelationLogsManager'
+
+    #ISMS Managers
+    RISK_CLASS = 'RiskClassManager'

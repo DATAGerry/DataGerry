@@ -52,7 +52,7 @@ def get_log(public_id: int, request_user: CmdbUser):
     Returns:
         CmdbObjectLog: The log with the given public_id
     """
-    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         requested_log: CmdbObjectLog = logs_manager.get_one(public_id)
@@ -78,7 +78,7 @@ def get_logs_with_existing_objects(params: CollectionParameters, request_user: C
     Returns:
         GetMultiResponse: with all logs of exisiting objects
     """
-    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         query = logs_manager.query_builder.prepare_log_query()
@@ -113,7 +113,7 @@ def get_logs_with_deleted_objects(params: CollectionParameters, request_user: Cm
     Returns:
         GetMultiResponse: with all logs of deleted objects
     """
-    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         query = logs_manager.query_builder.prepare_log_query(False)
@@ -148,7 +148,7 @@ def get_object_delete_logs(params: CollectionParameters, request_user: CmdbUser)
     Returns:
         GetMultiResponse: with all object deleted logs
     """
-    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         query = {
@@ -187,7 +187,7 @@ def get_logs_by_object(object_id: int, params: CollectionParameters, request_use
     Returns:
         GetMultiResponse: with all logs of the object
     """
-    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         builder_params = BuilderParameters({'object_id':object_id},
@@ -225,7 +225,7 @@ def get_corresponding_object_logs(public_id: int, request_user: CmdbUser):
     Returns:
         dict: object log
     """
-    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         selected_log: CmdbObjectLog = logs_manager.get_one(public_id)
@@ -265,7 +265,7 @@ def delete_log(public_id: int, request_user: CmdbUser):
     Returns:
         bool: deletion success
     """
-    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS_MANAGER, request_user)
+    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
     try:
         deleted = logs_manager.delete({'public_id':public_id})

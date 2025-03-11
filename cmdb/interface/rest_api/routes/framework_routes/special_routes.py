@@ -57,10 +57,10 @@ def show_datagerry_assistant(request_user: CmdbUser):
         DefaultResponse: True if there are no types, categories and objects in the database else False
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         categories_total = categories_manager.count_categories()
         types_total = types_manager.count_types()
@@ -92,10 +92,10 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
         _type_: list of created public_ids of types
     """
     try:
-        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES_MANAGER,
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES,
                                                                             request_user)
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS_MANAGER, request_user)
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES_MANAGER, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         profiles = data['data'].split('#')
 

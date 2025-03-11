@@ -14,27 +14,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of NestedBlueprint
+Implementation of base classes of rights for the different components used in Datagerry
 """
-import logging
+from cmdb.models.right_model.base_right import BaseRight
+from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
-LOGGER = logging.getLogger(__name__)
-
-# -------------------------------------------------------------------------------------------------------------------- #
-#                                                NestedBlueprint - CLASS                                               #
-# -------------------------------------------------------------------------------------------------------------------- #
-class NestedBlueprint:
-    """Default Blueprint class but with parent prefix route
+class IsmsRight(BaseRight):
     """
-    def __init__(self, blueprint, url_prefix):
-        self.blueprint = blueprint
-        self.prefix = '/' + url_prefix
-        super().__init__()
+    Base class for general ISMS rights
+    """
+    MIN_LEVEL = Levels.PERMISSION
+    PREFIX = f'{BaseRight.PREFIX}.isms'
 
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(level, name, description=description)
 
-    def route(self, rule, **options):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        rule = self.prefix + rule
-        return self.blueprint.route(rule, **options)
+# -------------------------------------------------------------------------------------------------------------------- #
+
+class RiskClassRight(IsmsRight):
+    """
+    Base class for IsmsRiskClass rights
+    """
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{IsmsRight.PREFIX}.riskClass'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)
