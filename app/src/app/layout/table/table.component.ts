@@ -1,6 +1,6 @@
 /*
 * DATAGERRY - OpenSource Enterprise CMDB
-* Copyright (C) 2024 becon GmbH
+* Copyright (C) 2025 becon GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@ import { TableService } from './table.service';
 import { Column, GroupRowsBy, Sort, SortDirection, TableState } from './table.types';
 import { PageLengthEntry } from './components/table-page-size/table-page-size.component';
 import { ToastService } from '../toast/toast.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -213,6 +214,12 @@ export class TableComponent<T> implements OnInit, OnDestroy {
 
     @Input() enableObjectReferenceLinks: boolean = false; // To enable hover pointer and routing
     @Input() referenceViewPath: string[] = []; // Base route for navigation
+
+    // Added input to enable draggable rows
+    @Input() public draggableEnabled: boolean = false;
+
+    // Added output to emit reordered items
+    @Output() public orderChange: EventEmitter<T[]> = new EventEmitter<T[]>();
 
     ASC: number = SortDirection.ASCENDING;
     DSC: number = SortDirection.DESCENDING;
@@ -498,5 +505,21 @@ export class TableComponent<T> implements OnInit, OnDestroy {
         if (this.enableObjectReferenceLinks && item?.object_information.object_id) {
             this.router.navigate([...this.referenceViewPath, item?.object_information.object_id]);
         }
+    }
+
+    /**
+     * to Computed property to determine if rows should be draggable
+     */
+    public get isDraggable(): boolean {
+        return this.draggableEnabled && (!this.paginationEnabled || this.totalItems <= this.pageSize);
+    }
+
+    /**
+    * to handle row drop event
+    */
+    public onRowDrop(event: CdkDragDrop<T[]>): void {
+        const itemsCopy = [...this.items]; // Create a copy to avoid mutating input directly
+        moveItemInArray(itemsCopy, event.previousIndex, event.currentIndex);
+        this.orderChange.emit(itemsCopy); // Emit the new order to the parent
     }
 }

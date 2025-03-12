@@ -35,6 +35,7 @@ import { TableColumnToggleComponent } from './components/table-column-toggle/tab
 import { TableLoadingComponent } from './components/table-loading/table-loading.component';
 import { TableStateComponent } from './components/table-states/table-state.component';
 import { TableColumnSearchComponent } from './head/table-column-search/table-column-search.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { TableColumnSearchComponent } from './head/table-column-search/table-col
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DragDropModule
   ]
 })
 export class TableModule {
