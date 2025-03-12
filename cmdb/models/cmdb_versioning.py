@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Module for versioning objects and types"""
+"""
+Module for versioning CmdbObjects and CmdbTypes
+"""
 import logging
 
 from cmdb.errors.cmdb_object import VersionTypeError
@@ -25,85 +27,101 @@ LOGGER = logging.getLogger(__name__)
 #                                                  Versioning - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class Versioning:
-    """Helper class for object/type versioning"""
+    """
+    A helper class for managing CmdbObjects/CmdbTypes versioning using Semantic Versioning (major.minor.patch).
+
+    This class provides attributes and methods to track and update version numbers
+    """
 
     def __init__(self, major: int = 1, minor: int = 0, patch: int = 0):
         """
+        Initializes a version instance
+
         Args:
-            major: core changes with no compatibility
-            minor: code changes
-            patch: little fixes
+            major (int): Indicates significant changes that break backward compatibility
+            minor (int): Indicates new features that are backward-compatible
+            patch (int): Indicates backward-compatible bug fixes or small changes
         """
         self.major = major
         self.minor = minor
         self.patch = patch
 
 
+    def __repr__(self) -> str:
+        """Returns the version as a formatted string"""
+        return f"{self.major}.{self.minor}.{self.patch}"
+
+
     @property
-    def major(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def major(self) -> int:
+        """Gets the major version number"""
         return self._major
 
 
-    @property
-    def minor(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self._minor
-
-
-    @property
-    def patch(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self._patch
-
-
     @major.setter
-    def major(self, value):
+    def major(self, value: int):
         if not isinstance(value, int):
-            raise VersionTypeError(f"The version type 'major' update for {str(value)} is wrong!")
+            raise VersionTypeError(f"Invalid 'major' version type: {value} (expected int).")
 
         self._major = value
 
 
+    @property
+    def minor(self) -> int:
+        """Gets the minor version number"""
+        return self._minor
+
+
     @minor.setter
-    def minor(self, value):
+    def minor(self, value: int):
         if not isinstance(value, int):
-            raise VersionTypeError(f"The version type 'minor' update for {str(value)} is wrong!")
+            raise VersionTypeError(f"Invalid 'minor' version type: {value} (expected int).")
 
         self._minor = value
 
 
+    @property
+    def patch(self) -> int:
+        """Gets the patch version number"""
+        return self._patch
+
+
     @patch.setter
-    def patch(self, value):
+    def patch(self, value: int):
         if not isinstance(value, int):
-            raise VersionTypeError(f"The version type 'patch' update for {str(value)} is wrong!")
+            raise VersionTypeError(f"Invalid 'patch' version type: {value} (expected int).")
 
         self._patch = value
 
 
     def update_major(self) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Increments the major version
+
+        Returns:
+            int: Updated major version
+        """
         self.major += 1
         return self.major
 
 
     def update_minor(self) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Increments the minor version and resets the patch version
+
+        Returns:
+            int: Updated minor version
+        """
         self.minor += 1
         return self.minor
 
 
     def update_patch(self) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Increments the patch version
+
+        Returns:
+            int: Updated patch version
+        """
         self.patch += 1
         return self.patch
-
-
-    def __repr__(self):
-        return f'{self.major}.{self.minor}.{self.patch}'

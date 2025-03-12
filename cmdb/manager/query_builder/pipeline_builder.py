@@ -13,11 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of PipelineBuilder
+"""
 import logging
 
-from cmdb.manager.query_builder.builder import Builder # TODO: REFACTOR-FIX
+from cmdb.manager.query_builder.builder import Builder
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -26,51 +27,83 @@ LOGGER = logging.getLogger(__name__)
 #                                                PipelineBuilder - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class PipelineBuilder(Builder):
-    """Pipeline query builder for database aggregation search"""
+    """
+    A query builder for database aggregation pipelines
+
+    This class helps in constructing and managing aggregation pipelines for 
+    database queries, allowing for dynamic pipeline modifications
+
+    Extends: Builder
+    """
 
     def __init__(self, pipeline: list[dict] = None):
-        """Init constructor
+        """
+        Initializes the PipelineBuilder
+
         Args:
-            pipeline: preset a for defined pipeline
+            pipeline (list[dict], optional): A predefined pipeline to initialize with.
+                                             Defaults to an empty list
         """
         self._pipeline = pipeline if pipeline is not None else []
 
 
     def __len__(self) -> int:
-        """Get the number of aggregate pipes inside the pipeline
-        Returns (int): number of pipes
+        """
+        Returns the number of stages (pipes) in the pipeline
+
+        Returns:
+            int: The number of pipeline stages
         """
         return len(self.pipeline)
 
 
     def clear(self):
-        """Clear the pipeline"""
+        """
+        Clears the pipeline, removing all stages
+        """
         self.pipeline = []
 
 
     @property
     def pipeline(self) -> list[dict]:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves the current aggregation pipeline
+
+        Returns:
+            list[dict]: The list of pipeline stages
+        """
         return self._pipeline
 
 
     @pipeline.setter
     def pipeline(self, pipes: list[dict]):
+        """
+        Sets a new aggregation pipeline
+
+        Args:
+            pipes (list[dict]): A list of pipeline stages
+        """
         self._pipeline = pipes
 
 
     def add_pipe(self, pipe: dict):
-        """Add a pipe to the pipeline"""
+        """
+        Adds a new stage to the pipeline
+
+        Args:
+            pipe (dict): The pipeline stage to add
+        """
         self._pipeline.append(pipe)
 
 
-    def remove_pipe(self, pipe: dict):
-        """Remove a pipe to the pipeline"""
-        self._pipeline.remove(pipe)
-
-
     def build(self, *args, **kwargs) -> list[dict]:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        raise NotImplementedError
+        """
+        Constructs and returns the aggregation pipeline
+
+        Raises:
+            NotImplementedError: This method should be implemented by subclasses
+
+        Returns:
+            list[dict]: The constructed pipeline (if implemented)
+        """
+        raise NotImplementedError("Subclasses must implement the build method.")

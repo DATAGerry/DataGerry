@@ -40,7 +40,7 @@ class IsmsImpact(CmdbDAO):
     """
     COLLECTION = "isms.impact"
     MODEL = 'Impact'
-
+    # pylint: disable=R0801
     SCHEMA: dict = {
         'public_id': {
             'type': 'integer'

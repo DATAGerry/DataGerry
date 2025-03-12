@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseQueryBuilder
+"""
 import logging
 from typing import Union
 
@@ -34,14 +35,22 @@ LOGGER = logging.getLogger(__name__)
 #                                               BaseQueryBuilder - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseQueryBuilder(Builder):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A base class for constructing query objects
+
+    This class provides a foundation for building query structures,
+    storing them as a list of dictionaries
+    """
+
     def __init__(self):
+        """
+        Initializes the BaseQueryBuilder
+        """
         self.query: list[dict] = []
         super().__init__()
 
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Get the length of the query"""
         return len(self.query)
 
@@ -51,15 +60,10 @@ class BaseQueryBuilder(Builder):
               builder_params: BuilderParameters,
               user: CmdbUser = None,
               permission: AccessControlPermission = None,
-              object_builder_mode: bool = False) -> list[dict]:
+              object_builder_mode: bool = False):
         """
         Converts the parameters from the call to a MongoDB aggregation pipeline
-        Args:
-            criteria Union[dict, list[dict]]: Query/Queries which the elements have to match
-            limit: Max number of documents to return
-            skip: Number of documents to skip first
-            sort: Sort field
-            order: Sort order
+
         Returns:
             Union[dict, list[dict]]: The build query
         """
@@ -119,7 +123,7 @@ class BaseQueryBuilder(Builder):
 
 # ------------------------------------------------- HELPER - SECTION ------------------------------------------------- #
 
-    def clear(self):
+    def clear(self) -> None:
         """`Delete` the query content"""
         self.query = None
 

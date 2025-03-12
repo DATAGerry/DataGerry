@@ -13,11 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of SearchReferencesPipelineBuilder
+"""
 import logging
 
-from cmdb.manager.query_builder import PipelineBuilder
+from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -26,15 +27,26 @@ LOGGER = logging.getLogger(__name__)
 #                                        SearchReferencesPipelineBuilder - CLASS                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SearchReferencesPipelineBuilder(PipelineBuilder):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A query builder for handling reference fields in search pipelines
+
+    This class constructs an aggregation pipeline that ensures reference fields are 
+    interpreted as standard fields during search operations. Reference fields should 
+    be preloaded at runtime for accurate search behavior
+
+    Extends: PipelineBuilder
+    """
+
     def __init__(self, pipeline: list[dict] = None):
         """
-        Init constructor load reference fields in runtime.
-        The search should interpret reference section like normal field contents.
-        This means that fields should already be loaded into the object during runtime.
+        Initializes the SearchReferencesPipelineBuilder
+
+        This pipeline ensures that reference fields are loaded dynamically 
+        so they can be treated as normal fields during searches
+
         Args:
-            pipeline: preset a for defined pipeline
+            pipeline (list[dict], optional): A predefined aggregation pipeline to initialize with.
+                                             Defaults to an empty list if not provided
         """
         super().__init__(pipeline=pipeline)
 

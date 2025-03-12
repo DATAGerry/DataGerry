@@ -13,12 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of QuickSearchPipelineBuilder
+"""
 import logging
 
-from cmdb.manager.query_builder import PipelineBuilder
-#TODO: IMPORT-FIX (SearchReferencesPipelineBuilder)
+from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
 from cmdb.manager.query_builder.search_references_pipeline_builder import SearchReferencesPipelineBuilder
 
 from cmdb.models.user_model import CmdbUser
@@ -32,34 +32,60 @@ LOGGER = logging.getLogger(__name__)
 #                                          QuickSearchPipelineBuilder - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class QuickSearchPipelineBuilder(PipelineBuilder):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A specialized pipeline builder for quick search queries
+
+    This class constructs a MongoDB aggregation pipeline based on a search term,
+    user permissions, and an active flag filter
+
+    Extends: PipelineBuilder
+    """
 
     def __init__(self, pipeline: list[dict] = None):
-        """Init constructor
+        """
+        Initializes the QuickSearchPipelineBuilder instance
 
         Args:
-            pipeline: preset a for defined pipeline
+            pipeline (list[dict], optional): A predefined aggregation pipeline.
+                                             Defaults to an empty list
         """
         super().__init__(pipeline=pipeline)
 
 
-    def build(self, search_term, user: CmdbUser = None, permission: AccessControlPermission = None,
-              active_flag: bool = False) -> list[dict]:
-        """Build a pipeline query out of search search term"""
+    def build(
+            self,
+            search_term: str,
+            user: CmdbUser = None,
+            permission: AccessControlPermission = None,
+            active_flag: bool = False) -> list[dict]:
+        """
+        Builds an aggregation pipeline based on the given search term and optional filters
 
+        Args:
+            search_term (str): The term to search for
+            user (CmdbUser, optional): The user executing the search, used for access control
+            permission (AccessControlPermission, optional): The required permission level
+            active_flag (bool, optional): If True, filters results to only active items. Defaults to False
+
+        Returns:
+            list[dict]: The constructed aggregation pipeline
+        """
         regex = self.regex_('fields.value', f'{search_term}', 'ims')
         pipe_and = self.and_([regex, {'active': {"$eq": True}} if active_flag else {}])
         pipe_match = self.match_(pipe_and)
 
-        # load reference fields in runtime.
+        # Load reference fields dynamically.
         self.pipeline = SearchReferencesPipelineBuilder().build()
 
-        # permission builds
+        # Apply permission-based filtering if a user and permission are provided
         if user and permission:
             self.pipeline = [*self.pipeline, *(AccessControlQueryBuilder().build(group_id=int(user.group_id),
                                                                                  permission=permission))]
+
+         # Add the main search match stage
         self.add_pipe(pipe_match)
+
+        # Aggregation pipeline for counting and categorizing results
         self.add_pipe({'$group': {"_id": {'active': '$active'}, 'count': {'$sum': 1}}})
         self.add_pipe({'$group': {'_id': 0,
                                   'levels': {'$push': {'_id': '$_id.active', 'count': '$count'}},
