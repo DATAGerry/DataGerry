@@ -47,7 +47,8 @@ export class RiskClassesComponent implements OnInit {
 
 
   ngOnInit(): void {
-    // Define columns for your cmdb-table
+
+
     this.columns = [
       {
         display: 'Public ID',
@@ -104,7 +105,7 @@ export class RiskClassesComponent implements OnInit {
         filter: '',
         limit: this.limit,
         page: this.page,
-        sort: 'name', // default sort to avoid 400 error
+        sort: '',
         order: 1
       })
       .pipe(
@@ -222,5 +223,14 @@ export class RiskClassesComponent implements OnInit {
     this.limit = newLimit;
     this.page = 1;
     this.loadRiskClasses();
+  }
+
+
+  /**
+    * handle row reordering
+    */
+  public onOrderChange(newItems: RiskClass[]): void {
+    console.log('Emitted new order:', newItems);
+    this.riskClasses = newItems;
   }
 }

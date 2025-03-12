@@ -11,3 +11,34 @@
 .row-hover-pointer:hover {
   cursor: pointer;
 }
+
+
+/* draggable row */
+
+td[cdkDragHandle] {
+  cursor: grab;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.5rem;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  i.fas.fa-grip-vertical {
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+// Style the row during drag
+tr.cdk-drag-preview {
+  background-color: #f5f5f5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Placeholder style during drag
+tr.cdk-drag-placeholder {
+  background-color: #e0e0e0;
+  opacity: 0.5;
+}

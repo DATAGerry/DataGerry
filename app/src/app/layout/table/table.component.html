@@ -57,8 +57,13 @@
     </div>
 
     <table #table layout-table class="table">
+        <!-- Main Header -->
         <thead table-head [sortable]="sortable">
             <tr class="table-head">
+                <!-- Dragging Column Header -->
+                <th *ngIf="isDraggable" [ngStyle]="{'width': '2rem'}"></th>
+                
+                <!-- Selection Column Header -->
                 <th *ngIf="selectEnabled" [ngStyle]="{'width': '2rem'}">
                     <div class="form-check">
                         <input
@@ -71,6 +76,8 @@
                         />
                     </div>
                 </th>
+                
+                <!-- Existing Columns -->
                 <th
                     table-column-head *ngFor="let column of columns"
                     [column]="column"
@@ -83,6 +90,8 @@
                 </th>
             </tr>
         </thead>
+
+        <!-- Column Search Header -->
         <thead
             table-column-search
             *ngIf="columnSearchEnabled && columnSearchIconHidden"
@@ -90,22 +99,43 @@
             [columns]="columns"
             [selectEnabled]="selectEnabled"
             (columnSearchChange)="columnSearchChange.emit($event)"
-        ></thead>
-        <tbody table-body *ngIf="!groupRowsBy; else rowGroupTable" [bodyClasses]="bodyClasses">
+        >
+            <tr>
+                <!-- Dragging Column (No Search Input) -->^
+                <th *ngIf="isDraggable" [ngStyle]="{'width': '2rem'}"></th>
+                
+                <!-- Selection Column (No Search Input) -->
+                <th *ngIf="selectEnabled" [ngStyle]="{'width': '2rem'}"></th>
+                
+                <!-- Search Inputs for Columns -->
+                <th *ngFor="let column of columns" [hidden]="column.hidden">
+                    <input type="text" class="form-control form-control-sm" [formControlName]="column.name"
+                        placeholder="Search {{column.display}}" />
+                </th>
+            </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody table-body *ngIf="!groupRowsBy; else rowGroupTable" [bodyClasses]="bodyClasses" cdkDropList
+            [cdkDropListData]="items" [cdkDropListDisabled]="!isDraggable" (cdkDropListDropped)="onRowDrop($event)">
             <tr
                 table-row
                 *ngFor="let item of items; let rowIndex = index"
                 [item]="item"
                 [rowIndex]="rowIndex"
+                cdkDrag
                 [ngClass]="[
-                (rowClasses && rowClasses.length ? rowClasses.join(' ') : ''),
-                reportRowValidationClass ? reportRowValidationClass(item) : ''
-              ]"
-                >
-                <td
-                    *ngIf="selectEnabled"
-                    [ngStyle]="{'width': '2rem'}"
-                >
+                    (rowClasses && rowClasses.length ? rowClasses.join(' ') : ''),
+                    reportRowValidationClass ? reportRowValidationClass(item) : ''
+                ]"
+            >
+                <!-- Dragging Column -->
+                <td *ngIf="isDraggable" cdkDragHandle [ngStyle]="{'width': '2rem'}">
+                    <i class="fas fa-grip-vertical"></i>
+                </td>
+                
+                <!-- Selection Column -->
+                <td *ngIf="selectEnabled" [ngStyle]="{'width': '2rem'}">
                     <div class="form-check">
                         <input
                             class="form-check-input position-static"
@@ -117,6 +147,8 @@
                         />
                     </div>
                 </td>
+                
+                <!-- Data Columns -->
                 <td
                     table-cell
                     *ngFor="let column of columns"
@@ -127,15 +159,18 @@
                     [ngStyle]="column.style"
                     [ngClass]="{ 'row-hover-pointer': enableObjectReferenceLinks && column.name !== 'type_id' }" 
                     (click)="column.name !== 'type_id' && enableObjectReferenceLinks ? navigateToItem(item) : null">
-                    ></td>
+                </td>
             </tr>
+            
+            <!-- No-Data Row -->
             <tr *ngIf="items?.length === 0">
-                <td class="text-center" [colSpan]="(columns.length) + (selectEnabled ? 1: 0)">
+                <td class="text-center" [colSpan]="columns.length + (selectEnabled ? 1 : 0) + (isDraggable ? 1 : 0)">
                     {{emptyMessage}}
                 </td>
             </tr>
         </tbody>
 
+        <!-- Grouped Rows Template -->
         <ng-template #rowGroupTable>
             <tbody
                 table-body
@@ -143,12 +178,13 @@
                 [bodyClasses]="bodyClasses"
             >
                 <tr>
-                    <td [colSpan]="(columns.length) + (selectEnabled ? 1: 0)">
+                    <td [colSpan]="columns.length + (selectEnabled ? 1 : 0) + (isDraggable ? 1 : 0)">
                         Grouping is currently not complete implemented.
                     </td>
                 </tr>
             </tbody>
         </ng-template>
+
         <tfoot table-foot>
         </tfoot>
     </table>
