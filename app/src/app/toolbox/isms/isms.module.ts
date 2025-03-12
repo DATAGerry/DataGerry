@@ -15,13 +15,14 @@ import { ConfigureComponent } from './configure/configure.component';
 
 // Step components under configure/steps
 import { RiskClassesComponent } from './configure/steps/risk-classes/risk-classes.component';
-import { LikelihoodComponent } from './configure/steps/likelihood/likelihood.component';
+import { LikelihoodsComponent } from './configure/steps/likelihood/likelihood.component';
 import { ImpactComponent } from './configure/steps/impact/impact.component';
 import { ImpactCategoriesComponent } from './configure/steps/impact-categories/impact-categories.component';
 import { ProtectionGoalsComponent } from './configure/steps/protection-goals/protection-goals.component';
 import { RiskCalculationComponent } from './configure/steps/risk-calculation/risk-calculation.component';
 import { TableModule } from 'src/app/layout/table/table.module';
 import { RiskClassModalComponent } from './configure/steps/risk-classes/modal/add-risk-class-modal.component';
+import { LikelihoodModalComponent } from './configure/steps/likelihood/modal/likelihood-modal.component';
 
 @NgModule({
   declarations: [
@@ -29,12 +30,13 @@ import { RiskClassModalComponent } from './configure/steps/risk-classes/modal/ad
     OverviewComponent,
     ConfigureComponent,
     RiskClassesComponent,
-    LikelihoodComponent,
+    LikelihoodsComponent,
     ImpactComponent,
     ImpactCategoriesComponent,
     ProtectionGoalsComponent,
     RiskCalculationComponent,
-    RiskClassModalComponent
+    RiskClassModalComponent,
+    LikelihoodModalComponent
   ],
   imports: [
     CommonModule,

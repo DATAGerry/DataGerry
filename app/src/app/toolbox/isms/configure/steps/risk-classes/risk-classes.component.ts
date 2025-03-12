@@ -131,11 +131,7 @@ export class RiskClassesComponent implements OnInit {
    * Opens modal to ADD a new Risk Class.
    */
   public addRiskClass(): void {
-    console.log('total risk classes', this.totalRiskClasses)
-    if (this.totalRiskClasses === 10) {
-      this.toast.error('No more than 10 risk classes allowed')
-      return;
-    }
+
     const modalRef = this.modalService.open(RiskClassModalComponent, { size: 'lg' });
     // No input => the modal knows it's creating a new record
     modalRef.result.then(
@@ -230,7 +226,6 @@ export class RiskClassesComponent implements OnInit {
     * handle row reordering
     */
   public onOrderChange(newItems: RiskClass[]): void {
-    console.log('Emitted new order:', newItems);
     this.riskClasses = newItems;
   }
 }
