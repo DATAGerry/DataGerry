@@ -23,20 +23,20 @@ import { RiskClassModalComponent } from './modal/add-risk-class-modal.component'
   styleUrls: ['./risk-classes.component.scss']
 })
 export class RiskClassesComponent implements OnInit {
+
+    // Table column templates
+    @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
+    @ViewChild('colorTemplate', { static: true }) colorTemplate: TemplateRef<any>;
+    //  pass a config from the wizard container
+    @Input() config: IsmsConfig;
+
   public riskClasses: RiskClass[] = [];
   public totalRiskClasses: number = 0;
   public page = 1;
   public limit = 10;
   public loading = false;
-
-  // Table column templates
-  @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
-  @ViewChild('colorTemplate', { static: true }) colorTemplate: TemplateRef<any>;
-
-  //  pass a config from the wizard container
-  @Input() config: IsmsConfig;
-
   public columns: Array<any>;
+  public isLoading$ = this.loaderService.isLoading$;
 
   constructor(
     private riskClassService: RiskClassService,
@@ -131,11 +131,7 @@ export class RiskClassesComponent implements OnInit {
    * Opens modal to ADD a new Risk Class.
    */
   public addRiskClass(): void {
-    console.log('total risk classes', this.totalRiskClasses)
-    if (this.totalRiskClasses === 10) {
-      this.toast.error('No more than 10 risk classes allowed')
-      return;
-    }
+
     const modalRef = this.modalService.open(RiskClassModalComponent, { size: 'lg' });
     // No input => the modal knows it's creating a new record
     modalRef.result.then(
@@ -230,7 +226,6 @@ export class RiskClassesComponent implements OnInit {
     * handle row reordering
     */
   public onOrderChange(newItems: RiskClass[]): void {
-    console.log('Emitted new order:', newItems);
     this.riskClasses = newItems;
   }
 }

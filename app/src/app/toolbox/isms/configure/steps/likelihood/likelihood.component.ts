@@ -1,17 +1,219 @@
-import { Component, Input, OnInit } from '@angular/core';
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { finalize } from 'rxjs/operators';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { ToastService } from 'src/app/layout/toast/toast.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
+import { Likelihood } from '../../../models/likelihood.model';
+import { LikelihoodService } from '../../../services/likelihood.service';
+import { LikelihoodModalComponent } from './modal/likelihood-modal.component';
 import { IsmsConfig } from '../../../models/isms-config.model';
+import { Sort, SortDirection } from 'src/app/layout/table/table.types';
 
 @Component({
   selector: 'app-isms-likelihood',
   templateUrl: './likelihood.component.html',
   styleUrls: ['./likelihood.component.scss']
 })
-export class LikelihoodComponent implements OnInit {
-    @Input() config: IsmsConfig;
+export class LikelihoodsComponent implements OnInit {
+  public likelihoods: Likelihood[] = [];
+  public totalLikelihoods = 0;
+  public page = 1;
+  public limit = 10;
+  public loading = false;
 
-  constructor() { }
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
+
+  @Input() config: IsmsConfig;
+
+  public columns: Array<any>;
+  public sort: Sort = { name: 'calculation_basis', order: SortDirection.DESCENDING } as Sort;
+
+  public isLoading$ = this.loaderService.isLoading$;
+
+  constructor(
+    private likelihoodService: LikelihoodService,
+    private toast: ToastService,
+    private modalService: NgbModal,
+    private loaderService: LoaderService
+  ) { }
+
 
   ngOnInit(): void {
-    // Setup form or data for likelihood entries
+    this.columns = [
+      {
+        display: 'Public ID',
+        name: 'publicId',
+        data: 'public_id',
+        searchable: false,
+        sortable: false,
+        style: { width: '90px', 'text-align': 'center' }
+      },
+      {
+        display: 'Name',
+        name: 'name',
+        data: 'name',
+        sortable: false
+      },
+      {
+        display: 'Description',
+        name: 'description',
+        data: 'description',
+        sortable: false
+      },
+      {
+        display: 'Calculation Basis',
+        name: 'calculation_basis',
+        data: 'calculation_basis',
+        sortable: false,
+        style: { width: '180px', 'text-align': 'center' }
+      },
+      {
+        display: 'Actions',
+        name: 'actions',
+        template: this.actionsTemplate,
+        sortable: false,
+        style: { width: '80px', 'text-align': 'center' }
+      }
+    ];
+
+    this.loadLikelihoods();
+  }
+
+  
+  /**
+   * Loads likelihoods from the backend with pagination and sorting.
+   */
+  private loadLikelihoods(): void {
+    this.loading = true;
+    this.loaderService.show();
+
+    this.likelihoodService
+      .getLikelihoods({
+        filter: '',
+        limit: this.limit,
+        page: this.page,
+        sort: this.sort.name,
+        order: this.sort.order
+      })
+      .pipe(
+        finalize(() => {
+          this.loaderService.hide();
+          this.loading = false;
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.likelihoods = data.results;
+          console.log('likelihoods', this.likelihoods)
+          this.totalLikelihoods = data.total;
+        },
+        error: (err) => {
+          this.likelihoods = [];
+          this.totalLikelihoods = 0;
+          this.toast.error(err?.error?.message);
+        }
+      });
+  }
+
+
+  /**
+   * Opens add likelihood modal.
+   */
+  public addLikelihood(): void {
+    const modalRef = this.modalService.open(LikelihoodModalComponent, { size: 'lg' });
+    // No input => add mode
+    modalRef.result.then(
+      (result) => {
+        if (result === 'saved') {
+          this.loadLikelihoods();
+        }
+      },
+      () => { }
+    );
+  }
+
+  /**
+   * Opens edit likelihood modal with pre-filled data.
+   */
+  public editLikelihood(item: Likelihood): void {
+    const modalRef = this.modalService.open(LikelihoodModalComponent, { size: 'lg' });
+    modalRef.componentInstance.likelihood = { ...item };
+    modalRef.result.then(
+      (result) => {
+        if (result === 'saved') {
+          this.loadLikelihoods();
+        }
+      },
+      () => { }
+    );
+  }
+
+
+  /**
+   * Opens delete confirmation modal and deletes the likelihood on confirm.
+   */
+  public deleteLikelihood(item: Likelihood): void {
+    const modalRef = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
+    modalRef.componentInstance.title = 'Delete Likelihood';
+    modalRef.componentInstance.item = item;
+    modalRef.componentInstance.itemType = 'Likelihood';
+    modalRef.componentInstance.itemName = item.name;
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmed') {
+          this.loaderService.show();
+          this.likelihoodService
+            .deleteLikelihood(item.public_id!)
+            .pipe(finalize(() => this.loaderService.hide()))
+            .subscribe({
+              next: () => {
+                this.toast.success('Likelihood deleted successfully.');
+                this.loadLikelihoods();
+              },
+              error: (err) => {
+                this.toast.error(err?.error?.message);
+              }
+            });
+        }
+      },
+      () => { }
+    );
+  }
+
+  /**
+   * Handles pagination change.
+   */
+  public onPageChange(newPage: number): void {
+    this.page = newPage;
+    this.loadLikelihoods();
+  }
+
+  /**
+   * Handles page size change.
+   */
+  public onPageSizeChange(newLimit: number): void {
+    this.limit = newLimit;
+    this.page = 1;
+    this.loadLikelihoods();
   }
 }

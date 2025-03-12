@@ -8,11 +8,20 @@ import { ConfigureComponent } from './configure/configure.component';
 const routes: Routes = [
     {
         path: '',
+        data: {
+            breadcrumb: 'Overview' // or breadcrumb: 'Overview'
+          },
         component: IsmsComponent,
         children: [
             { path: '', redirectTo: 'overview', pathMatch: 'full' },
             { path: 'overview', component: OverviewComponent },
-            { path: 'configure', component: ConfigureComponent },
+            {
+                path: 'configure',
+                data: {
+                    breadcrumb: 'Configure ISMS Settings'
+                },
+                component: ConfigureComponent
+            },
         ]
     }
 ];

@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between align-items-center mb-2 mt-2 mb-2">
     <h1>Risk Classes</h1>
     <button type="button" class="btn btn-sm btn-success" (click)="addRiskClass()"
-      [disabled]="this.totalRiskClasses === 10 " *permissionLink="['base.isms.riskClass.add']">
+      [disabled]="this.totalRiskClasses >= 10" *permissionLink="['base.isms.riskClass.add']">
       <i class="fas fa-plus"></i> Add
     </button>
   </div>
@@ -34,3 +34,10 @@
     <i class="far fa-trash-alt btn-delete" (click)="onDeleteRiskClass(item)" title="Delete Risk Class"></i>
   </span>
 </ng-template>
+
+
+
+<app-loading-popup 
+[isVisible]="isLoading$ | async"
+message="We're Processing the Data..."
+></app-loading-popup>
