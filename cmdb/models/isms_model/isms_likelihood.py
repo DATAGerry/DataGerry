@@ -40,7 +40,7 @@ class IsmsLikelihood(CmdbDAO):
     """
     COLLECTION = "isms.likelihood"
     MODEL = 'Likelihood'
-
+    # pylint: disable=R0801
     SCHEMA: dict = {
         'public_id': {
             'type': 'integer'

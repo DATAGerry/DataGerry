@@ -37,6 +37,7 @@ from cmdb.models.right_model.isms_rights import (
     IsmsRight,
     RiskClassRight,
     LikelihoodRight,
+    ImpactRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -154,6 +155,13 @@ ISMS_RIGHTS = (
             LikelihoodRight('add', description='Add ISMS Likelihoods'),
             LikelihoodRight('edit', Levels.PROTECTED, description='Edit ISMS Likelihoods'),
             LikelihoodRight('delete', Levels.SECURE, description='Delete ISMS Likelihoods'),
+        ),
+        ImpactRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage Impacts of ISMS'),
+        (
+            ImpactRight('view', description='View ISMS Impacts'),
+            ImpactRight('add', description='Add ISMS Impacts'),
+            ImpactRight('edit', Levels.PROTECTED, description='Edit ISMS Impacts'),
+            ImpactRight('delete', Levels.SECURE, description='Delete ISMS Impacts'),
         ),
     ),
 )

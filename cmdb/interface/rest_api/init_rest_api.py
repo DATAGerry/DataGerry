@@ -129,6 +129,7 @@ def register_blueprints(app: BaseCmdbApp):
     from cmdb.interface.rest_api.routes.isms_routes import (
         risk_class_blueprint,
         likelihood_blueprint,
+        impact_blueprint,
     )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -166,6 +167,7 @@ def register_blueprints(app: BaseCmdbApp):
     # ISMS Blueprints
     app.register_blueprint(risk_class_blueprint, url_prefix='/isms/risk_classes')
     app.register_blueprint(likelihood_blueprint, url_prefix='/isms/likelihoods')
+    app.register_blueprint(impact_blueprint, url_prefix='/isms/impacts')
 
     if cmdb.__MODE__ == 'DEBUG':
         from cmdb.interface.rest_api.routes.debug_routes import debug_blueprint

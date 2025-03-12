@@ -14,21 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all QueryBuilder relevant classes
+This module provides all errors for the ImpactManager
 """
-from .base_query_builder import BaseQueryBuilder
-from .builder_parameters import BuilderParameters
-from .builder import Builder
-from .pipeline_builder import PipelineBuilder
-from .quick_search_pipeline_builder import QuickSearchPipelineBuilder
-from .search_references_pipeline_builder import SearchReferencesPipelineBuilder
+from .impact_manager_errors import (
+    ImpactManagerError,
+    ImpactManagerInitError,
+    ImpactManagerInsertError,
+    ImpactManagerGetError,
+    ImpactManagerUpdateError,
+    ImpactManagerDeleteError,
+    ImpactManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'BaseQueryBuilder',
-    'BuilderParameters',
-    'Builder',
-    'PipelineBuilder',
-    'QuickSearchPipelineBuilder',
-    'SearchReferencesPipelineBuilder',
+    'ImpactManagerError',
+    'ImpactManagerInitError',
+    'ImpactManagerInsertError',
+    'ImpactManagerGetError',
+    'ImpactManagerUpdateError',
+    'ImpactManagerDeleteError',
+    'ImpactManagerIterationError',
 ]

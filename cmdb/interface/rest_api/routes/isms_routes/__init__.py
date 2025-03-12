@@ -18,9 +18,11 @@ This module prove all APIBluerpints for ISMS
 """
 from .risk_class_routes import risk_class_blueprint
 from .likelihood_routes import likelihood_blueprint
+from .impact_routes import impact_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
     'risk_class_blueprint',
     'likelihood_blueprint',
+    'impact_blueprint',
 ]

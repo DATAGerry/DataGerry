@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of Builder
+"""
 import logging
 from typing import Any, Union
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -26,16 +27,35 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class Builder:
-    """Base builder prototype"""
+    """
+    Abstract base class for building query-like structures
 
-    def __len__(self):
-        raise NotImplementedError()
+    This class defines a prototype for builder objects, requiring subclasses 
+    to implement essential methods for managing and manipulating data
+    """
+
+    def __len__(self) -> int:
+        """
+        Returns the number of elements in the builder
+
+        This method must be implemented by subclasses
+
+        Raises:
+            NotImplementedError: If the subclass does not override this method
+        """
+        raise NotImplementedError("Subclasses must implement the __len__ method!")
 
 
-    def clear(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        raise NotImplementedError()
+    def clear(self) -> None:
+        """
+        Clears the builder's data
+
+        This method must be implemented by subclasses to define how data should be reset or cleared
+
+        Raises:
+            NotImplementedError: If the subclass does not override this method
+        """
+        raise NotImplementedError("Subclasses must implement the clear method.")
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -226,7 +246,6 @@ class Builder:
         return {'$sort': {sort: order}}
 
 
-    # Type Expression Operators
     @classmethod
     def type_(cls, expression) -> dict:
         """Return the BSON data type of the field."""

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of SearchPipelineBuilder
+"""
 import logging
 
 from cmdb.manager.query_builder import PipelineBuilder, SearchReferencesPipelineBuilder
@@ -32,13 +33,23 @@ LOGGER = logging.getLogger(__name__)
 #                                             SearchPipelineBuilder - CLASS                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SearchPipelineBuilder(PipelineBuilder):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A query builder for search-specific database aggregation pipelines
+
+    This class constructs a pipeline for performing search queries, allowing dynamic modification
+    of pipeline stages
+
+    Inherits from:
+        PipelineBuilder: The base class for building aggregation query pipelines
+    """
 
     def __init__(self, pipeline: list[dict] = None):
-        """Init constructor
+        """
+        Initializes the SearchPipelineBuilder
+
         Args:
-            pipeline: preset a for defined pipeline
+            pipeline (list[dict], optional): A predefined aggregation pipeline to initialize with.
+                                             Defaults to an empty list if not provided
         """
         super().__init__(pipeline=pipeline)
 

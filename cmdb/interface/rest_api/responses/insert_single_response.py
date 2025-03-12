@@ -37,8 +37,8 @@ class InsertSingleResponse(BaseAPIResponse):
         Constructor of InsertSingleResponse
 
         Args:
-            result_id: The new public id or a identifier of the inserted resource
             raw: The raw document
+            result_id: The new public id or a identifier of the inserted resource
         """
         self.raw: dict = raw
         self.result_id: int = int(result_id)
