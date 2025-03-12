@@ -34,3 +34,10 @@
     <i class="far fa-trash-alt btn-delete" (click)="onDeleteRiskClass(item)" title="Delete Risk Class"></i>
   </span>
 </ng-template>
+
+
+
+<app-loading-popup 
+[isVisible]="isLoading$ | async"
+message="We're Processing the Data..."
+></app-loading-popup>

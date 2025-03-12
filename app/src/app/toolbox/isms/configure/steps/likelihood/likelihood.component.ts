@@ -47,6 +47,7 @@ export class LikelihoodsComponent implements OnInit {
   public columns: Array<any>;
   public sort: Sort = { name: 'calculation_basis', order: SortDirection.DESCENDING } as Sort;
 
+  public isLoading$ = this.loaderService.isLoading$;
 
   constructor(
     private likelihoodService: LikelihoodService,
@@ -54,7 +55,7 @@ export class LikelihoodsComponent implements OnInit {
     private modalService: NgbModal,
     private loaderService: LoaderService
   ) { }
-  
+
 
   ngOnInit(): void {
     this.columns = [

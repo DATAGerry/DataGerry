@@ -19,3 +19,8 @@
         title="Edit Likelihood"></i>
     <i class="far fa-trash-alt btn-delete" (click)="deleteLikelihood(item)" title="Delete Likelihood"></i>
 </ng-template>
+
+<app-loading-popup 
+[isVisible]="isLoading$ | async"
+message="We're Processing the Data..."
+></app-loading-popup>
