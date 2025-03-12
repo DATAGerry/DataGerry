@@ -13,14 +13,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of GroupDeleteMode
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class GroupDeleteMode(Enum):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Represents the deletion mode for a group
+
+    Attributes:
+        NONE: No deletion action is performed
+        MOVE: The group's content is moved before deletion
+        DELETE: The group is permanently deleted
+    """
     NONE = None
     MOVE = 'MOVE'
     DELETE = 'DELETE'

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CmdbMetaLog
+"""
 import logging
 from datetime import datetime
 
@@ -32,7 +33,18 @@ class CmdbMetaLog(CmdbDAO):
     COLLECTION = 'framework.logs'
     MODEL = 'CmdbLog'
 
-    def __init__(self, public_id, log_type, log_time: datetime, action: LogAction, action_name: str):
+    #pylint: disable=too-many-positional-arguments
+    def __init__(self, public_id: int, log_type, log_time: datetime, action: LogAction, action_name: str):
+        """
+        Initializes a CmdbMetaLog
+
+        Args:
+            public_id (int): The unique identifier for the log entry
+            log_type (str): The type/category of the log
+            log_time (datetime): The timestamp of when the log event occurred
+            action (LogAction): The action taken (e.g., CREATE, UPDATE, DELETE)
+            action_name (str): A descriptive name for the action performed
+        """
         self.log_type = log_type
         self.log_time: datetime = log_time
         self.action: LogAction = action

@@ -111,6 +111,7 @@ class IsmsImpact(CmdbDAO):
         except Exception as err:
             raise IsmsImpactInitFromDataError(err) from err
 
+
     @classmethod
     def to_json(cls, instance: "IsmsImpact") -> dict:
         """

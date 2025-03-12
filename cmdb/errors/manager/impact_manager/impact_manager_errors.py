@@ -28,7 +28,7 @@ class ImpactManagerError(Exception):
         """
         super().__init__(err)
 
-# ----------------------------------------------- ImpactManager - CLASS ---------------------------------------------- #
+# ---------------------------------------------- ImpactManager - ERRORS ---------------------------------------------- #
 
 class ImpactManagerInitError(ImpactManagerError):
     """

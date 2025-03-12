@@ -46,6 +46,7 @@ from cmdb.manager import (
     RiskClassManager,
     LikelihoodManager,
     ImpactManager,
+    ImpactCategoryManager,
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -120,6 +121,7 @@ class ManagerProvider:
             ManagerType.RISK_CLASS: RiskClassManager,
             ManagerType.LIKELIHOOD: LikelihoodManager,
             ManagerType.IMPACT: ImpactManager,
+            ManagerType.IMPACT_CATEGORY: ImpactCategoryManager,
         }
 
         return manager_classes.get(manager_type)

@@ -48,3 +48,4 @@ class ManagerType(Enum):
     RISK_CLASS = 'RiskClassManager'
     LIKELIHOOD = 'LikelihoodManager'
     IMPACT = 'ImpactManager'
+    IMPACT_CATEGORY = 'ImpactCategoryManager'
