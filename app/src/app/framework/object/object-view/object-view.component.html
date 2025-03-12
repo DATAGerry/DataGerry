@@ -199,15 +199,15 @@
 
 <!-- Table Actions Template -->
 <ng-template #actionsTemplate let-item="item">
-  <span>
+  <span *permissionLink="['base.framework.objectRelations.view']">
     <i class="far fa-eye spacing-right icon-view" (click)="viewRelationInstance(item)" title="View Relation">
     </i>
   </span>
-  <span>
-    <i class="far fa-edit btn-edit spacing-right icon-edit" (click)="editRelationInstance(item)" title="Edit Relation">
+  <span *permissionLink="['base.framework.objectRelations.edit']">
+    <i class="far fa-edit btn-edit spacing-right icon-edit" (click)="editRelationInstance(item)" title="Edit Relation" >
     </i>
   </span>
-  <span>
+  <span >
     <i class="far fa-clone spacing-right icon-copy" (click)="copyRelationInstance(item)" title="Copy Relation">
     </i>
   </span>

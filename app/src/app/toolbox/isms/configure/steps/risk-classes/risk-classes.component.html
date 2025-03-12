@@ -1,18 +1,20 @@
-<div class="d-flex justify-content-between align-items-center mb-2 mt-2 mb-2">
-  <h1>Risk Classes</h1>
-  <button type="button" class="btn btn-sm btn-success" (click)="addRiskClass()"
-    [disabled]="this.totalRiskClasses === 10 ">
-    <i class="fas fa-plus"></i> Add
-  </button>
+<div *permissionLink="['base.isms.riskClass.view']">
+  <div class="d-flex justify-content-between align-items-center mb-2 mt-2 mb-2">
+    <h1>Risk Classes</h1>
+    <button type="button" class="btn btn-sm btn-success" (click)="addRiskClass()"
+      [disabled]="this.totalRiskClasses === 10 " *permissionLink="['base.isms.riskClass.add']">
+      <i class="fas fa-plus"></i> Add
+    </button>
+  </div>
+  
+  <hr />
+  
+  <!-- (cmdb-table) -->
+  <cmdb-table [items]="riskClasses" [columns]="columns" [totalItems]="totalRiskClasses" [pageSize]="limit" [page]="page"
+    [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false" [searchEnabled]="false"
+    (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+  </cmdb-table>
 </div>
-
-<hr />
-
-<!-- (cmdb-table) -->
-<cmdb-table [items]="riskClasses" [columns]="columns" [totalItems]="totalRiskClasses" [pageSize]="limit" [page]="page"
-  [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false" [searchEnabled]="false"
-  (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
-</cmdb-table>
 
 <!-- Color Template -->
 <ng-template #colorTemplate let-item="item">
@@ -24,6 +26,10 @@
 
 <!-- Actions Template -->
 <ng-template #actionsTemplate let-item="item">
-  <i class="far fa-edit icon-margin btn-edit spacing-right" (click)="editRiskClass(item)" title="Edit Risk Class"></i>
-  <i class="far fa-trash-alt btn-delete" (click)="onDeleteRiskClass(item)" title="Delete Risk Class"></i>
+  <span *permissionLink="['base.isms.riskClass.edit']">
+    <i class="far fa-edit icon-margin btn-edit spacing-right" (click)="editRiskClass(item)" title="Edit Risk Class"></i>
+  </span>
+  <span *permissionLink="['base.isms.riskClass.delete']">
+    <i class="far fa-trash-alt btn-delete" (click)="onDeleteRiskClass(item)" title="Delete Risk Class"></i>
+  </span>
 </ng-template>
