@@ -128,16 +128,16 @@ class ImpactManager(BaseManager):
 
     def iterate(self, builder_params: BuilderParameters) -> IterationResult[IsmsImpact]:
         """
-        Retrieves multiple IsmsLikelihoods
+        Retrieves multiple IsmsImpacts
 
         Args:
-            builder_params (BuilderParameters): Filter for which IsmsLikelihoods should be retrieved
+            builder_params (BuilderParameters): Filter for which IsmsImpacts should be retrieved
 
         Raises:
             ImpactManagerIterationError: When the iteration failed
 
         Returns:
-            IterationResult[IsmsImpact]: All IsmsLikelihoods matching the filter
+            IterationResult[IsmsImpact]: All IsmsImpacts matching the filter
         """
         try:
             aggregation_result, total = self.iterate_query(builder_params)

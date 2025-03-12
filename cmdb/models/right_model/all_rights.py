@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all DataGerry rights
+"""
 from cmdb.models.right_model.levels_enum import Levels
 from cmdb.models.right_model.import_rights import ImportRight, ImportObjectRight, ImportTypeRight
 from cmdb.models.right_model.base_right import BaseRight
@@ -38,6 +39,7 @@ from cmdb.models.right_model.isms_rights import (
     RiskClassRight,
     LikelihoodRight,
     ImpactRight,
+    ImpactCategoryRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -162,6 +164,13 @@ ISMS_RIGHTS = (
             ImpactRight('add', description='Add ISMS Impacts'),
             ImpactRight('edit', Levels.PROTECTED, description='Edit ISMS Impacts'),
             ImpactRight('delete', Levels.SECURE, description='Delete ISMS Impacts'),
+        ),
+        ImpactCategoryRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage ImpactCategories of ISMS'),
+        (
+            ImpactCategoryRight('view', description='View ISMS ImpactCategories'),
+            ImpactCategoryRight('add', description='Add ISMS ImpactCategories'),
+            ImpactCategoryRight('edit', Levels.PROTECTED, description='Edit ISMS ImpactCategories'),
+            ImpactCategoryRight('delete', Levels.SECURE, description='Delete ISMS ImpactCategories'),
         ),
     ),
 )

@@ -77,7 +77,7 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         # There is a Limit of 10 Impact classes
         impact_count = impact_manager.count_impacts()
 
-        if impact_count > 10:
+        if impact_count >= 10:
             return abort(403, "Only a maximum of 10 Impacts can be created!")
 
 
@@ -140,7 +140,7 @@ def get_isms_impacts(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except ImpactManagerIterationError as err:
         LOGGER.error("[get_isms_impacts] ImpactManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Impact from the database!")
+        return abort(400, "Failed to retrieve Impacts from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impacts] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")

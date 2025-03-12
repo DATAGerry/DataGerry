@@ -14,14 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of MdsMode
+This module provides all errors for IsmsImpactCategories
 """
-from enum import Enum
+from .isms_impact_category_errors import (
+    IsmsImpactCategoryError,
+    IsmsImpactCategoryInitError,
+    IsmsImpactCategoryInitFromDataError,
+    IsmsImpactCategoryToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class MdsMode(str, Enum):
-    """
-    Available MDS modes
-    """
-    ROWS = 'ROWS'
-    COLUMNS = 'COLUMNS'
+__all__ = [
+    'IsmsImpactCategoryError',
+    'IsmsImpactCategoryInitError',
+    'IsmsImpactCategoryInitFromDataError',
+    'IsmsImpactCategoryToJsonError',
+]

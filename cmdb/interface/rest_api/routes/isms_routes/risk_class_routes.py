@@ -77,7 +77,7 @@ def insert_isms_risk_class(data: dict, request_user: CmdbUser):
         # There is a Limit of 10 Risk classes
         risk_class_count = risk_class_manager.count_risk_classes()
 
-        if risk_class_count > 10:
+        if risk_class_count >= 10:
             return abort(403, "Only a maximum of 10 RiskClasses can be created!")
 
 

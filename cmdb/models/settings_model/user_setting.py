@@ -30,6 +30,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                               UserSettingModel - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
+#TODO: RENAME-FIX (rename to CmdbUserSetting)
 class UserSettingModel:
     """
     User settings model. Holds all stored user-settings for a specific user.

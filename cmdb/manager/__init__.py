@@ -42,6 +42,7 @@ from cmdb.manager.webhooks_manager import WebhooksManager
 from cmdb.manager.isms_manager.risk_class_manager import RiskClassManager
 from cmdb.manager.isms_manager.likelihood_manager import LikelihoodManager
 from cmdb.manager.isms_manager.impact_manager import ImpactManager
+from cmdb.manager.isms_manager.impact_category_manager import ImpactCategoryManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -71,4 +72,5 @@ __all__ = [
     'RiskClassManager',
     'LikelihoodManager',
     'ImpactManager',
+    'ImpactCategoryManager',
 ]

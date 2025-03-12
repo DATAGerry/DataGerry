@@ -14,14 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of MdsMode
+This module provides all errors for the ImpactManager
 """
-from enum import Enum
+from .impact_category_manager_errors import (
+    ImpactCategoryManagerError,
+    ImpactCategoryManagerInitError,
+    ImpactCategoryManagerInsertError,
+    ImpactCategoryManagerGetError,
+    ImpactCategoryManagerUpdateError,
+    ImpactCategoryManagerDeleteError,
+    ImpactCategoryManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class MdsMode(str, Enum):
-    """
-    Available MDS modes
-    """
-    ROWS = 'ROWS'
-    COLUMNS = 'COLUMNS'
+__all__ = [
+    'ImpactCategoryManagerError',
+    'ImpactCategoryManagerInitError',
+    'ImpactCategoryManagerInsertError',
+    'ImpactCategoryManagerGetError',
+    'ImpactCategoryManagerUpdateError',
+    'ImpactCategoryManagerDeleteError',
+    'ImpactCategoryManagerIterationError',
+]

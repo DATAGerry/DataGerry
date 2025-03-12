@@ -77,9 +77,8 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
         # There is a Limit of 10 Likelihood classes
         likelihood_count = likelihood_manager.count_likelihoods()
 
-        if likelihood_count > 10:
+        if likelihood_count >= 10:
             return abort(403, "Only a maximum of 10 Likelihoods can be created!")
-
 
         result_id: int = likelihood_manager.insert_likelihood(data)
 
