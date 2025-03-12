@@ -1,0 +1,61 @@
+<aw-wizard [defaultStepIndex]="0">
+    <!-- Step 1: Risk Classes -->
+    <aw-wizard-step [stepTitle]="'Risk Classes'">
+      <app-isms-risk-classes 
+        [config]="ismsConfig"
+        (configChange)="ismsConfig = $event">
+      </app-isms-risk-classes>
+      <button class="btn btn-primary" awNextStep>Next Step</button>
+    </aw-wizard-step>
+  
+    <!-- Step 2: Likelihood -->
+    <aw-wizard-step [stepTitle]="'Likelihood'">
+      <app-isms-likelihood 
+        [config]="ismsConfig"
+        (configChange)="ismsConfig = $event">
+      </app-isms-likelihood>
+      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
+      <button class="btn btn-primary" awNextStep>Next Step</button>
+    </aw-wizard-step>
+  
+    <!-- Step 3: Impact -->
+    <aw-wizard-step [stepTitle]="'Impact'">
+      <app-isms-impact 
+        [config]="ismsConfig"
+        (configChange)="ismsConfig = $event">
+      </app-isms-impact>
+      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
+      <button class="btn btn-primary" awNextStep>Next Step</button>
+    </aw-wizard-step>
+  
+    <!-- Step 4: Impact Categories -->
+    <aw-wizard-step [stepTitle]="'Impact Categories'">
+      <app-isms-impact-categories 
+        [config]="ismsConfig"
+        (configChange)="ismsConfig = $event">
+      </app-isms-impact-categories>
+      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
+      <button class="btn btn-primary" awNextStep>Next Step</button>
+    </aw-wizard-step>
+  
+    <!-- Step 5: Protection Goals -->
+    <aw-wizard-step [stepTitle]="'Protection Goals'">
+      <app-isms-protection-goals 
+        [config]="ismsConfig"
+        (configChange)="ismsConfig = $event">
+      </app-isms-protection-goals>
+      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
+      <button class="btn btn-primary" awNextStep>Next Step</button>
+    </aw-wizard-step>
+  
+    <!-- Step 6: Risk Calculation -->
+    <aw-wizard-step [stepTitle]="'Risk Calculation'">
+      <app-isms-risk-calculation 
+        [config]="ismsConfig"
+        (configChange)="ismsConfig = $event">
+      </app-isms-risk-calculation>
+      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
+      <button class="btn btn-success" (click)="saveIsmsConfig()">Save Configuration</button>
+    </aw-wizard-step>
+  </aw-wizard>
+  

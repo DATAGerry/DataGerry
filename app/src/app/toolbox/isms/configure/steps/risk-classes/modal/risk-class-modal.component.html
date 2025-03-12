@@ -1,0 +1,95 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    {{ isEditMode ? 'Edit Risk Class' : 'Add Risk Class' }}
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+
+<div class="modal-body">
+  <!-- If edit mode => require 'base.isms.riskClass.edit' -->
+  <!-- If add mode => require 'base.isms.riskClass.add' -->
+  <ng-container *ngIf="isEditMode; else addPermissionBlock">
+    <div *permissionLink="['base.isms.riskClass.edit']">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Name -->
+        <div class="mb-3">
+          <label for="riskClassName" class="form-label">Name <span class="text-danger">*</span></label>
+          <input id="riskClassName" type="text" class="form-control" formControlName="name"
+            placeholder="Enter a name..." />
+        </div>
+
+        <!-- Color -->
+        <div class="mb-3">
+          <label for="riskClassColor" class="form-label">Color</label>
+          <input id="riskClassColor" type="color" class="form-control form-control-color" formControlName="color" />
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="riskClassDescription" class="form-label">Description</label>
+          <textarea id="riskClassDescription" class="form-control" formControlName="description" rows="3"></textarea>
+        </div>
+
+        <!-- Sort -->
+        <!-- <div class="mb-3">
+          <label for="riskClassSort" class="form-label">Sort (optional)</label>
+          <input id="riskClassSort" type="number" class="form-control" formControlName="sort"
+            placeholder="Enter sort order..." />
+        </div> -->
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
+            <span *ngIf="!isSubmitting">Save Changes</span>
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <!-- ADD MODE -->
+  <ng-template #addPermissionBlock>
+    <div *permissionLink="['base.isms.riskClass.add']">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Name -->
+        <div class="mb-3">
+          <label for="riskClassName" class="form-label">Name <span class="text-danger">*</span></label>
+          <input id="riskClassName" type="text" class="form-control" formControlName="name"
+            placeholder="Enter a name..." />
+        </div>
+
+        <!-- Color -->
+        <div class="mb-3">
+          <label for="riskClassColor" class="form-label">Color</label>
+          <input id="riskClassColor" type="color" class="form-control form-control-color" formControlName="color" />
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="riskClassDescription" class="form-label">Description</label>
+          <textarea id="riskClassDescription" class="form-control" formControlName="description" rows="3"></textarea>
+        </div>
+
+        <!-- Sort -->
+        <!-- <div class="mb-3">
+          <label for="riskClassSort" class="form-label">Sort (optional)</label>
+          <input id="riskClassSort" type="number" class="form-control" formControlName="sort"
+            placeholder="Enter sort order..." />
+        </div> -->
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
+            <span *ngIf="!isSubmitting">Add Risk Class</span>
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+</div>
