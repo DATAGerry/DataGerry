@@ -79,6 +79,15 @@ const routes: Routes = [
         loadChildren: () => import('../../export/export.module').then(m => m.ExportModule)
     },
     {
+        path: 'isms',
+        data: {
+            breadcrumb: 'ISMS'
+        },
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        loadChildren: () => import('../../toolbox/isms/isms.module').then(m => m.ISMSModule)
+    },
+    {
         path: 'management',
         data: {
             breadcrumb: 'User-Management'

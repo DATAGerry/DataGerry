@@ -1,0 +1,70 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    {{ isEditMode ? 'Edit Risk Class' : 'Add Risk Class' }}
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Name -->
+    <div class="mb-3">
+      <label class="form-label" for="riskClassName">Name <span class="text-danger">*</span></label>
+      <input
+        id="riskClassName"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Enter a name..."
+        [ngClass]="{'is-invalid': form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)}"
+      />
+      <div *ngIf="form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)" class="invalid-feedback">
+        Name is required
+      </div>
+    </div>
+
+    <!-- Color -->
+    <div class="mb-3">
+      <label class="form-label" for="riskClassColor">Color</label>
+      <input
+        id="riskClassColor"
+        type="color"
+        class="form-control form-control-color"
+        formControlName="color"
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label" for="riskClassDescription">Description</label>
+      <textarea
+        id="riskClassDescription"
+        class="form-control"
+        formControlName="description"
+        rows="3"
+        placeholder="Enter a description..."
+      ></textarea>
+    </div>
+
+    <!-- Sort -->
+    
+    <!-- <div class="mb-3">
+      <label class="form-label" for="riskClassSort">Sort (optional)</label>
+      <input
+        id="riskClassSort"
+        type="number"
+        class="form-control"
+        formControlName="sort"
+        placeholder="Enter sort order..."
+      />
+    </div> -->
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
+        <span *ngIf="!isSubmitting">{{ isEditMode ? 'Save Changes' : 'Add Risk Class' }}</span>
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>
