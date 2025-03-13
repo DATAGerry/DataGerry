@@ -99,7 +99,7 @@ export class ImpactModalComponent implements OnInit {
         const payload: Partial<Impact> = {
             name: formValue.name,
             description: formValue.description,
-            calculation_basis: parseFloat(formValue.calculation_basis),
+            calculation_basis: formValue.calculation_basis,
             sort: 0
         };
 
