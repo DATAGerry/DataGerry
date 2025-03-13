@@ -74,17 +74,17 @@ export class LikelihoodsComponent implements OnInit {
         sortable: false
       },
       {
-        display: 'Description',
-        name: 'description',
-        data: 'description',
-        sortable: false
-      },
-      {
         display: 'Calculation Basis',
         name: 'calculation_basis',
         data: 'calculation_basis',
         sortable: false,
-        style: { width: '180px', 'text-align': 'center' }
+        style: { width: '160px', 'text-align': 'center' }
+      },
+      {
+        display: 'Description',
+        name: 'description',
+        data: 'description',
+        sortable: false
       },
       {
         display: 'Actions',
@@ -140,6 +140,7 @@ export class LikelihoodsComponent implements OnInit {
    */
   public addLikelihood(): void {
     const modalRef = this.modalService.open(LikelihoodModalComponent, { size: 'lg' });
+    modalRef.componentInstance.existingCalculationBases = this.likelihoods.map(i => parseFloat(i.calculation_basis as any));
     // No input => add mode
     modalRef.result.then(
       (result) => {
@@ -150,6 +151,7 @@ export class LikelihoodsComponent implements OnInit {
       () => { }
     );
   }
+
 
   /**
    * Opens edit likelihood modal with pre-filled data.
@@ -200,6 +202,7 @@ export class LikelihoodsComponent implements OnInit {
     );
   }
 
+
   /**
    * Handles pagination change.
    */
@@ -207,6 +210,7 @@ export class LikelihoodsComponent implements OnInit {
     this.page = newPage;
     this.loadLikelihoods();
   }
+
 
   /**
    * Handles page size change.

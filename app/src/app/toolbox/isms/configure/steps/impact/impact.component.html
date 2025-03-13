@@ -1,0 +1,31 @@
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1>Impacts</h1>
+        <button type="button" class="btn btn-sm btn-success" (click)="addImpact()"
+            *permissionLink="['base.isms.impact.add']"
+            [disabled]="this.totalImpacts >= 10">
+            <i class="fas fa-plus"></i> Add
+        </button>
+    </div>
+
+    <hr />
+
+    <!-- Table (cmdb-table) -->
+    <cmdb-table [items]="impacts" [columns]="columns" [totalItems]="totalImpacts" [pageSize]="limit" [page]="page"
+        [loading]="loading" [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false"
+        [searchEnabled]="false" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+    </cmdb-table>
+
+    <!-- Actions Template -->
+    <ng-template #actionsTemplate let-item="item">
+        <span *permissionLink="['base.isms.impact.edit']">
+            <i class="far fa-edit icon-margin btn-edit spacing-right" (click)="editImpact(item)"
+                title="Edit Impact"></i>
+        </span>
+        <span *permissionLink="['base.isms.impact.delete']">
+            <i class="far fa-trash-alt btn-delete" (click)="deleteImpact(item)" title="Delete Impact"></i>
+        </span>
+    </ng-template>
+</div>
+
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>

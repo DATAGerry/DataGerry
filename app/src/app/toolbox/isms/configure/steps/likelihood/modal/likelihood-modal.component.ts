@@ -17,13 +17,14 @@
 */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { finalize } from 'rxjs/operators';
 
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Likelihood } from 'src/app/toolbox/isms/models/likelihood.model';
 import { LikelihoodService } from 'src/app/toolbox/isms/services/likelihood.service';
+import { uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
 
 @Component({
   selector: 'app-likelihood-modal',
@@ -31,7 +32,8 @@ import { LikelihoodService } from 'src/app/toolbox/isms/services/likelihood.serv
   styleUrls: ['./likelihood-modal.component.scss']
 })
 export class LikelihoodModalComponent implements OnInit {
-  @Input() likelihood?: Likelihood; // If provided, we're in "Edit" mode
+  @Input() likelihood?: Likelihood; // Provided => Edit mode
+  @Input() existingCalculationBases: number[] = []; // For duplicate checking
 
   public form: FormGroup;
   public isSubmitting = false;
@@ -53,54 +55,62 @@ export class LikelihoodModalComponent implements OnInit {
   }
 
   /**
-   * Build the reactive form.
-   * The calculation_basis field is validated with a pattern that requires a decimal value.
+   * Build the form.
+   * - Name: required
+   * - Description: required
+   * - Calculation Basis: required
    */
   private buildForm(): void {
+    const currentBasis = this.isEditMode && this.likelihood ? this.likelihood.calculation_basis : undefined;
     this.form = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
-      // Pattern: one or more digits, a dot, and one or more digits.
       calculation_basis: [
         '',
-        [Validators.required, Validators.pattern(/^\d+\.\d+$/)]
+        [
+          Validators.required,
+          Validators.pattern(/^\d+\.\d{1}$/),
+          uniqueCalculationBasisValidator(this.existingCalculationBases, currentBasis)
+        ]
       ]
     });
   }
+  
 
   /**
-   * Patch the form with existing likelihood data if in edit mode.
+   * Patch the form with existing data in edit mode.
+   * Uses toFixed(1) to ensure the trailing zero is preserved.
    */
   private patchForm(): void {
     if (!this.likelihood) return;
+    const basisString = this.likelihood.calculation_basis.toFixed(1);
     this.form.patchValue({
       name: this.likelihood.name,
       description: this.likelihood.description,
-      calculation_basis: this.likelihood.calculation_basis.toString()
+      calculation_basis: basisString
     });
   }
 
   /**
    * Handle form submission for Add or Edit.
-   * The calculation_basis value is parsed as a float.
    */
   public onSubmit(): void {
     if (this.form.invalid) {
-      // Mark all controls as touched so errors are displayed immediately.
       this.form.markAllAsTouched();
       return;
     }
     this.isSubmitting = true;
-
     const formValue = this.form.value;
-    const formData: Likelihood = {
-      ...formValue,
-      calculation_basis: parseFloat(formValue.calculation_basis)
+    const payload: Partial<Likelihood> = {
+      name: formValue.name,
+      description: formValue.description,
+      calculation_basis: formValue.calculation_basis,
+      sort: 0
     };
 
     if (!this.isEditMode) {
       // Add mode
-      this.likelihoodService.createLikelihood(formData)
+      this.likelihoodService.createLikelihood(payload)
         .pipe(finalize(() => (this.isSubmitting = false)))
         .subscribe({
           next: () => {
@@ -119,7 +129,7 @@ export class LikelihoodModalComponent implements OnInit {
         this.isSubmitting = false;
         return;
       }
-      this.likelihoodService.updateLikelihood(publicId, formData)
+      this.likelihoodService.updateLikelihood(publicId, payload)
         .pipe(finalize(() => (this.isSubmitting = false)))
         .subscribe({
           next: () => {
@@ -133,9 +143,6 @@ export class LikelihoodModalComponent implements OnInit {
     }
   }
 
-  /**
-   * Dismiss the modal.
-   */
   public onCancel(): void {
     this.activeModal.dismiss('cancel');
   }
