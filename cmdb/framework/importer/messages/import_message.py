@@ -13,12 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ImportMessage
+"""
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ImportMessage:
-    """Simple class wrapper for json encoding"""
+    """
+    Simple class wrapper for json encoding
+    """
 
     def __init__(self, obj: dict = None):
         self.obj = obj

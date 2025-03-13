@@ -13,19 +13,26 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ImportSuccessMessage
+"""
 from cmdb.framework.importer.messages.import_message import ImportMessage
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ImportSuccessMessage(ImportMessage):
-    """Message wrapper for successfully imported objects"""
+    """
+    Message wrapper for successfully imported CmdbObjects
+    
+    Extends: ImportMessage
+    """
 
     def __init__(self, public_id: int, obj: dict = None):
-        """Init message
+        """
+        Initialises the ImportSuccessMessage
+
         Args:
-            public_id: ID of the new object
-            obj (optional): cmdb object instance
+            public_id: public_id of the new CmdbObject
+            obj (optional): CmdbObject instance
         """
         self.public_id = public_id
         super().__init__(obj=obj)

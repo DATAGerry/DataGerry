@@ -81,7 +81,7 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
             return abort(403, "Only a maximum of 10 Likelihoods can be created!")
 
         try:
-            data['calculation_basis'] = float(data['calculation_basis'])
+            data['calculation_basis'] = f"{float(data['calculation_basis']):.1f}"
         except Exception:
             return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
 

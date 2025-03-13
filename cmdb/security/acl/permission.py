@@ -13,18 +13,33 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of AccessControlPermission
+"""
 from enum import unique, Enum, auto
 # -------------------------------------------------------------------------------------------------------------------- #
 
 @unique
 class AccessControlPermission(Enum):
-    """Permission enum for possible ACL operations."""
+    """
+    Permission enum for possible ACL operations
+    """
 
     def _generate_next_value_(self, start, count, last_values):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Automatically generates the next enumeration value
+        
+        This method is internally used by the `auto()` function to assign sequential 
+        values to the enum members based on their order of definition.
+
+        Parameters:
+        - start (int): The starting value (typically ignored for auto-generation).
+        - count (int): The number of existing members before this one
+        - last_values (list): A list of previously assigned values
+
+        Returns:
+        - The generated value for the next enum member
+        """
         return self
 
     CREATE = auto()
