@@ -23,6 +23,7 @@ import { RiskCalculationComponent } from './configure/steps/risk-calculation/ris
 import { TableModule } from 'src/app/layout/table/table.module';
 import { RiskClassModalComponent } from './configure/steps/risk-classes/modal/add-risk-class-modal.component';
 import { LikelihoodModalComponent } from './configure/steps/likelihood/modal/likelihood-modal.component';
+import { ImpactModalComponent } from './configure/steps/impact/modal/impact-modal.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { LikelihoodModalComponent } from './configure/steps/likelihood/modal/lik
     ProtectionGoalsComponent,
     RiskCalculationComponent,
     RiskClassModalComponent,
-    LikelihoodModalComponent
+    LikelihoodModalComponent,
+    ImpactModalComponent
   ],
   imports: [
     CommonModule,

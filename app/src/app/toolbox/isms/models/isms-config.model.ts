@@ -16,7 +16,7 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { RiskClass } from './risk-class.model';
-import { ImpactEntry } from './impact.model';
+import { Impact } from './impact.model';
 import { ImpactCategory } from './impact-category.model';
 import { ProtectionGoal } from './protection-goal.model';
 import { Likelihood } from './likelihood.model';
@@ -24,7 +24,7 @@ import { Likelihood } from './likelihood.model';
 export interface IsmsConfig {
   riskClasses: RiskClass[];
   likelihoodEntries: Likelihood[];
-  impactEntries: ImpactEntry[];
+  impactEntries: Impact[];
   impactCategories: ImpactCategory[];
   protectionGoals: ProtectionGoal[];
   riskMatrix: any;

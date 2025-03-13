@@ -15,11 +15,10 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-export interface ImpactEntry {
-    publicId?: number;     // Optional public ID if needed
-    name: string;          // Name of the impact entry
-    description: string;   // Detailed description
-    calculation_basis: number; // Calculation basis (float)
-    sort: number;          // Internal sort order
-  }
-  
+export interface Impact {
+  public_id?: number;          // Unique ID
+  name: string;               // Name of the impact entry
+  description: string;        // Description
+  calculation_basis: number;  // Calculation basis (float)
+  sort: number;               // Internal sort order
+}
