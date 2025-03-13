@@ -80,6 +80,13 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         if impact_count >= 10:
             return abort(403, "Only a maximum of 10 Impacts can be created!")
 
+        try:
+            data['calculation_basis'] = float(data['calculation_basis'])
+        except Exception:
+            return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
+
+        if impact_manager.impact_calculation_basis_exists(data['calculation_basis']):
+            return abort(400, "The calculation basis is already used by another Impact!")
 
         result_id: int = impact_manager.insert_impact(data)
 

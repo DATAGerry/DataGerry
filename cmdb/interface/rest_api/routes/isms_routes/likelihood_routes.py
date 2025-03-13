@@ -80,6 +80,14 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
         if likelihood_count >= 10:
             return abort(403, "Only a maximum of 10 Likelihoods can be created!")
 
+        try:
+            data['calculation_basis'] = float(data['calculation_basis'])
+        except Exception:
+            return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
+
+        if likelihood_manager.likelihood_calculation_basis_exists(data['calculation_basis']):
+            return abort(400, "The calculation basis is already used by another Likelihood!")
+
         result_id: int = likelihood_manager.insert_likelihood(data)
 
         created_likelihood: dict = likelihood_manager.get_likelihood(result_id)

@@ -14,19 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module prove all APIBluerpints for ISMS
+This module provides all errors for the ProtectionGoalManager
 """
-from .risk_class_routes import risk_class_blueprint
-from .likelihood_routes import likelihood_blueprint
-from .impact_routes import impact_blueprint
-from .impact_category_routes import impact_category_blueprint
-from .protection_goal_routes import protection_goal_blueprint
+from .protection_goal_manager_errors import (
+    ProtectionGoalManagerError,
+    ProtectionGoalManagerInitError,
+    ProtectionGoalManagerInsertError,
+    ProtectionGoalManagerGetError,
+    ProtectionGoalManagerUpdateError,
+    ProtectionGoalManagerDeleteError,
+    ProtectionGoalManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'risk_class_blueprint',
-    'likelihood_blueprint',
-    'impact_blueprint',
-    'impact_category_blueprint',
-    'protection_goal_blueprint',
+    'ProtectionGoalManagerError',
+    'ProtectionGoalManagerInitError',
+    'ProtectionGoalManagerInsertError',
+    'ProtectionGoalManagerGetError',
+    'ProtectionGoalManagerUpdateError',
+    'ProtectionGoalManagerDeleteError',
+    'ProtectionGoalManagerIterationError',
 ]

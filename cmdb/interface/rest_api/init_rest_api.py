@@ -131,6 +131,7 @@ def register_blueprints(app: BaseCmdbApp):
         likelihood_blueprint,
         impact_blueprint,
         impact_category_blueprint,
+        protection_goal_blueprint,
     )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -170,6 +171,7 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(likelihood_blueprint, url_prefix='/isms/likelihoods')
     app.register_blueprint(impact_blueprint, url_prefix='/isms/impacts')
     app.register_blueprint(impact_category_blueprint, url_prefix='/isms/impact_categories')
+    app.register_blueprint(protection_goal_blueprint, url_prefix='/isms/protection_goals')
 
 
     if cmdb.__MODE__ == 'DEBUG':

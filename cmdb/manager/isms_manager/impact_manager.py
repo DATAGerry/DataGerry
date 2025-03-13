@@ -210,3 +210,26 @@ class ImpactManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise ImpactManagerDeleteError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def impact_calculation_basis_exists(self, calculation_basis: float) -> bool:
+        """
+        Checks if a calculation_basis already exists for an IsmsImpact
+
+        Args:
+            calculation_basis (float): The calculation_basis which should be checked
+
+        Raises:
+            ImpactManagerGetError: If checking calculation_basis failed
+
+        Returns:
+            bool: True if calculation_basis exists, else false
+        """
+        try:
+            result = self.get_one_by({'calculation_basis': calculation_basis})
+
+            return bool(result)
+        except Exception as err:
+            LOGGER.error("[impact_calculation_basis_exists] Exception: %s. Type: %s", err, type(err))
+            raise ImpactManagerGetError(err) from err

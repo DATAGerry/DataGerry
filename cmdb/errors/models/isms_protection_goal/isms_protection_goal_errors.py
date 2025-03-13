@@ -14,33 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of all DocapiRights
+This module contains the classes of all IsmsProtectionGoal errors
 """
-from cmdb.models.right_model.base_right import BaseRight
-from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class DocapiRight(BaseRight):
+class IsmsProtectionGoalError(Exception):
     """
-    Base class for Docapi Rights
-
-    Extends: BaseRight
+    Raised to catch all IsmsProtectionGoal related errors
     """
-    MIN_LEVEL = Levels.PROTECTED
-    PREFIX = f'{BaseRight.PREFIX}.docapi'
+    def __init__(self, err: str):
+        """
+        Raised to catch all IsmsProtectionGoal related errors
+        """
+        super().__init__(err)
 
-    def __init__(self, name: str, level: Levels = Levels.SECURE, description: str = None):
-        super().__init__(level, name, description=description)
+# -------------------------------------------- IsmsProtectionGoal - ERRORS ------------------------------------------- #
 
-
-class DocapiTemplateRight(DocapiRight):
+class IsmsProtectionGoalInitError(IsmsProtectionGoalError):
     """
-    Class for DocapiTemplate Rights
-
-    Extends: DocapiRight
+    Raised when a IsmsProtectionGoal could not be initialised
     """
-    MIN_LEVEL = Levels.PROTECTED
-    PREFIX = f'{DocapiRight.PREFIX}.template'
 
-    def __init__(self, name: str, level: Levels = Levels.SECURE, description: str = None):
-        super().__init__(name, level, description=description)
+
+class IsmsProtectionGoalInitFromDataError(IsmsProtectionGoalError):
+    """
+    Raised when a IsmsProtectionGoal could not be initialised from a dict
+    """
+
+
+class IsmsProtectionGoalToJsonError(IsmsProtectionGoalError):
+    """
+    Raised when a IsmsProtectionGoal could not be transformed into a json compatible dict
+    """

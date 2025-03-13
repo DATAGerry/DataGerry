@@ -21,8 +21,11 @@ from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ExportRight(BaseRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for Export Rights
+
+    Extends: BaseRight
+    """
     MIN_LEVEL = Levels.PROTECTED
     PREFIX = f'{BaseRight.PREFIX}.export'
 
@@ -31,8 +34,11 @@ class ExportRight(BaseRight):
 
 
 class ExportObjectRight(ExportRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Class for exporting objects Rights
+    
+    Extends: ExportRight
+    """
     MIN_LEVEL = Levels.PROTECTED
     PREFIX = f'{ExportRight.PREFIX}.object'
 
@@ -41,8 +47,11 @@ class ExportObjectRight(ExportRight):
 
 
 class ExportTypeRight(ExportRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Class for exporting types Rights
+    
+    Extends: ExportRight
+    """
     MIN_LEVEL = Levels.SECURE
     PREFIX = f'{ExportRight.PREFIX}.type'
 

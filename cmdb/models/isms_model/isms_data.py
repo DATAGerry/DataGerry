@@ -14,19 +14,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module prove all APIBluerpints for ISMS
+This module stores all static data and methods for ISMS
 """
-from .risk_class_routes import risk_class_blueprint
-from .likelihood_routes import likelihood_blueprint
-from .impact_routes import impact_blueprint
-from .impact_category_routes import impact_category_blueprint
-from .protection_goal_routes import protection_goal_blueprint
-# -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'risk_class_blueprint',
-    'likelihood_blueprint',
-    'impact_blueprint',
-    'impact_category_blueprint',
-    'protection_goal_blueprint',
-]
+def get_default_protection_goals() -> list:
+    """
+    All default IsmsProtectionGoals as data. Used when DataGerry is setup
+
+    Returns:
+        list: All default IsmsProtectionGoals as data
+    """
+    return [
+        {
+            'public_id': 1,
+            'name': 'Confidentiality'
+        },
+        {
+            'public_id': 2,
+            'name': 'Integrity'
+        },
+        {
+            'public_id': 3,
+            'name': 'Availability'
+        }
+    ]
