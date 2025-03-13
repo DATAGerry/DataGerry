@@ -13,9 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
-from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder # TODO: IMPORT-FIX
+"""
+Implementation of LookedAccessControlQueryBuilder
+"""
+from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
 from cmdb.security.acl.permission import AccessControlPermission
 # -------------------------------------------------------------------------------------------------------------------- #
 

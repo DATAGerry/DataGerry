@@ -55,8 +55,12 @@ class AuthSettingsDAO:
 
 
     def get_id(self) -> str:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves the unique identifier of the instance
+
+        Returns:
+            str: The unique ID associated with this instance
+        """
         return self._id
 
 
