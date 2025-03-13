@@ -104,7 +104,7 @@ export class LikelihoodModalComponent implements OnInit {
     const payload: Partial<Likelihood> = {
       name: formValue.name,
       description: formValue.description,
-      calculation_basis: formValue.calculation_basis,
+      calculation_basis: parseFloat(formValue.calculation_basis),
       sort: 0
     };
 
