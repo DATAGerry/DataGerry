@@ -210,3 +210,26 @@ class LikelihoodManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise LikelihoodManagerDeleteError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def likelihood_calculation_basis_exists(self, calculation_basis: float) -> bool:
+        """
+        Checks if a calculation_basis already exists for an IsmsLikelihood
+
+        Args:
+            calculation_basis (float): The calculation_basis which should be checked
+
+        Raises:
+            LikelihoodManagerGetError: If checking calculation_basis failed
+
+        Returns:
+            bool: True if calculation_basis exists, else false
+        """
+        try:
+            result = self.get_one_by({'calculation_basis': calculation_basis})
+
+            return bool(result)
+        except Exception as err:
+            LOGGER.error("[likelihood_calculation_basis_exists] Exception: %s. Type: %s", err, type(err))
+            raise LikelihoodManagerGetError(err) from err

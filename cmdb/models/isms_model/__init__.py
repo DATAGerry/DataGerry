@@ -16,15 +16,19 @@
 """
 Provides all ISMS relevant classes
 """
+from .isms_data import get_default_protection_goals
 from .isms_risk_class import IsmsRiskClass
 from .isms_likelihood import IsmsLikelihood
 from .isms_impact import IsmsImpact
 from .isms_impact_category import IsmsImpactCategory
+from .isms_protection_goal import IsmsProtectionGoal
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
+    'get_default_protection_goals',
     'IsmsRiskClass',
     'IsmsLikelihood',
     'IsmsImpact',
     'IsmsImpactCategory',
+    'IsmsProtectionGoal',
 ]

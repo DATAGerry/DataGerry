@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of helper methods for API routes
+"""
 import os
 import base64
 import functools
@@ -38,6 +39,7 @@ from cmdb.interface.rest_api.auth_method_enum import AuthMethod
 from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.token.validator import TokenValidator
 from cmdb.security.token.generator import TokenGenerator
+from cmdb.models.isms_model import get_default_protection_goals, IsmsProtectionGoal
 from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.user_model import CmdbUser
@@ -533,6 +535,13 @@ def init_db_routine(db_name: str) -> None:
 
     # Generate 'General' report category
     current_app.database_manager.create_general_report_category(CmdbReportCategory.COLLECTION)
+
+    # Create the default IsmsProtectionGoals
+    default_protection_goals = get_default_protection_goals()
+
+    for protection_goal in default_protection_goals:
+        current_app.database_manager.insert(IsmsProtectionGoal.COLLECTION, protection_goal)
+        LOGGER.info("Created ProtectionGoal '%s'!", protection_goal['name'])
 
 
 def set_admin_user(user_data: dict, subscription: dict):

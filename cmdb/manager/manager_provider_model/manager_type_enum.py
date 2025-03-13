@@ -49,3 +49,4 @@ class ManagerType(Enum):
     LIKELIHOOD = 'LikelihoodManager'
     IMPACT = 'ImpactManager'
     IMPACT_CATEGORY = 'ImpactCategoryManager'
+    PROTECTION_GOAL = 'ProtectionGoalManager'

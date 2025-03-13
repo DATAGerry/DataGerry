@@ -13,15 +13,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all SystemRights
+"""
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class SystemRight(BaseRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for system Rights
+
+    Extends: BaseRight
+    """
     MIN_LEVEL = Levels.SECURE
     PREFIX = f'{BaseRight.PREFIX}.system'
 

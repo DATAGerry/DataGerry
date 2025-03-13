@@ -29,15 +29,14 @@ LOGGER = logging.getLogger(__name__)
 #                                                   BaseRight - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseRight:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for Rights in DataGerry
+    """
     MIN_LEVEL = Levels.NOTSET
     MAX_LEVEL = Levels.CRITICAL
 
     DEFAULT_MASTER: bool = False
     PREFIX: str = 'base'
-
-    __slots__ = '_level', 'name', 'label', 'description', 'is_master'
 
     def __init__(self, level: Levels, name: str, label: str = None, description: str = None):
         self.level = level
