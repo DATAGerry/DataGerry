@@ -24,6 +24,7 @@ import { TableModule } from 'src/app/layout/table/table.module';
 import { RiskClassModalComponent } from './configure/steps/risk-classes/modal/add-risk-class-modal.component';
 import { LikelihoodModalComponent } from './configure/steps/likelihood/modal/likelihood-modal.component';
 import { ImpactModalComponent } from './configure/steps/impact/modal/impact-modal.component';
+import { ImpactCategoryModalComponent } from './configure/steps/impact-categories/modal/impact-category-modal.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { ImpactModalComponent } from './configure/steps/impact/modal/impact-moda
     RiskCalculationComponent,
     RiskClassModalComponent,
     LikelihoodModalComponent,
-    ImpactModalComponent
+    ImpactModalComponent,
+    ImpactCategoryModalComponent
   ],
   imports: [
     CommonModule,
