@@ -25,6 +25,7 @@ import { RiskClassModalComponent } from './configure/steps/risk-classes/modal/ad
 import { LikelihoodModalComponent } from './configure/steps/likelihood/modal/likelihood-modal.component';
 import { ImpactModalComponent } from './configure/steps/impact/modal/impact-modal.component';
 import { ImpactCategoryModalComponent } from './configure/steps/impact-categories/modal/impact-category-modal.component';
+import { ProtectionGoalModalComponent } from './configure/steps/protection-goals/modal/protection-goal-modal.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ImpactCategoryModalComponent } from './configure/steps/impact-categorie
     RiskClassModalComponent,
     LikelihoodModalComponent,
     ImpactModalComponent,
-    ImpactCategoryModalComponent
+    ImpactCategoryModalComponent,
+    ProtectionGoalModalComponent
   ],
   imports: [
     CommonModule,

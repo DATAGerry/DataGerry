@@ -1,0 +1,41 @@
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h1>Protection Goals</h1>
+    <div>
+      <button type="button" class="btn btn-sm btn-success" (click)="addProtectionGoal()">
+        <i class="fas fa-plus"></i> Add
+      </button>
+    </div>
+  </div>
+  
+  <hr />
+  
+  <cmdb-table
+    [items]="protectionGoals"
+    [columns]="columns"
+    [totalItems]="totalProtectionGoals"
+    [pageSize]="limit"
+    [page]="page"
+    [searchEnabled]="false"
+    [paginationEnabled]="false"
+    [loading]="loading"
+    (pageChange)="onPageChange($event)"
+  >
+  </cmdb-table>
+  
+  <!-- Actions Template -->
+  <ng-template #actionsTemplate let-item="item">
+    <div>
+      <ng-container *ngIf="!isDefaultProtectionGoal(item); else defaultBadge">
+        <a *permissionLink="['base.isms.protectionGoal.edit']" (click)="editProtectionGoal(item)" title="Edit Protection Goal">
+          <i class="far fa-edit icon-edit spacing-right"></i>
+        </a>
+        <a *permissionLink="['base.isms.protectionGoal.delete']" (click)="deleteProtectionGoal(item)" title="Delete Protection Goal">
+          <i class="far fa-trash-alt icon-delete"></i>
+        </a>
+      </ng-container>
+      <ng-template #defaultBadge>
+        <span class="badge bg-secondary">Predefined</span>
+      </ng-template>
+    </div>
+  </ng-template>
+  
