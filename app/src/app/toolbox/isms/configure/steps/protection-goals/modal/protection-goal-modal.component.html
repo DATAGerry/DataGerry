@@ -1,0 +1,41 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+      <span *ngIf="isViewMode">View Protection Goal</span>
+      <span *ngIf="!isViewMode">
+        {{ isEditMode ? (isCopyMode ? 'Copy Protection Goal' : 'Edit Protection Goal') : 'Add Protection Goal' }}
+      </span>
+    </h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+  </div>
+  
+  <div class="modal-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="pgName" class="form-label">
+          Name <span class="text-danger">*</span>
+        </label>
+        <input
+          id="pgName"
+          type="text"
+          class="form-control"
+          formControlName="name"
+          placeholder="Enter protection goal name..."
+        />
+        <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="invalid-feedback d-block">
+          Name is required.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          {{ isViewMode ? 'Close' : 'Cancel' }}
+        </button>
+        <button type="submit" class="btn btn-primary" *ngIf="!isViewMode" [disabled]="isSubmitting || form.invalid">
+          <span *ngIf="!isSubmitting">
+            {{ isEditMode ? (isCopyMode ? 'Copy Protection Goal' : 'Save Changes') : 'Add Protection Goal' }}
+          </span>
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+  
