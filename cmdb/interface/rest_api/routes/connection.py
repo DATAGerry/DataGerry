@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of connection check routes
+"""
 import logging
 from flask import current_app, abort
 
@@ -35,13 +36,15 @@ with current_app.app_context():
 # -------------------------------------------------------------------------------------------------------------------- #
 
 @connection_routes.route('/', methods=['GET', 'HEAD'])
-def connection_response():
+def connection_test_frontend():
     """
     This route is called when {{url}}/rest/ is called
 
     Returns:
         Response: Dict with infos about Datagerry(title, version and connection status of db)
     """
+    LOGGER.debug("Executing connection check from Frontend! ")
+
     try:
         infos = {
             'title': __title__,
@@ -49,9 +52,7 @@ def connection_response():
             'connected': dbm.status()
         }
 
-        api_response = DefaultResponse(infos)
-
-        return api_response.make_response()
+        return DefaultResponse(infos).make_response()
     except Exception as err:
-        LOGGER.debug("[connection_response] Exception: %s", err)
+        LOGGER.debug("[connection_test_frontend] Exception: %s", err)
         abort(500, "Could not connect to REST API!")

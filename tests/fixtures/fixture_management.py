@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module defines pytest fixtures for rights management, user groups, and user access levels.
+"""
 import logging
 from datetime import datetime
 import pytest
@@ -31,29 +32,51 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 @pytest.fixture(scope="session", name="rights_manager")
 def fixture_rights_manager():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides an instance of RightsManager with all available rights.
+    
+    Returns:
+        RightsManager: An instance managing all rights.
+    """
     return RightsManager(rights)
 
 
 @pytest.fixture(scope="session", name="full_access_group")
 def fixture_full_access_group(rights_manager: RightsManager):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates a user group with full access rights.
+    
+    Args:
+        rights_manager (RightsManager): The rights manager instance.
+    
+    Returns:
+        CmdbUserGroup: A user group with full access rights.
+    """
     return CmdbUserGroup(public_id=1, name='full', label='Full', rights=[rights_manager.get_right('base.*')])
 
 
 @pytest.fixture(scope="session", name="none_access_group")
 def fixture_none_access_group():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates a user group with no access rights.
+    
+    Returns:
+        CmdbUserGroup: A user group with no assigned rights.
+    """
     return CmdbUserGroup(public_id=2, name='none', label='None')
 
 
 @pytest.fixture(scope="session", name="full_access_user")
 def fixture_full_access_user(full_access_group: CmdbUserGroup):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates a user with full access rights.
+    
+    Args:
+        full_access_group (CmdbUserGroup): The full access user group.
+    
+    Returns:
+        CmdbUser: A user with full access rights.
+    """
     registration_time = datetime.now()
     return CmdbUser(public_id=1,
                      user_name='full-access-user',
@@ -64,8 +87,15 @@ def fixture_full_access_user(full_access_group: CmdbUserGroup):
 
 @pytest.fixture(scope="session", name="none_access_user")
 def fixture_none_access_user(none_access_group: CmdbUserGroup):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates a user with no access rights.
+    
+    Args:
+        none_access_group (CmdbUserGroup): The no access user group.
+    
+    Returns:
+        CmdbUser: A user with no access rights.
+    """
     registration_time = datetime.now()
     return CmdbUser(public_id=2,
                      user_name='none-access-user',

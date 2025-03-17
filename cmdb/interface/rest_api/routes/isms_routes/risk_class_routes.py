@@ -26,6 +26,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.isms_model import IsmsRiskClass
+from cmdb.models.isms_model.isms_helper import remove_deleted_risk_class_from_matrix
 
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -86,9 +87,7 @@ def insert_isms_risk_class(data: dict, request_user: CmdbUser):
         created_risk_class: dict = risk_class_manager.get_risk_class(result_id)
 
         if created_risk_class:
-            api_response = InsertSingleResponse(created_risk_class, result_id)
-
-            return api_response.make_response()
+            return InsertSingleResponse(created_risk_class, result_id).make_response()
 
         return abort(404, "Could not retrieve the created RiskClass from the database!")
     except HTTPException as http_err:
@@ -249,6 +248,9 @@ def delete_isms_risk_class(public_id: int, request_user: CmdbUser):
             return abort(404, f"The RiskClass with ID:{public_id} was not found!")
 
         risk_class_manager.delete_risk_class(public_id)
+
+        # Remove the risk_class from the RiskMatrix
+        remove_deleted_risk_class_from_matrix(public_id, request_user)
 
         return DeleteSingleResponse(raw=to_delete_risk_class).make_response()
     except HTTPException as http_err:

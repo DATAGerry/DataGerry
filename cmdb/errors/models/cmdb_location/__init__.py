@@ -14,27 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module stores all static data and methods for ISMS
+This module provides all errors for CmdbLocations
 """
+from .cmdb_location_errors import (
+    CmdbLocationError,
+    CmdbLocationInitError,
+    CmdbLocationInitFromDataError,
+    CmdbLocationToJsonError,
+)
+# -------------------------------------------------------------------------------------------------------------------- #
 
-def get_default_protection_goals() -> list:
-    """
-    All default IsmsProtectionGoals as data. Used when DataGerry is setup
-
-    Returns:
-        list: All default IsmsProtectionGoals as data
-    """
-    return [
-        {
-            'public_id': 1,
-            'name': 'Confidentiality'
-        },
-        {
-            'public_id': 2,
-            'name': 'Integrity'
-        },
-        {
-            'public_id': 3,
-            'name': 'Availability'
-        }
-    ]
+__all__ = [
+    'CmdbLocationError',
+    'CmdbLocationInitError',
+    'CmdbLocationInitFromDataError',
+    'CmdbLocationToJsonError',
+]

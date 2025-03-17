@@ -90,3 +90,15 @@ class ProtectionGoalRight(IsmsRight):
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
+
+
+class RiskMatrixRight(IsmsRight):
+    """
+    Base class for IsmsRiskMatrix rights
+    """
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{IsmsRight.PREFIX}.riskMatrix'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)

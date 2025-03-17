@@ -458,6 +458,28 @@ class BaseManager:
         except DocumentUpdateError as err:
             raise BaseManagerUpdateError(err) from err
 
+
+    def update_many_pull(self, criteria: dict, update: dict) -> UpdateResult:
+        """
+        Updates multiple documents in the collection that match the given filter
+
+        Args:
+            criteria (dict): A dictionary specifying the filter criteria for selecting documents to update
+            update (dict): A dictionary containing the update operations to be applied
+            add_to_set (bool, optional): If True, wraps `update` in '$set' unless it already contains update
+                                         operators. Defaults to False
+
+        Raises:
+            BaseManagerUpdateError: If the update operation fails
+
+        Returns:
+            UpdateResult: The result of the update operation, containing metadata about the operation's success
+        """
+        try:
+            return self.dbm.update_many_pull(self.collection, criteria, update)
+        except DocumentUpdateError as err:
+            raise BaseManagerUpdateError(err) from err
+
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
     def delete(self, criteria: dict) -> bool:

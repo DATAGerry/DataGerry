@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of ConfigFileReader
+Module for reading and managing system configuration files
 """
 import os
 import logging
@@ -30,7 +30,6 @@ from cmdb.errors.system_config import (
     ConfigFileNotFound,
     ConfigNotLoaded,
     SectionError,
-    KeySectionError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -40,21 +39,30 @@ LOGGER = logging.getLogger(__name__)
 #                                               ConfigFileReader - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ConfigFileReader(SystemReader):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Configuration file reader for handling system settings.
+
+    This class loads configuration files and retrieves values. If a configuration 
+    file is unavailable, it falls back to environment variables.
+    """
     DEFAULT_CONFIG_FILE_LESS = False
     CONFIG_LOADED = True
     CONFIG_NOT_LOADED = False
 
 
-    def __init__(self, config_name, config_location):
+    def __init__(self, config_name: str, config_location: str):
         """
-        init the system config reader
+        Initializes the configuration reader
+
         Args:
-            config_name: name of config file with extension
-            config_location: directory of config file
+            config_name (str): The name of the configuration file (including extension)
+            config_location (str): The directory where the configuration file is stored
+
+        Raises:
+            ConfigFileNotFound: If the configuration file is not found
         """
         self.config = configparser.ConfigParser()
+
         if config_name is None:
             self.config_file_less = True
             self.config_status = self.CONFIG_LOADED
@@ -72,43 +80,54 @@ class ConfigFileReader(SystemReader):
         self.__envvars = SystemEnvironmentReader()
 
 
-    def add_section(self, section):
+    def add_section(self, section: str) -> None:
         """
-        Add a section to the config parser
+        Adds a new section to the configuration
+
         Notes:
-            Only allowed if no config file was loaded
+            This is only allowed when no configuration file is loaded
+
         Args:
-            section: name of the section
+            section (str): The name of the section to be added
+
+        Raises:
+            ConfigFileSetError: If a configuration file is loaded, manual changes are restricted
         """
         if not self.config_file_less:
-            raise ConfigFileSetError(f"Config file: {self.config_file} was loaded. \
-                                     No manual editing of values are allowed!")
+            raise ConfigFileSetError(f"Config file '{self.config_file}' is loaded. "
+                                     "Manual modifications are not allowed!")
 
         self.config.add_section(section)
 
 
-    def set(self, section, option, value):
+    def set(self, section: str, option: str, value: str) -> None:
         """
-        Set a value inside of a sections
+        Sets a configuration value
+
         Notes:
-            Only allowed if no config file was loaded
+            This is only allowed when no configuration file is loaded
+
         Args:
-            section: name of section
-            option: name of the option
-            value: value of the option
+            section (str): The section where the key-value pair is added
+            option (str): The configuration key
+            value (str): The configuration value
+
+        Raises:
+            ConfigFileSetError: If a configuration file is loaded, manual changes are restricted
         """
         if not self.config_file_less:
-            raise ConfigFileSetError(f"Config file: {self.config_file} was loaded. \
-                                     No manual editing of values are allowed!")
+            raise ConfigFileSetError(f"Config file '{self.config_file}' is loaded. "
+                                     "Manual modifications are not allowed!")
 
         self.config.set(section, option, value)
 
 
-    def setup(self):
+    def setup(self) -> bool:
         """
-        init configuration file
+        Initializes the configuration file
+
         Returns:
-            loading status
+            bool: True if the configuration was loaded successfully, otherwise False
         """
         try:
             self.read_config_file(self.config_file)
@@ -117,105 +136,113 @@ class ConfigFileReader(SystemReader):
             return self.CONFIG_NOT_LOADED
 
 
-    def read_config_file(self, file):
+    def read_config_file(self, file: str):
         """
-        helper function for file reading sets the path directly inside the config attribute
-        Args:
-            file: path to config file
+        Reads the configuration file
 
+        Args:
+            file (str): The path to the configuration file
+
+        Raises:
+            ConfigFileNotFound: If the file does not exist
         """
         if os.path.isfile(file):
             self.config.read(file)
         else:
-            raise ConfigFileNotFound(f"Config file: {self.config_name} was not found!")
+            raise ConfigFileNotFound(f"Config file '{self.config_name}' was not found!")
 
 
-    def get_value(self, name: str, section: str, default: Any = None):
+    def get_value(self, name: str, section: str, default: Any = None) -> Any:
         """
-        get a value from a given section
+        Retrieves a configuration value from a specified section
+
         Args:
-            name: key of value
-            section: section of the value
-            default: default value
+            name (str): The key of the configuration value
+            section (str): The section where the key resides
+            default (Any, optional): A default value if the key is not found
+
         Returns:
-            value
+            Any: The retrieved value, cast to the appropriate type
+
+        Raises:
+            SectionError: If the section does not exist
+            KeyError: If the key is missing and no default is provided
+            ConfigNotLoaded: If the configuration is not loaded
         """
-        # check if environment variable is set
         try:
             return self.__envvars.get_value(name, section)
         except KeyError:
             pass
 
-        # load option from config file
         if self.config_status == self.CONFIG_LOADED:
             if self.config.has_section(section):
                 if name not in self.config[section]:
-                    if default:
+                    if default is not None:
                         return default
                     raise KeyError(name)
-
                 return auto_cast(self.config[section][name])
 
             raise SectionError(f"The section '{section}' does not exist!")
 
-        raise ConfigNotLoaded(f"Config file: {self.config_name} was not loaded correctly!")
+        raise ConfigNotLoaded(f"Config file '{self.config_name}' was not loaded correctly!")
 
 
-    def get_sections(self):
+    def get_sections(self) -> list[str]:
         """
-        get all sections from config
+        Retrieves all sections from the configuration
+
         Returns:
-            list of sections inside a config
+            list: A list of section names
+
+        Raises:
+            ConfigNotLoaded: If the configuration is not loaded
         """
         if self.config_status == self.CONFIG_LOADED:
             return self.config.sections()
 
-        raise ConfigNotLoaded(f"Config file: {self.config_name} was not loaded correctly!")
+        raise ConfigNotLoaded(f"Config file '{self.config_name}' was not loaded correctly!")
 
 
-    def get_all_values_from_section(self, section):
+    def get_all_values_from_section(self, section: str) -> dict:
         """
-        get all values from a section
+        Retrieves all key-value pairs from a given section
+
         Args:
-            section: section name
+            section (str): The section name
 
         Returns:
-            key value dict of all elements inside section
+            dict: A dictionary containing all key-value pairs in the section
+
+        Raises:
+            SectionError: If the section does not exist
+            ConfigNotLoaded: If the configuration is not loaded
         """
-        # load env vars
         section_envvars = {}
         try:
             section_envvars = self.__envvars.get_all_values_from_section(section)
         except Exception:
             pass
 
-        # get section from config
         section_conffile = {}
         if self.config_status == self.CONFIG_LOADED:
-            try:
-                if self.config.has_section(section):
-                    section_conffile = dict(self.config.items(section))
-                else:
-                    raise SectionError(f"The section '{section}' does not exist!")
-            except KeyError as err:
-                #TODO: ERROR-FIX
-                raise KeySectionError(f"The key '{section}' was not found!") from err
+            if self.config.has_section(section):
+                section_conffile = dict(self.config.items(section))
+            else:
+                raise SectionError(f"The section '{section}' does not exist!")
         else:
-            raise ConfigNotLoaded(f"Config file: {self.config_name} was not loaded correctly!")
+            raise ConfigNotLoaded(f"Config file '{self.config_name}' was not loaded correctly!")
 
-        # merge two the config dicts
         section_merged = section_conffile.copy()
         section_merged.update(section_envvars)
+
         return section_merged
 
 
-    def status(self):
+    def status(self) -> bool:
         """
-        checks if config is loaded correctly
-        Returns:
-            True/False statement of loading status
-        """
-        if self.config_status:
-            return self.CONFIG_LOADED
+        Checks if the configuration was successfully loaded
 
-        return self.CONFIG_NOT_LOADED
+        Returns:
+            bool: True if loaded, False otherwise
+        """
+        return self.CONFIG_LOADED if self.config_status else self.CONFIG_NOT_LOADED

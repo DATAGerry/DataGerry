@@ -26,6 +26,7 @@ from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.isms_model import IsmsLikelihood
+from cmdb.models.isms_model.isms_helper import calculate_risk_matrix
 
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -81,7 +82,7 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
             return abort(403, "Only a maximum of 10 Likelihoods can be created!")
 
         try:
-            data['calculation_basis'] = f"{float(data['calculation_basis']):.1f}"
+            data['calculation_basis'] = f"{float(data['calculation_basis']):.2f}"
         except Exception:
             return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
 
@@ -93,9 +94,10 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
         created_likelihood: dict = likelihood_manager.get_likelihood(result_id)
 
         if created_likelihood:
-            api_response = InsertSingleResponse(created_likelihood, result_id)
+            # Calculate the RiskMatrix
+            calculate_risk_matrix(request_user)
 
-            return api_response.make_response()
+            return InsertSingleResponse(created_likelihood, result_id).make_response()
 
         return abort(404, "Could not retrieve the created Likelihood from the database!")
     except HTTPException as http_err:
@@ -217,6 +219,9 @@ def update_isms_likelihood(public_id: int, data: dict, request_user: CmdbUser):
 
         likelihood_manager.update_likelihood(public_id, likelihood)
 
+        # Calculate the RiskMatrix
+        calculate_risk_matrix(request_user)
+
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
         raise http_err
@@ -256,6 +261,9 @@ def delete_isms_likelihood(public_id: int, request_user: CmdbUser):
             return abort(404, f"The Likelihood with ID:{public_id} was not found!")
 
         likelihood_manager.delete_likelihood(public_id)
+
+        # Calculate the RiskMatrix
+        calculate_risk_matrix(request_user)
 
         return DeleteSingleResponse(raw=to_delete_likelihood).make_response()
     except HTTPException as http_err:

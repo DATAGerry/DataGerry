@@ -14,21 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module prove all APIBluerpints for ISMS
+This module contains the classes of all CmdbLocation errors
 """
-from .risk_class_routes import risk_class_blueprint
-from .likelihood_routes import likelihood_blueprint
-from .impact_routes import impact_blueprint
-from .impact_category_routes import impact_category_blueprint
-from .protection_goal_routes import protection_goal_blueprint
-from .risk_matrix_routes import risk_matrix_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'risk_class_blueprint',
-    'likelihood_blueprint',
-    'impact_blueprint',
-    'impact_category_blueprint',
-    'protection_goal_blueprint',
-    'risk_matrix_blueprint',
-]
+class CmdbLocationError(Exception):
+    """
+    Raised to catch all CmdbLocation related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbLocation related errors
+        """
+        super().__init__(err)
+
+# ----------------------------------------------- CmdbLocation - ERRORS ---------------------------------------------- #
+
+class CmdbLocationInitError(CmdbLocationError):
+    """
+    Raised when a CmdbLocation could not be initialised
+    """
+
+
+class CmdbLocationInitFromDataError(CmdbLocationError):
+    """
+    Raised when a CmdbLocation could not be initialised from a dict
+    """
+
+
+class CmdbLocationToJsonError(CmdbLocationError):
+    """
+    Raised when a CmdbLocation could not be transformed into a json compatible dict
+    """

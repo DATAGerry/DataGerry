@@ -14,21 +14,21 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module prove all APIBluerpints for ISMS
+This module provides all errors for the RiskMatrixManager
 """
-from .risk_class_routes import risk_class_blueprint
-from .likelihood_routes import likelihood_blueprint
-from .impact_routes import impact_blueprint
-from .impact_category_routes import impact_category_blueprint
-from .protection_goal_routes import protection_goal_blueprint
-from .risk_matrix_routes import risk_matrix_blueprint
+from .risk_matrix_manager_errors import (
+    RiskMatrixManagerError,
+    RiskMatrixManagerInitError,
+    RiskMatrixManagerInsertError,
+    RiskMatrixManagerUpdateError,
+    RiskMatrixManagerGetError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'risk_class_blueprint',
-    'likelihood_blueprint',
-    'impact_blueprint',
-    'impact_category_blueprint',
-    'protection_goal_blueprint',
-    'risk_matrix_blueprint',
+    'RiskMatrixManagerError',
+    'RiskMatrixManagerInitError',
+    'RiskMatrixManagerInsertError',
+    'RiskMatrixManagerUpdateError',
+    'RiskMatrixManagerGetError',
 ]

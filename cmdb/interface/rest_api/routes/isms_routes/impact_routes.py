@@ -20,12 +20,13 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import ImpactManager
+from cmdb.manager import ImpactManager, ImpactCategoryManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.isms_model import IsmsImpact
+from cmdb.models.isms_model.isms_helper import calculate_risk_matrix
 
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -73,7 +74,8 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
     """
     try:
         impact_manager: ImpactManager = ManagerProvider.get_manager(ManagerType.IMPACT, request_user)
-
+        impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
+                                                                                     request_user)
         # There is a Limit of 10 Impact classes
         impact_count = impact_manager.count_impacts()
 
@@ -81,7 +83,7 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
             return abort(403, "Only a maximum of 10 Impacts can be created!")
 
         try:
-            data['calculation_basis'] = f"{float(data['calculation_basis']):.1f}"
+            data['calculation_basis'] = f"{float(data['calculation_basis']):.2f}"
         except Exception:
             return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
 
@@ -93,9 +95,13 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         created_impact: dict = impact_manager.get_impact(result_id)
 
         if created_impact:
-            api_response = InsertSingleResponse(created_impact, result_id)
+            # Update all IsmsImpactCategories with new IsmsImpact
+            impact_category_manager.add_new_impact_to_categories(result_id)
 
-            return api_response.make_response()
+            # Calculate the RiskMatrix
+            calculate_risk_matrix(request_user)
+
+            return InsertSingleResponse(created_impact, result_id).make_response()
 
         return abort(404, "Could not retrieve the created Impact from the database!")
     except HTTPException as http_err:
@@ -217,6 +223,9 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
 
         impact_manager.update_impact(public_id, impact)
 
+        # Calculate the RiskMatrix
+        calculate_risk_matrix(request_user)
+
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
         raise http_err
@@ -249,6 +258,8 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
     """
     try:
         impact_manager: ImpactManager = ManagerProvider.get_manager(ManagerType.IMPACT, request_user)
+        impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
+                                                                                     request_user)
 
         to_delete_impact = impact_manager.get_impact(public_id)
 
@@ -256,6 +267,12 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
             return abort(404, f"The Impact with ID:{public_id} was not found!")
 
         impact_manager.delete_impact(public_id)
+
+        # Delete the IsmsImpact from all the IsmsImpactCategories
+        impact_category_manager.remove_deleted_impact_from_categories(public_id)
+
+        # Calculate the RiskMatrix
+        calculate_risk_matrix(request_user)
 
         return DeleteSingleResponse(to_delete_impact).make_response()
     except HTTPException as http_err:

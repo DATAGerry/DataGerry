@@ -14,8 +14,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module defines tests for the CMDB application and REST API initialization.
+"""
 import logging
 
 from cmdb import __title__
@@ -27,18 +28,25 @@ LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def test_start_routine():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Tests if the CMDB application title is correctly set
+    """
     assert __title__ == 'DATAGERRY'
 
 
 class TestRestAPI:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Tests for the REST API initialization.
+    """
 
     def test_rest_api_start(self, database_manager, rest_api):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Verifies that the REST API initializes correctly and returns the expected title.
+        
+        Args:
+            database_manager (MongoDatabaseManager): Instance of the database manager.
+            rest_api: The REST API client fixture.
+        """
         api = create_rest_api(database_manager)
         assert isinstance(api, BaseCmdbApp)
         assert rest_api.get('/').get_json()['title'] == __title__

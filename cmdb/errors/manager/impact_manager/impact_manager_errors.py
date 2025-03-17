@@ -61,5 +61,5 @@ class ImpactManagerDeleteError(ImpactManagerError):
 
 class ImpactManagerIterationError(ImpactManagerError):
     """
-    Raised when ImpactManager could not iterate over IsmsImpact
+    Raised when ImpactManager could not iterate over IsmsImpacts
     """

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module defines pytest fixtures for setting up and managing the REST API test client.
+"""
 import logging
 import pytest
 from cmdb.interface.cmdb_app import BaseCmdbApp
@@ -28,8 +29,16 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 @pytest.fixture(scope="session")
 def rest_api(database_manager, full_access_user):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides a configured test client for the REST API.
+    
+    Args:
+        database_manager (MongoDatabaseManager): Instance of the database manager.
+        full_access_user: A user with full access permissions for testing.
+    
+    Yields:
+        RestAPITestClient: A test client instance for making API requests.
+    """
     api = create_rest_api(database_manager)
     api.test_client_class = RestAPITestClient
 
@@ -39,8 +48,14 @@ def rest_api(database_manager, full_access_user):
 
 @pytest.fixture(scope="session", autouse=True)
 def app_context():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides an application context for testing.
+    
+    This ensures that the Flask application context is available during tests.
+    
+    Yields:
+        None
+    """
     current_app = BaseCmdbApp(__name__)
     with current_app.app_context():
         yield
