@@ -14,12 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of CmdbLocation, which is representing
-a location in Datagarry
+This module contains the implementation of CmdbLocation, which is representing a location in Datagarry
 """
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
+
+from cmdb.errors.models.cmdb_location import (
+    CmdbLocationInitError,
+    CmdbLocationInitFromDataError,
+    CmdbLocationToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -29,15 +34,9 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbLocation(CmdbDAO):
     """
-    The CMDB location is the basic data wrapper for storing and
-    holding locations within the CMDB.
+    The CMDBLocation is the basic data wrapper for storing and holding locations within the database
 
-    Attributes:
-        COLLECTION (str):    Name of the database collection.
-        MODEL (Model):              Name of the DAO.
-        DEFAULT_VERSION (str):      The default "starting" version number.
-        SCHEMA (dict):              The validation schema for this DAO.
-        INDEX_KEYS (list):          List of index keys for the database.
+    Extends: CmdbDAO
     """
     COLLECTION = 'framework.locations'
     MODEL = 'Location'
@@ -75,97 +74,102 @@ class CmdbLocation(CmdbDAO):
         },
     }
 
-# ---------------------------------------------------- CONSTRUCTOR --------------------------------------------------- #
 
-    def __init__(self, name: str,
+    #pylint: disable=too-many-positional-arguments
+    def __init__(self,
+                 public_id: int,
+                 name: str,
                  parent: int,
                  object_id: int,
                  type_id: int,
                  type_label: str,
                  type_icon: str = "fas fa-cube",
-                 type_selectable = True,
-                 **kwargs):
+                 type_selectable: bool = True):
         """
-        Initialisation of location
+        Initialises a CmdbLocation
 
         Args:
-            name (str): name of location displayed in location tree
-            parent (int): id of parent location
-            object_id (int): id of object who has this parent
-            type_id (int): id of type for which this location is set
-            type_label (str): label of type for which this location is set
-            type_icon (str): icon of type for which this location is set, default is 'fas fa-cube'
-            type_selectable (bool): sets if this type is selectable as a parent for other locations, default is yes
+            public_id (int): public_id of the CmdbLocation
+            name (str): name of the CmdbLocation displayed in location tree
+            parent (int): public_id of parent CmdbLocation
+            object_id (int): public_id of CmdbObject who has this CmdbLocation
+            type_id (int): public_id of CmdbType for which this CmdbLocation is set
+            type_label (str): label of CmdbType for which this location is set
+            type_icon (str): icon of CmdbType for which this CmdbLocation is set, default is 'fas fa-cube'
+            type_selectable (bool): sets if this CmdbType is selectable as a parent for other CmdbLocations.
+                                    Defaults to True
+
+        Raises:
+            CmdbLocationInitError: If the CmdbLocation could not be initialised
         """
-        self.name: str = name
-        self.parent: int = parent
-        self.object_id: int = object_id
-        self.type_id: int = type_id
-        self.type_label: str = type_label
-        self.type_icon: str = type_icon
-        self.type_selectable: bool = type_selectable
-        super().__init__(**kwargs)
+        try:
+            self.name: str = name
+            self.parent: int = parent
+            self.object_id: int = object_id
+            self.type_id: int = type_id
+            self.type_label: str = type_label
+            self.type_icon: str = type_icon
+            self.type_selectable: bool = type_selectable
+
+            super().__init__(public_id=public_id)
+        except Exception as err:
+            raise CmdbLocationInitError(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
     @classmethod
     def from_data(cls, data: dict) -> "CmdbLocation":
         """
-        Returns an Instance of CmdbLocation
+        Initialises a CmdbLocation from a dict
 
         Args:
-            data (dict): Dict which contains parameters to initiate a CmdbLocation 
+            data (dict): Data with which the CmdbLocation should be initialised
+
+        Raises:
+            CmdbLocationInitFromDataError: If the initialisation with the given data fails
 
         Returns:
-            (CmdbLocation): Instance of CmdbLocation with data from dict
+            CmdbLocation: CmdbLocation with the given data
         """
-        return cls(
-            public_id = data.get('public_id'),
-            name = data.get('name'),
-            parent = data.get('parent'),
-            object_id = data.get('object_id'),
-            type_id = data.get('type_id'),
-            type_label = data.get('type_label'),
-            type_icon = data.get('type_icon', 'fas fa-cube'),
-            type_selectable = data.get('type_selectable', True),
-        )
+        try:
+            return cls(
+                public_id = data.get('public_id'),
+                name = data.get('name'),
+                parent = data.get('parent'),
+                object_id = data.get('object_id'),
+                type_id = data.get('type_id'),
+                type_label = data.get('type_label'),
+                type_icon = data.get('type_icon', 'fas fa-cube'),
+                type_selectable = data.get('type_selectable', True),
+            )
+        except Exception as err:
+            raise CmdbLocationInitFromDataError(err) from err
 
 
     @classmethod
     def to_json(cls, instance: "CmdbLocation") -> dict:
         """
-        Convert a CmdbLocation instance to json conform data
+        Converts a CmdbLocation into a json compatible dict
 
         Args:
-            instance (CmdbLocation): Instance of CmdbLocation
+            instance (CmdbLocation): The CmdbLocation which should be converted
+
+        Raises:
+            CmdbLocationToJsonError: If the CmdbLocation could not be converted to a json compatible dict
 
         Returns:
-            (dict): Json conform dict 
+            dict: Json compatible dict of the CmdbLocation values
         """
-        return {
-            'public_id': instance.get_public_id(),
-            'name': instance.name,
-            'parent': instance.parent,
-            'object_id': instance.object_id,
-            'type_id': instance.type_id,
-            'type_label': instance.type_label,
-            'type_icon': instance.type_icon,
-            'type_selectable': instance.type_selectable,
-        }
-
-
-    @classmethod
-    def to_data(cls, instance: "CmdbLocation") -> dict:
-        """
-        Dict representation of a CmdbLocation
-        """
-        return {
-            'public_id': instance['public_id'],
-            'name': instance['name'],
-            'parent': instance['parent'],
-            'object_id': instance['object_id'],
-            'type_id': instance['type_id'],
-            'type_label': instance['type_label'],
-            'type_icon': instance['type_icon'],
-            'type_selectable': instance['type_selectable'],
-        }
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'name': instance.name,
+                'parent': instance.parent,
+                'object_id': instance.object_id,
+                'type_id': instance.type_id,
+                'type_label': instance.type_label,
+                'type_icon': instance.type_icon,
+                'type_selectable': instance.type_selectable,
+            }
+        except Exception as err:
+            raise CmdbLocationToJsonError(err) from err

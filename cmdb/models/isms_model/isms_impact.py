@@ -43,7 +43,8 @@ class IsmsImpact(CmdbDAO):
     # pylint: disable=R0801
     SCHEMA: dict = {
         'public_id': {
-            'type': 'integer'
+            'type': 'integer',
+            'min': 1,
         },
         'name': {
             'type': 'string',
@@ -52,6 +53,7 @@ class IsmsImpact(CmdbDAO):
         },
         'calculation_basis': {
             'type': 'float',
+            'min': 0.0,
             'required': True,
             'empty': False
         },
@@ -74,7 +76,7 @@ class IsmsImpact(CmdbDAO):
             description (str): The description of the IsmsImpact
 
         Raises:
-            IsmsImpactInitError: When the IsmsImpact could not be initialised
+            IsmsImpactInitError: If the IsmsImpact could not be initialised
         """
         try:
             self.name = name

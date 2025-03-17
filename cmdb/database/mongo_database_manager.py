@@ -413,14 +413,33 @@ class MongoDatabaseManager:
             update_operator = "$addToSet" if add_to_set else "$set"
             formatted_data = {update_operator: update}
 
-            result = self.get_collection(collection).update_many(criteria, formatted_data)
+            return self.get_collection(collection).update_many(criteria, formatted_data)
+        except Exception as err:
+            raise DocumentUpdateError(f"Failed to update documents in '{collection}': {err}") from err
 
-            if result.modified_count == 0:
-                LOGGER.warning(
-                    "[update_many] No documents matched criteria: %s in collection: %s", criteria, collection
-                )
 
-            return result
+    #TODO: REFACTOR-FIX (merge with update many and allow different operators)
+    def update_many_pull(self, collection: str, criteria: dict, update: dict) -> UpdateResult:
+        """
+        Updates multiple documents that match the filter in a collection
+
+        Args:
+            collection (str): Name of database collection
+            criteria (dict): The filter used to match the documents for updating
+            update (dict): The modifications to apply
+            add_to_set(bool): If True, uses '$addToSet' to add values to an array without duplicates.
+                              If False, uses '$set' to update fields. Defaults to False.
+
+        Raises:
+            DocumentUpdateError: If the update operation fails
+
+        Returns:
+            UpdateResult: The result of the update operation
+        """
+        try:
+            formatted_data = {"$pull": update}
+
+            return self.get_collection(collection).update_many(criteria, formatted_data)
         except Exception as err:
             raise DocumentUpdateError(f"Failed to update documents in '{collection}': {err}") from err
 

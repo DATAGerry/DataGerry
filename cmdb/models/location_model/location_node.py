@@ -20,12 +20,18 @@ The implementation of the managers used is always realized using the respective 
 """
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
+
 LOGGER = logging.getLogger(__name__)
 
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                 LocationNode - CLASS                                                 #
+# -------------------------------------------------------------------------------------------------------------------- #
 class LocationNode:
     """
     Represents a node in the location tree
     """
+    #TODO: DOCUMENT-FIX (Document whole class)
+    #TODO: REFACTOR-FIX (Specific errors)
     def __init__(self, params: dict):
         self.public_id: int = params['public_id']
         self.name: str = params['name']

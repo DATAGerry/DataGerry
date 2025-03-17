@@ -1133,13 +1133,13 @@ def delete_cmdb_object(public_id: int, request_user: CmdbUser):
             child_location = None
 
             if current_location:
-                child_location = locations_manager.get_one_by({'parent': current_location.public_id})
+                child_location = locations_manager.get_one_by({'parent': current_location['public_id']})
 
             if child_location and len(child_location) > 0:
                 return abort(405, "The Location of this Object has child Locations!")
 
             if current_location:
-                locations_manager.delete({'public_id':current_location.public_id})
+                locations_manager.delete_location(current_location['public_id'])
         except Exception as error:
             LOGGER.error(
                 "[delete_cmdb_object] Locations Exception: %s. Type: %s", error, type(error), exc_info=True
@@ -1263,14 +1263,14 @@ def delete_cmdb_object_with_child_locations(public_id: int, request_user: CmdbUs
             iteration_result: IterationResult[CmdbLocation] = locations_manager.iterate(build_params)
 
             all_locations: list[dict] = [location_.__dict__ for location_ in iteration_result.results]
-            all_children = locations_manager.get_all_children(current_location.public_id, all_locations)
+            all_children = locations_manager.get_all_children(current_location['public_id'], all_locations)
 
             # delete all child locations
             for child in all_children:
-                locations_manager.delete({'public_id':child['public_id']})
+                locations_manager.delete_location(child['public_id'])
 
             # delete the current object and its location
-            locations_manager.delete({'public_id':current_location.public_id})
+            locations_manager.delete_location(current_location['public_id'])
 
             deleted = objects_manager.delete_object(public_id, request_user, permission=AccessControlPermission.DELETE)
 
@@ -1364,14 +1364,14 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
             iteration_result: IterationResult[CmdbLocation] = locations_manager.iterate(builder_params)
 
             all_locations: list[dict] = [location_.__dict__ for location_ in iteration_result.results]
-            all_children_locations = locations_manager.get_all_children(current_location.public_id, all_locations)
+            all_children_locations = locations_manager.get_all_children(current_location['public_id'], all_locations)
 
             children_object_ids = []
 
             # delete all child locations and extract their corresponding object_ids
             for child in all_children_locations:
                 children_object_ids.append(child['object_id'])
-                locations_manager.delete({'public_id':child['public_id']})
+                locations_manager.delete_location(child['public_id'])
 
             # # delete the objects of child locations
             for child_object_id in children_object_ids:
@@ -1384,7 +1384,7 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
                                                 object_relation_logs_manager)
 
             # # delete the current object and its location
-            locations_manager.delete({'public_id':current_location.public_id})
+            locations_manager.delete_location(current_location['public_id'])
             deleted = objects_manager.delete_object(public_id, request_user, AccessControlPermission.DELETE)
 
             # Handle corresponding CmdbObjectRelations

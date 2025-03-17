@@ -80,12 +80,12 @@ class RelationsManager(BaseManager):
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-    def insert_relation(self, relation: dict) -> int:
+    def insert_relation(self, relation: Union[CmdbRelation, dict]) -> int:
         """
         Insert a CmdbRelation into the database
 
         Args:
-            relation (dict): Raw data of the CmdbRelation
+            relation (Union[CmdbRelation, dict]): Raw data of the CmdbRelation
 
         Raises:
             RelationsManagerInsertError: When a CmdbRelation could not be inserted into the database

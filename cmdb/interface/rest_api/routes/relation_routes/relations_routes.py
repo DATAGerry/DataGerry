@@ -89,7 +89,7 @@ def insert_cmdb_relation(data: dict, request_user: CmdbUser):
         raise http_err
     except RelationsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_relation] RelationsManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new Relation in the database!")
+        return abort(400, "Failed to insert the new Relation in the database!")
     except RelationsManagerGetError as err:
         LOGGER.error("[insert_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
         return abort(400, "Failed to retrieve the created Relation from the database!")

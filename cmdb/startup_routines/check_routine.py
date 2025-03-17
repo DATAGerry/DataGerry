@@ -124,7 +124,7 @@ class CheckRoutine:
                     root_location: CmdbLocation = self.dbm.find_one(collection.COLLECTION, 1)
 
                     if root_location:
-                        if validate_root_location(CmdbLocation.to_data(root_location)):
+                        if validate_root_location(CmdbLocation.to_json(root_location)):
                             LOGGER.info("CHECK: Root Location valid")
                         else:
                             LOGGER.info("CHECK: Root Location invalalid => Fixing the Issue!")

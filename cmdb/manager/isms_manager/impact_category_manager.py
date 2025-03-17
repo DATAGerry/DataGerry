@@ -196,3 +196,38 @@ class ImpactCategoryManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise ImpactCategoryManagerDeleteError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def add_new_impact_to_categories(self, new_impact_id: int) -> None:
+        """
+        Adds the new IsmsImpact entry to all IsmsImpactCategories
+
+        Args:
+            new_impact_id (int): public_id of the newly created IsmsImpact
+        """
+        update = {
+            "impact_descriptions": {
+                "impact_id": new_impact_id,
+                "value": ""
+            }
+        }
+
+        self.update_many({}, update, add_to_set=True)
+
+
+    def remove_deleted_impact_from_categories(self, deleted_impact_id: int) -> None:
+        """
+        Removes the IsmsImpact entry from all IsmsImpactCategories
+
+        Args:
+            new_impact_id (int): public_id of the deleted IsmsImpact
+        """
+        update = {
+            "impact_descriptions": {
+                "impact_id": {"$eq": deleted_impact_id}
+            }
+        }
+
+        # Call update_many_pull to remove the references in all ImpactCategory documents
+        self.update_many_pull({}, update)

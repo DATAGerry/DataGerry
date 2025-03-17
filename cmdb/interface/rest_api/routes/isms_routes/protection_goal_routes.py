@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of all API routes for IsmsProtectionGoals
+Implementation of all API routes for the IsmsProtectionGoals
 """
 import logging
 from flask import request, abort
@@ -51,7 +51,7 @@ from cmdb.errors.manager.protection_goal_manager import (
 
 LOGGER = logging.getLogger(__name__)
 
-protection_goal_blueprint = APIBlueprint('protection_goals', __name__)
+protection_goal_blueprint = APIBlueprint('protection_goal', __name__)
 
 # ---------------------------------------------------- CRUD-CREATE --------------------------------------------------- #
 
@@ -82,9 +82,7 @@ def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
         created_protection_goal: dict = protection_goal_manager.get_protection_goal(result_id)
 
         if created_protection_goal:
-            api_response = InsertSingleResponse(created_protection_goal, result_id)
-
-            return api_response.make_response()
+            return InsertSingleResponse(created_protection_goal, result_id).make_response()
 
         return abort(404, "Could not retrieve the created ProtectionGoal from the database!")
     except HTTPException as http_err:
@@ -202,6 +200,9 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
         UpdateSingleResponse: The new data of the IsmsProtectionGoal
     """
     try:
+        if public_id in [1,2,3]:
+            return abort(400, "The predefined ProtectionGoals can not be edited!")
+
         protection_goal_manager: ProtectionGoalManager = ManagerProvider.get_manager(
                                                                             ManagerType.PROTECTION_GOAL,
                                                                             request_user
@@ -248,7 +249,7 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
     """
     try:
         if public_id in [1,2,3]:
-            return abort(405, "The default ProtectionGoals can not be deleted!")
+            return abort(400, "The predefined ProtectionGoals can not be deleted!")
 
 
         protection_goal_manager: ProtectionGoalManager = ManagerProvider.get_manager(

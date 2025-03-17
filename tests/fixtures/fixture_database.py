@@ -13,8 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module defines pytest fixtures for MongoDB connection and database management.
+These fixtures provide necessary parameters and connections for testing purposes.
+"""
 import pytest
 
 from cmdb.database import MongoConnector, MongoDatabaseManager
@@ -22,8 +24,15 @@ from cmdb.database import MongoConnector, MongoDatabaseManager
 
 @pytest.fixture(scope="session", name="mongodb_parameters")
 def fixture_mongodb_parameters(request):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Retrieves MongoDB connection parameters from pytest command-line options
+    
+    Args:
+        request (pytest.FixtureRequest): The pytest request object
+    
+    Returns:
+        tuple: A tuple containing the MongoDB host, port, and database name
+    """
     return request.config.getoption('--mongodb-host'), \
            request.config.getoption('--mongodb-port'), \
            request.config.getoption('--mongodb-database')
@@ -31,23 +40,44 @@ def fixture_mongodb_parameters(request):
 
 @pytest.fixture(scope="session")
 def database_name(mongodb_parameters: tuple):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides the name of the test database
+    
+    Args:
+        mongodb_parameters (tuple): MongoDB connection parameters
+    
+    Returns:
+        str: The name of the MongoDB test database
+    """
     return mongodb_parameters[2]
 
 
 @pytest.fixture(scope="session")
 def connector(mongodb_parameters: tuple):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates and returns a MongoConnector instance
+    
+    Args:
+        mongodb_parameters (tuple): MongoDB connection parameters
+    
+    Returns:
+        MongoConnector: An instance of MongoConnector configured for testing
+    """
     host, port, database = mongodb_parameters
     return MongoConnector(host, port, database)
 
 
 @pytest.fixture(scope="session")
 def database_manager(mongodb_parameters: tuple):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates and returns a MongoDatabaseManager instance
+    
+    Args:
+        mongodb_parameters (tuple): MongoDB connection parameters
+    
+    Returns:
+        MongoDatabaseManager: An instance of MongoDatabaseManager configured for testing
+    """
     host, port, database = mongodb_parameters
 
     return MongoDatabaseManager(host, port, database)

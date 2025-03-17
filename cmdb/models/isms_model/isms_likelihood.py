@@ -43,7 +43,8 @@ class IsmsLikelihood(CmdbDAO):
     # pylint: disable=R0801
     SCHEMA: dict = {
         'public_id': {
-            'type': 'integer'
+            'type': 'integer',
+            'min': 1,
         },
         'name': {
             'type': 'string',
@@ -52,6 +53,7 @@ class IsmsLikelihood(CmdbDAO):
         },
         'calculation_basis': {
             'type': 'float',
+            'min': 0.0,
             'required': True,
             'empty': False
         },

@@ -44,6 +44,7 @@ from cmdb.manager.isms_manager.likelihood_manager import LikelihoodManager
 from cmdb.manager.isms_manager.impact_manager import ImpactManager
 from cmdb.manager.isms_manager.impact_category_manager import ImpactCategoryManager
 from cmdb.manager.isms_manager.protection_goal_manager import ProtectionGoalManager
+from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -75,4 +76,5 @@ __all__ = [
     'ImpactManager',
     'ImpactCategoryManager',
     'ProtectionGoalManager',
+    'RiskMatrixManager',
 ]

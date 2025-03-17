@@ -285,7 +285,7 @@ def update_cmdb_type(public_id: int, data: dict, request_user: CmdbUser):
 
             location: CmdbLocation
             for location in locations_with_type:
-                locations_manager.update({'public_id':location.public_id}, loc_data)
+                locations_manager.update_location(location.public_id, loc_data, False)
 
             # check and update all multi data sections for the type if required
             updated_objects = types_manager.handle_mutli_data_sections(CmdbType.from_data(unchanged_type),

@@ -80,9 +80,7 @@ def insert_isms_impact_category(data: dict, request_user: CmdbUser):
         created_impact: dict = impact_category_manager.get_impact_category(result_id)
 
         if created_impact:
-            api_response = InsertSingleResponse(created_impact, result_id)
-
-            return api_response.make_response()
+            return InsertSingleResponse(created_impact, result_id).make_response()
 
         return abort(404, "Could not retrieve the created ImpactCategory from the database!")
     except HTTPException as http_err:

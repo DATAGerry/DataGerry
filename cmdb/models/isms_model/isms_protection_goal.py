@@ -43,7 +43,8 @@ class IsmsProtectionGoal(CmdbDAO):
 
     SCHEMA: dict = {
         'public_id': {
-            'type': 'integer'
+            'type': 'integer',
+            'min': 1,
         },
         'name': {
             'type': 'string',

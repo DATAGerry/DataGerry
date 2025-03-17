@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides a test suite and custom Flask test client for REST API testing
+"""
 import logging
 from flask.testing import FlaskClient
 
@@ -25,16 +26,29 @@ LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 class RestAPITestSuite:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base test suite for REST API tests
+    
+    Attributes:
+        COLLECTION (str): Placeholder for collection name
+        ROUTE_URL (str): Placeholder for the route URL
+    """
     COLLECTION: str = NotImplemented
     ROUTE_URL: str = NotImplemented
 
 
 class RestAPITestClient(FlaskClient):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Custom test client for REST API testing with authentication support
+    """
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the test client with authentication handling
+        
+        Args:
+            database_manager: Database manager instance for token generation
+            default_auth_user (CmdbUser, optional): Default authenticated user
+        """
         self.database_manager = kwargs.pop('database_manager')
         self._token_generator = TokenGenerator(self.database_manager)
         token = None
@@ -54,8 +68,15 @@ class RestAPITestClient(FlaskClient):
 
 
     def inject_auth(self, kwargs: dict) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Injects authentication headers into request parameters
+        
+        Args:
+            kwargs (dict): Request keyword arguments
+        
+        Returns:
+            dict: Updated request keyword arguments with authentication headers
+        """
         if kwargs.get('unauthorized', None):
             kwargs['environ_overrides'] = {
                 'HTTP_AUTHORIZATION': ''
@@ -73,8 +94,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def get(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends a GET request with authentication handling
+        """
         kw['method'] = 'GET'
         if not kw.get('content_type', None):
             kw['content_type'] = 'application/json'
@@ -84,8 +106,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def patch(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends a PATCH request with authentication handling
+        """
         kw['method'] = 'PATCH'
 
         if not kw.get('content_type', None):
@@ -97,8 +120,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def post(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends a POST request with authentication handling
+        """
         kw['method'] = 'POST'
 
         if not kw.get('content_type', None):
@@ -110,8 +134,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def head(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends a HEAD request with authentication handling
+        """
         kw['method'] = 'HEAD'
 
         if not kw.get('content_type', None):
@@ -123,8 +148,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def put(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends a PUT request with authentication handling
+        """
         kw['method'] = 'PUT'
 
         if not kw.get('content_type', None):
@@ -136,8 +162,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def delete(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends a DELETE request with authentication handling
+        """
         kw['method'] = 'DELETE'
 
         if not kw.get('content_type', None):
@@ -149,8 +176,9 @@ class RestAPITestClient(FlaskClient):
 
 
     def options(self, *args, **kw):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Sends an OPTIONS request with authentication handling
+        """
         kw['method'] = 'OPTIONS'
 
         if not kw.get('content_type', None):

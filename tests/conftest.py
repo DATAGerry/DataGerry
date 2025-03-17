@@ -14,8 +14,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provides pytest configuration and database setup for testing.
+It includes command-line options for MongoDB connection settings and a fixture
+for preparing the database before running tests.
+"""
 import logging
 from datetime import datetime
 import pytest
@@ -31,14 +34,20 @@ from cmdb.security.key.generator import KeyGenerator
 from cmdb.models.user_management_constants import __FIXED_GROUPS__
 from cmdb.models.user_model import CmdbUser
 
-# from cmdb.errors.database import DatabaseNotFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def pytest_addoption(parser):
-    """Adds command line options"""
+    """
+    Adds custom command-line options for pytest
+
+    These options allow configuring the MongoDB connection details for testing
+    
+    Args:
+        parser (pytest.Parser): The pytest argument parser
+    """
     parser.addoption(
         '--mongodb-host',
         action='store',
@@ -68,8 +77,16 @@ pytest_plugins = [
 
 @pytest.fixture(scope="session", autouse=True)
 def preset_database(database_manager: MongoDatabaseManager, database_name: str):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Prepares the database before running tests
+    
+    This fixture resets the test database, generates cryptographic keys,
+    creates predefined user groups, and inserts an admin user.
+    
+    Args:
+        database_manager (MongoDatabaseManager): Instance of the database manager
+        database_name (str): Name of the test database
+    """
     try:
         database_manager.drop_database(database_name)
     except Exception:

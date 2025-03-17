@@ -18,6 +18,7 @@ Implementation of all API routes for CmdbLocations
 """
 import logging
 from flask import request, current_app, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -44,12 +45,14 @@ from cmdb.interface.rest_api.responses import (
     DefaultResponse,
 )
 
-from cmdb.errors.manager import (
-    BaseManagerInsertError,
-    BaseManagerIterationError,
-    BaseManagerGetError,
-    BaseManagerUpdateError,
-    BaseManagerDeleteError,
+from cmdb.errors.manager.types_manager import TypesManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
+from cmdb.errors.manager.locations_manager import (
+    LocationsManagerInsertError,
+    LocationsManagerGetError,
+    LocationsManagerUpdateError,
+    LocationsManagerDeleteError,
+    LocationsManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -64,62 +67,80 @@ location_blueprint = APIBlueprint('locations', __name__)
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 @location_blueprint.parse_request_parameters()
-def create_location(params: dict, request_user: CmdbUser):
+# @location_blueprint.validate(CmdbLocation.SCHEMA)
+def insert_cmdb_location(params: dict, request_user: CmdbUser):
     """
-    Creates a location in the database
+    HTTP `POST` route to insert a CmdbLocation into the database
 
     Args:
-        params (dict): location parameters
-        request_user (CmdbUser): User requesting the creation of a location
+        data (CmdbRelation.SCHEMA): Data of the CmdbRelation which should be inserted
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        int: public_id of the created location
+        InsertSingleResponse: The new CmdbRelation and its public_id
     """
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
-
-    location_creation_params= {}
-
-    location_creation_params['object_id'] = int(params['object_id'])
-    location_creation_params['parent'] = int(params['parent'])
-    location_creation_params['type_id'] = int(params['type_id'])
-
-    object_type = types_manager.get_type(location_creation_params['type_id'])
-    object_type = CmdbType.from_data(object_type)
-
-    location_creation_params['type_label'] = object_type.label
-    location_creation_params['type_icon'] = object_type.get_icon()
-    location_creation_params['type_selectable'] = object_type.selectable_as_parent
-
-    location_creation_params['public_id'] = locations_manager.get_next_public_id()
-
-    if params['name'] == '' or params['name'] is None:
-        current_object = objects_manager.get_object(int(params['object_id']))
-        current_object = CmdbObject.from_data(current_object)
-
-        if current_app.cloud_mode:
-            current_app.database_manager.connector.set_database(request_user.database)
-
-        rendered_list = RenderList([current_object],
-                                   request_user,
-                                   True,
-                                   objects_manager).render_result_list(True)
-
-        params['name'] = rendered_list[0]['summary_line']
-
-    location_creation_params['name'] =  params['name'] if params['name'] not in ['', None]\
-                                                       else f"ObjectID: {location_creation_params['object_id']}"
-
     try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+
+        location_creation_params= {}
+
+        location_creation_params['object_id'] = int(params['object_id'])
+        location_creation_params['parent'] = int(params['parent'])
+        location_creation_params['type_id'] = int(params['type_id'])
+
+        object_type = types_manager.get_type(location_creation_params['type_id'])
+
+        if not object_type:
+            return abort(404, "The Type of the linked Object was not found in the database!")
+
+        object_type = CmdbType.from_data(object_type)
+
+        location_creation_params['type_label'] = object_type.label
+        location_creation_params['type_icon'] = object_type.get_icon()
+        location_creation_params['type_selectable'] = object_type.selectable_as_parent
+
+        location_creation_params['public_id'] = locations_manager.get_next_public_id()
+
+        if params['name'] == '' or params['name'] is None:
+            current_object = objects_manager.get_object(int(params['object_id']))
+
+            if not current_object:
+                return abort(404, "The linked Object was not found in the database!")
+
+            current_object = CmdbObject.from_data(current_object)
+
+            if current_app.cloud_mode:
+                current_app.database_manager.connector.set_database(request_user.database)
+
+            rendered_list = RenderList([current_object],
+                                    request_user,
+                                    True,
+                                    objects_manager).render_result_list(True)
+
+            params['name'] = rendered_list[0]['summary_line']
+
+        location_creation_params['name'] =  params['name'] if params['name'] not in ['', None]\
+                                                        else f"ObjectID: {location_creation_params['object_id']}"
+
         created_location_id = locations_manager.insert_location(location_creation_params)
-    except BaseManagerInsertError as err:
-        LOGGER.error("[create_location] %s", err)
-        return abort(400, "Could not insert the new location in database)!")
 
-    api_response = DefaultResponse(created_location_id)
-
-    return api_response.make_response()
+        return DefaultResponse(created_location_id).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except TypesManagerGetError as err:
+        LOGGER.error("[insert_cmdb_location] TypesManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the Type of the linked Object from the database!")
+    except ObjectsManagerGetError as err:
+        LOGGER.error("[insert_cmdb_location] ObjectsManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the linked Object from the database!")
+    except LocationsManagerInsertError as err:
+        LOGGER.error("[insert_cmdb_location] LocationsManagerInsertError: %s", err, exc_info=True)
+        return abort(400, "Failed to insert the new Location in the database!")
+    except Exception as err:
+        LOGGER.error("[insert_cmdb_location] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -128,24 +149,24 @@ def create_location(params: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
 @location_blueprint.parse_collection_parameters()
-def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_locations(params: CollectionParameters, request_user: CmdbUser):
     """
-    Returns all locations based on the params
+    HTTP `GET`/`HEAD` route for getting multiple CmdbLocations
 
     Args:
-        params (CollectionParameters): params for locations request
-        request_user (CmdbUser): User requesting the data
+        params (CollectionParameters): Filter for requested CmdbLocations
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        (Response): All locations considering the params
+        GetMultiResponse: All the CmdbLocations matching the CollectionParameters
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
     try:
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
         iteration_result: IterationResult[CmdbLocation] = locations_manager.iterate(builder_params)
 
-        location_list: list[dict] = [location_.__dict__ for location_ in iteration_result.results]
+        location_list: list[dict] = [CmdbLocation.to_json(location) for location in iteration_result.results]
 
         api_response = GetMultiResponse(location_list,
                                         iteration_result.total,
@@ -153,11 +174,13 @@ def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
                                         request.url,
                                         request.method == 'HEAD')
 
-    except BaseManagerIterationError as err:
-        LOGGER.debug("[get_all_locations] %s", err)
-        return abort(400, "Could not retrieve locations from database!")
-
-    return api_response.make_response()
+        return api_response.make_response()
+    except LocationsManagerIterationError as err:
+        LOGGER.error("[get_cmdb_locations] LocationsManagerIterationError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve Locations from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_locations] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/tree', methods=['GET', 'HEAD'])
@@ -165,24 +188,25 @@ def get_all_locations(params: CollectionParameters, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
 @location_blueprint.parse_collection_parameters()
-def get_locations_tree(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_locations_tree(params: CollectionParameters, request_user: CmdbUser):
     """
-    Returns all locations as a location tree
+    Returns all CmdbLocations as a location tree
 
     Args:
         params (CollectionParameters): params for location tree (excluding root location)
         request_user (CmdbUser): User requesting the data
 
     Returns:
-        list: locations as a tree
+        list: CmdbLocations as a tree
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
     try:
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
         iteration_result: IterationResult[CmdbLocation] = locations_manager.iterate(builder_params)
 
-        location_list: list[dict] = [location_.__dict__ for location_ in iteration_result.results]
+        location_list: list[dict] = [CmdbLocation.to_json(location) for location in iteration_result.results]
+
         # get all root locations
         filtered_location_list = []
         root_locations: list[LocationNode] = []
@@ -210,127 +234,148 @@ def get_locations_tree(params: CollectionParameters, request_user: CmdbUser):
                                         request.url,
                                         request.method == 'HEAD')
 
-    except BaseManagerIterationError as err:
-        LOGGER.debug("[get_locations_tree] %s", err)
-        return abort(400, "Could not retrieve locations from database!")
-
-    return api_response.make_response()
+        return api_response.make_response()
+    except LocationsManagerIterationError as err:
+        LOGGER.error("[get_cmdb_locations] LocationsManagerIterationError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve Locations from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_locations_tree] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_location(public_id: int, request_user: CmdbUser):
+def get_cmdb_location(public_id: int, request_user: CmdbUser):
     """
-    Returns the selected location for a given public_id
-    
+    HTTP `GET`/`HEAD` route to retrieve a single CmdbLocation
+
     Args:
-        public_id (int): public_id of location
-        request_user (CmdbUser): User which is requesting the data
+        public_id (int): public_id of the CmdbLocation
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        GetSingleResponse: The requested CmdbLocation
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
     try:
-        location_instance = locations_manager.get_location(public_id)
-    except BaseManagerGetError as err:
-        LOGGER.debug("[get_location] %s", err)
-        return abort(404, "Could not retrieve the location from database!")
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
-    api_response = DefaultResponse(location_instance)
+        requested_location = locations_manager.get_location(public_id)
 
-    return api_response.make_response()
+        if not requested_location:
+            return abort(404, f"The Location with ID:{public_id} was not found!")
+
+        return DefaultResponse(requested_location).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except LocationsManagerGetError as err:
+        LOGGER.error("[get_cmdb_location] LocationsManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the Location with ID: {public_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_location] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:object_id>/object', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_location_for_object(object_id: int, request_user: CmdbUser):
+def get_cmdb_location_for_object(object_id: int, request_user: CmdbUser):
     """
-    Returns the selected location for a given object_id
+    Returns the selected CmdbLocation for a given object_id (public_id of CmdbObject)
     
     Args:
-        object_id (int): object_id of object 
+        object_id (int): public_id of CmdbObject 
         request_user (CmdbUser): User which is requesting the data
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
     try:
-        location_instance = locations_manager.get_location_for_object(object_id)
-    except BaseManagerGetError as err:
-        LOGGER.debug("[get_location_for_object] %s", err)
-        return abort(404, "Could not retrieve the location from database!")
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
-    api_response = DefaultResponse(location_instance)
+        requested_location = locations_manager.get_location_for_object(object_id)
 
-    return api_response.make_response()
+        if not requested_location:
+            return abort(404, f"The Location for Object with ID:{object_id} was not found!")
+
+        return DefaultResponse(requested_location).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except LocationsManagerGetError as err:
+        LOGGER.error("[get_cmdb_location_for_object] LocationsManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the Location for Object with ID: {object_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:object_id>/parent', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_location_parent(object_id: int, request_user: CmdbUser):
+def get_cmdb_location_parent(object_id: int, request_user: CmdbUser):
     """
-    Returns the parent location for a given object_id
+    Returns the parent CmdbLocation for a given object_id (public_id of CmdbObject)
     
     Args:
-        object_id (int): object_id of object 
+        object_id (int): public_id of CmdbObject
         request_user (CmdbUser): User which is requesting the data
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
-    parent = None
-
     try:
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+
+        parent = None
+
         current_location = locations_manager.get_location_for_object(object_id)
 
         if current_location:
-            parent_id = current_location.parent
+            parent_id = current_location['parent']
             parent = locations_manager.get_location(parent_id)
+
+            if not parent:
+                return abort(404, f"The parent Location for Object with ID:{object_id} was not found!")
+
+        return DefaultResponse(parent).make_response()
+    except LocationsManagerGetError as err:
+        LOGGER.error("[get_cmdb_location_parent] LocationsManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve the parent Location for Object with ID: {object_id} from the database!")
     except Exception as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[get_parent] Exception: %s, Type: %s", err, type(err))
-
-    api_response = DefaultResponse(parent)
-
-    return api_response.make_response()
+        LOGGER.error("[get_cmdb_location_parent] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:object_id>/children', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_children(object_id: int, request_user: CmdbUser):
+def get_cmdb_children(object_id: int, request_user: CmdbUser):
     """
-    Get all children of next level for a given object_id
+    Get all children CmdbLocations of next level for a given object_id
     
     Args:
-        object_id (int): object_id of object 
+        object_id (int): public_id of CmdbObject 
         request_user (CmdbUser): User which is requesting the data
     
     Returns:
         (Response): All children of next level for the given object_id
     """
-    locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
-    children = []
-
     try:
+        locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
+
+        children = []
+
         current_location = locations_manager.get_location_for_object(object_id)
 
         if current_location:
-            location_public_id = current_location.public_id
+            location_public_id = current_location['public_id']
             children = locations_manager.get_locations_by(parent=location_public_id)
 
+        return DefaultResponse(children).make_response()
+    except LocationsManagerGetError as err:
+        LOGGER.error("[get_cmdb_location_parent] LocationsManagerGetError: %s", err, exc_info=True)
+        return abort(400, f"Failed to retrieve Location for Object with ID: {object_id} from the database!")
     except Exception as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[get_children] Exception: %s, Type: %s", err, type(err))
-
-    api_response = DefaultResponse(children)
-
-    return api_response.make_response()
+        LOGGER.error("[get_cmdb_children] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -339,17 +384,17 @@ def get_children(object_id: int, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 @location_blueprint.parse_request_parameters()
-def update_location_for_object(params: dict, request_user: CmdbUser):
+def update_cmdb_location_for_object(params: dict, request_user: CmdbUser):
     """
     Updates a location
 
     Args:
         params (dict): location parameters
         request_user (CmdbUser): User requesting the update
+
     Returns:
         UpdateSingleResponse: with acknowledged from database
     """
-    LOGGER.debug("update_location_for_object() called")
     try:
         locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
@@ -359,8 +404,17 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
         object_id = int(params['object_id'])
         location_update_params['parent'] = int(params['parent'])
 
+        to_update_location = locations_manager.get_location_for_object(object_id)
+
+        if not to_update_location:
+            return abort(404, f"The Location for Object with ID:{object_id} was not found!")
+
         if params['name'] == '' or params['name'] is None:
             current_object = objects_manager.get_object(object_id)
+
+            if not current_object:
+                return abort(404, "The linked Object was not found in the database!")
+
             current_object = CmdbObject.from_data(current_object)
             if current_app.cloud_mode:
                 current_app.database_manager.connector.set_database(request_user.database)
@@ -375,19 +429,20 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
         location_update_params['name'] =  params['name'] if params['name'] not in ['', None]\
                                                         else f"ObjectID: {location_update_params['object_id']}"
 
-        locations_manager.update({'object_id': object_id}, location_update_params)
+        locations_manager.update_location(object_id, location_update_params)
 
-        api_response = UpdateSingleResponse(params)
-
-        return api_response.make_response()
-    except BaseManagerUpdateError as err:
-        LOGGER.debug("[update_location_for_object] %s", err)
-        return abort(400, "Could not update the location!")
+        return UpdateSingleResponse(params).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except ObjectsManagerGetError as err:
+        LOGGER.error("[update_cmdb_location_for_object] ObjectsManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Failed to retrieve the linked Object from the database!")
+    except LocationsManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_location_for_object] ObjectsManagerGetError: %s", err, exc_info=True)
+        return abort(400, "Failed to update the Location in the database!")
     except Exception as err:
-        LOGGER.error("[update_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[update_cmdb_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
-
-
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -395,29 +450,34 @@ def update_location_for_object(params: dict, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
-def delete_location_for_object(object_id: int, request_user: CmdbUser):
+def delete_cmdb_location_for_object(object_id: int, request_user: CmdbUser):
     """
-    Deletes a location where the object_id is assigned 
+    Deletes a CmdbLocation where the given object_id is assigned 
 
     Args:
         request_user (CmdbUser): user making the request
+
     Returns:
-        bool: Confirmation for deletion
+        DefaultResponse: Confirmation for deletion
     """
-    locations_manager:LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
-
     try:
-        current_location_instance = locations_manager.get_location_for_object(object_id)
-        location_public_id = current_location_instance.public_id
+        locations_manager:LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
 
-        ack = locations_manager.delete({'public_id':location_public_id})
-    except BaseManagerGetError as err:
-        LOGGER.debug("[delete_location_for_object] %s", err)
-        return abort(404, "Could not retrieve the location which should be deleted!")
-    except BaseManagerDeleteError as err:
-        LOGGER.debug("[delete_location_for_object] %s", err)
-        return abort(400, f"Could not delete the location with ID: {object_id} !")
+        to_delete_location = locations_manager.get_location_for_object(object_id)
 
-    api_response = DefaultResponse(ack)
+        if not to_delete_location:
+            return abort(404, "The Location linked to Object with ID: {object_id} was not found in the database!")
 
-    return api_response.make_response()
+        location_public_id = to_delete_location['public_id']
+
+        ack = locations_manager.delete_location(location_public_id)
+
+        return DefaultResponse(ack).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except LocationsManagerDeleteError as err:
+        LOGGER.error("[delete_cmdb_location_for_object] LocationsManagerDeleteError: %s", err, exc_info=True)
+        return abort(400, f"Failed to delete the Location linked to Object with ID: {object_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[delete_cmdb_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
