@@ -1,0 +1,73 @@
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h1>Impact Categories</h1>
+    <button type="button" class="btn btn-sm btn-success" (click)="addImpactCategory()">
+      <i class="fas fa-plus"></i> Add
+    </button>
+  </div>
+  
+  <hr />
+  
+  <!--  table component -->
+  <cmdb-table
+    [items]="impactCategories"
+    [columns]="columns"
+    [totalItems]="totalImpactCategories"
+    [pageSize]="limit"
+    [page]="page"
+    [loading]="loading"
+    [draggableEnabled]="true"
+    [searchEnabled]="true"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+    (orderChange)="onOrderChange($event)"
+    (searchChange)="onSearchChange($event)"
+  >
+  </cmdb-table>
+  
+  <!-- Impact Descriptions Template -->
+  <ng-template #impactDescriptionsTemplate let-item="item">
+
+    <div *ngIf="item.impact_descriptions?.length > 0; else noDescs">
+      <div *ngFor="let desc of item.impact_descriptions">
+        <strong>{{ getImpactName(desc.impact_id) }}:</strong> {{ desc.value }}
+      </div>
+    </div>
+    <ng-template #noDescs>
+      <em>No impact descriptions.</em>
+    </ng-template>
+  </ng-template>
+  
+  <!-- Actions Template -->
+
+<!-- Actions Template -->
+<ng-template #actionsTemplate let-item="item">
+  
+    <!-- View -->
+    <a *permissionLink="['base.isms.impactCategory.view']"
+       (click)="viewImpactCategory(item)"
+       title="View Impact Category">
+      <i class="far fa-eye icon-view"></i>
+    </a>
+
+    <!-- Edit -->
+    <a *permissionLink="['base.isms.impactCategory.edit']"
+       (click)="editImpactCategory(item)"
+       title="Edit Impact Category">
+      <i class="far fa-edit icon-edit"></i>
+    </a>
+
+    <!-- Copy As New -->
+    <a *permissionLink="['base.isms.impactCategory.add', 'base.isms.impactCategory.view']"
+       (click)="copyImpactCategory(item)"
+       title="Copy as New">
+      <i class="far fa-clone icon-copy"></i>
+    </a>
+
+    <!-- Delete -->
+    <a *permissionLink="['base.isms.impactCategory.delete']"
+       (click)="deleteImpactCategory(item)"
+       title="Delete Impact Category">
+      <i class="far fa-trash-alt icon-delete"></i>
+    </a>
+
+</ng-template>

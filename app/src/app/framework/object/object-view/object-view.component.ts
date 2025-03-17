@@ -166,7 +166,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       const groupIndex = tabIndex - 1;
       const group = this.relationGroups[groupIndex];
       // if there are more than 10 items in the a rel table then execute this for the pagination stuff
-      group.total > 10 ? this.loadGroupInstances(group.relationId, group.isParent, 1, 10) : null
+      group?.total > 10 ? this.loadGroupInstances(group?.relationId, group?.isParent, 1, 10) : null
     }
     this.changesRef.markForCheck();
   }
@@ -186,10 +186,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
  */
   public createNewRelationForGroup(group: RelationGroup): void {
     // Try to get the definition from the first instance in the group.
-    let definition = group.instances.length > 0 ? group.instances[0].definition : null;
+    let definition = group?.instances.length > 0 ? group?.instances[0]?.definition : null;
     // If not found, look for the definition in extendedRelations.
     if (!definition) {
-      definition = this.extendedRelations.find(rel => rel.public_id === group.relationId);
+      definition = this.extendedRelations.find(rel => rel?.public_id === group?.relationId);
     }
     if (!definition) {
       this.toastService.error('Relation definition is missing.');
@@ -198,16 +198,16 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const safeDefinition = {
       ...definition,
-      parent_type_ids: Array.isArray(definition.parent_type_ids) ? definition.parent_type_ids : [],
-      child_type_ids: Array.isArray(definition.child_type_ids) ? definition.child_type_ids : [],
+      parent_type_ids: Array.isArray(definition?.parent_type_ids) ? definition?.parent_type_ids : [],
+      child_type_ids: Array.isArray(definition?.child_type_ids) ? definition?.child_type_ids : [],
       canBeParent: group.isParent,
-      canBeChild: !group.isParent
+      canBeChild: !group?.isParent
     };
 
     this.chosenRelation = safeDefinition;
-    this.chosenRole = group.isParent ? 'parent' : 'child';
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition.child_type_ids;
+    this.chosenRole = group?.isParent ? 'parent' : 'child';
+    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : safeDefinition?.parent_type_ids;
+    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : safeDefinition?.child_type_ids;
 
     if (this.chosenRole === 'parent' && this.roleChildTypeIDs.length === 0) {
       this.toastService.warning('No child types defined for this relation.');
@@ -229,10 +229,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     mode: CmdbMode
   ): void {
     // 1) Mark which side is parent/child
-    const isParent = instance.relation_parent_id === this.currentObjectID;
+    const isParent = instance?.relation_parent_id === this.currentObjectID;
 
     // 2) Build the final definition
-    const definition = instance.definition || {} as CmdbRelation;
+    const definition = instance?.definition || {} as CmdbRelation;
     this.chosenRelation = {
       ...definition,
       canBeParent: isParent,
@@ -243,8 +243,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chosenRole = isParent ? 'parent' : 'child';
 
     // 4) Parent/Child type IDs
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : definition.parent_type_ids || [];
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : definition.child_type_ids || [];
+    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : definition?.parent_type_ids || [];
+    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : definition?.child_type_ids || [];
 
     // 5) Mode and selected instance
     this.dialogMode = mode;
@@ -280,12 +280,12 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     modalRef.componentInstance.title = 'Delete Object Relation';
     modalRef.componentInstance.item = instance;
     modalRef.componentInstance.itemType = 'Object Relation';
-    modalRef.componentInstance.itemName = instance.public_id;
+    modalRef.componentInstance.itemName = instance?.public_id;
 
     // Check if this is the last instance in the group
     const group = this.relationGroups.find(
-      g => g.relationId === instance.relation_id &&
-        g.isParent === (instance.relation_parent_id === this.currentObjectID)
+      g => g?.relationId === instance?.relation_id &&
+        g?.isParent === (instance.relation_parent_id === this.currentObjectID)
     );
     const isLastInstanceInGroup = group?.instances?.length === 1;
 
@@ -293,7 +293,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       (result) => {
         if (result === 'confirmed') {
           this.loadingRelations = true;
-          this.objectRelationService.deleteObjectRelation(instance.public_id)
+          this.objectRelationService?.deleteObjectRelation(instance?.public_id)
             .pipe(takeUntil(this.unsubscribe))
             .subscribe({
               next: () => {
@@ -343,7 +343,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /** Selects a relation and role in the modal */
   public onSelectRelation(relation: ExtendedRelation, role: 'parent' | 'child'): void {
-    if ((role === 'parent' && !relation.canBeParent) || (role === 'child' && !relation.canBeChild)) {
+    if ((role === 'parent' && !relation?.canBeParent) || (role === 'child' && !relation?.canBeChild)) {
       return;
     }
     this.chosenRelation = relation;
@@ -355,8 +355,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public onConfirmRelationSelection(): void {
     if (!this.chosenRelation || !this.chosenRole) return;
     this.closeRelationModal();
-    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : this.chosenRelation.parent_type_ids;
-    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : this.chosenRelation.child_type_ids;
+    this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : this.chosenRelation?.parent_type_ids;
+    this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : this.chosenRelation?.child_type_ids;
 
     this.showRelationRoleDialog = true;
     this.dialogMode = CmdbMode.Create; // Ensure Create mode for new relations
@@ -402,8 +402,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   public onRelationSortChange(event: { sort: string; order: number }): void {
-    this.relationSort = event.sort;
-    this.relationOrder = event.order;
+    this.relationSort = event?.sort;
+    this.relationOrder = event?.order;
     this.loadObjectRelationInstances(this.currentObjectID);
   }
 
@@ -443,11 +443,11 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.loadingRelations = true;
     this.objectRelationService.getObjectRelations(params)
-      .pipe(takeUntil(this.unsubscribe), finalize(() => this.loaderService.hide()))
+      .pipe(takeUntil(this.unsubscribe), finalize(() => this.loaderService?.hide()))
       .subscribe({
         next: (response) => {
           this.totalRelations = response.total;
-          const relationInstances: ObjectRelationInstance[] = response.results || [];
+          const relationInstances: ObjectRelationInstance[] = response?.results || [];
           if (!relationInstances.length) {
             this.relationGroups = [];
             this.loadingRelations = false;
@@ -457,7 +457,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.usedRolesMap = new Map<number, { parentUsed: boolean; childUsed: boolean }>();
           relationInstances.forEach(inst => {
-            let roles = this.usedRolesMap.get(inst.relation_id);
+            let roles = this.usedRolesMap.get(inst?.relation_id);
             if (!roles) {
               roles = { parentUsed: false, childUsed: false };
             }
@@ -467,20 +467,20 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
             if (inst.relation_child_id === this.currentObjectID) {
               roles.childUsed = true;
             }
-            this.usedRolesMap.set(inst.relation_id, roles);
+            this.usedRolesMap.set(inst?.relation_id, roles);
           });
 
-          const relationIds = [...new Set(relationInstances.map(inst => inst.relation_id))];
+          const relationIds = [...new Set(relationInstances.map(inst => inst?.relation_id))];
           const relationObservables = relationIds.map(id => this.relationService.getRelation(id));
           const oldTabIndex = this.activeRelationTabIndex;
 
           forkJoin(relationObservables).pipe(takeUntil(this.unsubscribe)).subscribe({
             next: (definitions: CmdbRelation[]) => {
               const relationMap = new Map<number, CmdbRelation>();
-              definitions.forEach(def => relationMap.set(def.public_id, def));
+              definitions.forEach(def => relationMap.set(def?.public_id, def));
 
               const groupedInstances = relationInstances.reduce((acc, instance) => {
-                const key = instance.relation_id;
+                const key = instance?.relation_id;
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(instance);
                 return acc;
@@ -500,17 +500,17 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                   .filter(inst => inst.relation_parent_id === this.currentObjectID)
                   .map(inst => ({
                     ...inst,
-                    counterpart_id: inst.relation_child_id,
+                    counterpart_id: inst?.relation_child_id,
                     type: definition.relation_name_parent,
                     definition
                   }));
 
                 const childInstances = instancesForRelation
-                  .filter(inst => inst.relation_child_id === this.currentObjectID)
+                  .filter(inst => inst?.relation_child_id === this.currentObjectID)
                   .map(inst => ({
                     ...inst,
-                    counterpart_id: inst.relation_parent_id,
-                    type: definition.relation_name_child,
+                    counterpart_id: inst?.relation_parent_id,
+                    type: definition?.relation_name_child,
                     definition
                   }));
 
@@ -518,11 +518,11 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                   groups.push({
                     relationId,
                     isParent: true,
-                    tabLabel: definition.relation_name_parent,
-                    tabColor: definition.relation_color_parent,
-                    tabIcon: definition.relation_icon_parent,
+                    tabLabel: definition?.relation_name_parent,
+                    tabColor: definition?.relation_color_parent,
+                    tabIcon: definition?.relation_icon_parent,
                     instances: parentInstances,
-                    total: parentInstances.length
+                    total: parentInstances?.length
                   });
                 }
 
@@ -530,9 +530,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                   groups.push({
                     relationId,
                     isParent: false,
-                    tabLabel: definition.relation_name_child,
-                    tabColor: definition.relation_color_child,
-                    tabIcon: definition.relation_icon_child,
+                    tabLabel: definition?.relation_name_child,
+                    tabColor: definition?.relation_color_child,
+                    tabIcon: definition?.relation_icon_child,
                     instances: childInstances,
                     total: childInstances.length
                   });
@@ -542,10 +542,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
               this.relationGroups = groups;
 
               const allIDs: number[] = [];
-              this.relationGroups.forEach((g) => {
-                g.instances?.forEach((inst) => {
-                  if (!allIDs.includes(inst.counterpart_id)) {
-                    allIDs.push(inst.counterpart_id);
+              this.relationGroups?.forEach((g) => {
+                g?.instances?.forEach((inst) => {
+                  if (!allIDs?.includes(inst?.counterpart_id)) {
+                    allIDs.push(inst?.counterpart_id);
                   }
                 });
               });
@@ -604,21 +604,21 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
           throw new Error(`Relation definition not found for ID ${relationId}`);
         }
         // Fetch the paginated instances with the definition available
-        return this.objectRelationService.getObjectRelations(params).pipe(
+        return this.objectRelationService?.getObjectRelations(params).pipe(
           map(response => ({ definition, response }))
         );
       })
     ).subscribe({
       next: ({ definition, response }) => {
-        const group = this.relationGroups.find(g => g.relationId === relationId && g.isParent === isParent);
+        const group = this.relationGroups?.find(g => g?.relationId === relationId && g?.isParent === isParent);
         if (group) {
-          group.instances = (response.results || []).map(inst => ({
+          group.instances = (response?.results || []).map(inst => ({
             ...inst,
-            counterpart_id: isParent ? inst.relation_child_id : inst.relation_parent_id,
-            type: isParent ? definition.relation_name_parent : definition.relation_name_child,
+            counterpart_id: isParent ? inst?.relation_child_id : inst?.relation_parent_id,
+            type: isParent ? definition?.relation_name_parent : definition?.relation_name_child,
             definition // Attach the definition to each instance
           }));
-          group.total = response.total;
+          group.total = response?.total;
           group.pageSize = pageSize;
         }
         this.changesRef.markForCheck();
@@ -664,15 +664,15 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
           this.availableRelations = response.results || [];
 
           this.extendedRelations = this.availableRelations.map(rel => {
-            let canBeParent = rel.parent_type_ids?.includes(typeId) || false;
-            let canBeChild = rel.child_type_ids?.includes(typeId) || false;
+            let canBeParent = rel?.parent_type_ids?.includes(typeId) || false;
+            let canBeChild = rel?.child_type_ids?.includes(typeId) || false;
 
             const used = this.usedRolesMap.get(rel.public_id);
             if (used) {
-              if (used.parentUsed) {
+              if (used?.parentUsed) {
                 canBeParent = false;
               }
-              if (used.childUsed) {
+              if (used?.childUsed) {
                 canBeChild = false;
               }
             }
@@ -682,7 +682,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
               canBeParent,
               canBeChild
             };
-          }).filter(rel => rel.canBeParent || rel.canBeChild);
+          }).filter(rel => rel?.canBeParent || rel?.canBeChild);
 
           this.loadingRelations = false;
           this.changesRef.detectChanges();
@@ -698,7 +698,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadCounterpartObjects(ids: number[]): void {
     // Remove duplicates, if necessary:
     const uniqueIDs = Array.from(new Set(ids));
-    if (!uniqueIDs.length) {
+    if (!uniqueIDs?.length) {
       return; // Nothing to fetch
     }
 
@@ -724,7 +724,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
           // Populate the map: object_id -> RenderResult (or union type)
           (apiResponse.results || []).forEach((obj) => {
             if (this.isRenderResult(obj)) {
-              const id = obj.object_information.object_id;
+              const id = obj?.object_information?.object_id;
               // now TS knows it's a RenderResult
 
               if (id) {
@@ -778,7 +778,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const group = this.relationGroups[tabIndex];
     if (group) {
       // Use default page 1 and the group's pageSize (or a default value, e.g., 10)
-      this.loadGroupInstances(group.relationId, group.isParent, 1, group.pageSize || 10);
+      this.loadGroupInstances(group?.relationId, group?.isParent, 1, group?.pageSize || 10);
     }
     this.changesRef.markForCheck();
   }
@@ -792,6 +792,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   trackByRelationId(index: number, group: RelationGroup): number {
-    return group.relationId;
+    return group?.relationId;
   }
 }
