@@ -17,7 +17,7 @@
 */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { finalize } from 'rxjs/operators';
 
@@ -52,6 +52,8 @@ export class LikelihoodModalComponent implements OnInit {
     if (this.isEditMode) {
       this.patchForm();
     }
+
+    console.log('is edit mode', this.isEditMode)
   }
 
   /**
@@ -83,7 +85,7 @@ export class LikelihoodModalComponent implements OnInit {
    */
   private patchForm(): void {
     if (!this.likelihood) return;
-    const basisString = this.likelihood.calculation_basis.toFixed(1);
+    const basisString = this.likelihood.calculation_basis;
     this.form.patchValue({
       name: this.likelihood.name,
       description: this.likelihood.description,

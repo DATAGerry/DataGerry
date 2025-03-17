@@ -61,7 +61,7 @@ export class ImpactModalComponent implements OnInit {
                 '',
                 [
                     Validators.required,
-                    Validators.pattern(/^\d+\.\d{1}$/),
+                    Validators.pattern(/^\d+\.\d{2}$/),
                     uniqueCalculationBasisValidator(this.existingCalculationBases, currentBasis)
                 ]
             ]
@@ -74,7 +74,7 @@ export class ImpactModalComponent implements OnInit {
     private patchForm(): void {
         if (!this.impact) return;
         // Convert the numeric float to a string with exactly one decimal place
-        const basisString = this.impact.calculation_basis.toFixed(1);
+        const basisString = this.impact.calculation_basis;
 
         this.form.patchValue({
             name: this.impact.name,
