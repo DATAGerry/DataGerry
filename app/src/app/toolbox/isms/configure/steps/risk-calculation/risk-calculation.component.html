@@ -1,0 +1,90 @@
+<div class="header">
+  <h1>Risk Assessment Matrix</h1>
+  <div style="display: flex; align-items: center;">
+    <div class="unit-selector mr-3">
+      <label for="matrix-unit">Matrix Unit:</label>
+      <select id="matrix-unit" [(ngModel)]="selectedMatrixUnit" class="unit-dropdown">
+        <option value="">None</option>
+        <option value="€">Euro (€)</option>
+        <option value="$">Dollar ($)</option>
+      </select>
+    </div>
+    <div>
+      <button class="btn btn-success" (click)="saveMatrix()">
+        Save Configurations
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="risk-matrix-container">
+
+  <div class="matrix-controls">
+    <div class="legend">
+      <div class="legend-item" *ngFor="let rc of riskClasses">
+        <div class="legend-color" [style.backgroundColor]="rc.color"></div>
+        <span class="legend-label">{{ rc.name }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="matrix-wrapper" *ngIf="riskMatrix">
+    <table class="risk-matrix">
+      <thead>
+        <tr>
+          <th class="axis-corner">
+            <div class="axis-label">Impact →<br>Likelihood ↓</div>
+          </th>
+          <!-- Column headers using orderedImpacts -->
+          <th *ngFor="let imp of orderedImpacts; let c = index" class="impact-header">
+            <div class="header-content">
+              <span class="level-name">{{ imp.name }}</span>
+              <span class="calculation-basis">
+                {{ imp.calculation_basis }}
+              </span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Row headers using orderedLikelihoods -->
+        <tr *ngFor="let lh of orderedLikelihoods; let r = index">
+          <td class="likelihood-header">
+            <div class="header-content">
+              <span class="level-name">{{ lh.name }}</span>
+              <span class="calculation-basis">
+                {{ lh.calculation_basis }}
+              </span>
+            </div>
+          </td>
+          <td *ngFor="let imp of orderedImpacts; let c = index" class="risk-cell"
+            [style.backgroundColor]="getCellColor(getCell(r, c))" (click)="openRiskClassModal(getCell(r, c))">
+            <ng-container *ngIf="getCell(r, c) as cell">
+              <div class="cell-content">
+                <div class="calculated-value">{{selectedMatrixUnit}}{{ cell.calculated_value }}</div>
+                {{getRiskClassName(cell)}}
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  <!-- Risk Class Selection Modal -->
+  <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Select Risk Class</h3>
+        <div class="modal-subheader">{{ selectedCell?.calculated_value }}</div>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="risk-class-options">
+        <div *ngFor="let rc of riskClasses" class="risk-class-option" [style.backgroundColor]="rc.color"
+          (click)="assignRiskClass(rc)">
+          <span class="risk-class-label">{{ rc.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
