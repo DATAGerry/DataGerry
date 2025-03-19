@@ -181,10 +181,10 @@ ISMS_RIGHTS = (
             ProtectionGoalRight('edit', Levels.PROTECTED, description='Edit ISMS ProtectionGoals'),
             ProtectionGoalRight('delete', Levels.SECURE, description='Delete ISMS ProtectionGoals'),
         ),
-        ProtectionGoalRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage the RiskMatrix of ISMS'),
+        RiskMatrixRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage the RiskMatrix of ISMS'),
         (
-            ProtectionGoalRight('view', description='View ISMS RiskMatrix'),
-            ProtectionGoalRight('edit', Levels.PROTECTED, description='Edit ISMS RiskMatrix'),
+            RiskMatrixRight('view', description='View ISMS RiskMatrix'),
+            RiskMatrixRight('edit', Levels.PROTECTED, description='Edit ISMS RiskMatrix'),
         ),
     ),
 )

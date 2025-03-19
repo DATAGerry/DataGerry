@@ -158,3 +158,6 @@ class IsmsRiskMatrix(CmdbDAO):
             }
         except Exception as err:
             raise IsmsRiskMatrixToJsonError(err) from err
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+

@@ -13,37 +13,71 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of general helper functions
+"""
 
-def boolify(s):
-    """document"""
-    #TODO: DOCUMENT-FIX
+def boolify(s: str) -> bool:
+    """
+    Converts a string representation of a boolean to its corresponding boolean value
+    
+    Args:
+        s (str): The string to be converted
+
+    Raises:
+        ValueError: If the input string is not a valid boolean representation
+
+    Returns:
+        bool: True if 'True' or 'true', False if 'False' or 'false'
+    """
     if s in ('True', 'true'):
         return True
-
     if s in ('False', 'false'):
         return False
 
-    raise ValueError('Not Boolean Value!')
+    raise ValueError(f"Invalid boolean value: {s}")
 
 
-def noneify(s):
-    """document"""
-    #TODO: DOCUMENT-FIX
+def noneify(s: str) -> None:
+    """
+    Converts a string representation of 'None' to a NoneType value
+    
+    Args:
+        s (str): The string to be converted
+
+    Raises:
+        ValueError: If the input string is not a valid representation of None
+
+    Returns:
+        None: If the input string is 'None' or 'null'
+    """
     if s in ('None', 'null'):
         return None
 
-    raise ValueError('Not None Value!')
+    raise ValueError(f"Invalid None value: {s}")
 
 
-def auto_cast(val):
-    """document"""
-    #TODO: DOCUMENT-FIX
+def auto_cast(val: str):
+    """
+    Attempts to automatically convert a string into its most appropriate data type
+    
+    Tries the following conversions in order:
+    - Boolean (True/False)
+    - Integer
+    - NoneType (None)
+    - Float
+    - String (fallback)
+    
+    Args:
+        val (str): The value to be converted
+    
+    Returns:
+        bool | int | None | float | str: The converted value
+    """
     for caster in (boolify, int, noneify, float, str):
         try:
             return caster(val)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
     return val

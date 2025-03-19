@@ -65,12 +65,15 @@ class IsmsImpactCategory(CmdbDAO):
                         }
                     }
             }
+        },
+        'sort': {
+            'type': 'integer',
         }
     }
 
 
     #pylint: disable=too-many-positional-arguments
-    def __init__(self, public_id: int, name: str, impact_descriptions: list):
+    def __init__(self, public_id: int, name: str, impact_descriptions: list, sort: int = None):
         """
         Initialises an IsmsImpactCategory
 
@@ -85,6 +88,7 @@ class IsmsImpactCategory(CmdbDAO):
         try:
             self.name = name
             self.impact_descriptions = impact_descriptions
+            self.sort = sort
 
             super().__init__(public_id=public_id)
         except Exception as err:
@@ -111,6 +115,7 @@ class IsmsImpactCategory(CmdbDAO):
                 public_id = data.get('public_id'),
                 name = data.get('name'),
                 impact_descriptions = data.get('impact_descriptions'),
+                sort = data.get('sort'),
             )
         except Exception as err:
             raise IsmsImpactCategoryInitFromDataError(err) from err
@@ -135,6 +140,7 @@ class IsmsImpactCategory(CmdbDAO):
                 'public_id': instance.get_public_id(),
                 'name': instance.name,
                 'impact_descriptions': instance.impact_descriptions,
+                'sort': instance.sort,
             }
         except Exception as err:
             raise IsmsImpactCategoryToJsonError(err) from err

@@ -17,7 +17,11 @@
 Provides all ISMS relevant helper methods
 """
 from .isms_data import get_default_protection_goals, get_default_risk_matrix
-from .isms_risk_matrix_helper import calculate_risk_matrix, remove_deleted_risk_class_from_matrix
+from .isms_risk_matrix_helper import (
+    calculate_risk_matrix,
+    remove_deleted_risk_class_from_matrix,
+    check_risk_classes_set_in_matrix,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -25,4 +29,5 @@ __all__ = [
     'get_default_risk_matrix',
     'calculate_risk_matrix',
     'remove_deleted_risk_class_from_matrix',
+    'check_risk_classes_set_in_matrix',
 ]

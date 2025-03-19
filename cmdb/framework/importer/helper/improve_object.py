@@ -18,6 +18,7 @@ Implementation of ImproveObject
 """
 import logging
 import datetime
+from typing import Union
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -26,16 +27,19 @@ LOGGER = logging.getLogger(__name__)
 #                                                 ImproveObject - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ImproveObject:
-    """document"""
-    #TODO: DOCUMENT-FIX
-    def __init__(self, entry: dict, property_entries, field_entries, possible_fields):
+    """
+    Base class for improving object imports by converting field values to appropriate types
+    """
+
+    def __init__(self, entry: dict, property_entries: list, field_entries: list, possible_fields: list):
         """
-        Basic improve super class for object imports
+        Initializes the ImproveObject
+
         Args:
-            entry: Numbered values of the fields
-            property_entries: Object properties (active, public_id, etc)
-            field_entries: Field attributes
-            possible_fields: Field types
+            entry (dict): Dictionary containing field values
+            property_entries (list): Object properties
+            field_entries (list): Field attributes
+            possible_fields (list): List of field types and their mappings
         """
         self.entry = entry
         self.property_entries = property_entries
@@ -46,73 +50,87 @@ class ImproveObject:
 
     def improve_entry(self) -> dict:
         """
-        This method converts field values to the appropriate type
-        Returns: dict
+        Converts field values to their appropriate types
 
+        Returns:
+            dict: The updated entry with improved values
         """
         # improve properties
         for property_entry in self.property_entries:
             self.value = self.entry.get(property_entry.get_value())
             if property_entry.get_name() == "active":
-                self.entry.update({property_entry.get_value(): ImproveObject.improve_boolean(self.value)})
+                self.entry[property_entry.get_value()] = self.improve_boolean(self.value)
 
         # improve fields
         for entry_field in self.field_entries:
-            for item in self.possible_fields:
-                self.value = self.entry.get(entry_field.get_value())
-                if item["name"] == entry_field.get_name():
-                    if item['type'] == 'date':
-                        self.entry.update({entry_field.get_value(): ImproveObject.improve_date(self.value)})
-                    if item['type'] == 'text' and not isinstance(self.value, str):
-                        self.entry.update({entry_field.get_value(): str(self.value)})
+            self.value = self.entry.get(entry_field.get_value())
+            matching_field = next((item for item in self.possible_fields if
+                                   item["name"] == entry_field.get_name()), None)
+
+            if matching_field:
+                if matching_field['type'] == 'date':
+                    self.entry[entry_field.get_value()] = self.improve_date(self.value)
+                elif matching_field['type'] == 'text' and not isinstance(self.value, str):
+                    self.entry[entry_field.get_value()] = str(self.value)
+
         return self.entry
 
 
     @staticmethod
-    def improve_boolean(value) -> bool:
+    def improve_boolean(value: str) -> bool:
         """
-        This method converts the value from Type: String to Type: Boolean
+        Converts a string representation of a boolean into a boolean type.
+
+        Args:
+            value (str): The value to be converted.
 
         Returns:
-            True if value in ['True', 'true', 'TRUE', '1']
-            False if value in ['False', 'false', 'FALSE', '0', 'no']
-
+            bool: True if the value represents a truthy string, False otherwise.
         """
-        if isinstance(value, str):
-            if value in ['False', 'false', 'FALSE', '0', 'no']:
-                return False
+        truthy_values = {'True', 'true', 'TRUE', '1'}
+        falsy_values = {'False', 'false', 'FALSE', '0', 'no'}
 
-            if value in ['True', 'true', 'TRUE', '1']:
+        if isinstance(value, str):
+            if value in falsy_values:
+                return False
+            if value in truthy_values:
                 return True
 
         return value
 
 
     @staticmethod
-    def improve_date(value):
+    def improve_date(value: Union[str, dict]) -> Union[datetime.datetime, str, dict]:
         """
-        This method converts the date format
+        Converts various date formats into a standardized datetime object.
+
+        Args:
+            value (Union[str, dict]): The date value to be converted.
+                                      It can be a string or a dictionary containing a timestamp
 
         Returns:
-            datetime parsed from a string
+            Union[datetime.datetime, str, dict]: Parsed datetime object if successful,
+                                                 otherwise returns the original value.
         """
         try:
             if isinstance(value, dict) and value.get('$date'):
-                return datetime.datetime.fromtimestamp(value["$date"]/1000)
+                return datetime.datetime.fromtimestamp(value["$date"] / 1000)
         except Exception:
             pass
 
         if isinstance(value, str):
-            dt_format = ('%Y/%m/%d', '%Y-%m-%d', '%Y.%m.%d', '%Y,%m,%d',
-                         '%d/%m/%Y', '%d-%m-%Y', '%d.%m.%Y', '%d,%m,%Y',
-                         '%d.%m.%y %H:%M', '%d.%m.%y %H:%M:%S', '%y.%m.%d %H:%M', '%y.%m.%d %H:%M:%S',
-                         '%d.%m.%Y %H:%M', '%d.%m.%Y %H:%M:%S', '%Y.%m.%d %H:%M', '%Y.%m.%d %H:%M:%S',
-                         '%d-%m-%y %H:%M', '%d-%m-%y %H:%M:%S', '%y-%m-%d %H:%M', '%y-%m-%d %H:%M:%S',
-                         '%d-%m-%Y %H:%M', '%d-%m-%Y %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d %H:%M:%S')
+            dt_formats = (
+                '%Y/%m/%d', '%Y-%m-%d', '%Y.%m.%d', '%Y,%m,%d',
+                '%d/%m/%Y', '%d-%m-%Y', '%d.%m.%Y', '%d,%m,%Y',
+                '%d.%m.%y %H:%M', '%d.%m.%y %H:%M:%S', '%y.%m.%d %H:%M', '%y.%m.%d %H:%M:%S',
+                '%d.%m.%Y %H:%M', '%d.%m.%Y %H:%M:%S', '%Y.%m.%d %H:%M', '%Y.%m.%d %H:%M:%S',
+                '%d-%m-%y %H:%M', '%d-%m-%y %H:%M:%S', '%y-%m-%d %H:%M', '%y-%m-%d %H:%M:%S',
+                '%d-%m-%Y %H:%M', '%d-%m-%Y %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d %H:%M:%S'
+            )
 
-            for fmt in dt_format:
+            for fmt in dt_formats:
                 try:
-                    return datetime.datetime.strptime(str(value), fmt)
+                    return datetime.datetime.strptime(value, fmt)
                 except ValueError:
                     pass
 

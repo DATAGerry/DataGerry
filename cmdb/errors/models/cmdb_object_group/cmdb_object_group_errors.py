@@ -14,41 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all system config file errors
+This module contains the classes of all CmdbObjectGroup errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ConfigFileError(Exception):
+class CmdbObjectGroupError(Exception):
     """
-    Raised to catch all system config file related errors
+    Raised to catch all CmdbObjectGroup related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all system config file related errors
+        Raised to catch all CmdbObjectGroup related errors
         """
         super().__init__(err)
 
-# ------------------------------------------------ CONFIG FILE ERRORS ------------------------------------------------ #
-#TODO: REFACTOR-FIX (better naming convention for all error classes)
-class ConfigFileSetError(ConfigFileError):
+# --------------------------------------------- CmdbObjectGroup - ERRORS --------------------------------------------- #
+
+class CmdbObjectGroupInitError(CmdbObjectGroupError):
     """
-    Raises if values of loaded config file are tryed to get edited
+    Raised when a CmdbObjectGroup could not be initialised
     """
 
 
-class ConfigFileNotFound(ConfigFileError):
+class CmdbObjectGroupInitFromDataError(CmdbObjectGroupError):
     """
-    Error if local config file could not be loaded
-    """
-
-
-class ConfigNotLoaded(ConfigFileError):
-    """
-    Error if config file was not loaded correctly is not loaded
+    Raised when a CmdbObjectGroup could not be initialised from a dict
     """
 
 
-class SectionError(ConfigFileError):
+class CmdbObjectGroupToJsonError(CmdbObjectGroupError):
     """
-    Error if section does not exist
+    Raised when a CmdbObjectGroup could not be transformed into a json compatible dict
     """

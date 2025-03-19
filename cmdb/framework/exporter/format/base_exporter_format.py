@@ -23,7 +23,6 @@ class BaseExporterFormat:
     """
     Base class for exporter formats
     """
-    #TODO: DOCUMENT-FIX
     FILE_EXTENSION = None
     LABEL = None
     MULTITYPE_SUPPORT = False
@@ -32,32 +31,61 @@ class BaseExporterFormat:
     ACTIVE = None
 
 
-    def __init__(self, file_name=''):
+    def __init__(self, file_name: str =''):
+        """
+        Initializes the exporter with a filename
+        
+        Args:
+            file_name (str): The base name of the file without extension
+        """
         self.file_name = f'{file_name}.{self.FILE_EXTENSION}'
 
 
     def export(self, data, *args):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Exports the given data
+        
+        This method must be implemented by subclasses
+        
+        Args:
+            data: The data to export
+            *args: Additional arguments for export customization
+        
+        Raises:
+            NotImplementedError: If the method is not implemented by a subclass
+        """
+        raise NotImplementedError("The 'export' method must be implemented in a subclass.")
 
 
     @staticmethod
-    def summary_renderer(obj, field, view: str = 'native') -> str:
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def summary_renderer(obj, field: dict, view: str = 'native') -> str:
+        """
+        Renders a summary of an CmdbObject based on the given field and view type
+        
+        Args:
+            obj: The object containing type information.
+            field (dict): A dictionary representing the field to summarize
+            view (str): The rendering view type. Defaults to 'native'
+        
+        Returns:
+            str: A formatted summary string
+        """
+        if not isinstance(field, dict):
+            return ""
+
         # Export only the shown fields chosen by the user
         if view.upper() == ExporterConfigType.RENDER.name and field.get('type') == 'ref':
-            summary_line = f'{obj.type_information["type_label"]} #{obj.type_information["type_id"]}  '
-            first = True
-            reference = field.get('reference')
-            summaries = [] if not reference else reference.get('summaries')
+            type_info = obj.type_information
+            summary_line = f'{type_info["type_label"]} #{type_info["type_id"]}'
 
-            for line in summaries:
-                if first:
-                    summary_line += f'{line["value"]}'
-                    first = False
-                else:
-                    summary_line += f' | {line["value"]}'
+            reference = field.get('reference')
+            summaries = reference.get('summaries', []) if reference else []
+
+            summary_values = [line["value"] for line in summaries]
+
+            if summary_values:
+                summary_line += f' | {" | ".join(summary_values)}'
+
             return summary_line
 
         return field.get('value', None)

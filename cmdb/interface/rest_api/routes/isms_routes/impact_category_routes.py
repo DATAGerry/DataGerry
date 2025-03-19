@@ -38,6 +38,7 @@ from cmdb.interface.rest_api.responses import (
     GetSingleResponse,
     UpdateSingleResponse,
     DeleteSingleResponse,
+    DefaultResponse,
 )
 
 from cmdb.errors.manager.impact_category_manager import (
@@ -217,6 +218,83 @@ def update_isms_impact_category(public_id: int, data: dict, request_user: CmdbUs
         return abort(400, f"Failed to update the ImpactCategory with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_impact_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
+
+
+@impact_category_blueprint.route('/multiple', methods=['PUT', 'PATCH'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@impact_category_blueprint.protect(auth=True, right='base.isms.impactCategory.edit')
+def update_multiple_isms_impact_categories(data: list, request_user: CmdbUser):
+    """
+    HTTP `PUT`/`PATCH` route to update multiple IsmsImpactCategory records.
+
+    Args:
+        data (list of IsmsImpactCategory.SCHEMA): List of new IsmsImpactCategory data
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        dict: Summary of success and failures
+    """
+    try:
+        impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
+                                                                                     request_user)
+
+        results = []
+        for item in data:
+            public_id = item.get("public_id")
+            if not public_id:
+                results.append({"public_id": None, "status": "failed", "message": "Missing public_id"})
+                continue
+
+            try:
+                to_update_impact = impact_category_manager.get_impact_category(public_id)
+                if not to_update_impact:
+                    results.append({
+                        "public_id": public_id,
+                        "status": "failed",
+                        "message": f"ImpactCategory ID:{public_id} not found"
+                    })
+                    continue
+
+                impact_category = IsmsImpactCategory.from_data(item)
+                impact_category_manager.update_impact_category(public_id, impact_category)
+
+                results.append({"public_id": public_id, "status": "success"})
+            except ImpactCategoryManagerGetError as err:
+                LOGGER.error(
+                    "[update_multiple_isms_impact_categories] ImpactCategoryManagerGetError: %s", err, exc_info=True
+                )
+                results.append({
+                    "public_id": public_id,
+                    "status": "failed",
+                    "message": f"Failed to retrieve ImpactCategory ID: {public_id}"
+                })
+            except ImpactCategoryManagerUpdateError as err:
+                LOGGER.error(
+                    "[update_multiple_isms_impact_categories] ImpactCategoryManagerUpdateError: %s", err, exc_info=True
+                )
+                results.append({
+                    "public_id": public_id,
+                    "status": "failed",
+                    "message": f"Failed to update ImpactCategory ID: {public_id}"
+                })
+            except Exception as err:
+                LOGGER.error(
+                    "[update_multiple_isms_impact_categories] Exception: %s. Type: %s", err, type(err), exc_info=True
+                )
+                results.append({
+                    "public_id": public_id,
+                    "status": "failed",
+                    "message": "Internal server error"
+                })
+
+        return DefaultResponse(results).make_response()
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[update_multiple_isms_impact_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #

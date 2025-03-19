@@ -37,6 +37,8 @@ from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
 from cmdb.models.relation_model import CmdbRelation
 from cmdb.models.object_relation_model import CmdbObjectRelation
 from cmdb.models.log_model import CmdbObjectRelationLog
+from cmdb.models.object_group_model import CmdbObjectGroup
+from cmdb.models.extendable_option_model import CmdbExtendableOption
 from cmdb.models.isms_model import (
     IsmsRiskClass,
     IsmsLikelihood,
@@ -69,4 +71,6 @@ __COLLECTIONS__ = [
     IsmsImpact,
     IsmsImpactCategory,
     IsmsProtectionGoal,
+    CmdbObjectGroup,
+    CmdbExtendableOption,
 ]

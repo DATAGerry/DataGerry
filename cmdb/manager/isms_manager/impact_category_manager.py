@@ -153,6 +153,22 @@ class ImpactCategoryManager(BaseManager):
             LOGGER.error("[iterate] Exception: %s. Type: %s", err, type(err))
             raise ImpactCategoryManagerIterationError(err) from err
 
+
+    def count_impact_categories(self) -> int:
+        """
+        Counts the total number of IsmsImpactCategories in the collection
+
+        Raises:
+            ImpactCategoryManagerGetError: If counting IsmsImpactCategories failed
+
+        Returns:
+            int: The number of IsmsImpactCategories
+        """
+        try:
+            return self.count_documents(self.collection)
+        except BaseManagerGetError as err:
+            raise ImpactCategoryManagerGetError(err) from err
+
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
     def update_impact_category(self, public_id:int, data: Union[IsmsImpactCategory, dict]) -> None:
@@ -209,7 +225,7 @@ class ImpactCategoryManager(BaseManager):
         update = {
             "impact_descriptions": {
                 "impact_id": new_impact_id,
-                "value": ""
+                "value": "-"
             }
         }
 
