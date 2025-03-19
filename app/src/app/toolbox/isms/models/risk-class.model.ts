@@ -4,5 +4,8 @@ export interface RiskClass {
     description: string; // Detailed text
     color: string;       // Color code
     sort: number;        // Internal sort order
+    minScore?: number;
+    maxScore?: number;
+    escalationProcess?: string;
   }
   

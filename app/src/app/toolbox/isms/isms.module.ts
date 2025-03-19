@@ -1,6 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ArchwizardModule } from '@rg-software/angular-archwizard';
@@ -54,7 +54,8 @@ import { ProtectionGoalModalComponent } from './configure/steps/protection-goals
     FontAwesomeModule,
     AuthModule,
     CoreModule,
-    TableModule
+    TableModule,
+    FormsModule
   ]
 })
 export class ISMSModule {}
