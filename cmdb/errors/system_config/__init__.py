@@ -22,7 +22,6 @@ from .system_config_errors import (
     ConfigFileNotFound,
     ConfigNotLoaded,
     SectionError,
-    KeySectionError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -32,5 +31,4 @@ __all__ = [
     'ConfigFileNotFound',
     'ConfigNotLoaded',
     'SectionError',
-    'KeySectionError'
 ]

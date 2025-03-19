@@ -80,6 +80,18 @@ def remove_deleted_risk_class_from_matrix(deleted_risk_class_id: int, request_us
 
     risk_matrix_manager.update_risk_matrix(1, current_risk_matrix)
 
+
+def check_risk_classes_set_in_matrix(risk_matrix: dict) -> bool:
+    """
+    Checks if all cells in the given risk matrix have a risk_class_id set (i.e., greater than 0).
+
+    Args:
+        risk_matrix (Dict): The risk matrix dictionary containing a list of cells
+
+    Returns:
+        bool: True if all cells have a risk_class_id greater than 0, otherwise False
+    """
+    return all(cell.get("risk_class_id", 0) > 0 for cell in risk_matrix.get("risk_matrix", []))
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
 def __generate_risk_matrix(impacts: list[dict], likelihoods: list[dict]) -> list[dict]:

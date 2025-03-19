@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ResponseFailedMessage
+"""
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -41,8 +42,12 @@ class ResponseFailedMessage:
 
 
     def to_dict(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Converts a ResponseFailedMessage into a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the ResponseFailedMessage values
+        """
         return {
             'status': self.status,
             'public_id': self.public_id,

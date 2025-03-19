@@ -47,7 +47,7 @@ class CmdbRelation(CmdbDAO):
     SCHEMA: dict = get_cmdb_relation_schema()
 
     #pylint: disable=too-many-arguments
-    #pylint: disable=too-many-locals
+    #pylint: disable=too-many-positional-arguments
     def __init__(self,
                  public_id: int,
                  relation_name: str,

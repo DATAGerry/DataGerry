@@ -13,14 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of Updater
+"""
 import logging
 from abc import abstractmethod
 
 from cmdb.database import MongoDatabaseManager
+
+from cmdb.manager.base_manager import BaseManager
 from cmdb.manager import (
-    BaseManager,
     TypesManager,
     CategoriesManager,
     ObjectsManager,

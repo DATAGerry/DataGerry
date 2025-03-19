@@ -14,41 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all system config file errors
+This module contains the classes of all CmdbExtendableOption errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ConfigFileError(Exception):
+class CmdbExtendableOptionError(Exception):
     """
-    Raised to catch all system config file related errors
+    Raised to catch all CmdbExtendableOption related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all system config file related errors
+        Raised to catch all CmdbExtendableOption related errors
         """
         super().__init__(err)
 
-# ------------------------------------------------ CONFIG FILE ERRORS ------------------------------------------------ #
-#TODO: REFACTOR-FIX (better naming convention for all error classes)
-class ConfigFileSetError(ConfigFileError):
+# --------------------------------------------- CmdbExtendableOption - ERRORS --------------------------------------------- #
+
+class CmdbExtendableOptionInitError(CmdbExtendableOptionError):
     """
-    Raises if values of loaded config file are tryed to get edited
+    Raised when a CmdbExtendableOption could not be initialised
     """
 
 
-class ConfigFileNotFound(ConfigFileError):
+class CmdbExtendableOptionInitFromDataError(CmdbExtendableOptionError):
     """
-    Error if local config file could not be loaded
-    """
-
-
-class ConfigNotLoaded(ConfigFileError):
-    """
-    Error if config file was not loaded correctly is not loaded
+    Raised when a CmdbExtendableOption could not be initialised from a dict
     """
 
 
-class SectionError(ConfigFileError):
+class CmdbExtendableOptionToJsonError(CmdbExtendableOptionError):
     """
-    Error if section does not exist
+    Raised when a CmdbExtendableOption could not be transformed into a json compatible dict
     """

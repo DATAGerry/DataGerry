@@ -14,23 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module prove all APIBluerpints for ISMS
+Provides all CmdbOptionGroup relevant classes
 """
-from .risk_class_routes import risk_class_blueprint
-from .likelihood_routes import likelihood_blueprint
-from .impact_routes import impact_blueprint
-from .impact_category_routes import impact_category_blueprint
-from .protection_goal_routes import protection_goal_blueprint
-from .risk_matrix_routes import risk_matrix_blueprint
-from .isms_config_routes import isms_config_blueprint
+from .object_group_mode_enum import ObjectGroupMode
+from .cmdb_object_group import CmdbObjectGroup
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'risk_class_blueprint',
-    'likelihood_blueprint',
-    'impact_blueprint',
-    'impact_category_blueprint',
-    'protection_goal_blueprint',
-    'risk_matrix_blueprint',
-    'isms_config_blueprint',
+    'ObjectGroupMode',
+    'CmdbObjectGroup',
 ]

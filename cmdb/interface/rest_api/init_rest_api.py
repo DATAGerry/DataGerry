@@ -133,6 +133,7 @@ def register_blueprints(app: BaseCmdbApp):
         impact_category_blueprint,
         protection_goal_blueprint,
         risk_matrix_blueprint,
+        isms_config_blueprint,
     )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -168,6 +169,7 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(object_relation_logs_blueprint, url_prefix='/object_relation_logs')
 
     # ISMS Blueprints
+    app.register_blueprint(isms_config_blueprint, url_prefix='/isms/config')
     app.register_blueprint(risk_class_blueprint, url_prefix='/isms/risk_classes')
     app.register_blueprint(likelihood_blueprint, url_prefix='/isms/likelihoods')
     app.register_blueprint(impact_blueprint, url_prefix='/isms/impacts')

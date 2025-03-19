@@ -20,6 +20,7 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
+from cmdb.interface.rest_api.responses.default_response import DefaultResponse
 from cmdb.manager import RiskClassManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -222,6 +223,73 @@ def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
         LOGGER.error("[update_isms_risk_class] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
 
+
+@risk_class_blueprint.route('/multiple', methods=['PUT', 'PATCH'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.edit')
+def update_multiple_isms_risk_classes(data: list, request_user: CmdbUser):
+    """
+    HTTP `PUT`/`PATCH` route to update multiple IsmsRiskClasses
+
+    Args:
+        data (list): New IsmsRiskClasses data
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        DefaultResponse: The new data of the IsmsRiskClass
+    """
+    try:
+        risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
+
+        results = []
+        for item in data:
+            public_id = item.get("public_id")
+            if not public_id:
+                results.append({"public_id": None, "status": "failed", "message": "Missing public_id"})
+                continue
+
+            try:
+                to_update_risk_class = risk_class_manager.get_risk_class(public_id)
+                if not to_update_risk_class:
+                    results.append(
+                        {"public_id": public_id, "status": "failed", "message": f"RiskClass ID:{public_id} not found"}
+                    )
+                    continue
+
+                risk_class = IsmsRiskClass.from_data(item)
+                risk_class_manager.update_risk_class(public_id, risk_class)
+
+                results.append({"public_id": public_id, "status": "success"})
+            except RiskClassManagerGetError as err:
+                LOGGER.error("[update_multiple_isms_risk_classes] RiskClassManagerGetError: %s", err, exc_info=True)
+                results.append({
+                    "public_id": public_id,
+                    "status": "failed",
+                    "message": f"Failed to retrieve RiskClass ID: {public_id}"
+                })
+            except RiskClassManagerUpdateError as err:
+                LOGGER.error("[update_multiple_isms_risk_classes] RiskClassManagerUpdateError: %s", err, exc_info=True)
+                results.append({
+                    "public_id": public_id,
+                    "status": "failed",
+                    "message": f"Failed to update RiskClass ID: {public_id}"
+                })
+            except Exception as err:
+                LOGGER.error(
+                    "[update_multiple_isms_risk_classes] Exception: %s. Type: %s", err, type(err), exc_info=True
+                )
+                results.append(
+                    {"public_id": public_id, "status": "failed", "message": "Internal server error"}
+                )
+
+        return DefaultResponse(results).make_response()
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[update_multiple_isms_risk_classes] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
 @risk_class_blueprint.route('/<int:public_id>', methods=['DELETE'])
