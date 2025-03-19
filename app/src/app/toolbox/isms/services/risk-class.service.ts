@@ -42,7 +42,7 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
   };
 
   constructor(
-    private api: ApiCallService  ) {}
+    private api: ApiCallService) { }
 
   /**
    * Fetch a paginated list of Risk Classes.
@@ -50,24 +50,24 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
   public getRiskClasses(params: CollectionParameters = {
     filter: '',
     limit: 10,
-    sort: '', 
+    sort: '',
     order: 1,
     page: 1,
   }): Observable<APIGetMultiResponse<RiskClass>> {
     const options = this.options;
     let httpParams: HttpParams = new HttpParams();
-  
+
     if (params.filter !== undefined) {
       const filter = JSON.stringify(params.filter);
       httpParams = httpParams.set('filter', filter);
     }
-  
+
     httpParams = httpParams.set('limit', params.limit.toString());
     httpParams = httpParams.set('sort', params.sort);
     httpParams = httpParams.set('order', params.order.toString());
     httpParams = httpParams.set('page', params.page.toString());
     options.params = httpParams;
-  
+
     return this.api.callGet<APIGetMultiResponse<RiskClass>>(`${this.servicePrefix}/`, options).pipe(
       map((apiResponse: HttpResponse<APIGetMultiResponse<RiskClass>>) => apiResponse.body),
       catchError((error) => {
@@ -75,7 +75,7 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
       })
     );
   }
-  
+
 
   /**
    * Fetch a single Risk Class by its public ID.
@@ -92,6 +92,7 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
         })
       );
   }
+
 
   /**
    * Create a new Risk Class.
@@ -118,6 +119,7 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
       );
   }
 
+
   /**
    * Update an existing Risk Class by its public ID.
    */
@@ -127,16 +129,16 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
   ): Observable<APIUpdateSingleResponse<T>> {
     // Copy the existing options object
     const options = { ...this.options };
-  
+
     let httpParams = new HttpParams();
     options.params = httpParams;
-  
+
     // Build the request body: combine the provided data with public_id
     const body = {
       public_id: publicId,
       ...riskClassData
     };
-  
+
     return this.api.callPut<APIUpdateSingleResponse<T>>(
       `${this.servicePrefix}/${publicId}`,
       body,
@@ -148,7 +150,35 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
       })
     );
   }
-  
+
+
+  public updateRiskClassOrder(
+    riskClassData: Partial<Array<RiskClass>>
+  ): Observable<APIUpdateSingleResponse<T>> {
+    // Copy the existing options object
+    const options = { ...this.options };
+
+    let httpParams = new HttpParams();
+    options.params = httpParams;
+
+    // Build the request body: combine the provided data with public_id
+    const body = [...riskClassData]
+
+      ;
+
+    return this.api.callPut<APIUpdateSingleResponse<T>>(
+      `${this.servicePrefix}/multiple`,
+      body,
+      options
+    ).pipe(
+      map((apiResponse: HttpResponse<APIUpdateSingleResponse<T>>) => apiResponse.body),
+      catchError((error) => {
+        throw error;
+      })
+    );
+  }
+
+
 
   /**
    * Delete a Risk Class by its public ID.
