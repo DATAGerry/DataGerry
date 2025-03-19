@@ -24,11 +24,11 @@ import { RiskClassModalComponent } from './modal/add-risk-class-modal.component'
 })
 export class RiskClassesComponent implements OnInit {
 
-    // Table column templates
-    @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
-    @ViewChild('colorTemplate', { static: true }) colorTemplate: TemplateRef<any>;
-    //  pass a config from the wizard container
-    @Input() config: IsmsConfig;
+  // Table column templates
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
+  @ViewChild('colorTemplate', { static: true }) colorTemplate: TemplateRef<any>;
+  //  pass a config from the wizard container
+  @Input() config: IsmsConfig;
 
   public riskClasses: RiskClass[] = [];
   public totalRiskClasses: number = 0;
@@ -226,6 +226,17 @@ export class RiskClassesComponent implements OnInit {
     * handle row reordering
     */
   public onOrderChange(newItems: RiskClass[]): void {
-    this.riskClasses = newItems;
+    this.riskClasses = [...newItems];
+    console.log('order change', this.riskClasses)
+    this.riskClassService.updateRiskClassOrder(this.riskClasses).subscribe({
+      next: (res) => {
+        console.log('res', res)
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message)
+        console.log('order change', err?.error?.message)
+      }
+    })
   }
+
 }
