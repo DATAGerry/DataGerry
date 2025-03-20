@@ -137,3 +137,15 @@ class ObjectRelationLogRight(FrameworkRight):
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
+
+
+class ExtendableOptionRight(FrameworkRight):
+    """
+    Base class for CmdbExtendableOption rights
+    """
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{FrameworkRight.PREFIX}.extendableOption'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)

@@ -13,3 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+This module prove all APIBluerpints for the Framework section of DataGerry
+"""
+from .extendable_option_routes import extendable_option_blueprint
+
+# -------------------------------------------------------------------------------------------------------------------- #
+
+__all__ = [
+    'extendable_option_blueprint',
+]

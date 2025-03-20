@@ -24,6 +24,8 @@ import json
 from cmdb.framework.exporter.format.base_exporter_format import BaseExporterFormat
 from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterConfigType
 from cmdb.framework.rendering.render_result import RenderResult
+
+from cmdb.errors.exporter import ExporterCSVTypeError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -45,29 +47,36 @@ class CsvExportFormat(BaseExporterFormat):
     ACTIVE = True
 
 
-    def export(self, data: list[RenderResult], *args):
-        """ Exports data as .csv file
-
+    def export(self, data: list[RenderResult], *args) -> StringIO:
+        """ 
+        Exports data as a CSV file
+        
         Args:
-            data: The objects to be exported
+            data (List[RenderResult]): The objects to be exported
+            *args (Dict[str, Any]): Additional export parameters
+        
         Returns:
-            Csv file containing the data
+            StringIO: A file-like object containing the CSV data
+        
+        Raises:
+            ExporterCSVTypeError: If objects of different types are detected
         """
-        # init values
+        if not data:
+            raise ValueError("No data provided for CSV export")
+
         header = ['public_id', 'active']
-        columns = [] if not data else [x['name'] for x in data[0].fields]
+        columns = [x['name'] for x in data[0].fields] if data else []
         rows = []
         view = 'native'
-        current_type_id = None
+        current_type_id = data[0].type_information['type_id']
 
         # Export only the shown fields chosen by the user
-        if args and args[0].get("metadata", False) and \
-           args[0].get('view', 'native').upper() == ExporterConfigType.RENDER.name:
-
-            _meta = json.loads(args[0].get("metadata", ""))
-            view = args[0].get('view', 'native')
-            header = _meta['header']
-            columns = _meta['columns']
+        if args and args[0].get("metadata") and\
+           args[0].get("view", "native").upper() == ExporterConfigType.RENDER.name:
+            metadata = json.loads(args[0]["metadata"])
+            view = args[0]["view"]
+            header = metadata.get("header", header)
+            columns = metadata.get("columns", columns)
 
         for obj in data:
             # get type from first object and setup csv header
@@ -76,8 +85,7 @@ class CsvExportFormat(BaseExporterFormat):
 
             # throw Exception if objects of different type are detected
             if current_type_id != obj.type_information['type_id']:
-                #TODO: ERROR-FIX
-                raise Exception({'message': 'CSV can export only object of the same type'})
+                raise ExporterCSVTypeError('CSV can export only Objects of the same Type')
 
             # get object fields as dict:
             obj_fields_dict = {}
@@ -116,10 +124,7 @@ class CsvExportFormat(BaseExporterFormat):
         csv_file = StringIO()
         writer = csv.writer(csv_file, dialect=dialect)
         writer.writerow(header)
-        writer.writerows(rows)  # More efficient than looping manually
-        # for row in rows:
-        #     writer.writerow(row)
-
+        writer.writerows(rows)
         csv_file.seek(0) # Reset pointer to the beginning of the file
 
         return csv_file

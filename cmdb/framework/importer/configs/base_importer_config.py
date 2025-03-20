@@ -27,12 +27,20 @@ class BaseImporterConfig:
     MANUALLY_MAPPING: bool = True
 
     def __init__(self, mapping: list = None):
-        if mapping:
-            mapping = Mapping.generate_mapping_from_list(mapping)
-        self.mapping: Mapping = mapping or self.DEFAULT_MAPPING
+        """
+        Initializes the BaseImporterConfig
+
+        Args:
+            mapping (Optional[List]): Optional list to generate a mapping
+        """
+        self.mapping: Mapping = Mapping.generate_mapping_from_list(mapping) if mapping else self.DEFAULT_MAPPING
 
 
     def get_mapping(self) -> Mapping:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Returns the current mapping configuration
+
+        Returns:
+            Mapping: The mapping instance associated with this configuration
+        """
         return self.mapping

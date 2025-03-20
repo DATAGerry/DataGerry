@@ -14,14 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of OptionType
+This module provides all errors for the ExtendableOptionsManager
 """
-from enum import Enum
+from .extendable_options_manager_errors import (
+    ExtendableOptionsManagerError,
+    ExtendableOptionsManagerInitError,
+    ExtendableOptionsManagerInsertError,
+    ExtendableOptionsManagerGetError,
+    ExtendableOptionsManagerUpdateError,
+    ExtendableOptionsManagerDeleteError,
+    ExtendableOptionsManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class OptionType(str, Enum):
-    """
-    Available OptionTypes for CmdbExtendableOptions
-    """
-    OBJECT_GROUP = 'OBJECT_GROUP'
-    THREAT = 'THREAT'
+__all__ = [
+    'ExtendableOptionsManagerError',
+    'ExtendableOptionsManagerInitError',
+    'ExtendableOptionsManagerInsertError',
+    'ExtendableOptionsManagerGetError',
+    'ExtendableOptionsManagerUpdateError',
+    'ExtendableOptionsManagerDeleteError',
+    'ExtendableOptionsManagerIterationError',
+]

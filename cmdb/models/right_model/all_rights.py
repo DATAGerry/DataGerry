@@ -33,6 +33,7 @@ from cmdb.models.right_model.framework_rights import (
     RelationRight,
     ObjectRelationRight,
     ObjectRelationLogRight,
+    ExtendableOptionRight,
 )
 from cmdb.models.right_model.isms_rights import (
     IsmsRight,
@@ -185,6 +186,13 @@ ISMS_RIGHTS = (
         (
             RiskMatrixRight('view', description='View ISMS RiskMatrix'),
             RiskMatrixRight('edit', Levels.PROTECTED, description='Edit ISMS RiskMatrix'),
+        ),
+        ExtendableOptionRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage extendable options'),
+        (
+            ExtendableOptionRight('view', description='View extendable options'),
+            ExtendableOptionRight('add', description='Add extendable options'),
+            ExtendableOptionRight('edit', Levels.PROTECTED, description='Edit extendable options'),
+            ExtendableOptionRight('delete', Levels.SECURE, description='Delete extendable options'),
         ),
     ),
 )
