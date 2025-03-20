@@ -225,7 +225,7 @@ def update_isms_impact_category(public_id: int, data: dict, request_user: CmdbUs
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @impact_category_blueprint.protect(auth=True, right='base.isms.impactCategory.edit')
-def update_multiple_isms_impact_categories(data: list, request_user: CmdbUser):
+def update_multiple_isms_impact_categories(request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update multiple IsmsImpactCategory records.
 
@@ -240,7 +240,9 @@ def update_multiple_isms_impact_categories(data: list, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
+        data = request.get_json()
         results = []
+
         for item in data:
             public_id = item.get("public_id")
             if not public_id:

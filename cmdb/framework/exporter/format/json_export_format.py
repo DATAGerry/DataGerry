@@ -32,7 +32,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class JsonExportFormat(BaseExporterFormat):
     """
-    The Json export format
+    The JSON export format for exporting data as a .json file
 
     Extends: BaseExporterFormat
     """
@@ -44,86 +44,158 @@ class JsonExportFormat(BaseExporterFormat):
     ACTIVE = True
 
 
-    def export(self, data: list[RenderResult], *args):
-        """Exports data as .json file
+    def export(self, data: list[RenderResult], *args) -> str:
+        """
+        Exports a list of RenderResult objects as a JSON-formatted string
 
         Args:
-            data: The objects to be exported
+            data (List[RenderResult]): List of `RenderResult` objects to export
+            *args: Optional arguments, including:
+                - 'metadata' (dict or str): Customizes the export (e.g., columns, header)
+                - 'view' (str): Specifies the view format. Defaults to 'native'.
+                                Affects data processing if set to 'RENDER'.
 
         Returns:
-            Json file containing the data
+            str: A JSON-formatted string representing the exported data with fields, MDS, and metadata
         """
-        meta = False
+        metadata = None
         view = 'native'
 
         if args:
-            meta = args[0].get("metadata", False)
-            view = args[0].get('view', 'native')
+            metadata = args[0].get("metadata")
+            view = args[0].get("view", 'native')
 
         header = ['public_id', 'active', 'type_label']
         output = []
 
         for obj in data:
-            # init columns
+            # Initialize columns and multi_data_sections
             columns = obj.fields
-            multi_data_sections = []
+            multi_data_sections = obj.multi_data_sections if obj.multi_data_sections else []
 
-            if len(obj.multi_data_sections) > 0:
-                multi_data_sections = obj.multi_data_sections
+            # If metadata is provided, adjust columns and header
+            if metadata and view.upper() == ExporterConfigType.RENDER.name:
+                metadata = json.loads(metadata)
+                header = metadata.get('header', header)
+                columns = [field for field in columns if field['name'] in metadata.get('columns', [])]
 
-            # Export only the shown fields chosen by the user
-            if meta and view.upper() == ExporterConfigType.RENDER.name:
-                _meta = json.loads(meta)
-                header = _meta['header']
-                columns = [x for x in columns if x['name'] in _meta['columns']]
+            # Prepare the base output element
+            output_element = self._create_output_element(obj, header)
 
-            # init output element
-            output_element = {}
+            # Add fields to the output element
+            output_element['fields'] = self._get_fields(obj, columns, view)
 
-            for head in header:
-                head = 'object_id' if head == 'public_id' else head
-
-                if head == 'type_label':
-                    output_element.update({head: obj.type_information[head]})
-                else:
-                    output_element.update({head: obj.object_information[head]})
-
-            # get object fields
-            output_element.update({'fields': []})
-            for field in columns:
-                output_element['fields'].append({
-                    'name': field.get('name'),
-                    'value': BaseExporterFormat.summary_renderer(obj, field, view)
-                })
-
-            if len(multi_data_sections) > 0:
-                output_element.update({'multi_data_sections': []})
-
-                for index, mds in enumerate(multi_data_sections):
-                    # set first level items
-                    output_element['multi_data_sections'].append({
-                        'section_id': mds.get('section_id'),
-                        'highest_id': mds.get('highest_id')
-                    })
-                    output_element['multi_data_sections'][index].update({'values': []})
-
-                    #set values
-                    values = mds.get('values')
-
-                    for val_index, value in enumerate(values):
-                        output_element['multi_data_sections'][index]['values'].append({
-                             'multi_data_id': value.get('multi_data_id')
-                        })
-                        output_element['multi_data_sections'][index]['values'][val_index].update({'data': []})
-
-                        #set all data
-                        data = value.get('data')
-                        for data_set in data:
-                            output_element['multi_data_sections'][index]['values'][val_index]['data'].append({
-                                'name': data_set.get('name'),
-                                'value': data_set.get('value')
-                            })
+            # Add multi-data sections if available
+            if multi_data_sections:
+                output_element['multi_data_sections'] = self._get_multi_data_sections(multi_data_sections)
 
             output.append(output_element)
 
         return json.dumps(output, default=default, ensure_ascii=False, indent=2)
+
+
+    def _create_output_element(self, obj: RenderResult, header: list[str]) -> dict:
+        """
+        Creates the basic structure of an output element based on the header
+
+        Args:
+            obj (RenderResult): The RenderResult object containing the data to be exported
+            header (list[str]): A list of field names to include in the output element
+
+        Returns:
+            dict: A dictionary representing the output element with the specified header fields
+        """
+        output_element = {}
+        for head in header:
+            # Map 'public_id' to 'object_id'
+            head = 'object_id' if head == 'public_id' else head
+
+            if head == 'type_label':
+                output_element[head] = obj.type_information.get(head)
+            else:
+                output_element[head] = obj.object_information.get(head)
+
+        return output_element
+
+
+    def _get_fields(self, obj: RenderResult, columns: list[dict], view: str) -> list[dict]:
+        """
+        Retrieves the fields data for the object based on the view format
+
+        Args:
+            obj (RenderResult): The RenderResult object containing the fields to be retrieved
+            columns (list[dict]): A list of field definitions for the object
+            view (str): The view format that determines how the field data is processed
+
+        Returns:
+            list[dict]: A list of dictionaries representing the field names and their corresponding values
+        """
+        fields = []
+
+        for field in columns:
+            fields.append({
+                'name': field.get('name'),
+                'value': BaseExporterFormat.summary_renderer(obj, field, view)
+            })
+
+        return fields
+
+
+    def _get_multi_data_sections(self, multi_data_sections: list[dict]) -> list[dict]:
+        """
+        Processes the multi-data sections for the object
+
+        Args:
+            multi_data_sections (list[dict]): A list of multi-data sections to be processed
+
+        Returns:
+            list[dict]: A list of dictionaries representing the multi-data sections and their values
+        """
+        sections = []
+
+        for mds in multi_data_sections:
+            section = {
+                'section_id': mds.get('section_id'),
+                'highest_id': mds.get('highest_id'),
+                'values': self._get_multi_data_values(mds.get('values', []))
+            }
+            sections.append(section)
+
+        return sections
+
+
+    def _get_multi_data_values(self, values: list[dict]) -> list[dict]:
+        """
+        Processes the values within each multi-data section
+
+        Args:
+            values (list[dict]): A list of values within a multi-data section
+
+        Returns:
+            list[dict]: A list of dictionaries representing the values and their data
+                        within the multi-data sections
+        """
+        value_list = []
+
+        for value in values:
+            value_data = {
+                'multi_data_id': value.get('multi_data_id'),
+                'data': self._get_data(value.get('data', []))
+            }
+            value_list.append(value_data)
+
+        return value_list
+
+
+    def _get_data(self, data: list[dict]) -> list[dict]:
+        """
+        Processes the individual data elements within each multi-data value
+
+        Args:
+            data (list[dict]): A list of data elements to be processed
+
+        Returns:
+            list[dict]: A list of dictionaries representing the data elements
+                        with their names and values
+        """
+        return [{'name': data_set.get('name'), 'value': data_set.get('value')} for data_set in data]

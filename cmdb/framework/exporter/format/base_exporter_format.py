@@ -22,6 +22,14 @@ from cmdb.framework.exporter.config.exporter_config_type_enum import ExporterCon
 class BaseExporterFormat:
     """
     Base class for exporter formats
+
+    Attributes:
+        FILE_EXTENSION (Optional[str]): The file extension for the export format
+        LABEL (Optional[str]): Label for the exporter format
+        MULTITYPE_SUPPORT (bool): Indicates if multiple types are supported
+        ICON (Optional[str]): Icon representation of the format
+        DESCRIPTION (Optional[str]): Description of the exporter format
+        ACTIVE (Optional[bool]): Status indicating if the format is active
     """
     FILE_EXTENSION = None
     LABEL = None
@@ -31,7 +39,7 @@ class BaseExporterFormat:
     ACTIVE = None
 
 
-    def __init__(self, file_name: str =''):
+    def __init__(self, file_name: str = ''):
         """
         Initializes the exporter with a filename
         

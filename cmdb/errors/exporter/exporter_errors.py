@@ -14,14 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of OptionType
+Contains all Exporter Error Classes
 """
-from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class OptionType(str, Enum):
+class ExporterError(Exception):
     """
-    Available OptionTypes for CmdbExtendableOptions
+    Raised to catch all Exporter related errors
     """
-    OBJECT_GROUP = 'OBJECT_GROUP'
-    THREAT = 'THREAT'
+    def __init__(self, err: str):
+        """
+        Raised to catch all Exporter related errors
+        """
+        super().__init__(err)
+
+# -------------------------------------------------- Exporter ERRORS ------------------------------------------------- #
+
+class ExporterCSVTypeError(ExporterError):
+    """
+    Raised when the Exporter trys to export Objects of different CmdbTypes
+    """

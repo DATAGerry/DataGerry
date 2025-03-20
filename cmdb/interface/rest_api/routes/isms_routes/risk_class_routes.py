@@ -228,7 +228,7 @@ def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.edit')
-def update_multiple_isms_risk_classes(data: list, request_user: CmdbUser):
+def update_multiple_isms_risk_classes(request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update multiple IsmsRiskClasses
 
@@ -239,7 +239,10 @@ def update_multiple_isms_risk_classes(data: list, request_user: CmdbUser):
     Returns:
         DefaultResponse: The new data of the IsmsRiskClass
     """
+    LOGGER.debug("update_multiple_isms_risk_classes() called")
     try:
+        data = request.get_json()
+
         risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
 
         results = []

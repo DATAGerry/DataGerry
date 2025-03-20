@@ -49,6 +49,7 @@ from cmdb.manager import (
     ImpactCategoryManager,
     ProtectionGoalManager,
     RiskMatrixManager,
+    ExtendableOptionsManager,
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -126,6 +127,7 @@ class ManagerProvider:
             ManagerType.IMPACT_CATEGORY: ImpactCategoryManager,
             ManagerType.PROTECTION_GOAL: ProtectionGoalManager,
             ManagerType.RISK_MATRIX: RiskMatrixManager,
+            ManagerType.EXTENDABLE_OPTIONS: ExtendableOptionsManager,
         }
 
         return manager_classes.get(manager_type)

@@ -43,6 +43,7 @@ class ManagerType(Enum):
     RELATIONS = 'RelationsManager'
     OBJECT_RELATIONS = 'ObjectRelationsManager'
     OBJECT_RELATION_LOGS = 'ObjectRelationLogsManager'
+    EXTENDABLE_OPTIONS = 'ExtendableOptionsManager'
 
     #ISMS Managers
     RISK_CLASS = 'RiskClassManager'
