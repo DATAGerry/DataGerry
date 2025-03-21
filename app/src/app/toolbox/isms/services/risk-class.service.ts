@@ -50,8 +50,8 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
   public getRiskClasses(params: CollectionParameters = {
     filter: '',
     limit: 10,
-    sort: '',
     order: 1,
+    sort: 'sort',
     page: 1,
   }): Observable<APIGetMultiResponse<RiskClass>> {
     const options = this.options;
