@@ -5,7 +5,7 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize, switchMap } from 'rxjs/operators';
 
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,6 +16,7 @@ import { RiskClassService } from '../../../services/risk-class.service';
 import { IsmsConfig } from '../../../models/isms-config.model';
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
 import { RiskClassModalComponent } from './modal/add-risk-class-modal.component';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-isms-risk-classes',
@@ -30,6 +31,7 @@ export class RiskClassesComponent implements OnInit {
   //  pass a config from the wizard container
   @Input() config: IsmsConfig;
 
+  private orderChangeSubject = new Subject<RiskClass[]>();
   public riskClasses: RiskClass[] = [];
   public totalRiskClasses: number = 0;
   public page = 1;
@@ -89,6 +91,7 @@ export class RiskClassesComponent implements OnInit {
       }
     ];
 
+    this.setupDebouncedOrderChange();
     this.loadRiskClasses();
   }
 
@@ -105,7 +108,7 @@ export class RiskClassesComponent implements OnInit {
         filter: '',
         limit: this.limit,
         page: this.page,
-        sort: '',
+        sort: 'sort',
         order: 1
       })
       .pipe(
@@ -116,6 +119,7 @@ export class RiskClassesComponent implements OnInit {
       )
       .subscribe({
         next: (data) => {
+          console.log('risk classes', data)
           this.riskClasses = data.results;
           this.totalRiskClasses = data.total;
         },
@@ -133,6 +137,7 @@ export class RiskClassesComponent implements OnInit {
   public addRiskClass(): void {
 
     const modalRef = this.modalService.open(RiskClassModalComponent, { size: 'lg' });
+    modalRef.componentInstance.sort = this.totalRiskClasses
     // No input => the modal knows it's creating a new record
     modalRef.result.then(
       (result) => {
@@ -226,17 +231,44 @@ export class RiskClassesComponent implements OnInit {
     * handle row reordering
     */
   public onOrderChange(newItems: RiskClass[]): void {
-    this.riskClasses = [...newItems];
-    console.log('order change', this.riskClasses)
-    this.riskClassService.updateRiskClassOrder(this.riskClasses).subscribe({
-      next: (res) => {
-        console.log('res', res)
-      },
-      error: (err) => {
-        this.toast.error(err?.error?.message)
-        console.log('order change', err?.error?.message)
-      }
-    })
+    this.riskClasses = newItems.map((item, index) => ({
+      ...item,
+      sort: index
+    }));
+
+    this.orderChangeSubject.next(this.riskClasses);
+  }
+
+
+
+  /**
+   *  Sets up the stream that will handle order-change events and
+   *  make the API call only after a short pause (debounce).
+   */
+  private setupDebouncedOrderChange(): void {
+    this.orderChangeSubject
+      .pipe(
+        debounceTime(300),
+        // Only trigger when the emitted array actually changes
+        distinctUntilChanged(
+          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+        ),
+        // Switch to the actual API call
+        switchMap((updatedItems) => {
+          this.loaderService.show();
+          return this.riskClassService.updateRiskClassOrder(updatedItems)
+            .pipe(
+              finalize(() => this.loaderService.hide())
+            );
+        })
+      )
+      .subscribe({
+        next: (res) => {
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message);
+        }
+      });
   }
 
 }
