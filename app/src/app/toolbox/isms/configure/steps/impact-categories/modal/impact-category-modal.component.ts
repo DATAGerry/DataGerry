@@ -50,6 +50,7 @@ export class ImpactCategoryModalComponent implements OnInit {
     private toast: ToastService
   ) { }
 
+
   ngOnInit(): void {
     // Determine mode: if impactCategory is provided and not copy mode, we're in edit mode.
     this.isEditMode = !!this.impactCategory && !this.isCopyMode;
@@ -57,15 +58,17 @@ export class ImpactCategoryModalComponent implements OnInit {
     this.fetchAllImpacts();
   }
 
+
   /**
    * Build the main form: category name and impact_descriptions (as FormArray).
    */
   private buildForm(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      impact_descriptions: this.fb.array([], Validators.required)
+      impact_descriptions: this.fb.array([])
     });
   }
+
 
   /**
    * Fetch all Impacts from the API, then build (or patch) the impact_descriptions FormArray.
@@ -84,6 +87,7 @@ export class ImpactCategoryModalComponent implements OnInit {
         }
       });
   }
+
 
   /**
    * Build or patch the impact_descriptions FormArray.
@@ -117,7 +121,7 @@ export class ImpactCategoryModalComponent implements OnInit {
         this.fb.group({
           impact_id: [imp.public_id, Validators.required],
           impact_name: [imp.name], // for display only
-          value: [existingValue, Validators.required]
+          value: [existingValue]
         })
       );
     });
@@ -128,12 +132,14 @@ export class ImpactCategoryModalComponent implements OnInit {
     }
   }
 
+
   /**
    * Getter for the impact_descriptions FormArray.
    */
   get impactDescriptions(): FormArray {
     return this.form.get('impact_descriptions') as FormArray;
   }
+
 
   /**
    * onSubmit: validate the form and send the payload.
@@ -218,6 +224,7 @@ export class ImpactCategoryModalComponent implements OnInit {
         });
     }
   }
+  
 
   public onCancel(): void {
     this.activeModal.dismiss('cancel');

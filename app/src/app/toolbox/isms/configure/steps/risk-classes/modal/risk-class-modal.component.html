@@ -2,94 +2,107 @@
   <h4 class="modal-title">
     {{ isEditMode ? 'Edit Risk Class' : 'Add Risk Class' }}
   </h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+  <!-- "X" close button -->
+  <button type="button" class="close" (click)="onCancel()">
+    <span aria-hidden="true">×</span>
+  </button>
 </div>
 
 <div class="modal-body">
-  <!-- If edit mode => require 'base.isms.riskClass.edit' -->
-  <!-- If add mode => require 'base.isms.riskClass.add' -->
-  <ng-container *ngIf="isEditMode; else addPermissionBlock">
-    <div *permissionLink="['base.isms.riskClass.edit']">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <!-- Name -->
-        <div class="mb-3">
-          <label for="riskClassName" class="form-label">Name <span class="text-danger">*</span></label>
-          <input id="riskClassName" type="text" class="form-control" formControlName="name"
-            placeholder="Enter a name..." />
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Row: Name & Color side by side -->
+    <div class="row mb-3">
+      <!-- NAME (Required) -->
+      <div class="col-6">
+        <div class="form-group">
+          <label for="riskClassName" class="form-label">
+            Name <span class="text-danger">*</span>
+          </label>
+          <input
+            id="riskClassName"
+            type="text"
+            class="form-control"
+            formControlName="name"
+            placeholder="Enter a name..."
+          />
+          <!-- Error message below the field -->
+          <div
+            class="invalid-feedback d-block"
+            *ngIf="form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)"
+          >
+            Name is required.
+          </div>
         </div>
+      </div>
 
-        <!-- Color -->
-        <div class="mb-3">
-          <label for="riskClassColor" class="form-label">Color</label>
-          <input id="riskClassColor" type="color" class="form-control form-control-color" formControlName="color" />
+      <!-- COLOR (Required) -->
+      <div class="col-6">
+        <div class="form-group">
+          <label for="riskClassColor" class="form-label">
+            Color <span class="text-danger">*</span>
+          </label>
+          <input
+            id="riskClassColor"
+            type="color"
+            class="form-control form-control-color wide-color-bar"
+            formControlName="color"
+          />
+          <!-- Error message below the field -->
+          <div
+            class="invalid-feedback d-block"
+            *ngIf="form.get('color')?.invalid && (form.get('color')?.touched || form.get('color')?.dirty)"
+          >
+            Color is required.
+          </div>
         </div>
-
-        <!-- Description -->
-        <div class="mb-3">
-          <label for="riskClassDescription" class="form-label">Description</label>
-          <textarea id="riskClassDescription" class="form-control" formControlName="description" rows="3"></textarea>
-        </div>
-
-        <!-- Sort -->
-        <!-- <div class="mb-3">
-          <label for="riskClassSort" class="form-label">Sort (optional)</label>
-          <input id="riskClassSort" type="number" class="form-control" formControlName="sort"
-            placeholder="Enter sort order..." />
-        </div> -->
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="onCancel()">
-            Cancel
-          </button>
-          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
-            <span *ngIf="!isSubmitting">Save Changes</span>
-            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
-  </ng-container>
 
-  <!-- ADD MODE -->
-  <ng-template #addPermissionBlock>
-    <div *permissionLink="['base.isms.riskClass.add']">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <!-- Name -->
-        <div class="mb-3">
-          <label for="riskClassName" class="form-label">Name <span class="text-danger">*</span></label>
-          <input id="riskClassName" type="text" class="form-control" formControlName="name"
-            placeholder="Enter a name..." />
+    <!-- DESCRIPTION (Required) -->
+    <div class="mb-3">
+      <div class="form-group">
+        <label for="riskClassDescription" class="form-label">
+          Description <span class="text-danger">*</span>
+        </label>
+        <textarea
+          id="riskClassDescription"
+          class="form-control"
+          formControlName="description"
+          rows="3"
+          placeholder="Enter a description..."
+        ></textarea>
+        <!-- Error message below the field -->
+        <div
+          class="invalid-feedback d-block"
+          *ngIf="form.get('description')?.invalid && (form.get('description')?.touched || form.get('description')?.dirty)"
+        >
+          Description is required.
         </div>
-
-        <!-- Color -->
-        <div class="mb-3">
-          <label for="riskClassColor" class="form-label">Color</label>
-          <input id="riskClassColor" type="color" class="form-control form-control-color" formControlName="color" />
-        </div>
-
-        <!-- Description -->
-        <div class="mb-3">
-          <label for="riskClassDescription" class="form-label">Description</label>
-          <textarea id="riskClassDescription" class="form-control" formControlName="description" rows="3"></textarea>
-        </div>
-
-        <!-- Sort -->
-        <!-- <div class="mb-3">
-          <label for="riskClassSort" class="form-label">Sort (optional)</label>
-          <input id="riskClassSort" type="number" class="form-control" formControlName="sort"
-            placeholder="Enter sort order..." />
-        </div> -->
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="onCancel()">
-            Cancel
-          </button>
-          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
-            <span *ngIf="!isSubmitting">Add Risk Class</span>
-            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
-  </ng-template>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-success"
+        [disabled]="isSubmitting || form.invalid"
+      >
+        <span *ngIf="!isSubmitting">
+          {{ isEditMode ? 'Save Changes' : 'Add Risk Class' }}
+        </span>
+        <span
+          *ngIf="isSubmitting"
+          class="spinner-border spinner-border-sm"
+        ></span>
+      </button>
+    </div>
+  </form>
 </div>

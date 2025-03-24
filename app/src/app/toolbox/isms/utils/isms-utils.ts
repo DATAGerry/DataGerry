@@ -12,3 +12,29 @@ export function uniqueCalculationBasisValidator(existingValues: number[], curren
     return existingValues.includes(valueFloat) ? { duplicateCalculationBasis: true } : null;
   };
 }
+
+
+export function numericOrDecimalValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+
+    if (value === null || value === '') {
+      return null;
+    }
+
+    const isValid = !isNaN(value) && /^-?\d+(\.\d+)?$/.test(value.toString());
+    return isValid ? null : { invalidNumber: true };
+  };
+}
+
+
+
+export function nonZeroValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = parseFloat(control.value);
+    if (!isNaN(value) && value === 0) {
+      return { zeroNotAllowed: true };
+    }
+    return null;
+  };
+}

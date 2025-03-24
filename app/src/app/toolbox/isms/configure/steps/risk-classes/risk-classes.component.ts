@@ -91,8 +91,9 @@ export class RiskClassesComponent implements OnInit {
       }
     ];
 
-    this.setupDebouncedOrderChange();
     this.loadRiskClasses();
+    this.setupDebouncedOrderChange();
+
   }
 
 

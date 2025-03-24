@@ -39,6 +39,7 @@ export class LikelihoodsComponent implements OnInit {
   public page = 1;
   public limit = 10;
   public loading = false;
+  public defaultCalculationBasis: number = -Infinity;
 
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
 
@@ -71,7 +72,8 @@ export class LikelihoodsComponent implements OnInit {
         display: 'Name',
         name: 'name',
         data: 'name',
-        sortable: false
+        sortable: false,
+        style: { width: 'auto', 'text-align': 'center' }
       },
       {
         display: 'Calculation Basis',
@@ -84,7 +86,8 @@ export class LikelihoodsComponent implements OnInit {
         display: 'Description',
         name: 'description',
         data: 'description',
-        sortable: false
+        sortable: false,
+        style: { width: 'auto', 'text-align': 'center' }
       },
       {
         display: 'Actions',
@@ -139,8 +142,20 @@ export class LikelihoodsComponent implements OnInit {
    * Opens add likelihood modal.
    */
   public addLikelihood(): void {
+    const maxBasis = Math.max(...this.likelihoods.map(o => Number(o.calculation_basis)));
+
+    // Set defaultCalculationBasis to 1 if maxBasis is -Infinity, otherwise increment maxBasis
+    if (maxBasis === -Infinity) {
+      this.defaultCalculationBasis = 1;
+    } else if (Number.isInteger(maxBasis)) {
+      this.defaultCalculationBasis = maxBasis + 1;
+    } else {
+      // Don't assign defaultCalculationBasis if it's a decimal
+      this.defaultCalculationBasis = undefined;
+    }    
     const modalRef = this.modalService.open(LikelihoodModalComponent, { size: 'lg' });
     modalRef.componentInstance.existingCalculationBases = this.likelihoods.map(i => parseFloat(i.calculation_basis as any));
+    modalRef.componentInstance.defaultCalculationBasis = this.defaultCalculationBasis;
     // No input => add mode
     modalRef.result.then(
       (result) => {
