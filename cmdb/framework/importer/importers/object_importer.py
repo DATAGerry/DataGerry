@@ -21,11 +21,8 @@ import logging
 from flask import current_app
 
 from cmdb.manager import ObjectsManager
-from cmdb.manager.query_builder import BuilderParameters
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.object_model import CmdbObject
-from cmdb.framework.results import IterationResult
 from cmdb.framework.importer.importers.base_importer import BaseImporter
 from cmdb.framework.importer.configs.object_importer_config import ObjectImporterConfig
 from cmdb.framework.importer.responses.importer_object_response import ImporterObjectResponse
@@ -34,7 +31,6 @@ from cmdb.framework.importer.messages.import_success_message import ImportSucces
 from cmdb.framework.importer.parser.base_object_parser import BaseObjectParser
 from cmdb.framework.importer.responses.object_parser_response import ObjectParserResponse
 from cmdb.interface.route_utils import sync_config_items
-from cmdb.security.acl.permission import AccessControlPermission
 
 from cmdb.errors.manager.objects_manager import (
     ObjectsManagerDeleteError,
@@ -97,8 +93,6 @@ class ObjectImporter(BaseImporter):
         Args:
             import_objects: list of all objects for import - or output of _generate_objects()
         """
-
-
         run_config = self.get_config()
 
         success_imports: list[ImportSuccessMessage] = []
@@ -111,7 +105,6 @@ class ObjectImporter(BaseImporter):
         while current_import_index < import_objects_length:
             current_import_object: dict = import_objects[current_import_index]
             current_public_id: int = current_import_object.get('public_id')
-
             # Object has PublicID and can not overwrite
             if current_public_id is not None and not run_config.overwrite_public:
                 failed_imports.append(ImportFailedMessage(
@@ -131,8 +124,10 @@ class ObjectImporter(BaseImporter):
             # Insert data
             try:
                 existing = self.objects_manager.get_object(current_public_id)
-                existing = CmdbObject.from_data(existing)
-                current_import_object['creation_time'] = existing.creation_time
+
+                if existing:
+                    current_import_object['creation_time'] = existing['creation_time']
+
                 current_import_object['last_edit_time'] = datetime.now(timezone.utc)
             except ObjectsManagerGetError as err:
                 try:
@@ -164,6 +159,7 @@ class ObjectImporter(BaseImporter):
                 try:
                     self.objects_manager.delete_object(current_public_id, self.request_user)
                 except ObjectsManagerDeleteError as err:
+                    LOGGER.error("[_import] ObjectsManagerDeleteError: %s", err, exc_info=True)
                     failed_imports.append(ImportFailedMessage(error_message=err, obj=current_import_object))
                     current_import_index += 1
                     continue
@@ -188,6 +184,7 @@ class ObjectImporter(BaseImporter):
                         except Exception as error:
                             LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
                     except ObjectsManagerInsertError as err:
+                        LOGGER.error("[_import] ObjectsManagerInsertError: %s", err, exc_info=True)
                         failed_imports.append(ImportFailedMessage(error_message=err, obj=current_import_object))
                         current_import_index += 1
                         continue

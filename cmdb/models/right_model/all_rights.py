@@ -34,6 +34,7 @@ from cmdb.models.right_model.framework_rights import (
     ObjectRelationRight,
     ObjectRelationLogRight,
     ExtendableOptionRight,
+    ObjectGroupRight,
 )
 from cmdb.models.right_model.isms_rights import (
     IsmsRight,
@@ -141,6 +142,20 @@ FRAMEWORK_RIGHTS = (
             ObjectRelationLogRight('delete', Levels.DANGER, description='Delete object relation logs'),
         )
     ),
+        ExtendableOptionRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage extendable options'),
+        (
+            ExtendableOptionRight('view', description='View extendable options'),
+            ExtendableOptionRight('add', description='Add extendable options'),
+            ExtendableOptionRight('edit', Levels.PROTECTED, description='Edit extendable options'),
+            ExtendableOptionRight('delete', Levels.SECURE, description='Delete extendable options'),
+        ),
+        ObjectGroupRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage ObjectGroups'),
+        (
+            ObjectGroupRight('view', description='View ObjectGroups'),
+            ObjectGroupRight('add', description='Add ObjectGroups'),
+            ObjectGroupRight('edit', Levels.PROTECTED, description='Edit ObjectGroups'),
+            ObjectGroupRight('delete', Levels.SECURE, description='Delete ObjectGroups'),
+        ),
 )
 
 
@@ -186,13 +201,6 @@ ISMS_RIGHTS = (
         (
             RiskMatrixRight('view', description='View ISMS RiskMatrix'),
             RiskMatrixRight('edit', Levels.PROTECTED, description='Edit ISMS RiskMatrix'),
-        ),
-        ExtendableOptionRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage extendable options'),
-        (
-            ExtendableOptionRight('view', description='View extendable options'),
-            ExtendableOptionRight('add', description='Add extendable options'),
-            ExtendableOptionRight('edit', Levels.PROTECTED, description='Edit extendable options'),
-            ExtendableOptionRight('delete', Levels.SECURE, description='Delete extendable options'),
         ),
     ),
 )

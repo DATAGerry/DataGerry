@@ -14,16 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of ApiLevel
+This module provides all errors for the ObjectGroupsManager
 """
-from enum import IntEnum
+from .object_groups_manager_errors import (
+    ObjectGroupsManagerError,
+    ObjectGroupsManagerInitError,
+    ObjectGroupsManagerInsertError,
+    ObjectGroupsManagerGetError,
+    ObjectGroupsManagerUpdateError,
+    ObjectGroupsManagerDeleteError,
+    ObjectGroupsManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ApiLevel(IntEnum):
-    """
-    Class wrapper for different API levels
-    """
-    NO_API = 0
-    ADMIN = 1
-    SUPER_ADMIN = 2
-    LOCKED = 3
+__all__ = [
+    'ObjectGroupsManagerError',
+    'ObjectGroupsManagerInitError',
+    'ObjectGroupsManagerInsertError',
+    'ObjectGroupsManagerGetError',
+    'ObjectGroupsManagerUpdateError',
+    'ObjectGroupsManagerDeleteError',
+    'ObjectGroupsManagerIterationError',
+]

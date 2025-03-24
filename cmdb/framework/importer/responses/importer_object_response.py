@@ -13,14 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of ImporterObjectResponse
+"""
 from cmdb.framework.importer.messages.import_success_message import ImportSuccessMessage
 from cmdb.framework.importer.messages.import_failed_message import ImportFailedMessage
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ImporterObjectResponse:
-    """Response of an bulk object import"""
+    """
+    Response of an bulk object import
+    """
 
     def __init__(self, message: str, success_imports: list = None, failed_imports: list = None):
         self.message = message

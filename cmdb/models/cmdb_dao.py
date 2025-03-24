@@ -17,6 +17,7 @@
 Implementation of CmdbDAO
 """
 import logging
+from typing import Type, TypeVar
 import pprint
 from pymongo import IndexModel
 
@@ -26,6 +27,8 @@ from cmdb.errors.cmdb_object import NoPublicIDError, NoVersionError, RequiredIni
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
+
+T = TypeVar("T", bound="CmdbDAO")
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                    CmdbDAO - CLASS                                                   #
@@ -195,3 +198,19 @@ class CmdbDAO:
 
     def __repr__(self):
         return f'Class: {self.__class__.__name__} \nDict:\n{pprint.pformat(self.__dict__)}'
+
+
+    @classmethod
+    def from_data(cls: Type[T], data: dict) -> T:
+        """
+        Each subclass must implement this to initialize from a dictionary
+        """
+        raise NotImplementedError(f"{cls.__name__} must implement from_data.")
+
+
+    @classmethod
+    def to_json(cls, instance: T) -> dict:
+        """
+        Each subclass must implement this to convert to a JSON-compatible dict
+        """
+        raise NotImplementedError(f"{cls.__name__} must implement to_json.")

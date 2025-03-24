@@ -27,7 +27,6 @@ properties:
                   additionalProperties: true
             - type: object
               additionalProperties: true
-            - type: 'null'
         default: null
         description: The filter criteria can be a list of dictionaries, a dictionary or empty, depending on the use case.
     limit:
@@ -51,11 +50,9 @@ properties:
         nullable: true
         description: Used for pagination
     projection:
-        oneOf:
-            - type: object
-              additionalProperties:
-                type: integer
-            - type: 'null'
+        type: object
+        additionalProperties: true
+        nullable: true
         default: null
         description: The projection can either be a dictionary or null. If null, no projection is applied.
 example:

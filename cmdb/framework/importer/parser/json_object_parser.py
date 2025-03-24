@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of JsonObjectParser
+"""
 import json
 import logging
 
@@ -29,19 +30,47 @@ LOGGER = logging.getLogger(__name__)
 #                                               JsonObjectParser - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class JsonObjectParser(BaseObjectParser, JSONContent):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A parser class that reads and processes JSON files
 
+    Extends: BaseObjectParser, JSONContent
+
+    Attributes:
+        DEFAULT_CONFIG (dict): The default configuration for the parser. Includes:
+            - indent: The number of spaces to use for indentation in the output (default 2)
+            - encoding: The file encoding used when reading the file (default 'UTF-8')
+    """
     DEFAULT_CONFIG = {
         'indent': 2,
         'encoding': 'UTF-8'
     }
 
     def __init__(self, parser_config: dict = None):
+        """
+        Initializes the JsonObjectParser with a given configuration
+
+        Args:
+            parser_config (dict, optional): Custom configuration to override default settings
+                If None, the default configuration will be used
+        """
         super().__init__(parser_config)
 
 
     def parse(self, file) -> JsonObjectParserResponse:
+        """
+        Parses the provided JSON file and returns a response containing the parsed data
+
+        The file is read with the encoding specified in the configuration, and the JSON data is loaded.
+        It returns a structured response containing the number of entries and the parsed data
+
+        Args:
+            file (str): The path to the JSON file to be parsed
+
+        Returns:
+            JsonObjectParserResponse: A structured response containing:
+                - count: The number of entries in the parsed JSON data
+                - entries: The actual parsed JSON data (usually a list or dictionary)
+        """
         run_config = self.get_config()
 
         with open(file, 'r', encoding=run_config.get('encoding')) as json_file:

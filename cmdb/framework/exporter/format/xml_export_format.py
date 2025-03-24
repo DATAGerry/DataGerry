@@ -111,7 +111,6 @@ class XmlExportFormat(BaseExporterFormat):
         cmdb_object_list = ET.Element('objects')
 
         for obj in data:
-            LOGGER.debug("Processing object: %s", obj.object_information.get('public_id', 'Unknown'))
             obj_fields_dict = self._extract_object_fields(obj, view)
             cmdb_object = ET.SubElement(cmdb_object_list, 'object')
             self._add_meta_data(cmdb_object, obj, header)

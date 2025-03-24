@@ -194,129 +194,136 @@ def parse_objects():
 def import_objects(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    # Check if file exists
-    if not request.files:
-        return abort(400, 'No import file was provided')
-
-    request_file: FileStorage = get_file_in_request('file', request.files)
-
-    filename = secure_filename(request_file.filename)
-    working_file = f'/tmp/{filename}'
-    request_file.save(working_file)
-
-    # Load file format
-    file_format = request.form.get('file_format', None)
-
-    # Load parser config
-    parser_config: dict = get_element_from_data_request('parser_config', request) or {}
-    if parser_config == {}:
-        LOGGER.info('No parser config was provided - using default parser config')
-
-    # Check for importer config
-    importer_config_request: dict = get_element_from_data_request('importer_config', request) or None
-    if not importer_config_request:
-        return abort(400, 'No import config was provided')
-
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
-    logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
-
-    # Check if type exists
     try:
-        type_ = types_manager.get_type(importer_config_request.get('type_id'))
-        type_ = CmdbType.from_data(type_)
+        # Check if file exists
+        if not request.files:
+            LOGGER.error("[import_objects] No import file!")
+            return abort(400, 'No import file was provided')
 
-        if not type_.active:
-            raise AccessDeniedError(f'Objects cannot be created because type `{type_.name}` is deactivated.')
-        verify_import_access(request_user, type_, types_manager)
-    except AccessDeniedError:
-        return abort(403, "Access denied for importing objects !")
-    except (TypesManagerGetError, Exception) as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] %s", err)
-        return abort(400, "Could not import objects !")
+        request_file: FileStorage = get_file_in_request('file', request.files)
 
+        filename = secure_filename(request_file.filename)
+        working_file = f'/tmp/{filename}'
+        request_file.save(working_file)
 
-    # Load parser
-    try:
-        parser_class = load_parser_class('object', file_format)
-    except ParserLoadError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] %s", err)
-        return abort(406)
+        # Load file format
+        file_format = request.form.get('file_format', None)
 
-    parser = parser_class(parser_config)
+        # Load parser config
+        parser_config: dict = get_element_from_data_request('parser_config', request) or {}
+        if parser_config == {}:
+            LOGGER.info('No parser config was provided - using default parser config')
 
-    # Load importer config
-    try:
-        importer_config_class = load_importer_config_class('object', file_format)
-    except ImporterLoadError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] ImporterLoadError: %s", err)
-        return abort(406)
-    importer_config = importer_config_class(**importer_config_request)
+        # Check for importer config
+        importer_config_request: dict = get_element_from_data_request('importer_config', request) or None
+        if not importer_config_request:
+            LOGGER.error("[import_objects] No import config was provided!")
+            return abort(400, 'No import config was provided')
 
-    # Load importer
-    try:
-        importer_class = load_importer_class('object', file_format)
-    except ImporterLoadError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[import_objects] ImporterLoadError: %s", err)
-        return abort(406)
-    importer = importer_class(working_file, importer_config, parser, objects_manager, request_user)
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        logs_manager: LogsManager = ManagerProvider.get_manager(ManagerType.LOGS, request_user)
 
-    try:
-        import_response: ImporterObjectResponse = importer.start_import()
-    except ImportRuntimeError as err:
-        #TODO: ERROR-FIX
-        LOGGER.error("Error while importing objects: %s", err)
-        return abort(500)
-    except AccessDeniedError as err:
-        #TODO: ERROR-FIX
-        return abort(403)
-
-    # close request file
-    request_file.close()
-
-    # log all successful imports
-    for message in import_response.success_imports:
+        # Check if type exists
         try:
-            # get object state of every imported object
-            current_type_instance = objects_manager.get_object_type(importer_config_request.get('type_id'))
-            current_object = objects_manager.get_object(message.public_id)
-            current_object = CmdbObject.from_data(current_object)
+            type_ = types_manager.get_type(importer_config_request.get('type_id'))
 
-            current_object_render_result = CmdbRender(current_object,
-                                                      current_type_instance,
-                                                      request_user,
-                                                      False,
-                                                      objects_manager.dbm).result()
+            if type_:
+                type_ = CmdbType.from_data(type_)
 
-            # insert object create log
-            log_params = {
-                'object_id': message.public_id,
-                'user_id': request_user.get_public_id(),
-                'user_name': request_user.get_display_name(),
-                'comment': 'Object was imported',
-                'render_state': json.dumps(
-                                    current_object_render_result,
-                                    default=default).encode('UTF-8'),
-                'version': current_object.version
-            }
-
-            logs_manager.insert_log(action=LogAction.CREATE, log_type=CmdbObjectLog.__name__, **log_params)
-
-        except ObjectsManagerGetError as err:
-            LOGGER.debug("[import_objects] %s", err)
-            return abort(404)
-        except InstanceRenderError as err:
+                if not type_.active:
+                    raise AccessDeniedError(f'Objects cannot be created because type `{type_.name}` is deactivated.')
+                verify_import_access(request_user, type_, types_manager)
+        except AccessDeniedError:
+            LOGGER.error("[import_objects] No import config was provided!")
+            return abort(403, "Access denied for importing objects !")
+        except (TypesManagerGetError, Exception) as error:
             #TODO: ERROR-FIX
-            LOGGER.debug("[import_objects] InstanceRenderError: %s", err)
+            LOGGER.error("[import_objects] Exception: %s. Type: %s", error, type(error), exc_info=True)
+            return abort(400, "Could not import objects !")
+
+        # Load parser
+        try:
+            parser_class = load_parser_class('object', file_format)
+        except ParserLoadError as err:
+            #TODO: ERROR-FIX
+            LOGGER.error("[import_objects] ParserLoadError: %s", err, exc_info=True)
+            return abort(406)
+
+        parser = parser_class(parser_config)
+
+        # Load importer config
+        try:
+            importer_config_class = load_importer_config_class('object', file_format)
+        except ImporterLoadError as err:
+            #TODO: ERROR-FIX
+            LOGGER.error("[import_objects] ImporterLoadError: %s", err, exc_info=True)
+            return abort(406)
+        importer_config = importer_config_class(**importer_config_request)
+
+        # Load importer
+        try:
+            importer_class = load_importer_class('object', file_format)
+        except ImporterLoadError as err:
+            #TODO: ERROR-FIX
+            LOGGER.error("[import_objects] ImporterLoadError: %s", err, exc_info=True)
+            return abort(406)
+        importer = importer_class(working_file, importer_config, parser, objects_manager, request_user)
+
+        try:
+            import_response: ImporterObjectResponse = importer.start_import()
+        except ImportRuntimeError as err:
+            LOGGER.error("[import_objects] ImportRuntimeError: %s", err, exc_info=True)
             return abort(500)
-        except BaseManagerInsertError as err:
-            #TODO: ERROR-FIX
-            LOGGER.debug("[import_objects] %s", err)
+        except AccessDeniedError as err:
+            LOGGER.error("[import_objects] AccessDeniedError: %s", err)
+            return abort(403)
+        except Exception as err:
+            LOGGER.error("[import_objects-import_response] Exception: %s. Type: %s", err, type(err), exc_info=True)
+            return abort(500, "Internal server error!")
 
-    api_response = DefaultResponse(import_response)
+        # close request file
+        request_file.close()
 
-    return api_response.make_response()
+        # log all successful imports
+        for message in import_response.success_imports:
+            try:
+                # get object state of every imported object
+                current_type_instance = objects_manager.get_object_type(importer_config_request.get('type_id'))
+                current_object = objects_manager.get_object(message.public_id)
+                current_object = CmdbObject.from_data(current_object)
+
+                current_object_render_result = CmdbRender(current_object,
+                                                        current_type_instance,
+                                                        request_user,
+                                                        False,
+                                                        objects_manager.dbm).result()
+
+                # insert object create log
+                log_params = {
+                    'object_id': message.public_id,
+                    'user_id': request_user.get_public_id(),
+                    'user_name': request_user.get_display_name(),
+                    'comment': 'Object was imported',
+                    'render_state': json.dumps(
+                                        current_object_render_result,
+                                        default=default).encode('UTF-8'),
+                    'version': current_object.version
+                }
+
+                logs_manager.insert_log(action=LogAction.CREATE, log_type=CmdbObjectLog.__name__, **log_params)
+            except ObjectsManagerGetError as err:
+                LOGGER.debug("[import_objects] %s", err)
+                return abort(404)
+            except InstanceRenderError as err:
+                #TODO: ERROR-FIX
+                LOGGER.error("[import_objects] InstanceRenderError: %s. Type: %s", err, type(err), exc_info=True)
+                return abort(500)
+            except BaseManagerInsertError as err:
+                #TODO: ERROR-FIX
+                LOGGER.debug("[import_objects] %s", err)
+
+        return DefaultResponse(import_response).make_response()
+    except Exception as err:
+        LOGGER.error("[import_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        return abort(500, "Internal server error!")

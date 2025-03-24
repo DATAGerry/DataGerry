@@ -25,14 +25,44 @@ LOGGER = logging.getLogger(__name__)
 #                                             DispatcherMiddleware - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class DispatcherMiddleware:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A class that represents an application with mountable sub-applications
+
+    This class allows the mounting of sub-applications at specific paths and
+    delegates requests to the appropriate sub-application based on the URL path
+    """
+
     def __init__(self, app, mounts=None):
+        """
+        Initializes the MountableApp instance
+
+        This method stores the main application (`app`) and the optional sub-applications (`mounts`)
+
+        Args:
+            app: The main application instance that will handle requests if no sub-application is matched
+            mounts (dict, optional): A dictionary mapping URL paths to sub-applications. Defaults to an empty
+                                     dictionary if not provided
+        """
         self.app = app
         self.mounts = mounts or {}
 
 
     def __call__(self, environ, start_response):
+        """
+        Handles incoming HTTP requests by delegating to the appropriate sub-application
+        based on the path in the request, or to the main application if no match is found.
+
+        This method inspects the `PATH_INFO` of the request to identify if the request corresponds 
+        to any mounted sub-application. If a match is found, the request is forwarded to that sub-application.
+        If no match is found, the request is forwarded to the main application
+
+        Args:
+            environ (dict): The WSGI environment dictionary containing request details
+            start_response (callable): The function used to start the HTTP response
+
+        Returns:
+            The response from the chosen application (either the main app or a mounted sub-app)
+        """
         script = environ.get('PATH_INFO', '')
         path_info = ''
 

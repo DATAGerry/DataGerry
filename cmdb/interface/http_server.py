@@ -73,6 +73,15 @@ class HTTPServer(BaseApplication):
 
     @staticmethod
     def number_of_workers() -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Returns the optimal number of worker processes based on the system's CPU count
+
+        This method calculates the number of workers by multiplying the number of CPU cores 
+        available on the system by 2 and then adding 1. This formula is often used to optimize 
+        parallel processing, taking advantage of the available cores while leaving one core 
+        available for other system tasks
+
+        Returns:
+            int: The calculated number of worker processes
+        """
         return (multiprocessing.cpu_count() * 2) + 1

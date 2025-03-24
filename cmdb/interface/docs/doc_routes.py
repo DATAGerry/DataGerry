@@ -25,6 +25,14 @@ doc_pages = RootBlueprint("doc_pages", __name__, static_folder="static", static_
 
 @doc_pages.route("/")
 def default_page():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Handles the request for the default page (index page) of the documentation
+
+    This function is mapped to the root URL (`/`) of the documentation pages. When a request 
+    is made to this URL, it serves the `index.html` file as the response. This is typically 
+    the main landing page for the documentation interface
+
+    Returns:
+        Response: The response object containing the `index.html` file
+    """
     return doc_pages.send_static_file("index.html")
