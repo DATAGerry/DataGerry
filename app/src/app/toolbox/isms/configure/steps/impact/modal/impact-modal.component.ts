@@ -10,7 +10,7 @@ import { finalize } from 'rxjs/operators';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Impact } from 'src/app/toolbox/isms/models/impact.model';
 import { ImpactService } from 'src/app/toolbox/isms/services/impact.service';
-import { uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
+import { nonZeroValidator, numericOrDecimalValidator, uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
 
 
 @Component({
@@ -21,10 +21,13 @@ import { uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms
 export class ImpactModalComponent implements OnInit {
     @Input() impact?: Impact;                  // If provided => Edit mode
     @Input() existingCalculationBases: number[] = []; // For checking duplicates
+    @Input() defaultCalculationBasis: number;
+
 
     public form: FormGroup;
     public isSubmitting = false;
     public isEditMode = false;
+    public isModalVisible = true;
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -61,7 +64,8 @@ export class ImpactModalComponent implements OnInit {
                 '',
                 [
                     Validators.required,
-                    Validators.pattern(/^\d+\.\d{2}$/),
+                    numericOrDecimalValidator(),
+                    nonZeroValidator(),
                     uniqueCalculationBasisValidator(this.existingCalculationBases, currentBasis)
                 ]
             ]

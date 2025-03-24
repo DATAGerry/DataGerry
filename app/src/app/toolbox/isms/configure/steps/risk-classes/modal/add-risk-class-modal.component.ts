@@ -14,6 +14,7 @@ import { RiskClassService } from 'src/app/toolbox/isms/services/risk-class.servi
 })
 export class RiskClassModalComponent implements OnInit {
   @Input() riskClass?: RiskClass; // If provided => "Edit" mode
+  @Input() sort?: number
   public form: FormGroup;
   public isSubmitting = false;
   public isEditMode = false;
@@ -41,8 +42,8 @@ export class RiskClassModalComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       color: ['#ff0000'],  // default color
-      description: [''],
-      sort: [0]
+      description: ['', Validators.required],
+      sort: this.sort
     });
   }
 

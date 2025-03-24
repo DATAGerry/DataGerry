@@ -24,7 +24,7 @@ import { finalize } from 'rxjs/operators';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Likelihood } from 'src/app/toolbox/isms/models/likelihood.model';
 import { LikelihoodService } from 'src/app/toolbox/isms/services/likelihood.service';
-import { uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
+import { nonZeroValidator, numericOrDecimalValidator, uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
 
 @Component({
   selector: 'app-likelihood-modal',
@@ -34,6 +34,7 @@ import { uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms
 export class LikelihoodModalComponent implements OnInit {
   @Input() likelihood?: Likelihood; // Provided => Edit mode
   @Input() existingCalculationBases: number[] = []; // For duplicate checking
+  @Input() defaultCalculationBasis: number;
 
   public form: FormGroup;
   public isSubmitting = false;
@@ -44,7 +45,7 @@ export class LikelihoodModalComponent implements OnInit {
     private fb: FormBuilder,
     private likelihoodService: LikelihoodService,
     private toast: ToastService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.isEditMode = !!this.likelihood;
@@ -54,6 +55,7 @@ export class LikelihoodModalComponent implements OnInit {
     }
 
     console.log('is edit mode', this.isEditMode)
+    console.log('defaultCalculationBasis', this.defaultCalculationBasis)
   }
 
   /**
@@ -68,20 +70,20 @@ export class LikelihoodModalComponent implements OnInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       calculation_basis: [
-        '',
+        this.defaultCalculationBasis,
         [
           Validators.required,
-          Validators.pattern(/^\d+\.\d{1}$/),
+          numericOrDecimalValidator(),
+          nonZeroValidator(),
           uniqueCalculationBasisValidator(this.existingCalculationBases, currentBasis)
         ]
       ]
     });
   }
-  
+
 
   /**
    * Patch the form with existing data in edit mode.
-   * Uses toFixed(1) to ensure the trailing zero is preserved.
    */
   private patchForm(): void {
     if (!this.likelihood) return;
@@ -92,6 +94,7 @@ export class LikelihoodModalComponent implements OnInit {
       calculation_basis: basisString
     });
   }
+
 
   /**
    * Handle form submission for Add or Edit.
@@ -144,6 +147,7 @@ export class LikelihoodModalComponent implements OnInit {
         });
     }
   }
+
 
   public onCancel(): void {
     this.activeModal.dismiss('cancel');

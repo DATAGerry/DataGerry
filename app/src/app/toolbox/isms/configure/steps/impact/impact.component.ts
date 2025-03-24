@@ -28,6 +28,7 @@ export class ImpactComponent implements OnInit {
   public loading = false;
   public columns: Array<any>;
   public sort: Sort = { name: 'calculation_basis', order: SortDirection.DESCENDING } as Sort;
+  public defaultCalculationBasis: number = -Infinity;
 
   public isLoading$ = this.loaderService.isLoading$;
 
@@ -123,8 +124,21 @@ export class ImpactComponent implements OnInit {
    * Opens add impact modal.
    */
   public addImpact(): void {
+    const maxBasis = Math.max(...this.impacts.map(o => Number(o.calculation_basis)));
+
+    // Set defaultCalculationBasis to 1 if maxBasis is -Infinity, otherwise increment maxBasis
+    if (maxBasis === -Infinity) {
+      this.defaultCalculationBasis = 1;
+    } else if (Number.isInteger(maxBasis)) {
+      this.defaultCalculationBasis = maxBasis + 1;
+    } else {
+      // Don't assign defaultCalculationBasis if it's a decimal
+      this.defaultCalculationBasis = undefined;
+    }   
     const modalRef = this.modalService.open(ImpactModalComponent, { size: 'lg' });
     modalRef.componentInstance.existingCalculationBases = this.impacts.map(i => i.calculation_basis);
+    modalRef.componentInstance.defaultCalculationBasis = this.defaultCalculationBasis;
+
     // No input => add mode
     modalRef.result.then(
       (result) => {

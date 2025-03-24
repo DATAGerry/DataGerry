@@ -1,13 +1,20 @@
-<div *permissionLink="['base.isms.riskClass.view']">
+<div *permissionLink="'base.isms.riskClass.view'">
   <div class="d-flex justify-content-between align-items-center mb-2 mt-2 mb-2">
     <h1>Risk Classes</h1>
     <button type="button" class="btn btn-sm btn-success" (click)="addRiskClass()"
-      [disabled]="this.totalRiskClasses >= 10" *permissionLink="['base.isms.riskClass.add']">
+      [disabled]="this.totalRiskClasses >= 10" *permissionLink="'base.isms.riskClass.add'">
       <i class="fas fa-plus"></i> Add
     </button>
   </div>
 
-  <hr />
+  <div class="structural-warning-alert">
+    <div class="alert-content">
+      <i class="fas fa-exclamation-circle warning-icon"></i>
+      <div class="warning-text">
+        <strong>Structural Advisory:</strong> Please sort your risk classes from High to Low.
+      </div>      
+    </div>
+  </div>
 
   <!-- (cmdb-table) -->
   <cmdb-table [items]="riskClasses" [columns]="columns" [totalItems]="totalRiskClasses" [pageSize]="limit" [page]="page"
@@ -27,10 +34,10 @@
 
 <!-- Actions Template -->
 <ng-template #actionsTemplate let-item="item">
-  <span *permissionLink="['base.isms.riskClass.edit']">
+  <span *permissionLink="'base.isms.riskClass.edit'">
     <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="editRiskClass(item)" title="Edit Risk Class"></i>
   </span>
-  <span *permissionLink="['base.isms.riskClass.delete']">
+  <span *permissionLink="'base.isms.riskClass.delete'">
     <i class="far fa-trash-alt icon-delete" (click)="onDeleteRiskClass(item)" title="Delete Risk Class"></i>
   </span>
 </ng-template>

@@ -15,14 +15,10 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-export interface ImpactDescription {
-  impact_id: number;
-  value: string;
-}
-
-export interface ImpactCategory {
-  public_id?: number;
-  name: string;
-  impact_descriptions: ImpactDescription[];
-  sort: number;
+export interface IsmsConfigValidation {
+    impact_categories: boolean;
+    impacts: boolean;
+    likelihoods: boolean;
+    risk_classes: boolean;
+    risk_matrix: boolean;
 }

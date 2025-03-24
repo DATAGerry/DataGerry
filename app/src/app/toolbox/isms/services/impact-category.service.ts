@@ -88,6 +88,32 @@ export class ImpactCategoryService<T = any> implements ApiServicePrefix {
       );
   }
 
+    public updateImpactCategoriesOrder(
+      riskClassData: Partial<Array<ImpactCategory>>
+    ): Observable<APIUpdateSingleResponse<T>> {
+      // Copy the existing options object
+      const options = { ...this.options };
+  
+      let httpParams = new HttpParams();
+      options.params = httpParams;
+  
+      // Build the request body: combine the provided data with public_id
+      const body = [...riskClassData]
+  
+        ;
+  
+      return this.api.callPut<APIUpdateSingleResponse<T>>(
+        `${this.servicePrefix}/multiple`,
+        body,
+        options
+      ).pipe(
+        map((apiResponse: HttpResponse<APIUpdateSingleResponse<T>>) => apiResponse.body),
+        catchError((error) => {
+          throw error;
+        })
+      );
+    }
+
   /**
    * Delete impact category by ID.
    */

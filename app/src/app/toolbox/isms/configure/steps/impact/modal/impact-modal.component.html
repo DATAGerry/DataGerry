@@ -1,90 +1,97 @@
 <div class="modal-header">
-    <h4 class="modal-title">{{ isEditMode ? 'Edit Impact' : 'Add Impact' }}</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
-  </div>
-  
-  <div class="modal-body">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <!-- Name (required) -->
-      <div class="mb-3">
-        <label for="impactName" class="form-label">
-          Name <span class="text-danger">*</span>
-        </label>
-        <input
-          id="impactName"
-          type="text"
-          class="form-control"
-          formControlName="name"
-          placeholder="Enter a name..."
-        />
-        <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="invalid-feedback d-block">
-          Name is required.
-        </div>
+  <h4 class="modal-title">{{ isEditMode ? 'Edit Impact' : 'Add Impact' }}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="onCancel()">
+    <span aria-hidden="true">×</span>
+  </button>
+</div>
+
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Name (required) -->
+    <div class="mb-3">
+      <label for="impactName" class="form-label">
+        Name <span class="text-danger">*</span>
+      </label>
+      <input
+        id="impactName"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Enter a name..."
+      />
+      <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="invalid-feedback d-block">
+        Name is required.
       </div>
-  
-      <!-- Description (required) -->
-      <div class="mb-3">
-        <label for="impactDescription" class="form-label">
-          Description <span class="text-danger">*</span>
-        </label>
-        <textarea
-          id="impactDescription"
-          class="form-control"
-          formControlName="description"
-          rows="3"
-          placeholder="Enter a description..."
-        ></textarea>
-        <div *ngIf="form.get('description')?.touched && form.get('description')?.invalid" class="invalid-feedback d-block">
-          Description is required.
-        </div>
+    </div>
+
+    <!-- Description (required) -->
+    <div class="mb-3">
+      <label for="impactDescription" class="form-label">
+        Description <span class="text-danger">*</span>
+      </label>
+      <textarea
+        id="impactDescription"
+        class="form-control"
+        formControlName="description"
+        rows="3"
+        placeholder="Enter a description..."
+      ></textarea>
+      <div *ngIf="form.get('description')?.touched && form.get('description')?.invalid" class="invalid-feedback d-block">
+        Description is required.
       </div>
-  
-      <!-- Calculation Basis (required, exactly one decimal digit, no duplicates) -->
-      <div class="mb-3">
-        <label for="calculation_basis" class="form-label">
-          Calculation Basis <span class="text-danger">*</span>
-        </label>
-        <!-- type="text" so we keep trailing zero in the string -->
-        <input
-          id="calculation_basis"
-          type="text"
-          class="form-control"
-          formControlName="calculation_basis"
-          placeholder="E.g., 2.0, 3.5, 9.9"
-        />
-  
-        <!-- Required error -->
-        <div
-          *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.required"
-          class="invalid-feedback d-block"
-        >
-          Calculation Basis is required.
-        </div>
-  
-        <!-- Pattern error -->
-        <div
-          *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.pattern"
-          class="invalid-feedback d-block"
-        >
-          Please enter exactly one digit after the decimal (e.g. 2.0, 3.1).
-        </div>
-  
-        <!-- Duplicate error -->
-        <div
-          *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.duplicateCalculationBasis"
-          class="invalid-feedback d-block"
-        >
-          This calculation basis already exists.
-        </div>
+    </div>
+
+    <!-- Calculation Basis (required, exactly one decimal digit, no duplicates) -->
+    <div class="mb-3">
+      <label for="calculation_basis" class="form-label">
+        Calculation Basis <span class="text-danger">*</span>
+      </label>
+      <!-- type="text" so we keep trailing zero in the string -->
+      <input
+        id="calculation_basis"
+        type="text"
+        class="form-control"
+        formControlName="calculation_basis"
+        placeholder="E.g., 2.0, 3.5, 9.9"
+      />
+
+      <!-- Required error -->
+      <div
+        *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.required"
+        class="invalid-feedback d-block"
+      >
+        Calculation Basis is required.
       </div>
-  
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
-          <span *ngIf="!isSubmitting">{{ isEditMode ? 'Save Changes' : 'Add Impact' }}</span>
-          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
-        </button>
+
+      <!-- Pattern error -->
+      <div
+        *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.pattern"
+        class="invalid-feedback d-block"
+      >
+        Please enter exactly one digit after the decimal (e.g. 2.0, 3.1).
       </div>
-    </form>
-  </div>
-  
+
+      <!-- Duplicate error -->
+      <div
+        *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.duplicateCalculationBasis"
+        class="invalid-feedback d-block"
+      >
+        This calculation basis already exists.
+      </div>
+
+      <div *ngIf="form.get('calculation_basis')?.touched && form.get('calculation_basis')?.errors?.zeroNotAllowed" class="invalid-feedback d-block">
+        Calculation Basis cannot be zero.
+      </div>
+      
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn btn-success" [disabled]="isSubmitting || form.invalid">
+        <span *ngIf="!isSubmitting">{{ isEditMode ? 'Save Changes' : 'Add Impact' }}</span>
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

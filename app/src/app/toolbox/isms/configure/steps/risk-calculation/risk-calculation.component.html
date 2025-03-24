@@ -1,4 +1,4 @@
-<div class="header">
+<div class="header" *permissionLink="'base.isms.riskMatrix.view'">
   <h1>Risk Assessment Matrix</h1>
   <div style="display: flex; align-items: center;">
     <div class="unit-selector mr-3">
@@ -10,7 +10,7 @@
       </select>
     </div>
     <div>
-      <button class="btn btn-success" (click)="saveMatrix()">
+      <button class="btn btn-success" (click)="saveMatrix()" *permissionLink="'base.isms.riskMatrix.edit'">
         Save Configurations
       </button>
     </div>
@@ -18,8 +18,7 @@
   </div>
 </div>
 
-<div class="risk-matrix-container">
-
+<div class="risk-matrix-container" *permissionLink="'base.isms.riskMatrix.view'">
   <div class="matrix-controls">
     <div class="legend">
       <div class="legend-item" *ngFor="let rc of riskClasses">
@@ -71,20 +70,20 @@
       </tbody>
     </table>
 
-  <!-- Risk Class Selection Modal -->
-  <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Select Risk Class</h3>
-        <div class="modal-subheader">{{ selectedCell?.calculated_value }}</div>
-        <button class="close-btn" (click)="closeModal()">&times;</button>
-      </div>
-      <div class="risk-class-options">
-        <div *ngFor="let rc of riskClasses" class="risk-class-option" [style.backgroundColor]="rc.color"
-          (click)="assignRiskClass(rc)">
-          <span class="risk-class-label">{{ rc.name }}</span>
+    <!-- Risk Class Selection Modal -->
+    <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Select Risk Class</h3>
+          <div class="modal-subheader">{{ selectedCell?.calculated_value }}</div>
+          <button class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="risk-class-options">
+          <div *ngFor="let rc of riskClasses" class="risk-class-option" [style.backgroundColor]="rc.color"
+            (click)="assignRiskClass(rc)">
+            <span class="risk-class-label">{{ rc.name }}</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>

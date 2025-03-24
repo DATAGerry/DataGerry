@@ -1,70 +1,111 @@
 <div class="modal-header">
-    <h4 class="modal-title">
-      <span *ngIf="isViewMode">View Impact Category</span>
-      <span *ngIf="!isViewMode">
-        {{ isEditMode ? (isCopyMode ? 'Copy Impact Category' : 'Edit Impact Category') : 'Add Impact Category' }}
+  <h4 class="modal-title">
+    <!-- If in View Mode, show "View Impact Category: [Name]" -->
+    <ng-container *ngIf="isViewMode; else editAddCopyMode">
+      View Impact Category: {{ form.get('name')?.value }}
+    </ng-container>
+
+    <!-- If NOT in View Mode, show the usual Add/Edit/Copy text -->
+    <ng-template #editAddCopyMode>
+      <span *ngIf="isEditMode">
+        <span *ngIf="isCopyMode">Copy Impact Category</span>
+        <span *ngIf="!isCopyMode">Edit Impact Category</span>
       </span>
-    </h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
-  </div>
-  
-  <div class="modal-body">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <!-- Category Name -->
-      <div class="mb-3">
-        <label for="catName" class="form-label">
-          Name <span class="text-danger">*</span>
-        </label>
-        <input
-          id="catName"
-          type="text"
-          class="form-control"
-          formControlName="name"
-          placeholder="Enter category name..."
-        />
-        <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="invalid-feedback d-block">
-          Name is required.
-        </div>
+      <span *ngIf="!isEditMode">Add Impact Category</span>
+    </ng-template>
+  </h4>
+
+  <!-- Textual "x" close button -->
+  <button type="button" class="close" (click)="onCancel()">
+    <span aria-hidden="true">×</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Show Category Name field ONLY if not in View Mode -->
+    <div *ngIf="!isViewMode" class="mb-3">
+      <label class="form-label">
+        Impact Category Name <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Enter category name..."
+      />
+      <!-- Category name is still required -->
+      <div
+        class="invalid-feedback d-block"
+        *ngIf="
+          form.get('name')?.invalid &&
+          (form.get('name')?.touched || form.get('name')?.dirty)
+        "
+      >
+        Category name is required.
       </div>
-  
-      <!-- Impact Descriptions -->
-      <div formArrayName="impact_descriptions" class="border p-2 mb-3 bg-light">
-        <div *ngFor="let row of impactDescriptions.controls; let i = index" [formGroupName]="i" class="mb-3 p-2 border">
-          <!-- Read-only Impact Name -->
-          <div class="fw-semibold">
-            {{ row.value.impact_name }} <span class="text-danger">*</span>
+    </div>
+
+    <!-- Impact Descriptions (Not Required Anymore) -->
+    <div class="mb-3">
+      <label class="form-label section-heading">Impact Descriptions</label>
+
+      <div formArrayName="impact_descriptions" class="impact-descriptions-wrapper">
+        <div
+          *ngFor="let row of impactDescriptions.controls; let i = index"
+          [formGroupName]="i"
+          class="impact-descriptions-item"
+        >
+          <!-- Impact Name (read-only from data) -->
+          <div class="impact-label">
+            {{ row.value.impact_name }}
           </div>
+
           <!-- Hidden Impact ID -->
           <input type="hidden" formControlName="impact_id" />
-          <!-- Description input -->
+
+          <!-- Description (No longer required) -->
           <div class="mt-2">
-            <label for="desc_{{ i }}" class="form-label">Description for this Impact</label>
+            <label for="desc_{{ i }}" class="form-label">
+              Description
+            </label>
             <textarea
               id="desc_{{ i }}"
               class="form-control"
               formControlName="value"
               rows="2"
               placeholder="Enter description..."
+              [readonly]="isViewMode"
             ></textarea>
-            <div *ngIf="row.get('value')?.touched && row.get('value')?.invalid" class="invalid-feedback d-block">
-              Impact description is required.
-            </div>
+            <!-- No error messages since not required -->
           </div>
         </div>
       </div>
-  
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">
-          {{ isViewMode ? 'Close' : 'Cancel' }}
-        </button>
-        <!-- Only show the submit button if not in view mode -->
-        <button type="submit" class="btn btn-primary" *ngIf="!isViewMode" [disabled]="isSubmitting || form.invalid">
-          <span *ngIf="!isSubmitting">
-            {{ isEditMode ? (isCopyMode ? 'Copy Impact Category' : 'Save Changes') : 'Add Impact Category' }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        {{ isViewMode ? 'Close' : 'Cancel' }}
+      </button>
+      <button
+        type="submit"
+        class="btn btn-success"
+        *ngIf="!isViewMode"
+        [disabled]="isSubmitting || form.invalid"
+      >
+        <span *ngIf="!isSubmitting">
+          <!-- If editing -->
+          <span *ngIf="isEditMode">
+            <span *ngIf="isCopyMode">Copy</span>
+            <span *ngIf="!isCopyMode">Save</span>
           </span>
-          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
-        </button>
-      </div>
-    </form>
-  </div>
-  
+          <!-- If adding -->
+          <span *ngIf="!isEditMode">Create</span>
+        </span>
+        <!-- Spinner while submitting -->
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>
