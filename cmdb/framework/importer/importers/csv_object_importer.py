@@ -124,9 +124,9 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
                 if len(founded_objects) != 1:
                     continue
 
-                working_object['fields'].append(
-                    {'name': foreign_entry.get_name(),
-                        'value': founded_objects[0].get_public_id()
+                working_object['fields'].append({
+                    'name': foreign_entry.get_name(),
+                    'value': founded_objects[0].get_public_id()
                 })
 
             except (ObjectsManagerGetError, Exception) as err:
@@ -141,12 +141,16 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
         #TODO: DOCUMENT-FIX
         try:
             parsed_response: CsvObjectParserResponse = self.parser.parse(self.file)
-        except ParserRuntimeError as err:
+
+
+            type_instance_fields: list[dict] = self.objects_manager.get_object_type(
+                                                                        self.config.get_type_id()
+                                                                    ).get_fields()
+
+            import_objects: list[dict] = self._generate_objects(parsed_response, fields=type_instance_fields)
+            import_result: ImporterObjectResponse = self._import(import_objects)
+
+            return import_result
+        except (ParserRuntimeError, Exception) as err:
+            LOGGER.error("[start_import] Exception: %s. Type: %s", err, type(err), exc_info=True)
             raise ImportRuntimeError(err) from err
-
-        type_instance_fields: list[dict] = self.objects_manager.get_object_type(self.config.get_type_id()).get_fields()
-
-        import_objects: list[dict] = self._generate_objects(parsed_response, fields=type_instance_fields)
-        import_result: ImporterObjectResponse = self._import(import_objects)
-
-        return import_result

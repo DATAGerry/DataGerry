@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of DefaultResponse
+"""
 import logging
 from typing import Any
 from werkzeug.wrappers import Response
@@ -29,20 +30,38 @@ LOGGER = logging.getLogger(__name__)
 #                                                DefaultResponse - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class DefaultResponse(BaseAPIResponse):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A response class that represents a default API response containing a value
+
+    Extends: BaseAPIResponse
+    """
     def __init__(self, value: Any):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initializes the DefaultResponse instance with the provided value
+
+        This constructor takes the provided value and sets it as an attribute of the response
+        It also sets the operation type to `GET` by calling the constructor of the parent class (`BaseAPIResponse`)
+
+        Args:
+            value (Any): The value to be included in the response body
+        """
         self.value = value
+
         super().__init__(OperationType.GET)
 
 
     def make_response(self, status: int = 200) -> Response:
         """
-        Make a valid http response
+        Constructs and returns a valid HTTP response with the given status code
+
+        This method generates a response using the `value` stored in the instance. By default, 
+        the status code is set to 200 (OK), but this can be customized by passing a different 
+        status code
+
+        Args:
+            status (int, optional): The HTTP status code for the response. Defaults to 200 (OK)
 
         Returns:
-            Instance of Response with a HTTP 200 status code
+            Response: The HTTP response instance containing the `value` and the provided status code
         """
         return self.make_api_response(self.value, status)

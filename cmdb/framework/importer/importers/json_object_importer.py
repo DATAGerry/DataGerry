@@ -102,8 +102,19 @@ class JsonObjectImporter(ObjectImporter, JSONContent):
 
 
     def start_import(self) -> ImporterObjectResponse:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Starts the import process by parsing the file, generating objects based on the parsed data, 
+        and importing those objects into the system
+
+        The method performs the following steps:
+        1. Uses the parser to parse the provided file
+        2. Retrieves the fields for the specified object type based on the config
+        3. Generates import objects based on the parsed response and object type fields
+        4. Imports the generated objects and returns the result
+
+        Returns:
+            ImporterObjectResponse: The response after importing the objects, containing status and data
+        """
         parsed_response: JsonObjectParserResponse = self.parser.parse(self.file)
         type_instance_fields: list = self.objects_manager.get_object_type(self.config.get_type_id()).get_fields()
 

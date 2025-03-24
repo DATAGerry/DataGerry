@@ -32,8 +32,16 @@ LOGGER = logging.getLogger(__name__)
 #                                               ExcelObjectParser - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ExcelObjectParser(BaseObjectParser, XLSXContent):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Parses Excel files (XLSX) to extract data according to a given configuration
+
+    Extends: BaseObjectParser, XLSXContent
+
+    Attributes:
+        DEFAULT_CONFIG (dict): Default configuration for the parser
+            - sheet_name: The name of the sheet to parse (default 'Sheet1')
+            - header: Whether the sheet includes a header (default True)
+    """
     DEFAULT_CONFIG = {
         'sheet_name': 'Sheet1',
         'header': True

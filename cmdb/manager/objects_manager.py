@@ -685,6 +685,10 @@ class ObjectsManager(BaseManager):
         """
         try:
             to_delete_object = self.get_object(public_id)
+
+            if not to_delete_object:
+                return False
+
             type_id = CmdbObject.from_data(to_delete_object).type_id
 
             object_type = self.get_object_type(type_id)

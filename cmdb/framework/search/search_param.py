@@ -70,7 +70,6 @@ class SearchParam:
                     )
                 )
             except Exception as err:
-                #TODO: ERROR-FIX
                 LOGGER.error("[from_request] Exception: %s, Type: %s", err, type(err))
                 continue
 

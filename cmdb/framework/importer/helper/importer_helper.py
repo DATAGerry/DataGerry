@@ -16,6 +16,8 @@
 """
 Implementation of helper functions for the importer workflows
 """
+from typing import Union
+
 from cmdb.framework.importer.parser.csv_object_parser import CsvObjectParser
 from cmdb.framework.importer.parser.json_object_parser import JsonObjectParser
 from cmdb.framework.importer.importers.csv_object_importer import CsvObjectImporter
@@ -42,54 +44,119 @@ __OBJECT_PARSER__ = {
 }
 
 
-def load_importer_class(importer_type: str, importer_name: str):
-    """document"""
-    #TODO: DOCUMENT-FIX
-
-    __importer = {
+def load_importer_class(importer_type: str, importer_name: str) -> Union['JsonObjectImporter', 'CsvObjectImporter']:
+    """
+    Loads the importer class based on the provided importer type and name
+    
+    Args:
+        importer_type (str): The type of the importer (e.g., 'object')
+        importer_name (str): The name of the specific importer class to load
+        
+    Returns:
+        Union['JsonObjectImporter', 'CsvObjectImporter']: The corresponding importer class
+        
+    Raises:
+        ImporterLoadError: If the importer type or name is invalid, or the importer class cannot be found
+    """
+    # Define a mapping of importer types to configuration objects
+    importer_config_mapping = {
         'object': __OBJECT_IMPORTER__
     }
 
-    try:
-        importer_class = __importer.get(importer_type).get(importer_name)
-    except (IndexError, KeyError, ValueError, TypeError) as err:
-        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: {err}") from err
+    # Check if the importer type is valid
+    if importer_type not in importer_config_mapping:
+        raise ImporterLoadError(f"Invalid importer type: {importer_type}")
 
+    # Retrieve the importer configuration for the given type
+    importer_config = importer_config_mapping[importer_type]
+
+    # Check if the importer name exists in the configuration
+    if importer_name not in importer_config:
+        raise ImporterLoadError(f"Invalid importer name: {importer_name} for type {importer_type}")
+
+    # Retrieve the importer class
+    importer_class = importer_config[importer_name]
+
+    # Ensure the importer class is valid
     if not importer_class:
-        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: No importer_class!")
+        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: No importer class found!")
 
     return importer_class
 
 
-def load_importer_config_class(importer_type: str, importer_name: str):
-    """document"""
-    #TODO: DOCUMENT-FIX
-
-    __importer_config = {
+def load_importer_config_class(
+        importer_type: str,
+        importer_name: str
+    ) -> Union['JsonObjectImporterConfig', 'CsvObjectImporterConfig']:
+    """
+    Loads the importer configuration class based on the provided importer type and name
+    
+    Args:
+        importer_type (str): The type of the importer (e.g., 'object')
+        importer_name (str): The name of the specific importer configuration to load
+        
+    Returns:
+        Union['JsonObjectImporterConfig', 'CsvObjectImporterConfig']: The corresponding importer configuration class
+        
+    Raises:
+        ImporterLoadError: If the importer type or name is invalid, or the importer configuration cannot be found
+    """
+    importer_config_mapping = {
         'object': __OBJECT_IMPORTER_CONFIG__
     }
-    try:
-        importer_config_class = __importer_config.get(importer_type).get(importer_name)
-    except (IndexError, KeyError, ValueError, TypeError) as err:
-        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: {err}") from err
+
+    # Retrieve the importer configuration for the given type
+    importer_config = importer_config_mapping[importer_type]
+
+    # Check if the importer name exists in the configuration
+    if importer_name not in importer_config:
+        raise ImporterLoadError(f"Invalid importer name: {importer_name} for type {importer_type}")
+
+    # Retrieve the importer configuration class
+    importer_config_class = importer_config[importer_name]
+
+    # Ensure the configuration class is valid
     if not importer_config_class:
-        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: No importer_config_class!")
+        raise ImporterLoadError(f"[{importer_type} - {importer_name}]: No importer_config_class found!")
+
     return importer_config_class
 
 
-def load_parser_class(parser_type: str, parser_name: str):
-    """document"""
-    #TODO: DOCUMENT-FIX
-
-    __parser = {
-            'object': __OBJECT_PARSER__
+def load_parser_class(parser_type: str, parser_name: str) -> Union['JsonObjectParser', 'CsvObjectParser']:
+    """
+    Loads the parser class based on the provided parser type and name
+    
+    Args:
+        parser_type (str): The type of the parser (e.g., 'object')
+        parser_name (str): The name of the specific parser class to load
+        
+    Returns:
+        Union['JsonObjectParser', 'CsvObjectParser']: The corresponding parser class
+        
+    Raises:
+        ParserLoadError: If the parser type or name is invalid, or the parser class cannot be found
+    """
+    # Define a mapping of parser types to configuration objects
+    parser_config_mapping = {
+        'object': __OBJECT_PARSER__
     }
-    try:
-        parser_class = __parser.get(parser_type).get(parser_name)
-    except (IndexError, KeyError, ValueError, TypeError) as err:
-        raise ParserLoadError(f"[{parser_type} - {parser_name}]: {err}") from err
 
+    # Check if the parser type is valid
+    if parser_type not in parser_config_mapping:
+        raise ParserLoadError(f"Invalid parser type: {parser_type}")
+
+    # Retrieve the parser configuration for the given type
+    parser_config = parser_config_mapping[parser_type]
+
+    # Check if the parser name exists in the configuration
+    if parser_name not in parser_config:
+        raise ParserLoadError(f"Invalid parser name: {parser_name} for type {parser_type}")
+
+    # Retrieve the parser class
+    parser_class = parser_config[parser_name]
+
+    # Ensure the parser class is valid
     if not parser_class:
-        raise ParserLoadError(f"[{parser_type} - {parser_name}]: No parser_class!")
+        raise ParserLoadError(f"[{parser_type} - {parser_name}]: No parser class found!")
 
     return parser_class

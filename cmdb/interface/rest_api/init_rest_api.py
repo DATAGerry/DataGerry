@@ -128,6 +128,7 @@ def register_blueprints(app: BaseCmdbApp):
     from cmdb.interface.rest_api.routes.log_routes.object_relation_logs_routes import object_relation_logs_blueprint
     from cmdb.interface.rest_api.routes.framework_routes import (
         extendable_option_blueprint,
+        object_group_blueprint,
     )
     from cmdb.interface.rest_api.routes.isms_routes import (
         risk_class_blueprint,
@@ -171,6 +172,7 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(object_relations_blueprint, url_prefix='/object_relations')
     app.register_blueprint(object_relation_logs_blueprint, url_prefix='/object_relation_logs')
     app.register_blueprint(extendable_option_blueprint, url_prefix='/extendable_options')
+    app.register_blueprint(object_group_blueprint, url_prefix='/object_groups')
 
     # ISMS Blueprints
     app.register_blueprint(isms_config_blueprint, url_prefix='/isms/config')

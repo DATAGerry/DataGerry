@@ -180,7 +180,7 @@ class ProtectionGoalManager(BaseManager):
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete_prtection_goal(self, public_id: int) -> bool:
+    def delete_protection_goal(self, public_id: int) -> bool:
         """
         Deletes an IsmsProtectionGoal from the database
 

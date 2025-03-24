@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+JsonObjectParserResponse
+"""
 import logging
 
 from cmdb.framework.importer.responses.object_parser_response import ObjectParserResponse
@@ -26,7 +27,18 @@ LOGGER = logging.getLogger(__name__)
 #                                           JsonObjectParserResponse - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class JsonObjectParserResponse(ObjectParserResponse):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A response class that represents the result of parsing a JSON file
+
+    Extends: ObjectParserResponse
+    """
+
     def __init__(self, count: int, entries: list):
+        """
+        Initializes the JsonObjectParserResponse instance with the provided count and entries
+
+        Args:
+            count (int): The number of entries in the parsed data
+            entries (list): The parsed data (usually a list or dictionary) from the JSON file
+        """
         super().__init__(count=count, entries=entries)

@@ -17,9 +17,10 @@
 This module prove all APIBluerpints for the Framework section of DataGerry
 """
 from .extendable_option_routes import extendable_option_blueprint
-
+from .object_groups_routes import object_group_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
     'extendable_option_blueprint',
+    'object_group_blueprint',
 ]

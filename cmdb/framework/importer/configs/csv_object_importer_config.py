@@ -52,8 +52,10 @@ class CsvObjectImporterConfig(ObjectImporterConfig, CSVContent):
             mapping (list, optional): A list defining the mapping of CSV columns to object fields
             overwrite_public (bool, optional): Whether to overwrite public data. Defaults to True
         """
-        super().__init__(type_id=type_id,
-                         mapping=mapping,
-                         start_element=start_element,
-                         max_elements=max_elements,
-                         overwrite_public=overwrite_public)
+        super().__init__(
+            type_id = type_id,
+            mapping = mapping,
+            start_element = start_element,
+            max_elements = max_elements,
+            overwrite_public = overwrite_public
+        )

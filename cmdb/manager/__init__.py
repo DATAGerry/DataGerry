@@ -46,6 +46,7 @@ from cmdb.manager.isms_manager.impact_category_manager import ImpactCategoryMana
 from cmdb.manager.isms_manager.protection_goal_manager import ProtectionGoalManager
 from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
+from cmdb.manager.object_groups_manager import ObjectGroupsManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -79,4 +80,5 @@ __all__ = [
     'ProtectionGoalManager',
     'RiskMatrixManager',
     'ExtendableOptionsManager',
+    'ObjectGroupsManager',
 ]

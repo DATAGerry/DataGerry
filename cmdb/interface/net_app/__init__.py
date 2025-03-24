@@ -28,8 +28,17 @@ from cmdb.interface.net_app.app_routes import app_pages, redirect_index
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def create_app():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Creates and configures the Flask application instance
+
+    This function sets up the main Flask app, configures it based on the mode (DEBUG or production),
+    enables Cross-Origin Resource Sharing (CORS), registers blueprints for app pages, and defines routes
+    for static files like `favicon.ico` and `browserconfig.xml`. The configuration for the app is determined
+    by the mode specified in the `cmdb.__MODE__` variable
+
+    Returns:
+        app: The configured Flask application instance
+    """
     app = BaseCmdbApp(__name__)
     CORS(app)
 

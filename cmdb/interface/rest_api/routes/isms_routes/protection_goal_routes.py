@@ -262,7 +262,7 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
         if not to_delete_protection_goal:
             return abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
 
-        protection_goal_manager.delete_prtection_goal(public_id)
+        protection_goal_manager.delete_protection_goal(public_id)
 
         return DeleteSingleResponse(to_delete_protection_goal).make_response()
     except HTTPException as http_err:

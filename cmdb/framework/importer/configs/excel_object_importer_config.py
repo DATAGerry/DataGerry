@@ -28,11 +28,39 @@ LOGGER = logging.getLogger(__name__)
 #                                           ExcelObjectImporterConfig - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ExcelObjectImporterConfig(ObjectImporterConfig, XLSXContent):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Configuration class for importing Excel-based objects
+
+    Extends: ObjectImporterConfig, XLSXContent
+
+    Attributes:
+        MANUALLY_MAPPING (bool): Flag indicating whether manual mapping is enabled
+    """
     MANUALLY_MAPPING = True
 
-    def __init__(self, type_id: int, mapping: list = None, start_element: int = 0, max_elements: int = 0,
-                 overwrite_public: bool = True, *args, **kwargs):
-        super().__init__(type_id=type_id, mapping=mapping, start_element=start_element,
-                                                        max_elements=max_elements, overwrite_public=overwrite_public)
+    def __init__(
+            self,
+            type_id: int,
+            mapping: list = None,
+            start_element: int = 0,
+            max_elements: int = 0,
+            overwrite_public: bool = True,
+            *args, **kwargs):
+        """
+        Initializes the ExcelObjectImporterConfig with the given parameters
+
+        Args:
+            type_id (int): The identifier for the import type
+            mapping (list, optional): List of mappings for the import. Defaults to None
+            start_element (int, optional): The index of the first element to process. Defaults to 0
+            max_elements (int, optional): The maximum number of elements to process. Defaults to 0 (no limit)
+            overwrite_public (bool, optional): Flag to determine if public data should be overwritten. Defaults to True
+            *args: Additional positional arguments passed to the parent constructor
+            **kwargs: Additional keyword arguments passed to the parent constructor
+        """
+        super().__init__(
+            type_id = type_id,
+            mapping = mapping,
+            start_element = start_element,
+            max_elements = max_elements,
+            overwrite_public = overwrite_public)
