@@ -15,34 +15,57 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
+import { WizardComponent } from '@rg-software/angular-archwizard';
 import { IsmsConfig } from '../models/isms-config.model';
-
+import { ISMSService } from '../services/isms.service';
+import { IsmsConfigValidation } from '../models/isms-config-validation.model';
 
 @Component({
   selector: 'app-isms-configure',
   templateUrl: './configure.component.html',
   styleUrls: ['./configure.component.scss']
 })
-export class ConfigureComponent implements OnInit {
+export class ConfigureComponent  {
   public ismsConfig: IsmsConfig;
+  public totalSteps: number = 6; // Total number of steps in the wizard
+  public validationStatus: IsmsConfigValidation = {
+    impact_categories: true,
+    impacts: true,
+    likelihoods: true,
+    risk_classes: true,
+    risk_matrix: true
+};  
 
-  constructor() {
-    // Initialize the configuration object with empty arrays
+  @ViewChild('wizard') wizard!: WizardComponent; // Reference to the wizard component
+
+  constructor(
+    private ismsService: ISMSService,
+    private cdRef: ChangeDetectorRef
+  ) {
     this.ismsConfig = {
       riskClasses: [],
       likelihoodEntries: [],
       impactEntries: [],
       impactCategories: [],
       protectionGoals: [],
-      riskMatrix: null 
+      riskMatrix: null
     };
   }
 
-  ngOnInit(): void {
+
+
+  nextStep(): void {
+    const nextIndex = this.wizard.currentStepIndex + 1;
+    if (nextIndex < this.totalSteps) {
+      this.wizard.goToStep(nextIndex);
+    }
   }
 
-  saveIsmsConfig(): void {
-
+  previousStep(): void {
+    const prevIndex = this.wizard.currentStepIndex - 1;
+    if (prevIndex >= 0) {
+      this.wizard.goToStep(prevIndex);
+    }
   }
 }
