@@ -1,0 +1,19 @@
+// ::ng-deep .aw-wizard-step.current .aw-wizard-step-icon {
+//   background-color: purple !important;
+// }
+
+// ::ng-deep .aw-wizard-step.done .aw-wizard-step-icon {
+//   background-color: green !important;
+// }
+
+::ng-deep .steps-indicator li.current .step-indicator {
+  background-color: purple !important; /* Current step is always grey */
+}
+
+.steps-indicator li.done:not(.invalid-step) .step-indicator {
+  background-color: green; /* Done and valid steps are green */
+}
+
+.steps-indicator li.done.invalid-step .step-indicator {
+  background-color: red; /* Done and invalid steps are red */
+}

@@ -1,61 +1,39 @@
-<aw-wizard [defaultStepIndex]="0">
-    <!-- Step 1: Risk Classes -->
-    <aw-wizard-step [stepTitle]="'Risk Classes'">
-      <app-isms-risk-classes 
-        [config]="ismsConfig"
-        (configChange)="ismsConfig = $event">
-      </app-isms-risk-classes>
-      <button class="btn btn-primary" awNextStep>Next Step</button>
-    </aw-wizard-step>
-  
-    <!-- Step 2: Likelihood -->
-    <aw-wizard-step [stepTitle]="'Likelihood'">
-      <app-isms-likelihood 
-        [config]="ismsConfig"
-        (configChange)="ismsConfig = $event">
-      </app-isms-likelihood>
-      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
-      <button class="btn btn-primary" awNextStep>Next Step</button>
-    </aw-wizard-step>
-  
-    <!-- Step 3: Impact -->
-    <aw-wizard-step [stepTitle]="'Impact'">
-      <app-isms-impact 
-        [config]="ismsConfig"
-        (configChange)="ismsConfig = $event">
-      </app-isms-impact>
-      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
-      <button class="btn btn-primary" awNextStep>Next Step</button>
-    </aw-wizard-step>
-  
-    <!-- Step 4: Impact Categories -->
-    <aw-wizard-step [stepTitle]="'Impact Categories'">
-      <app-isms-impact-categories 
-        [config]="ismsConfig"
-        (configChange)="ismsConfig = $event">
-      </app-isms-impact-categories>
-      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
-      <button class="btn btn-primary" awNextStep>Next Step</button>
-    </aw-wizard-step>
-  
-    <!-- Step 5: Protection Goals -->
-    <aw-wizard-step [stepTitle]="'Protection Goals'">
-      <app-isms-protection-goals 
-        [config]="ismsConfig"
-        (configChange)="ismsConfig = $event">
-      </app-isms-protection-goals>
-      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
-      <button class="btn btn-primary" awNextStep>Next Step</button>
-    </aw-wizard-step>
-  
-    <!-- Step 6: Risk Calculation -->
-    <aw-wizard-step [stepTitle]="'Risk Calculation'">
-      <app-isms-risk-calculation 
-        [config]="ismsConfig"
-        (configChange)="ismsConfig = $event">
-      </app-isms-risk-calculation>
-      <button class="btn btn-secondary" awPreviousStep>Previous Step</button>
-      <button class="btn btn-success" (click)="saveIsmsConfig()">Save Configuration</button>
-    </aw-wizard-step>
+<div class="wizard-container">
+  <!-- Wizard Navigation with dynamic classes -->
+  <aw-wizard #wizard [defaultStepIndex]="0">
+    <aw-wizard-step
+      [stepTitle]="'Risk Classes'"
+    ></aw-wizard-step>
+    <aw-wizard-step
+      [stepTitle]="'Likelihood'"
+    ></aw-wizard-step>
+    <aw-wizard-step
+      [stepTitle]="'Impact'"
+    ></aw-wizard-step>
+    <aw-wizard-step
+      [stepTitle]="'Impact Categories'"
+    ></aw-wizard-step>
+    <aw-wizard-step
+      [stepTitle]="'Protection Goals'"
+    ></aw-wizard-step>
+    <aw-wizard-step
+      [stepTitle]="'Risk Calculation'"
+    ></aw-wizard-step>
   </aw-wizard>
-  
+
+  <!-- Step Content -->
+  <div class="step-content" [ngSwitch]="wizard.currentStepIndex">
+    <app-isms-risk-classes *ngSwitchCase="0" [config]="ismsConfig" (configChange)="ismsConfig = $event"></app-isms-risk-classes>
+    <app-isms-likelihood *ngSwitchCase="1" [config]="ismsConfig" (configChange)="ismsConfig = $event"></app-isms-likelihood>
+    <app-isms-impact *ngSwitchCase="2" [config]="ismsConfig" (configChange)="ismsConfig = $event"></app-isms-impact>
+    <app-isms-impact-categories *ngSwitchCase="3" [config]="ismsConfig" (configChange)="ismsConfig = $event"></app-isms-impact-categories>
+    <app-isms-protection-goals *ngSwitchCase="4" [config]="ismsConfig" (configChange)="ismsConfig = $event"></app-isms-protection-goals>
+    <app-isms-risk-calculation *ngSwitchCase="5" [config]="ismsConfig" (configChange)="ismsConfig = $event"></app-isms-risk-calculation>
+  </div>
+
+  <!-- Navigation Buttons Below Components -->
+  <div class="navigation-buttons d-flex justify-content-between mt-3">
+    <button *ngIf="wizard.currentStepIndex > 0" class="btn btn-secondary" (click)="previousStep()">Previous Step</button>
+    <button *ngIf="wizard.currentStepIndex < totalSteps - 1" class="btn btn-primary" (click)="nextStep()">Next Step</button>
+  </div>
+</div>

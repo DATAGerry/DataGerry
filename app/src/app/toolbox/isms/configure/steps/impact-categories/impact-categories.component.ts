@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize, switchMap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ToastService } from 'src/app/layout/toast/toast.service';
@@ -14,6 +14,7 @@ import { IsmsConfig } from 'src/app/toolbox/isms/models/isms-config.model';
 
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
 import { Sort, SortDirection } from 'src/app/layout/table/table.types';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-isms-impact-categories',
@@ -21,20 +22,17 @@ import { Sort, SortDirection } from 'src/app/layout/table/table.types';
   styleUrls: ['./impact-categories.component.scss']
 })
 export class ImpactCategoriesComponent implements OnInit {
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
+  @ViewChild('impactDescriptionsTemplate', { static: true }) impactDescriptionsTemplate: TemplateRef<any>;
+  @Input() config: IsmsConfig;
+
   public impactCategories: ImpactCategory[] = [];
   public totalImpactCategories = 0;
   public page = 1;
   public limit = 10;
   public loading = false;
-
-  @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
-  @ViewChild('impactDescriptionsTemplate', { static: true }) impactDescriptionsTemplate: TemplateRef<any>;
-
-  @Input() config: IsmsConfig;
-
   public columns: Array<any>;
-
-  // fetch all impacts and store them in a map from public_id => name
+  private orderChangeSubject = new Subject<ImpactCategory[]>();
   private impactMap = new Map<number, string>();
   public filter: string;
 
@@ -61,13 +59,15 @@ export class ImpactCategoriesComponent implements OnInit {
         display: 'Name',
         name: 'name',
         data: 'name',
-        sortable: false
+        sortable: false,
+        style: { width: 'auto', 'text-align': 'center' }
       },
       {
         display: 'Impact level descriptions',
         name: 'impact_descriptions',
         template: this.impactDescriptionsTemplate,
-        sortable: false
+        sortable: false,
+        style: { width: 'auto', 'text-align': 'center' }
       },
       {
         display: 'Actions',
@@ -80,6 +80,7 @@ export class ImpactCategoriesComponent implements OnInit {
 
     // First, fetch all impacts so we can build a map from impact_id => name
     this.fetchAllImpactsAndThenLoadCategories();
+    this.setupDebouncedOrderChange();
   }
 
 
@@ -118,7 +119,7 @@ export class ImpactCategoriesComponent implements OnInit {
         filter: this.filterBuilder(),
         limit: this.limit,
         page: this.page,
-        sort: 'name',
+        sort: 'sort',
         order: 1
       })
       .pipe(finalize(() => {
@@ -189,26 +190,6 @@ export class ImpactCategoriesComponent implements OnInit {
   public editImpactCategory(item: ImpactCategory): void {
     const modalRef = this.modalService.open(ImpactCategoryModalComponent, { size: 'lg' });
     modalRef.componentInstance.impactCategory = { ...item };
-    modalRef.result.then(
-      (result) => {
-        if (result === 'saved') {
-          this.loadImpactCategories();
-        }
-      },
-      () => { }
-    );
-  }
-
-
-  /**
-   * Copy as new (duplicates the category)
-   */
-  public copyImpactCategory(item: ImpactCategory): void {
-    const cloned = { ...item, public_id: undefined };
-    const modalRef = this.modalService.open(ImpactCategoryModalComponent, { size: 'lg' });
-    modalRef.componentInstance.impactCategory = cloned;
-    modalRef.componentInstance.isCopyMode = true;
-
     modalRef.result.then(
       (result) => {
         if (result === 'saved') {
@@ -324,5 +305,44 @@ export class ImpactCategoriesComponent implements OnInit {
     */
   public onOrderChange(newItems: ImpactCategory[]): void {
     this.impactCategories = newItems;
+
+    this.impactCategories = newItems.map((item, index) => ({
+      ...item,
+      sort: index
+    }));
+
+    this.orderChangeSubject.next(this.impactCategories);
+
+  }
+
+
+  /**
+   *  Sets up the stream that will handle order-change events and
+   *  make the API call only after a short pause (debounce).
+   */
+  private setupDebouncedOrderChange(): void {
+    this.orderChangeSubject
+      .pipe(
+        debounceTime(300),
+        // Only trigger when the emitted array actually changes
+        distinctUntilChanged(
+          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+        ),
+        // Switch to the actual API call
+        switchMap((updatedItems) => {
+          this.loaderService.show();
+          return this.impactCategoryService.updateImpactCategoriesOrder(updatedItems)
+            .pipe(
+              finalize(() => this.loaderService.hide())
+            );
+        })
+      )
+      .subscribe({
+        next: (res) => {
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message);
+        }
+      });
   }
 }
