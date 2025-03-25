@@ -107,10 +107,9 @@ class JsonExportFormat(BaseExporterFormat):
         """
         output_element = {}
         for head in header:
-            # Map 'public_id' to 'object_id'
-            head = 'object_id' if head == 'public_id' else head
-
-            if head == 'type_label':
+            if head == 'public_id':
+                output_element[head] = obj.object_information.get('object_id')
+            elif head == 'type_label':
                 output_element[head] = obj.type_information.get(head)
             else:
                 output_element[head] = obj.object_information.get(head)

@@ -13,20 +13,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for CmdbObject exports
+"""
 import logging
 from flask import abort, current_app
 
+from cmdb.models.user_model import CmdbUser
 from cmdb.framework.exporter.config.exporter_config import ExporterConfig
 from cmdb.framework.exporter.writer.base_export_writer import BaseExportWriter
 from cmdb.framework.exporter.writer.supported_exporter_extension import SupportedExporterExtension
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses import DefaultResponse
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.blueprints import APIBlueprint
-from cmdb.interface.rest_api.responses import DefaultResponse
-from cmdb.models.user_model import CmdbUser
 from cmdb.utils.helpers import load_class
 from cmdb.security.acl.permission import AccessControlPermission
 # -------------------------------------------------------------------------------------------------------------------- #

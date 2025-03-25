@@ -119,7 +119,6 @@ class XlsxExportFormat(BaseExporterFormat):
 
                 # Insert headers in the new sheet
                 for col_index, header_item in enumerate(header, start=1):
-                    header_item = 'object_id' if header_item == 'public_id' else header_item
                     sheet.cell(row=row_index, column=col_index).value = header_item
 
                 # Insert column headers for fields

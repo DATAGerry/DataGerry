@@ -66,7 +66,7 @@ class GenericManager(BaseManager):
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-    def insert_document(self, document: Union[dict, CmdbDAO]) -> int:
+    def insert_item(self, document: Union[dict, CmdbDAO]) -> int:
         """
         Inserts an document into the database
 

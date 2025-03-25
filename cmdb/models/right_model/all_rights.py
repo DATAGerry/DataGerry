@@ -44,6 +44,7 @@ from cmdb.models.right_model.isms_rights import (
     ImpactCategoryRight,
     ProtectionGoalRight,
     RiskMatrixRight,
+    ThreatRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -201,6 +202,13 @@ ISMS_RIGHTS = (
         (
             RiskMatrixRight('view', description='View ISMS RiskMatrix'),
             RiskMatrixRight('edit', Levels.PROTECTED, description='Edit ISMS RiskMatrix'),
+        ),
+        ThreatRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage Threats of ISMS'),
+        (
+            ThreatRight('view', description='View ISMS Threats'),
+            ThreatRight('add', description='Add ISMS Threats'),
+            ThreatRight('edit', Levels.PROTECTED, description='Edit ISMS Threats'),
+            ThreatRight('delete', Levels.SECURE, description='Delete ISMS Threats'),
         ),
     ),
 )

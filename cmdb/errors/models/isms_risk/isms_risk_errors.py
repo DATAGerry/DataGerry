@@ -14,27 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant classes
+This module contains the classes of all IsmsRisk errors
 """
-from .isms_risk_class import IsmsRiskClass
-from .isms_likelihood import IsmsLikelihood
-from .isms_impact import IsmsImpact
-from .isms_impact_category import IsmsImpactCategory
-from .isms_protection_goal import IsmsProtectionGoal
-from .isms_risk_matrix import IsmsRiskMatrix
-from .risk_type_enum import RiskType
-from .isms_risk import IsmsRisk
-from .isms_threat import IsmsThreat
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'IsmsRiskClass',
-    'IsmsLikelihood',
-    'IsmsImpact',
-    'IsmsImpactCategory',
-    'IsmsProtectionGoal',
-    'IsmsRiskMatrix',
-    'RiskType',
-    'IsmsRisk',
-    'IsmsThreat',
-]
+class IsmsRiskError(Exception):
+    """
+    Raised to catch all IsmsRisk related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all IsmsRisk related errors
+        """
+        super().__init__(err)
+
+# ------------------------------------------------- IsmsRisk - ERRORS ------------------------------------------------ #
+
+class IsmsRiskInitError(IsmsRiskError):
+    """
+    Raised when a IsmsRisk could not be initialised
+    """
+
+
+class IsmsRiskInitFromDataError(IsmsRiskError):
+    """
+    Raised when a IsmsRisk could not be initialised from a dict
+    """
+
+
+class IsmsRiskToJsonError(IsmsRiskError):
+    """
+    Raised when a IsmsRisk could not be transformed into a json compatible dict
+    """

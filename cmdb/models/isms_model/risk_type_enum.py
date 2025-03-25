@@ -1,8 +1,3 @@
-# DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2025 becon GmbH
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 #
@@ -14,17 +9,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module prove all API Response parameters for ISMS
+Implementation of RiskType
 """
-from .api_parameters import APIParameters
-from .collection_parameters import CollectionParameters
-from .group_parameters import GroupDeletionParameters
-from .type_parameters import TypeIterationParameters
+from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'APIParameters',
-    'CollectionParameters',
-    'GroupDeletionParameters',
-    'TypeIterationParameters',
-]
+class RiskType(str, Enum):
+    """
+    Available OptionTypes for CmdbExtendableOptions
+    """
+    THREAT_X_VULNERABILITY = 'THREAT_X_VULNERABILITY'
+    THREAT = 'THREAT'
+    EVENT = 'EVENT'

@@ -144,8 +144,10 @@ class XmlExportFormat(BaseExporterFormat):
         """
         cmdb_object_meta = ET.SubElement(cmdb_object, 'meta')
         for head in header:
-            head = 'object_id' if head == 'public_id' else head
-            if head == 'type_label':
+            if head == 'public_id':
+                cmdb_object_meta_id = ET.SubElement(cmdb_object_meta, head)
+                cmdb_object_meta_id.text = str(obj.object_information.get('object_id', ''))
+            elif head == 'type_label':
                 cmdb_object_meta_type = ET.SubElement(cmdb_object_meta, 'type')
                 cmdb_object_meta_type.text = obj.type_information.get('type_label', '')
             else:

@@ -53,3 +53,4 @@ class ManagerType(Enum):
     IMPACT_CATEGORY = 'ImpactCategoryManager'
     PROTECTION_GOAL = 'ProtectionGoalManager'
     RISK_MATRIX = 'RiskMatrixManager'
+    THREAT = 'ThreatManager'

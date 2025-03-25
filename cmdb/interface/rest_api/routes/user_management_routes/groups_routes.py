@@ -32,10 +32,13 @@ from cmdb.models.group_model import CmdbUserGroup, GroupDeleteMode
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights
 from cmdb.interface.blueprints import APIBlueprint
-from cmdb.interface.rest_api.responses.response_parameters.group_parameters import GroupDeletionParameters
+from cmdb.interface.rest_api.responses.response_parameters import (
+    GroupDeletionParameters,
+    CollectionParameters,
+)
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+
 from cmdb.interface.rest_api.responses import (
     DeleteSingleResponse,
     UpdateSingleResponse,

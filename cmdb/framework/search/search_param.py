@@ -37,7 +37,9 @@ class SearchParam:
     ]
 
     def __init__(self, search_text, search_form: str, settings: dict = None, disjunction: bool = False):
-        """SearchParamDAO constructor
+        """
+        Initialises a SearchParam class
+
         Args:
             search_text: searchable user input for database search
             search_form: kind of search parameter
@@ -45,8 +47,10 @@ class SearchParam:
             disjunction: optional kind of search parameter
         """
         self.search_text = search_text
+
         if search_form not in self.POSSIBLE_FORM_TYPES:
-            raise ValueError(f'{search_form} is not a possible param type ')
+            raise ValueError(f'{search_form} is not a possible param type')
+
         self.search_form = search_form
         self.settings: dict = settings or {}
         self.disjunction: bool = disjunction
@@ -58,7 +62,7 @@ class SearchParam:
 
     @classmethod
     def from_request(cls, request) -> list['SearchParam']:
-        """Build a SearchParamDAO list from http request"""
+        """Build a SearchParam list from http request"""
         param_list: list[cls] = []
         for param in request:
             try:

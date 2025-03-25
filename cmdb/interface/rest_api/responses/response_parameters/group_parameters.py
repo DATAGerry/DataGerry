@@ -13,28 +13,32 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of GroupDeletionParameters
+"""
 from cmdb.models.group_model import GroupDeleteMode
 from cmdb.interface.rest_api.responses.response_parameters.api_parameters import APIParameters
 # -------------------------------------------------------------------------------------------------------------------- #
 
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                            GroupDeletionParameters - CLASS                                           #
+# -------------------------------------------------------------------------------------------------------------------- #
 class GroupDeletionParameters(APIParameters):
     """document"""
     #TODO: DOCUMENT-FIX
     def __init__(self, query_string: str, action: GroupDeleteMode = None, group_id: int = None, **kwargs):
         """
-        Constructor of the GroupDeletionParameters.
+        Initialises GroupDeletionParameters
 
         Args:
-            query_string (str): The raw http query string. Can be used when the parsed parameters are not enough.
-            action (GroupDeleteMode): The action which is to perform on delete a group.
-            group_id (int): The public id of another group which the users have to move.
+            query_string (str): The raw http query string. Can be used when the parsed parameters are not enough
+            action (GroupDeleteMode): The action which is to perform on delete a group
+            group_id (int): The public id of another group which the users have to move
             **kwargs: optional parameters
         """
         self.action = action
         self.group_id = group_id
-        super().__init__(query_string=query_string, **kwargs)
+        super().__init__(query_string = query_string, **kwargs)
 
 
     @classmethod
