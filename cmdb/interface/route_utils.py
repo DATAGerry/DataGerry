@@ -22,7 +22,7 @@ import functools
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Union
+from typing import Union, Optional
 import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
@@ -205,16 +205,27 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
     return decorator
 
 
-def __get_x_api_key():
-    """document"""
-    #TODO: DOCUMENT-FIX
-    x_api_key = request.headers.get('x-api-key', None)
+def __get_x_api_key() -> Optional[str]:
+    """
+    Retrieve the 'x-api-key' from the request headers
+
+    Returns:
+        Optional[str]: The value of the 'x-api-key' header if present, otherwise None
+    """
+    x_api_key = request.headers.get('x-api-key')
+
     return x_api_key
 
 
-def __get_request_api_user():
-    """document"""
-    #TODO: DOCUMENT-FIX
+def __get_request_api_user() -> Optional[dict[str, str]]:
+    """Retrieve the API user credentials from the 'Authorization' request header
+
+    Extracts and decodes the 'Authorization' header to obtain Basic Authentication credentials
+
+    Returns:
+        Optional[dict[str, str]]: A dictionary containing 'email' and 'password' if authentication is Basic
+        Returns None if the header is missing, improperly formatted, or uses an unsupported authentication type
+    """
     try:
         value = _wsgi_decoding_dance(request.headers['Authorization'])
 
@@ -229,20 +240,27 @@ def __get_request_api_user():
             email, password = base64.b64decode(auth_info).split(b":", 1)
 
             with current_app.app_context():
-                email = email.decode("utf-8")
-                password = password.decode("utf-8")
+                return {'email': email.decode("utf-8"), 'password': password.decode("utf-8")}
 
-                return {'email': email, 'password': password}
-        else:
-            return None
+        return None
     except Exception as err:
-        LOGGER.debug("c User Exception: %s, Type: %s", err, type(err))
+        LOGGER.error("[__get_request_api_user] User Exception: %s, Type: %s", err, type(err))
         return None
 
 
-def __get_request_auth_method():
-    """document"""
-    #TODO: DOCUMENT-FIX
+def __get_request_auth_method() -> Optional["AuthMethod"]:
+    """
+    Determine the authentication method from the request headers
+
+    This function checks the 'Authorization' header to determine whether the request uses 
+    Basic Authentication or JWT-based authentication
+
+    Returns:
+        Optional[AuthMethod]: 
+            - `AuthMethod.BASIC` if the 'Authorization' header starts with 'Basic '
+            - `AuthMethod.JWT` if the header starts with 'Bearer '
+            - Aborts the request with a 400 error if the auth method is invalid or missing
+    """
     try:
         auth_header = request.headers.get('Authorization')
 
@@ -255,13 +273,26 @@ def __get_request_auth_method():
 
         return abort(400, "Invalid auth method!")
     except Exception as err:
-        LOGGER.debug("[insert_auth_method] User Exception: %s, Type: %s", err, type(err))
+        LOGGER.debug("[__get_request_auth_method] Exception: %s, Type: %s", err, type(err))
         return abort(400, "Invalid auth method!")
 
 
 def __check_api_level(user_instance: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Check if the user has the required API access level
+
+    This function verifies whether a user has the necessary API level permissions.
+    The check is only performed in cloud mode
+
+    Args:
+        user_instance (dict, optional): A dictionary containing user details, including API level
+        required_api_level (ApiLevel): The minimum API level required for access
+
+    Returns:
+        bool: 
+            - `True` if the API level requirement is met or cloud mode is disabled
+            - `False` if the user does not have the required API level or an error occurs
+    """
     # Only validate in cloud mode
     if not current_app.cloud_mode:
         return True
@@ -275,7 +306,7 @@ def __check_api_level(user_instance: dict = None, required_api_level: ApiLevel =
 
         return user_instance['subscriptions'][0]['api_level'] >= required_api_level
     except Exception as err:
-        LOGGER.debug("[validate_api_access] Error: %s, Type: %s", err, type(err))
+        LOGGER.debug("[__check_api_level] Exception: %s, Type: %s", err, type(err))
         return False
 
 
@@ -411,11 +442,23 @@ def parse_authorization_header(header):
 # ------------------------------------------------------ HELPER ------------------------------------------------------ #
 
 def validate_right_cloud_api(required_right: str, request_user: CmdbUser) -> bool:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Validate whether the user has the required rights in a cloud-based API
+
+    This function checks if the given user has the necessary permissions within their group.
+    It first verifies if the user has the direct right and then checks for extended rights
+
+    Args:
+        required_right (str): The permission right to be validated
+        request_user (CmdbUser): The user whose rights need to be validated
+
+    Returns:
+        bool: 
+            - `True` if the user has the required right or an extended right
+            - `False` if the user lacks the required permissions or an error occurs
+    """
     with current_app.app_context():
         groups_manager = GroupsManager(current_app.database_manager, request_user.database)
-
 
     try:
         group = groups_manager.get_group(request_user.group_id)
@@ -425,7 +468,8 @@ def validate_right_cloud_api(required_right: str, request_user: CmdbUser) -> boo
             right_status = group.has_extended_right(required_right)
 
         return right_status
-    except Exception:
+    except Exception as err:
+        LOGGER.debug("[validate_right_cloud_api] Exception: %s, Type: %s", err, type(err))
         return False
 
 
@@ -442,8 +486,7 @@ def validate_password(user_name: str, password: str, database: str = None) -> Un
         security_manager = SecurityManager(current_app.database_manager)
         settings_reader = SettingsReaderManager(current_app.database_manager)
 
-    auth_settings = settings_reader.get_all_values_from_section('auth',
-                                                                            AuthModule.__DEFAULT_SETTINGS__)
+    auth_settings = settings_reader.get_all_values_from_section('auth', AuthModule.__DEFAULT_SETTINGS__)
     auth_module = AuthModule(auth_settings,
                                 security_manager=security_manager,
                                 users_manager=users_manager)
@@ -455,8 +498,28 @@ def validate_password(user_name: str, password: str, database: str = None) -> Un
         return None
 
 
-def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None):
-    """Simulates Users in MySQL DB"""
+def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None) -> Optional[dict]:
+    """Check if a user exists in the service portal
+
+    This function verifies user credentials in two modes:
+    - **Local mode**: Loads test users from a JSON file and verifies credentials
+    - **Cloud mode**: Validates user credentials via the service portal
+
+    Args:
+        mail (str): The user's email address
+        password (str): The user's password
+        x_api_key (Optional[str], optional): An optional API key for authentication. Defaults to None
+
+    Raises:
+        NoAccessTokenError: If the service portal authentication fails due to a missing access token
+        InvalidCloudUserError: If the user is invalid in the cloud authentication system
+        RequestTimeoutError: If the authentication request times out
+        RequestError: For general request failures
+        Exception: For any other unexpected errors
+
+    Returns:
+        Optional[Dict]: A dictionary representing the user if authentication is successful, otherwise None
+    """
     if current_app.local_mode:
         try:
             with open('etc/test_users.json', 'r', encoding='utf-8') as users_file:
@@ -467,12 +530,10 @@ def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None
 
                     if user["password"] == password:
                         return user
-                else:
-                    return None
 
-            return None
+                return None
         except Exception as err:
-            LOGGER.debug("[get users from file] Exception: %s, Type: %s", err, type(err))
+            LOGGER.debug("[check_user_in_service_portal] Exception: %s, Type: %s", err, type(err))
             return None
 
     # Validation through service portal
@@ -480,21 +541,23 @@ def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None
         user_data = validate_subscrption_user(mail, password, x_api_key)
 
         return user_data
-
-    except NoAccessTokenError as err:
-        raise NoAccessTokenError(err) from err
-    except InvalidCloudUserError as err:
-        raise InvalidCloudUserError(err) from err
-    except RequestTimeoutError as err:
-        raise RequestTimeoutError(err) from err
-    except RequestError as err:
-        raise RequestError(err) from err
+    except (NoAccessTokenError, InvalidCloudUserError, RequestTimeoutError, RequestError) as err:
+        raise err from err
     except Exception as err:
+        #TODO: ERROR-FIX (proper exception required)
         raise Exception(err) from err
 
 
-def check_db_exists(db_name: dict):
-    """Checks if the database exists"""
+def check_db_exists(db_name: str) -> bool:
+    """
+    This function checks if a given database name exists within the current database manager
+
+    Args:
+        db_name (str): The name of the database to check
+
+    Returns:
+        bool: True if the database exists, False otherwise
+    """
     return current_app.database_manager.check_database_exists(db_name)
 
 
@@ -595,19 +658,42 @@ def set_admin_user(user_data: dict, subscription: dict):
         raise UsersManagerInsertError(err) from err
 
 
-def retrive_user(user_data: dict, database: str):
-    """Get user from db"""
+def retrive_user(user_data: dict, database: str) -> Optional[dict]:
+    """
+    Retrieve a user from the database by email
+
+    This function fetches a user from the database using the provided email from the user data
+
+    Args:
+        user_data (dict[str, str]): A dictionary containing user information (e.g., email)
+        database (str): The name of the database to query
+
+    Returns:
+        Optional[dict]: A dictionary representing the user if found, or None if an error occurs
+    """
     with current_app.app_context():
         users_manager = UsersManager(current_app.database_manager, database)
 
     try:
         return users_manager.get_user_by({'email': user_data['email']})
-    except UsersManagerGetError:
+    except UsersManagerGetError as err:
+        LOGGER.debug("[retrive_user] Exception: %s, Type: %s", err, type(err))
         return None
 
 
-def delete_database(db_name: str):
-    """Deletes the database"""
+def delete_database(db_name: str) -> None:
+    """
+    Delete the specified database
+
+    This function attempts to delete the database with the given name. It sets the appropriate database 
+    in the database manager and then drops it using the `UsersManager`
+
+    Args:
+        db_name (str): The name of the database to be deleted
+
+    Raises:
+        DatabaseNotFoundError: If the database cannot be found or deleted
+    """
     try:
         with current_app.app_context():
             current_app.database_manager.connector.set_database(db_name)
@@ -658,9 +744,26 @@ def validate_subscrption_user(email: str, password: str, x_api_key: str = None) 
 
 
 def sync_config_items(email: str, database: str, config_item_count: int) -> bool:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Synchronize configuration items with the service portal
 
+    This function sends a request to the service portal to sync configuration items for a specific 
+    user and database. It is only executed in cloud mode. If the mode is local, the function simply 
+    returns `True`
+
+    Args:
+        email (str): The email of the user
+        database (str): The name of the database
+        config_item_count (int): The number of configuration items to sync
+
+    Returns:
+        bool: 
+            - `True` if the synchronization was successful
+            - `False` if the request failed or an error occurred
+
+    Raises:
+        NoAccessTokenError: If the `X-ACCESS-TOKEN` environment variable is not set
+    """
     # Just do this in cloud mode
     if current_app.local_mode:
         return True
@@ -688,5 +791,5 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
 
         return False
     except (requests.exceptions.Timeout, requests.exceptions.RequestException) as err:
-        LOGGER.error("[sync_config_items] Request Error: %s", err)
+        LOGGER.error("[sync_config_items] Request Error: %s. Type: %s", err, type(err))
         return False

@@ -23,7 +23,7 @@ from flask import Blueprint, abort, request, current_app
 
 from cmdb.manager import UsersManager
 
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.interface.route_utils import user_has_right, parse_authorization_header
 from cmdb.models.user_model import CmdbUser
 from cmdb.security.token.validator import TokenValidator
@@ -146,15 +146,8 @@ class APIBlueprint(Blueprint):
 
     @classmethod
     def parse_parameters(cls, parameters_class, **optional):
-        """
-        Parse generic parameters from http to a class
-        Args:
-            parameters_class: Wrapper class of the ApiParameters
-            **optional: Dynamic route parameters
-
-        Returns:
-            APIParameters: Wrapper class
-        """
+        """document"""
+        #TODO: DOCUMENT-FIX
         def _parse(f):
             @wraps(f)
             def _decorate(*args, **kwargs):

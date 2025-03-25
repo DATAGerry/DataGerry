@@ -23,6 +23,7 @@ from .impact_category_routes import impact_category_blueprint
 from .protection_goal_routes import protection_goal_blueprint
 from .risk_matrix_routes import risk_matrix_blueprint
 from .isms_config_routes import isms_config_blueprint
+from .threat_routes import threat_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     'protection_goal_blueprint',
     'risk_matrix_blueprint',
     'isms_config_blueprint',
+    'threat_blueprint',
 ]

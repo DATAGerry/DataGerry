@@ -38,7 +38,7 @@ from cmdb.interface.rest_api.routes.media_library_routes.media_file_route_utils 
     generate_collection_parameters,
     create_attachment_name,
 )
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import (
     InsertSingleResponse,

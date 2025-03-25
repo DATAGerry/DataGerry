@@ -63,7 +63,7 @@ from cmdb.interface.rest_api.responses import (
     GetMultiResponse,
     DefaultResponse,
 )
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 
 from cmdb.errors.manager.objects_manager import (
     ObjectsManagerGetError,

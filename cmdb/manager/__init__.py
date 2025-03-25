@@ -47,6 +47,7 @@ from cmdb.manager.isms_manager.protection_goal_manager import ProtectionGoalMana
 from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
 from cmdb.manager.object_groups_manager import ObjectGroupsManager
+from cmdb.manager.isms_manager.threat_manager import ThreatManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -81,4 +82,5 @@ __all__ = [
     'RiskMatrixManager',
     'ExtendableOptionsManager',
     'ObjectGroupsManager',
+    'ThreatManager',
 ]

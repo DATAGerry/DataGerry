@@ -25,7 +25,7 @@ from cmdb.models.right_model.constants import NAME_TO_LEVEL
 from cmdb.models.right_model.all_rights import __all__ as right_tree
 from cmdb.interface.route_utils import verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import GetMultiResponse, GetSingleResponse
 

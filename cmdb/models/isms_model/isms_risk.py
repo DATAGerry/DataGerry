@@ -1,0 +1,188 @@
+# DATAGERRY - OpenSource Enterprise CMDB
+# Copyright (C) 2025 becon GmbH
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+Implementation of IsmsRisk in DataGerry - ISMS
+"""
+import logging
+
+from cmdb.models.cmdb_dao import CmdbDAO
+from cmdb.models.isms_model import RiskType
+
+from cmdb.errors.models.isms_risk import (
+    IsmsRiskInitError,
+    IsmsRiskInitFromDataError,
+    IsmsRiskToJsonError,
+)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+
+LOGGER = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                   IsmsRisk - CLASS                                                   #
+# -------------------------------------------------------------------------------------------------------------------- #
+class IsmsRisk(CmdbDAO):
+    """
+    Implementation of IsmsRisk which represents a risk in ISMS
+
+    Extends: CmdbDAO
+    """
+    COLLECTION = "isms.risk"
+    MODEL = 'Risk'
+    # pylint: disable=R0801
+    SCHEMA: dict = {
+        'public_id': {
+            'type': 'integer',
+            'min': 1,
+        },
+        'name': {
+            'type': 'string',
+            'required': True,
+            'empty': False
+        },
+        'risk_type': {
+            'type': 'string',
+            'required': True,
+            'empty': False
+        },
+        'protection_goals': {
+            'type': 'list',
+            'required': True,
+            'empty': False
+        },
+        'threats': {
+            'type': 'list',
+        },
+        'vulnerabilities': {
+            'type': 'list',
+        },
+        'identifier': {
+            'type': 'string',
+        },
+        'consequences': {
+            'type': 'string',
+        },
+        'description': {
+            'type': 'string',
+        },
+    }
+
+
+    #pylint: disable=too-many-arguments
+    #pylint: disable=too-many-positional-arguments
+    def __init__(
+            self,
+            public_id: int,
+            name: str,
+            risk_type: RiskType,
+            protection_goals: list[int],
+            threats: list[int] = None,
+            vulnerabilities: list[int] = None,
+            identifier: str = None,
+            consequences: str = None,
+            description: str = None,
+        ):
+        """
+        Initialises an IsmsRisk
+
+        Args:
+            public_id (int): public_id of the IsmsRisk
+            name (str): The name of the IsmsRisk
+            risk_type (RiskType): RiskType of the IsmsRisk
+            protection_goals (list[int]): List of affected protection goals of the IsmsRisk
+            threats (list[int]): List of threats linked with this IsmsRisk
+            vulnerabilities (list[int]): List of vulnerabilities linked with this IsmsRisk
+            identifier (str, optional): Identifier of the IsmsRisk
+            consequences (str, optional): Consequences of the IsmsRisk
+            description (str, optional): Description of the IsmsRisk
+
+        Raises:
+            IsmsRiskInitError: If the IsmsRisk could not be initialised
+        """
+        try:
+            self.name = name
+            self.risk_type = risk_type
+            self.protection_goals = protection_goals
+            self.threats = threats or []
+            self.vulnerabilities = vulnerabilities or []
+            self.identifier = identifier
+            self.consequences = consequences
+            self.description = description
+
+            super().__init__(public_id = public_id)
+        except Exception as err:
+            raise IsmsRiskInitError(err) from err
+
+# -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
+
+    @classmethod
+    def from_data(cls, data: dict) -> "IsmsRisk":
+        """
+        Initialises a IsmsRisk from a dict
+
+        Args:
+            data (dict): Data with which the IsmsRisk should be initialised
+
+        Raises:
+            IsmsRiskInitFromDataError: If the initialisation with the given data fails
+
+        Returns:
+            IsmsRisk: IsmsRisk with the given data
+        """
+        try:
+            return cls(
+                public_id = data.get('public_id'),
+                name = data.get('name'),
+                risk_type = data.get('risk_type'),
+                protection_goals = data.get('protection_goals'),
+                threats = data.get('threats', []),
+                vulnerabilities = data.get('vulnerabilities', []),
+                identifier = data.get('identifier'),
+                consequences = data.get('consequences'),
+                description = data.get('description'),
+            )
+        except Exception as err:
+            raise IsmsRiskInitFromDataError(err) from err
+
+
+    @classmethod
+    def to_json(cls, instance: "IsmsRisk") -> dict:
+        """
+        Converts a IsmsRisk into a json compatible dict
+
+        Args:
+            instance (IsmsRisk): The IsmsRisk which should be converted
+
+        Raises:
+            IsmsRiskToJsonError: If the IsmsRisk could not be converted to a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the IsmsRisk values
+        """
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'name': instance.name,
+                'risk_type': instance.risk_type,
+                'protection_goals': instance.protection_goals,
+                'threats': instance.threats,
+                'vulnerabilities': instance.vulnerabilities,
+                'identifier': instance.identifier,
+                'consequences': instance.consequences,
+                'description': instance.description,
+            }
+        except Exception as err:
+            raise IsmsRiskToJsonError(err) from err

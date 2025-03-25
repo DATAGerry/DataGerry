@@ -28,7 +28,7 @@ from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse, GetMultiResponse, UpdateSingleResponse
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.reports_model.cmdb_report import CmdbReport

@@ -102,3 +102,15 @@ class RiskMatrixRight(IsmsRight):
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
+
+
+class ThreatRight(IsmsRight):
+    """
+    Base class for IsmsThreatRight rights
+    """
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{IsmsRight.PREFIX}.threat'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)

@@ -14,27 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant classes
+This module provides all errors for the IsmsRiskClassManager
 """
-from .isms_risk_class import IsmsRiskClass
-from .isms_likelihood import IsmsLikelihood
-from .isms_impact import IsmsImpact
-from .isms_impact_category import IsmsImpactCategory
-from .isms_protection_goal import IsmsProtectionGoal
-from .isms_risk_matrix import IsmsRiskMatrix
-from .risk_type_enum import RiskType
-from .isms_risk import IsmsRisk
-from .isms_threat import IsmsThreat
+from .threat_manager_errors import (
+    ThreatManagerError,
+    ThreatManagerInitError,
+    ThreatManagerInsertError,
+    ThreatManagerGetError,
+    ThreatManagerUpdateError,
+    ThreatManagerDeleteError,
+    ThreatManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'IsmsRiskClass',
-    'IsmsLikelihood',
-    'IsmsImpact',
-    'IsmsImpactCategory',
-    'IsmsProtectionGoal',
-    'IsmsRiskMatrix',
-    'RiskType',
-    'IsmsRisk',
-    'IsmsThreat',
+    'ThreatManagerError',
+    'ThreatManagerInitError',
+    'ThreatManagerInsertError',
+    'ThreatManagerGetError',
+    'ThreatManagerUpdateError',
+    'ThreatManagerDeleteError',
+    'ThreatManagerIterationError',
 ]
+
+
+THREAT_MANAGER_ERRORS = {
+    "init": ThreatManagerInitError,
+    "insert": ThreatManagerInsertError,
+    "get": ThreatManagerGetError,
+    "update": ThreatManagerUpdateError,
+    "delete": ThreatManagerDeleteError,
+    "iterate": ThreatManagerIterationError,
+}

@@ -13,11 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of MediaFile API Route utility methods
+"""
 import json
 import logging
-from typing import Union
+from typing import Union, Optional
 from flask import request, abort
 from werkzeug.datastructures import FileStorage
 from werkzeug.wrappers import Request
@@ -25,7 +26,7 @@ from werkzeug.wrappers import Request
 from cmdb.manager import MediaFilesManager
 from cmdb.manager.query_builder import Builder
 
-from cmdb.interface.rest_api.responses.response_parameters.collection_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -42,13 +43,14 @@ def get_file_in_request(file_name: str) -> FileStorage:
         return abort(400)
 
 
-def get_element_from_data_request(element, _request: Request) -> Union[dict, None]:
+def get_element_from_data_request(element: str, _request: Request) -> Optional[dict]:
     """document"""
     #TODO: DOCUMENT-FIX
     try:
         metadata = json.loads(_request.form.to_dict()[element])
         return metadata
-    except (KeyError, Exception):
+    except (KeyError, Exception) as err:
+        LOGGER.error("[get_element_from_data_request] Exception:'%s'. Type: %s", err, type(err))
         return None
 
 
@@ -106,17 +108,19 @@ def generate_collection_parameters(params: CollectionParameters):
 
 
 #TODO: ANNOTATION-FIX
-def create_attachment_name(name, index, metadata, media_files_manager):
-    """ This method checks whether the current file name already exists in the directory.
-        If this is the case, 'copy_(index)_' is appended as a prefix. method is executed recursively.
+def create_attachment_name(name: str, index: int, metadata, media_files_manager: MediaFilesManager):
+    """
+    This method checks whether the current file name already exists in the directory.
+    If this is the case, 'copy_(index)_' is appended as a prefix. method is executed recursively.
 
-        Args:
-            name (str): filename of the File
-            index (int): counter
-            metadata (dict): Metadata for filtering Files from Database
-            media_file_manager (MediaFilesManager): Manager
-        Returns:
-         New Filename with 'copy_(index)_' - prefix.
+    Args:
+        name (str): filename of the File
+        index (int): counter
+        metadata (dict): Metadata for filtering Files from Database
+        media_file_manager (MediaFilesManager): Manager
+
+    Returns:
+        New Filename with 'copy_(index)_' - prefix
     """
     try:
         if media_files_manager.file_exists(metadata):
@@ -129,7 +133,7 @@ def create_attachment_name(name, index, metadata, media_files_manager):
 
         return name
     except Exception as err:
-        #TODO: ERROR-FIX
+        #TODO: ERROR-FIX (proper exception)
         raise Exception(err) from err
 
 
