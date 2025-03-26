@@ -28,7 +28,7 @@
                 <th style="width: 90px;">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody *permissionLink="'base.framework.extendableOption.view'">
               <tr *ngFor="let cat of localCategoryOptions">
                 <td>
                   <ng-container *ngIf="editingCategoryId === cat.public_id; else readMode">
@@ -53,11 +53,13 @@
                   </ng-container>
                   <ng-template #normalActions>
                     <button class="btn btn-link btn-sm text-primary p-0 mr-2"
-                            (click)="onEditCategory(cat)">
+                            (click)="onEditCategory(cat)"
+                            *permissionLink="'base.framework.extendableOption.edit'">
                       <i class="far fa-edit"></i>
                     </button>
                     <button class="btn btn-link btn-sm text-danger p-0"
-                            (click)="onDeleteCategory(cat)">
+                            (click)="onDeleteCategory(cat)"
+                            *permissionLink="'base.framework.extendableOption.delete'">
                       <i class="far fa-trash-alt"></i>
                     </button>
                   </ng-template>

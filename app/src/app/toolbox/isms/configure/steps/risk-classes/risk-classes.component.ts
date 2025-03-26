@@ -120,7 +120,6 @@ export class RiskClassesComponent implements OnInit {
       )
       .subscribe({
         next: (data) => {
-          console.log('risk classes', data)
           this.riskClasses = data.results;
           this.totalRiskClasses = data.total;
         },
@@ -157,13 +156,11 @@ export class RiskClassesComponent implements OnInit {
    * Opens modal to EDIT an existing Risk Class.
    */
   public editRiskClass(item: RiskClass): void {
-    console.log('edir riskClass', item)
     const modalRef = this.modalService.open(RiskClassModalComponent, { size: 'lg' });
     // Pass existing item => the modal is in edit mode
     modalRef.componentInstance.riskClass = { ...item };
     modalRef.result.then(
       (result) => {
-        console.log('edit result', result)
         if (result === 'saved') {
           this.loadRiskClasses();
         }
@@ -179,7 +176,6 @@ export class RiskClassesComponent implements OnInit {
    * Deletes a Risk Class after user confirms in CoreDeleteConfirmationModalComponent.
    */
   public onDeleteRiskClass(item: RiskClass): void {
-    console.log('item', item)
     const modalRef = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
     modalRef.componentInstance.title = 'Delete Risk Class';
     modalRef.componentInstance.item = item;

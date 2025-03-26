@@ -126,7 +126,6 @@ export class LikelihoodsComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.likelihoods = data.results;
-          console.log('likelihoods', this.likelihoods)
           this.totalLikelihoods = data.total;
         },
         error: (err) => {

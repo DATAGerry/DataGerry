@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -29,6 +28,8 @@ export class ObjectGroupsAddComponent implements OnInit {
   public isEditMode = false;
   public groupId?: number;
   public isLoading$ = this.loaderService.isLoading$;
+
+  // Model for creating / editing an object group
   public group: ObjectGroup = {
     name: '',
     group_type: ObjectGroupMode.STATIC,
@@ -36,12 +37,13 @@ export class ObjectGroupsAddComponent implements OnInit {
     assigned_ids: []
   };
 
-  /** Category options for the main form */
+  // Category options for the main form
   public categoryOptions: ExtendableOption[] = [];
 
   // Show/hide the new Category Manager component
   public showCategoryManager = false;
 
+  // Track previous group type to handle changes
   private previousGroupType?: string;
 
   // Cache types for dynamic selection
@@ -64,17 +66,21 @@ export class ObjectGroupsAddComponent implements OnInit {
     this.groupId = +this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.groupId;
 
+    // Always load categories & types
     this.loadCategories();
     this.loadTypesIfNeeded();
 
+    // If editing, fetch the single group by ID
     if (this.isEditMode && this.groupId) {
       this.loadGroupToEdit(this.groupId);
     }
 
+    // Cache the group_type for toggling logic
     this.previousGroupType = this.group.group_type;
   }
 
-  /** Load extendable options for categories */
+  /* --------------------------- Categories --------------------------- */
+
   private loadCategories(): void {
     this.extendableOptionService.getExtendableOptionsByType(OptionType.OBJECT_GROUP)
       .subscribe({
@@ -85,40 +91,37 @@ export class ObjectGroupsAddComponent implements OnInit {
       });
   }
 
-  /** Load group to edit and patch the form model */
+  /* --------------------------- Editing a single group --------------------------- */
+
   private loadGroupToEdit(id: number): void {
     this.loaderService.show();
-    this.objectGroupService.getObjectGroups()
+    this.objectGroupService.getObjectGroupById(id)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (resp) => {
-          if (!resp.results || resp.results.length === 0) {
-            this.toast.error(`Object Group with ID ${id} not found`);
-            this.router.navigate(['/framework/object_groups']);
-            return;
-          }
-          const item = resp.results.find(g => g.public_id === id);
-          if (!item) {
-            this.toast.error(`Object Group with ID ${id} not found`);
-            this.router.navigate(['/framework/object_groups']);
-            return;
-          }
+          // 'resp' is type APIGetSingleResponse<ObjectGroup>
+          const item = resp.result;
+
+          // use 'item' as an ObjectGroup
           this.group = {
             public_id: item.public_id,
             name: item.name,
             group_type: item.group_type,
             categories: item.categories,
-            assigned_ids: item.assigned_ids
+            assigned_ids: item.assigned_ids,
           };
+
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
           this.router.navigate(['/framework/object_groups']);
         }
       });
+
   }
 
-  /** Load types if not already cached */
+  /* --------------------------- Type Options (STATIC / DYNAMIC) --------------------------- */
+
   private loadTypesIfNeeded(): void {
     if (ObjectGroupsAddComponent.allTypes && ObjectGroupsAddComponent.allTypes.length > 0) {
       this.typeOptions = this.buildTypeOptions(ObjectGroupsAddComponent.allTypes);
@@ -126,6 +129,7 @@ export class ObjectGroupsAddComponent implements OnInit {
       this.typesLoaded = true;
       return;
     }
+
     this.loaderService.show();
     const params = { filter: '', limit: 0, sort: 'sort', order: 1, page: 1 };
     this.typeService.getTypes(params)
@@ -142,7 +146,6 @@ export class ObjectGroupsAddComponent implements OnInit {
       });
   }
 
-  /** Convert types to select options */
   private buildTypeOptions(types: CmdbType[]): SelectOption[] {
     return types.map(t => ({
       value: t.public_id,
@@ -173,11 +176,14 @@ export class ObjectGroupsAddComponent implements OnInit {
   public onSave(): void {
     this.loaderService.show();
     let request$: Observable<any>;
+
+    // Switch between update / create
     if (this.isEditMode && this.group.public_id) {
       request$ = this.objectGroupService.updateObjectGroup(this.group.public_id, this.group) as Observable<any>;
     } else {
       request$ = this.objectGroupService.createObjectGroup(this.group) as Observable<any>;
     }
+
     request$
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
@@ -207,9 +213,8 @@ export class ObjectGroupsAddComponent implements OnInit {
     this.loadCategories();
   }
 
-  /** 
-   * Disable save if static group has no objects 
-   */
+  /* ---------------------- Validation Helpers ---------------------- */
+
   public isSaveDisabled(): boolean {
     if (
       (!this.group.assigned_ids || this.group.assigned_ids.length === 0) ||

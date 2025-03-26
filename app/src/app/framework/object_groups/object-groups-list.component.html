@@ -1,17 +1,18 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Object Groups</h2>
-  <button class="btn btn-sm btn-success" (click)="onAddNew()">
+  <button class="btn btn-sm btn-success" (click)="onAddNew()" *permissionLink="'base.framework.objectGroup.add'">
     <i class="fas fa-plus"></i> Add Object Group
   </button>
 </div>
 <hr />
-
+<div *permissionLink="'base.framework.objectGroup.view'">
 <cmdb-table [items]="objectGroups" [columns]="columns" [page]="page" [sort]="sort" [id]="'object-groups-table'"
   [stateEnabled]="false" [emptyMessage]="'No object groups found.'" [totalItems]="totalObjectGroups"
   [selectEnabled]="false" [loading]="loading" [pageSize]="limit" [toggleable]="true"
   [initialVisibleColumns]="initialVisibleColumns" (pageChange)="onPageChange($event)"
   (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
   (searchChange)="onSearchChange($event)"></cmdb-table>
+</div>
 
 <!-- Action Template for the table -->
 <ng-template #actionTemplate let-data="data" let-item="item">
