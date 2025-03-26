@@ -170,9 +170,8 @@ export class ObjectGroupsAddComponent implements OnInit {
     this.group.assigned_ids = selectedIds;
   }
 
-  /**
-   * Save or update the object group.
-   */
+  /* --------------------------- Save / Cancel --------------------------- */
+
   public onSave(): void {
     this.loaderService.show();
     let request$: Observable<any>;
@@ -217,8 +216,7 @@ export class ObjectGroupsAddComponent implements OnInit {
 
   public isSaveDisabled(): boolean {
     if (
-      (!this.group.assigned_ids || this.group.assigned_ids.length === 0) ||
-      (!this.group.categories || this.group.categories.length === 0)
+      (!this.group.assigned_ids || this.group.assigned_ids.length === 0)
     ) {
       return true;
     }
