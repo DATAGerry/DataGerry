@@ -26,7 +26,7 @@ export class ImpactCategoryService<T = any> implements ApiServicePrefix {
     observe: resp
   };
 
-  constructor(private api: ApiCallService, private toast: ToastService) { }
+  constructor(private api: ApiCallService) { }
 
   /**
    * Fetch impact categories with pagination, sorting, and filters.
@@ -67,7 +67,6 @@ export class ImpactCategoryService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIInsertSingleResponse<T>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );
@@ -82,7 +81,6 @@ export class ImpactCategoryService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIUpdateSingleResponse<T>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );
@@ -124,7 +122,6 @@ export class ImpactCategoryService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIDeleteSingleResponse<T>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );

@@ -210,7 +210,6 @@ export class ImpactCategoryModalComponent implements OnInit {
     } else {
       // Copy mode: treat as add, do not send public_id.
 
-      console.log('copy mode payload', payload)
       this.impactCategoryService.createImpactCategory(payload)
         .pipe(finalize(() => (this.isSubmitting = false)))
         .subscribe({

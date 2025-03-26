@@ -1,0 +1,11 @@
+
+::ng-deep .ng-option-selected {
+  background-color: #f8d7da;
+  color: #212529;
+  padding: 3px;
+}
+
+
+::ng-deep ng-select .ng-value {
+  padding: 3px 6px;
+}

@@ -155,8 +155,7 @@ export class RiskCalculationComponent implements OnInit {
           this.buildRowColumnMappings();
         },
         error: (err) => {
-          this.toast.error('Failed to load risk matrix from backend.');
-          console.error(err);
+          this.toast.error(err?.error?.message);
         }
       });
   }
@@ -248,7 +247,6 @@ export class RiskCalculationComponent implements OnInit {
    */
   private handleError(message: string, err: any): void {
     this.toast.error(message);
-    console.error(message, err);
     this.loading = false;
     this.loaderService.hide();
   }
@@ -371,7 +369,6 @@ export class RiskCalculationComponent implements OnInit {
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
-          console.error(err);
         }
       });
   }

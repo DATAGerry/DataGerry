@@ -54,8 +54,6 @@ export class LikelihoodModalComponent implements OnInit {
       this.patchForm();
     }
 
-    console.log('is edit mode', this.isEditMode)
-    console.log('defaultCalculationBasis', this.defaultCalculationBasis)
   }
 
   /**
