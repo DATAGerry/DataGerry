@@ -1,0 +1,127 @@
+
+
+<div class="container">
+  <h2 class="mb-3">{{ isEditMode ? 'Edit' : 'Add' }} Object Group</h2>
+
+  <form #groupForm="ngForm" autocomplete="off" class="needs-validation" (ngSubmit)="onSave()">
+    <!-- Group Name -->
+    <div class="form-group">
+      <label>Group Name <span class="text-danger">*</span></label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="group.name"
+        name="groupName"
+        required
+        #groupName="ngModel" />
+    </div>
+
+    <!-- Group Type radio -->
+    <div class="form-group mt-3">
+      <label class="mr-3">Group Type:</label>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          id="staticRadio"
+          name="groupType"
+          [value]="'STATIC'"
+          [(ngModel)]="group.group_type"
+          (change)="onGroupTypeChange()" />
+        <label class="form-check-label" for="staticRadio">Static</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          id="dynamicRadio"
+          name="groupType"
+          [value]="'DYNAMIC'"
+          [(ngModel)]="group.group_type"
+          (change)="onGroupTypeChange()" />
+        <label class="form-check-label" for="dynamicRadio">Dynamic</label>
+      </div>
+    </div>
+
+    <!-- Categories with "Manage Categories" -->
+    <div class="form-group mt-3">
+      <label>Categories: <span class="text-danger">*</span></label>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <ng-select
+          [items]="categoryOptions"
+          bindLabel="value"
+          bindValue="public_id"
+          [multiple]="true"
+          placeholder="Select categories..."
+          [(ngModel)]="group.categories"
+          name="groupCategories"
+          class="flex-grow-1">
+        </ng-select>
+
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          (click)="openCategoryManager()">
+          Manage Categories
+        </button>
+      </div>
+    </div>
+
+<!-- Assigned IDs: Objects (STATIC) or Types (DYNAMIC) -->
+<div class="form-group mt-3">
+  <label>
+    {{ group.group_type === 'STATIC' ? 'Assigned Objects:' : 'Assigned Types:' }}
+    <span class="text-danger">*</span>
+  </label>
+
+  <!-- Keep the object-selector in the DOM, only hide it if not STATIC. -->
+  <app-object-selector
+    *ngIf="typesLoaded"
+    [typeIds]="allTypeIds"
+    [multiple]="true"
+    [selectedIds]="group.assigned_ids"
+    (selectionChange)="onObjectsSelected($event)"
+    [style.display]="group.group_type === 'STATIC' ? 'block' : 'none'">
+  </app-object-selector>
+
+  <!-- Keep the dynamic <ng-select> in the DOM, only hide it if not DYNAMIC. -->
+  <ng-select
+    *ngIf="typesLoaded"
+    [items]="typeOptions"
+    bindLabel="label"
+    bindValue="value"
+    [multiple]="true"
+    placeholder="Select types..."
+    [(ngModel)]="group.assigned_ids"
+    name="assignedIdsDynamic"
+    [style.display]="group.group_type === 'DYNAMIC' ? 'block' : 'none'">
+  </ng-select>
+</div>
+
+
+    <!-- Footer buttons -->
+    <div class="mt-4">
+      <button class="btn btn-secondary mr-2" type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="onSave()"
+        [disabled]="groupForm.invalid || isSaveDisabled()">
+        {{ isEditMode ? 'Save Changes' : 'Add Group' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<app-category-manager
+  *ngIf="showCategoryManager"
+  [categoryOptions]="categoryOptions"
+  (close)="closeCategoryManager()">
+</app-category-manager>
+
+<app-loading-popup
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data...">
+</app-loading-popup>

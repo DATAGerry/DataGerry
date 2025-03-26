@@ -20,7 +20,7 @@ export class ISMSService<T = any> implements ApiServicePrefix {
     observe: resp
   };
 
-  constructor(private api: ApiCallService, private toast: ToastService) { }
+  constructor(private api: ApiCallService) { }
 
   /**
    * Fetch the ISMS settings Validation Status
@@ -31,7 +31,6 @@ export class ISMSService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<IsmsConfigValidation>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );

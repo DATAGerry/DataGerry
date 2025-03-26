@@ -1,0 +1,181 @@
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
+import { ToastService } from 'src/app/layout/toast/toast.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { CollectionParameters } from 'src/app/services/models/api-parameter';
+import { ObjectGroup } from '../models/object-group.model';
+import { ObjectGroupService } from '../services/object-group.service';
+import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
+
+@Component({
+  selector: 'app-object-groups-list',
+  templateUrl: './object-groups-list.component.html',
+  styleUrls: ['./object-groups-list.component.scss']
+})
+export class ObjectGroupsListComponent implements OnInit {
+  @ViewChild('actionTemplate', { static: true }) actionTemplate: TemplateRef<any>;
+
+  public objectGroups: ObjectGroup[] = [];
+  public totalObjectGroups = 0;
+  public page = 1;
+  public limit = 10;
+  public loading = false;
+  public filter: string;
+  public sort: Sort = { name: 'public_id', order: SortDirection.ASCENDING };
+
+  // Define table columns
+  public columns: Column[] = [];
+  public initialVisibleColumns: string[] = [];
+
+  public isLoading$ = this.loaderService.isLoading$;
+
+
+  constructor(
+    private objectGroupService: ObjectGroupService,
+    private toast: ToastService,
+    private loaderService: LoaderService,
+    private router: Router,
+    private modalService: NgbModal
+  ) {}
+
+  ngOnInit(): void {
+    this.setupColumns();
+    this.loadObjectGroups();
+  }
+
+  setupColumns(): void {
+    this.columns = [
+      {
+        display: 'ID',
+        name: 'public_id',
+        data: 'public_id',
+        searchable: true,
+        sortable: true,
+        style: { width: '90px', 'text-align': 'center' }
+      },
+      {
+        display: 'Name',
+        name: 'name',
+        data: 'name',
+        searchable: true,
+        sortable: true,
+        style: { width: 'auto', 'text-align': 'center' }
+
+      },
+      {
+        display: 'Group Type',
+        name: 'group_type',
+        data: 'group_type',
+        searchable: true,
+        sortable: true,
+        style: { width: 'auto', 'text-align': 'center' }
+
+      },
+      {
+        display: 'Actions',
+        name: 'actions',
+        data: 'public_id',
+        searchable: false,
+        sortable: false,
+        fixed: true,
+        template: this.actionTemplate,
+        style: { width: '80px', 'text-align': 'center' }
+      }
+    ];
+    this.initialVisibleColumns = this.columns.filter(c => !c.hidden).map(c => c.name);
+  }
+
+  loadObjectGroups(): void {
+    this.loading = true;
+    this.loaderService.show();
+
+    const params: CollectionParameters = {
+      filter: this.filter || '',
+      limit: this.limit,
+      page: this.page,
+      sort: this.sort.name,
+      order: this.sort.order
+    };
+
+    this.objectGroupService.getObjectGroups(params)
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.loaderService.hide();
+      }))
+      .subscribe({
+        next: (resp) => {
+          this.objectGroups = resp.results;
+          this.totalObjectGroups = resp.total;
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message);
+        }
+      });
+  }
+
+  onAddNew(): void {
+    this.router.navigate(['/framework/object_groups/add']);
+  }
+
+  onEdit(group: ObjectGroup): void {
+    if (group.public_id) {
+      this.router.navigate(['framework/object_groups/edit', group.public_id]);
+    }
+  }
+
+
+    public onDelete(item: ObjectGroup): void {
+      const modalRef = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
+      modalRef.componentInstance.title = 'Delete Object Group';
+      modalRef.componentInstance.item = item;
+      modalRef.componentInstance.itemType = 'Object Group';
+      modalRef.componentInstance.itemName = item.name;
+  
+      modalRef.result.then(
+        (result) => {
+          if (result === 'confirmed') {
+            this.loaderService.show();
+            this.objectGroupService
+              .deleteObjectGroup(item.public_id!)
+              .pipe(finalize(() => this.loaderService.hide()))
+              .subscribe({
+                next: () => {
+                  this.toast.success('Object Group deleted successfully.');
+                  this.loadObjectGroups();
+                },
+                error: (err) => {
+                  this.toast.error(err?.error?.message);
+                }
+              });
+          }
+        },
+        () => { }
+      );
+    }
+
+
+  onPageChange(page: number): void {
+    this.page = page;
+    this.loadObjectGroups();
+  }
+
+  onPageSizeChange(limit: number): void {
+    this.limit = limit;
+    this.page = 1;
+    this.loadObjectGroups();
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sort = sort;
+    this.loadObjectGroups();
+  }
+
+  onSearchChange(search: string): void {
+    this.filter = search;
+    this.page = 1;
+    this.loadObjectGroups();
+  }
+}

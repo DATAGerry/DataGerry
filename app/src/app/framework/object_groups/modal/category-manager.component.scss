@@ -1,0 +1,128 @@
+
+$dg-primary-color: #e94d18;
+$dg-border-color: rgba(#dee2e6, 0.5);
+$dg-error-message-color: #dc3545;
+
+.category-manager-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 2rem;
+}
+
+// MODAL WRAPPER
+.category-manager-modal {
+  background: white;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  
+  display: flex;
+  flex-direction: column;
+}
+
+// MODAL HEADER
+.modal-header {
+  background: linear-gradient(195deg, darken($dg-primary-color, 5%), $dg-primary-color);
+  color: white;
+  padding: 1.5rem 2rem;
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .close {
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+// MODAL BODY
+.modal-body {
+  padding: 2rem;
+  background: white;
+  flex: 1 1 auto;
+
+  .add-category-inline {
+    input.form-control {
+      border: 1px solid $dg-border-color;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        border-color: $dg-primary-color;
+        box-shadow: 0 0 0 0.2rem rgba($dg-primary-color, 0.25);
+      }
+    }
+  }
+
+  .category-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .invalid-feedback {
+    color: $dg-error_message_color;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+}
+
+// MODAL FOOTER
+.modal-footer {
+  border-top: 1px solid rgba(#dee2e6, 0.3);
+  padding: 1.25rem 2rem;
+  background: white;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+// RESPONSIVE TWEAKS
+@media (max-width: 576px) {
+  .category-manager-backdrop {
+    padding-top: 1rem;
+    align-items: flex-start;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+
+  .category-manager-modal {
+    max-width: 95%;
+  }
+}

@@ -77,6 +77,14 @@ const routes: Routes = [
             right: 'base.framework.type.view'
         },
         loadChildren: () => import('./section_templates/section-template.module').then(m => m.SectionTemplateModule),
+    },
+    {
+        path: 'object_groups',
+        canActivateChild: [PermissionGuard],
+        data: {
+            breadcrumb: 'Object Groups',
+        },
+        loadChildren: () => import('./object_groups/object-groups.module').then(m => m.ObjectGroupsModule),
     }
 ];
 

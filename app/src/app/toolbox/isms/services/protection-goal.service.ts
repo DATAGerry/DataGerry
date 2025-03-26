@@ -53,7 +53,6 @@ export class ProtectionGoalService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIGetMultiResponse<ProtectionGoal>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );
@@ -69,7 +68,6 @@ export class ProtectionGoalService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIInsertSingleResponse<T>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );
@@ -85,7 +83,6 @@ export class ProtectionGoalService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIUpdateSingleResponse<T>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );
@@ -101,7 +98,6 @@ export class ProtectionGoalService<T = any> implements ApiServicePrefix {
       .pipe(
         map((res: HttpResponse<APIDeleteSingleResponse<T>>) => res.body),
         catchError((error) => {
-          this.toast.error(error?.error?.message);
           throw error;
         })
       );
