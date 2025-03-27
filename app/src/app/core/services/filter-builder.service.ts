@@ -40,7 +40,6 @@ export class FilterBuilderService {
 
     fields.forEach(field => {
       if (field.isArray) {
-        // For array fields, we often need $elemMatch with $regex
         orConditions.push({
           [field.name]: {
             $elemMatch: {
@@ -60,7 +59,6 @@ export class FilterBuilderService {
       }
     });
 
-    // If you need $match with $or
     if (orConditions.length) {
       query.push({ $match: { $or: orConditions } });
     }
