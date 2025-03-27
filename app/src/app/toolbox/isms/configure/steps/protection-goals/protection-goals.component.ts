@@ -25,7 +25,6 @@ export class ProtectionGoalsComponent implements OnInit {
   public limit = 10;
   public loading = false;
   public columns: Array<any> = [];
-  public defaultProtectionGoals = ["Confidentiality", "Integrity", "Availability"];
 
   constructor(
     private protectionGoalService: ProtectionGoalService,
