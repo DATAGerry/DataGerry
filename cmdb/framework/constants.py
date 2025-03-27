@@ -33,7 +33,7 @@ from cmdb.models.log_model.cmdb_meta_log import CmdbMetaLog
 from cmdb.models.log_model.cmdb_log import CmdbLog
 from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 from cmdb.models.webhook_model.cmdb_webhook_model import CmdbWebhook
-from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
+from cmdb.models.webhook_model.cmdb_webhook_event import CmdbWebhookEvent
 from cmdb.models.relation_model import CmdbRelation
 from cmdb.models.object_relation_model import CmdbObjectRelation
 from cmdb.models.log_model import CmdbObjectRelationLog
@@ -47,6 +47,7 @@ from cmdb.models.isms_model import (
     IsmsProtectionGoal,
     IsmsRisk,
     IsmsThreat,
+    IsmsVulnerability,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -77,4 +78,5 @@ __COLLECTIONS__ = [
     CmdbExtendableOption,
     IsmsRisk,
     IsmsThreat,
+    IsmsVulnerability,
 ]

@@ -24,34 +24,55 @@ from cmdb.interface.rest_api.responses.response_parameters.api_parameters import
 #                                            GroupDeletionParameters - CLASS                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 class GroupDeletionParameters(APIParameters):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Handles parameters for deleting a group.
+    
+    This class parses and stores the parameters needed to delete a group, including the action to perform
+    and the ID of another group for user reassignment if necessary.
+    """
+
     def __init__(self, query_string: str, action: GroupDeleteMode = None, group_id: int = None, **kwargs):
         """
         Initialises GroupDeletionParameters
 
         Args:
-            query_string (str): The raw http query string. Can be used when the parsed parameters are not enough
-            action (GroupDeleteMode): The action which is to perform on delete a group
-            group_id (int): The public id of another group which the users have to move
-            **kwargs: optional parameters
+            query_string (str): The raw HTTP query string. Useful when parsed parameters are insufficient
+            action (GroupDeleteMode, optional): The action to perform when deleting a group
+            group_id (int, optional): The public ID of another group to which users must be moved
+            **kwargs: Additional optional parameters
         """
         self.action = action
         self.group_id = group_id
         super().__init__(query_string = query_string, **kwargs)
 
+# --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
     def from_http(cls, query_string: str, **optional) -> "GroupDeletionParameters":
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Creates GroupDeletionParameters from an HTTP query string
+
+        Args:
+            query_string (str): The raw HTTP query string
+            **optional: Additional optional parameters
+
+        Returns:
+            GroupDeletionParameters: A new instance populated with the provided data
+        """
         return cls(query_string, **optional)
 
 
     @classmethod
     def to_dict(cls, parameters: "GroupDeletionParameters") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Converts an instance of `GroupDeletionParameters` to a dictionary
+
+        Args:
+            parameters (GroupDeletionParameters): The instance to convert
+
+        Returns:
+            dict: A dictionary representation of the group deletion parameters
+        """
         return {
             'action': parameters.action,
             'group_id': parameters.group_id,

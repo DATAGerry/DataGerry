@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of APIProjection
+"""
 import logging
 from typing import Union
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -28,7 +29,6 @@ class APIProjection:
     """
     ApiProjection is a wrapper for the api http parameters under `projection`.
     """
-    __slots__ = 'projection', '__includes', '__has_includes', '__excludes', '__has_excludes'
 
     def __init__(self, projection: Union[dict, list] = None):
         if isinstance(projection, list):
@@ -39,6 +39,30 @@ class APIProjection:
         self.__excludes = None
         self.__has_excludes = None
 
+# ---------------------------------------------------- PROPERTIES ---------------------------------------------------- #
+
+    @property
+    def includes(self) -> list[str]:
+        """
+        Get all keys which includes (value set to 1)
+        """
+        if not self.__includes:
+            self.__includes = APIProjection.__validate_inclusion(self.projection)
+
+        return self.__includes
+
+
+    @property
+    def excludes(self) -> list[str]:
+        """
+        Get all keys which excludes (value set to 0)
+        """
+        if not self.__excludes:
+            self.__excludes = APIProjection.__validate_inclusion(self.projection, match=0)
+
+        return self.__excludes
+
+# -------------------------------------------------- STATIC METHODS -------------------------------------------------- #
 
     @staticmethod
     def __validate_inclusion(projection: dict, match: int = 1) -> list[str]:
@@ -47,7 +71,7 @@ class APIProjection:
         
         Args:
             projection (dict): Projection parameters
-            match (int): Matching value in dict or list. Must be 0 or 1.
+            match (int): Matching value in dict or list. Must be 0 or 1
 
         Returns:
             list[str]: List of all keys with the matching parameters
@@ -60,33 +84,23 @@ class APIProjection:
 
         return [key for key, value in projection.items() if value == match]
 
-
-
-    @property
-    def includes(self) -> list[str]:
-        """Get all keys which includes (value set to 1)"""
-        if not self.__includes:
-            self.__includes = APIProjection.__validate_inclusion(self.projection)
-        return self.__includes
-
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
     def has_includes(self) -> bool:
-        """Has include values"""
+        """
+        Has include values
+        """
         if not self.__has_includes:
             self.__has_includes = len(self.includes) > 0
+
         return self.__has_includes
 
 
-    @property
-    def excludes(self) -> list[str]:
-        """Get all keys which excludes (value set to 0)"""
-        if not self.__excludes:
-            self.__excludes = APIProjection.__validate_inclusion(self.projection, match=0)
-        return self.__excludes
-
-
     def has_excludes(self) -> bool:
-        """Has excludes values"""
+        """
+        Has excludes values
+        """
         if not self.__has_excludes:
             self.__has_excludes = len(self.excludes) > 0
+
         return self.__has_excludes

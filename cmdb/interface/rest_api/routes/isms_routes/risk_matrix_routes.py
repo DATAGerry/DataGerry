@@ -73,15 +73,15 @@ def get_isms_risk_matrix(public_id: int, request_user: CmdbUser):
         if requested_risk_matrix:
             return GetSingleResponse(requested_risk_matrix, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The RiskMatrix with ID:{public_id} was not found!")
+        abort(404, f"The RiskMatrix with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except RiskMatrixManagerGetError as err:
         LOGGER.error("[get_isms_risk_matrix] RiskMatrixManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the RiskMatrix with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the RiskMatrix with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_risk_matrix] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -111,7 +111,7 @@ def update_isms_risk_matrix(public_id: int, data: dict, request_user: CmdbUser):
         to_update_risk_matrix = risk_matrix_manager.get_risk_matrix(public_id)
 
         if not to_update_risk_matrix:
-            return abort(404, f"The RiskMatrix with ID:{public_id} was not found!")
+            abort(404, f"The RiskMatrix with ID:{public_id} was not found!")
 
         risk_matrix = IsmsRiskMatrix.from_data(data)
 
@@ -122,10 +122,10 @@ def update_isms_risk_matrix(public_id: int, data: dict, request_user: CmdbUser):
         raise http_err
     except RiskMatrixManagerGetError as err:
         LOGGER.error("[update_isms_risk_matrix] RiskMatrixManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the RiskMatrix with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the RiskMatrix with ID: {public_id} from the database!")
     except RiskMatrixManagerUpdateError as err:
         LOGGER.error("[update_isms_risk_matrix] RiskMatrixManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the RiskMatrix with ID: {public_id}!")
+        abort(400, f"Failed to update the RiskMatrix with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_risk_matrix] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

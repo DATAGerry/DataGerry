@@ -14,19 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of OperationType enumeration
+This module contains the classes of all CmdbUserSetting errors
 """
-from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class OperationType(Enum):
+class CmdbUserSettingError(Exception):
     """
-    Enumeration representing different types of API operations.
-    
-    This enum acts as an identifier for the type of operation performed in an API response.
+    Raised to catch all CmdbUserSetting related errors
     """
-    GET = 'GET'
-    UPDATE = 'UPDATE'
-    PATCH = 'PATCH'
-    INSERT = 'INSERT'
-    DELETE = 'DELETE'
+    def __init__(self, err: str):
+        """
+        Raised to catch all CmdbUserSetting related errors
+        """
+        super().__init__(err)
+
+# -------------------------------------------- CmdbUserSetting - ERRORS -------------------------------------------- #
+
+class CmdbUserSettingInitError(CmdbUserSettingError):
+    """
+    Raised when a CmdbUserSetting could not be initialised
+    """
+
+
+class CmdbUserSettingInitFromDataError(CmdbUserSettingError):
+    """
+    Raised when a CmdbUserSetting could not be initialised from a dict
+    """
+
+
+class CmdbUserSettingToJsonError(CmdbUserSettingError):
+    """
+    Raised when a CmdbUserSetting could not be transformed into a json compatible dict
+    """

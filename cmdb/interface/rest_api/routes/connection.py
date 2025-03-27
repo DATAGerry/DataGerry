@@ -17,7 +17,7 @@
 Implementation of connection check routes
 """
 import logging
-from flask import current_app, abort, request
+from flask import current_app, abort
 
 from cmdb.database import MongoDatabaseManager
 
@@ -41,10 +41,8 @@ def connection_test_frontend():
     Connection check for frontend ({{url}}/rest/)
 
     Returns:
-        Response: Dict with infos about Datagerry(title, version and connection status of db)
+        DefaultResponse: Dict with infos about Datagerry(title, version and connection status of db)
     """
-    LOGGER.info("Executing connection check from: %s!", request.remote_addr)
-
     try:
         infos = {
             'title': __title__,

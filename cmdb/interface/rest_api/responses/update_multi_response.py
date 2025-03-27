@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of UpdateMultiResponse
+"""
 import logging
 from werkzeug.wrappers import Response
 
@@ -30,11 +31,11 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class UpdateMultiResponse(BaseAPIResponse):
     """
-    API Response for update call of a multiple resources
+    API Response for update call of multiple resources
     """
     def __init__(self, results: list[dict], failed: list[ResponseFailedMessage] = None):
         """
-        Constructor of UpdateMultiResponse
+        Initialises the UpdateMultiResponse
 
         Args:
             results: Updated resources

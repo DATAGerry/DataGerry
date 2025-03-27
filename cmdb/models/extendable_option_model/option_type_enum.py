@@ -25,3 +25,4 @@ class OptionType(str, Enum):
     """
     OBJECT_GROUP = 'OBJECT_GROUP'
     THREAT = 'THREAT'
+    VULNERABILITY = 'VULNERABILITY'

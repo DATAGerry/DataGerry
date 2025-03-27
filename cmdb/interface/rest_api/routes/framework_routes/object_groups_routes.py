@@ -84,18 +84,18 @@ def insert_cmdb_object_group(data: dict, request_user: CmdbUser):
         if created_object_group:
             return InsertSingleResponse(created_object_group, result_id).make_response()
 
-        return abort(404, "Could not retrieve the created ObjectGroup from the database!")
+        abort(404, "Could not retrieve the created ObjectGroup from the database!")
     except HTTPException as http_err:
         raise http_err
     except ObjectGroupsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_object_group] ObjectGroupsManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new ObjectGroup in the database!")
+        abort(400, "Could not insert the new ObjectGroup in the database!")
     except ObjectGroupsManagerGetError as err:
         LOGGER.error("[insert_cmdb_object_group] ObjectGroupsManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created ObjectGroup from the database!")
+        abort(400, "Failed to retrieve the created ObjectGroup from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_object_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An internal server error occured while creating the ObjectGroup!")
+        abort(500, "An internal server error occured while creating the ObjectGroup!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -138,10 +138,10 @@ def get_cmdb_object_groups(params: CollectionParameters, request_user: CmdbUser)
         return api_response.make_response()
     except ObjectGroupsManagerIterationError as err:
         LOGGER.error("[get_cmdb_object_groups] ObjectGroupsManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve ObjectGroups from the database!")
+        abort(400, "Failed to retrieve ObjectGroups from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_groups] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @object_group_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -170,15 +170,15 @@ def get_cmdb_object_group(public_id: int, request_user: CmdbUser):
         if requested_object_group:
             return GetSingleResponse(requested_object_group, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
+        abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectGroupsManagerGetError as err:
         LOGGER.error("[get_cmdb_object_group] ObjectGroupsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectGroup with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ObjectGroup with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -208,7 +208,7 @@ def update_cmdb_object_group(public_id: int, data: dict, request_user: CmdbUser)
         to_update_object_group = object_groups_manager.get_object_group(public_id)
 
         if not to_update_object_group:
-            return abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
+            abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
 
         object_group = CmdbObjectGroup.from_data(data)
 
@@ -219,13 +219,13 @@ def update_cmdb_object_group(public_id: int, data: dict, request_user: CmdbUser)
         raise http_err
     except ObjectGroupsManagerGetError as err:
         LOGGER.error("[update_cmdb_object_group] ObjectGroupsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectGroup with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ObjectGroup with ID: {public_id} from the database!")
     except ObjectGroupsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_object_group] ObjectGroupsManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the ObjectGroup with ID: {public_id}!")
+        abort(400, f"Failed to update the ObjectGroup with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_object_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -253,7 +253,7 @@ def delete_cmdb_object_group(public_id: int, request_user: CmdbUser):
         to_delete_object_group = object_groups_manager.get_object_group(public_id)
 
         if not to_delete_object_group:
-            return abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
+            abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
 
         object_groups_manager.delete_object_group(public_id)
 
@@ -262,10 +262,10 @@ def delete_cmdb_object_group(public_id: int, request_user: CmdbUser):
         raise http_err
     except ObjectGroupsManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_object_group] ObjectGroupsManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the ObjectGroup with ID:{public_id}!")
+        abort(400, f"Failed to delete the ObjectGroup with ID:{public_id}!")
     except ObjectGroupsManagerGetError as err:
         LOGGER.error("[delete_cmdb_object_group] ObjectGroupsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectGroup with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the ObjectGroup with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_object_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

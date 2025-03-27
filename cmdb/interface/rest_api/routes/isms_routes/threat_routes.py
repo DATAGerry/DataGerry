@@ -81,18 +81,18 @@ def insert_isms_threat(data: dict, request_user: CmdbUser):
         if created_threat:
             return InsertSingleResponse(created_threat, result_id).make_response()
 
-        return abort(404, "Could not retrieve the created Threat from the database!")
+        abort(404, "Could not retrieve the created Threat from the database!")
     except HTTPException as http_err:
         raise http_err
     except ThreatManagerInsertError as err:
         LOGGER.error("[insert_isms_threat] ThreatManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new Threat in the database!")
+        abort(400, "Could not insert the new Threat in the database!")
     except ThreatManagerGetError as err:
         LOGGER.error("[insert_isms_threat] ThreatManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created Threat from the database!")
+        abort(400, "Failed to retrieve the created Threat from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An internal server error occured while creating the Threat!")
+        abort(500, "An internal server error occured while creating the Threat!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -131,10 +131,10 @@ def get_isms_threats(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except ThreatManagerIterationError as err:
         LOGGER.error("[get_isms_threats] ThreatManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Threats from the database!")
+        abort(400, "Failed to retrieve Threats from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_threats] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error while retrieving Threats!")
+        abort(500, "Internal server error while retrieving Threats!")
 
 
 @threat_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -160,15 +160,15 @@ def get_isms_threat(public_id: int, request_user: CmdbUser):
         if requested_threat:
             return GetSingleResponse(requested_threat, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The Threat with ID:{public_id} was not found!")
+        abort(404, f"The Threat with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ThreatManagerGetError as err:
         LOGGER.error("[get_isms_threat] ThreatManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Threat with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Threat with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, f"Internal server error while retrieving the Threat with ID: {public_id}!")
+        abort(500, f"Internal server error while retrieving the Threat with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -195,7 +195,7 @@ def update_isms_threat(public_id: int, data: dict, request_user: CmdbUser):
         to_update_threat = threat_manager.get_item(public_id)
 
         if not to_update_threat:
-            return abort(404, f"The Threat with ID:{public_id} was not found!")
+            abort(404, f"The Threat with ID:{public_id} was not found!")
 
         threat = IsmsThreat.from_data(data)
 
@@ -206,13 +206,13 @@ def update_isms_threat(public_id: int, data: dict, request_user: CmdbUser):
         raise http_err
     except ThreatManagerGetError as err:
         LOGGER.error("[update_isms_threat] ThreatManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Threat with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Threat with ID: {public_id} from the database!")
     except ThreatManagerUpdateError as err:
         LOGGER.error("[update_isms_threat] ThreatManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the Threat with ID: {public_id}!")
+        abort(400, f"Failed to update the Threat with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, f"Internal server error while updating the Threat with ID: {public_id}!")
+        abort(500, f"Internal server error while updating the Threat with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -237,7 +237,7 @@ def delete_isms_threat(public_id: int, request_user: CmdbUser):
         to_delete_threat = threat_manager.get_item(public_id)
 
         if not to_delete_threat:
-            return abort(404, f"The Threat with ID:{public_id} was not found!")
+            abort(404, f"The Threat with ID:{public_id} was not found!")
 
         threat_manager.delete_item(public_id)
 
@@ -246,10 +246,10 @@ def delete_isms_threat(public_id: int, request_user: CmdbUser):
         raise http_err
     except ThreatManagerDeleteError as err:
         LOGGER.error("[delete_isms_threat] ThreatManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Threat with ID:{public_id}!")
+        abort(400, f"Failed to delete the Threat with ID:{public_id}!")
     except ThreatManagerGetError as err:
         LOGGER.error("[delete_isms_threat] ThreatManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Threat with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the Threat with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, f"Internal server error while deleting the Threat with ID: {public_id}!")
+        abort(500, f"Internal server error while deleting the Threat with ID: {public_id}!")

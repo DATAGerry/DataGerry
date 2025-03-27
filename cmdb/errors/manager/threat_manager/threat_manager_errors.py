@@ -35,6 +35,7 @@ class ThreatManagerInitError(ThreatManagerError):
     Raised when ThreatManager could not be initialised
     """
 
+
 class ThreatManagerInsertError(ThreatManagerError):
     """
     Raised when ThreatManager could not insert an IsmsThreat

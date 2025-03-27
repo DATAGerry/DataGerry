@@ -13,9 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseAPIResponse
+"""
 import logging
+import html
 from json import dumps
 from datetime import datetime, timezone
 from flask import abort, make_response as flask_response
@@ -91,6 +93,10 @@ class BaseAPIResponse:
             Response
         """
         try:
+            # Sanitize input if it's a dictionary
+            # if isinstance(body, dict):
+            #     body = {key: html.escape(str(value)) for key, value in body.items()}
+
             response = flask_response(dumps(body, default=default, indent=indent), status)
             response.mimetype = mime or DEFAULT_MIME_TYPE
             response.headers['X-API-Version'] = API_VERSION

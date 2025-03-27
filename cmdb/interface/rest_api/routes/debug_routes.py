@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API debug routes
+"""
 from flask import current_app
 from werkzeug.exceptions import abort
 
@@ -33,27 +34,55 @@ with current_app.app_context():
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-@debug_blueprint.route('/indexes/<string:collection>/', methods=['GET'])
 @debug_blueprint.route('/indexes/<string:collection>', methods=['GET'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_index(collection: str):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Retrieves index information for the specified collection
+
+    This route allows you to query the index information of a given collection in the database.
+    It returns metadata about the indexes available for the specified collection
+
+    Args:
+        collection (str): The name of the collection for which index information is being requested
+
+    Returns:
+        DefaultResponse: A JSON response containing the index information for the specified collection
+    """
     return DefaultResponse(dbm.get_index_info(collection)).make_response()
 
 
-@debug_blueprint.route('/error/<int:status_code>/', methods=['GET', 'POST'])
 @debug_blueprint.route('/error/<int:status_code>', methods=['GET', 'POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def trigger_error_handler(status_code: int):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Triggers an error response with the specified status code.
+
+    This route allows you to trigger a specific HTTP error by providing the status code in the URL. 
+    It's useful for testing error handling in your application.
+
+    Args:
+        status_code (int): The HTTP status code to trigger, e.g., 400, 404, 500, etc
+
+    Returns:
+        Response: An error response with the provided status code
+    """
     return abort(status_code)
 
 
-@debug_blueprint.route('/error/<int:status_code>/<string:description>/', methods=['GET', 'POST'])
 @debug_blueprint.route('/error/<int:status_code>/<string:description>', methods=['GET', 'POST'])
 def trigger_error_handler_with_description(status_code: int, description: str):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Triggers an error response with the specified status code and description
+
+    This route allows you to trigger a specific HTTP error along with a custom description.
+    It's useful for testing error handling with more detailed error messages.
+
+    Args:
+        status_code (int): The HTTP status code to trigger, e.g., 400, 404, 500, etc
+        description (str): A custom error message or description to accompany the status code
+
+    Returns:
+        Response: An error response with the provided status code and description
+    """
     return abort(status_code, description=description)

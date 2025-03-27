@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of CmdbReport, which is representing
-a report in Datagarry
+This module contains the implementation of CmdbReport, which is representing a report in Datagarry
 """
 import logging
 

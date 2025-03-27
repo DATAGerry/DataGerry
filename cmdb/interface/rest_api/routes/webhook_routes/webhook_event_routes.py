@@ -29,7 +29,7 @@ from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse, GetMultiResponse
 from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
+from cmdb.models.webhook_model.cmdb_webhook_event import CmdbWebhookEvent
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import (

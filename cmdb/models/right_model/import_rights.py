@@ -13,15 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all Importer Rights
+"""
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.levels_enum import Levels
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ImportRight(BaseRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for Importer rights
+    """
     MIN_LEVEL = Levels.PROTECTED
     PREFIX = f'{BaseRight.PREFIX}.import'
 
@@ -30,8 +32,9 @@ class ImportRight(BaseRight):
 
 
 class ImportObjectRight(ImportRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Right class for importing CmdbObjects
+    """
     MIN_LEVEL = Levels.PROTECTED
     PREFIX = f'{ImportRight.PREFIX}.object'
 
@@ -40,8 +43,9 @@ class ImportObjectRight(ImportRight):
 
 
 class ImportTypeRight(ImportRight):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Right class for importing CmdbTypes
+    """
     MIN_LEVEL = Levels.SECURE
     PREFIX = f'{ImportRight.PREFIX}.type'
 
