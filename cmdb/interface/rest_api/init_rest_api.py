@@ -140,6 +140,7 @@ def register_blueprints(app: BaseCmdbApp):
         isms_config_blueprint,
         threat_blueprint,
         vulnerability_blueprint,
+        risk_blueprint,
     )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -186,6 +187,7 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(risk_matrix_blueprint, url_prefix='/isms/risk_matrix')
     app.register_blueprint(threat_blueprint, url_prefix='/isms/threats')
     app.register_blueprint(vulnerability_blueprint, url_prefix='/isms/vulnerabilities')
+    app.register_blueprint(risk_blueprint, url_prefix='/isms/risks')
 
     if cmdb.__MODE__ == 'DEBUG':
         from cmdb.interface.rest_api.routes.debug_routes import debug_blueprint

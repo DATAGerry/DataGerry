@@ -60,11 +60,16 @@ class CmdbExtendableOption(CmdbDAO):
             'type': 'string',
             'required': True,
             'empty': False
+        },
+        'predefined': {
+            'type': 'boolean',
+            'required': True,
+            'empty': False
         }
     }
 
 
-    def __init__(self, public_id: int, value: str, option_type: OptionType):
+    def __init__(self, public_id: int, value: str, option_type: OptionType, predefined: bool = False):
         """
         Initialises an CmdbExtendableOption
 
@@ -72,6 +77,7 @@ class CmdbExtendableOption(CmdbDAO):
             public_id (int): public_id of the CmdbExtendableOption
             value (str): value of the CmdbExtendableOption
             option_type (str): OptionType of CmdbExtendableOption
+            predefined (bool): If True it is created by 
 
         Raises:
             CmdbExtendableOptionInitError: If the CmdbExtendableOption could not be initialised
@@ -79,6 +85,7 @@ class CmdbExtendableOption(CmdbDAO):
         try:
             self.value = value
             self.option_type = option_type
+            self.predefined = predefined
 
             super().__init__(public_id=public_id)
         except Exception as err:
@@ -105,6 +112,7 @@ class CmdbExtendableOption(CmdbDAO):
                 public_id = data.get('public_id'),
                 value = data.get('value'),
                 option_type = data.get('option_type'),
+                predefined = data.get('predefined', False),
             )
         except Exception as err:
             raise CmdbExtendableOptionInitFromDataError(err) from err
@@ -129,6 +137,7 @@ class CmdbExtendableOption(CmdbDAO):
                 'public_id': instance.get_public_id(),
                 'value': instance.value,
                 'option_type': instance.option_type,
+                'predefined': instance.predefined,
             }
         except Exception as err:
             raise CmdbExtendableOptionToJsonError(err) from err

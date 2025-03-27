@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+This module provide all available Response classes for the API routes
+"""
 from .base_api_response import BaseAPIResponse
 from .delete_single_response import DeleteSingleResponse
 from .get_list_response import GetListResponse

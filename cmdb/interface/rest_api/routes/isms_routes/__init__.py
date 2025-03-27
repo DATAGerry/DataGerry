@@ -25,6 +25,7 @@ from .risk_matrix_routes import risk_matrix_blueprint
 from .isms_config_routes import isms_config_blueprint
 from .threat_routes import threat_blueprint
 from .vulnerability_routes import vulnerability_blueprint
+from .risk_routes import risk_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -37,4 +38,5 @@ __all__ = [
     'isms_config_blueprint',
     'threat_blueprint',
     'vulnerability_blueprint',
+    'risk_blueprint',
 ]

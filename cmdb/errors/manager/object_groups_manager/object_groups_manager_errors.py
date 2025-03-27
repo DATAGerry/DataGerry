@@ -28,12 +28,13 @@ class ObjectGroupsManagerError(Exception):
         """
         super().__init__(err)
 
-# -------------------------------------------- ObjectGroupsManager - ERRORS -------------------------------------------- #
+# ------------------------------------------- ObjectGroupsManager - ERRORS ------------------------------------------- #
 
 class ObjectGroupsManagerInitError(ObjectGroupsManagerError):
     """
     Raised when ObjectGroupsManager could not be initialised
     """
+
 
 class ObjectGroupsManagerInsertError(ObjectGroupsManagerError):
     """

@@ -52,7 +52,8 @@ from cmdb.manager import (
     ObjectGroupsManager,
     ThreatManager,
     VulnerabilityManager,
-    UserSettingsManager
+    UserSettingsManager,
+    RiskManager,
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -134,6 +135,7 @@ class ManagerProvider:
             ManagerType.OBJECT_GROUP: ObjectGroupsManager,
             ManagerType.THREAT: ThreatManager,
             ManagerType.VULNERABILITY: VulnerabilityManager,
+            ManagerType.RISK: RiskManager,
         }
 
         return manager_classes.get(manager_type)
