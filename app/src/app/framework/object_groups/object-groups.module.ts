@@ -11,13 +11,11 @@ import { ObjectGroupsAddComponent } from './add/object-groups-add.component';
 import { TableModule } from 'src/app/layout/table/table.module';
 import { AuthModule } from 'src/app/modules/auth/auth.module';
 import { CoreModule } from 'src/app/core/core.module';
-import { CategoryManagerComponent } from './modal/category-manager.component';
 
 @NgModule({
   declarations: [
     ObjectGroupsListComponent,
     ObjectGroupsAddComponent,
-    CategoryManagerComponent
   ],
   imports: [
     CommonModule,

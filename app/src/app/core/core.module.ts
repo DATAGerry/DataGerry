@@ -5,14 +5,14 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ObjectSelectorComponent } from './components/object_selector/object-selector.component';
 import { FormsModule } from '@angular/forms';
 import { WarningAlertComponent } from './components/warning-message/warning-alert.component';
-
+import { ExtendableOptionManagerComponent } from './components/extendable_option_manager/extendable-option-manager.component';
 
 @NgModule({
   declarations: [
     LoadingPopupComponent,
     ObjectSelectorComponent,
-    WarningAlertComponent
-
+    WarningAlertComponent,
+    ExtendableOptionManagerComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +22,8 @@ import { WarningAlertComponent } from './components/warning-message/warning-aler
   exports: [
     LoadingPopupComponent,
     ObjectSelectorComponent,
-    WarningAlertComponent
+    WarningAlertComponent,
+    ExtendableOptionManagerComponent
   ]
 })
 export class CoreModule { }
