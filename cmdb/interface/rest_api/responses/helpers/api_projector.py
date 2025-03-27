@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of APIProjector
+"""
 import logging
 from typing import Union
 
@@ -32,7 +33,6 @@ class APIProjector:
     """
     Converts the API Responses based on the ApiProjection mapping.
     """
-    __slots__ = '_output', '__data', '__projection'
 
     def __init__(self, data: Union[dict, list[dict]], projection: APIProjection = None):
         self._output = None

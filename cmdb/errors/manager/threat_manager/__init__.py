@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the IsmsRiskClassManager
+This module provides all errors for the ThreatManager
 """
 from .threat_manager_errors import (
     ThreatManagerError,

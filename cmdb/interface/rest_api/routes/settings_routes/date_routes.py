@@ -13,16 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for DateSettings
+"""
 import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
-from cmdb.manager import (
-    SettingsReaderManager,
-    SettingsWriterManager,
-)
+from cmdb.manager import SettingsReaderManager, SettingsWriterManager
 
 from cmdb.settings.date_settings import DateSettingsDAO
 from cmdb.models.user_model import CmdbUser
@@ -42,23 +41,29 @@ LOGGER = logging.getLogger(__name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_date_settings(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                        request_user)
+    """
+    Retrieves the date-related settings for the current user
 
+    Args:
+        request_user (CmdbUser): The user making the request
+
+    Returns:
+        DefaultResponse: The HTTP response containing the date settings
+    """
     try:
+        settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
+                                                                             request_user)
+
         date_settings = settings_reader.get_all_values_from_section('date', DateSettingsDAO.__DEFAULT_SETTINGS__)
 
         date_settings = DateSettingsDAO(**date_settings)
 
-        api_response = DefaultResponse(date_settings)
-
-        return api_response.make_response()
+        return DefaultResponse(date_settings).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except Exception as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[get_date_settings] Exception: %s, Type: %s", err, type(err))
-        return abort(500)
+        LOGGER.error("[get_date_settings] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving the DateSettings!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -67,27 +72,34 @@ def get_date_settings(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @date_blueprint.protect(auth=True, right='base.system.edit')
 def update_date_settings(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    new_auth_settings_values = request.get_json()
+    """
+    Updates the date-related settings for the current user
 
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                               request_user)
-    settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER,
-                                                                               request_user)
+    Args:
+        request_user (CmdbUser): The user making the request
 
-    if not new_auth_settings_values:
-        return abort(400, 'No new data was provided')
+    Returns:
+        DefaultResponse: The HTTP response containing the updated date settings, or an error message
+    """
     try:
+        new_auth_settings_values = request.get_json()
+
+        settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
+                                                                                request_user)
+        settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER,
+                                                                                request_user)
+
+        if not new_auth_settings_values:
+            abort(400, 'No new data was provided')
+
         new_auth_setting_instance = DateSettingsDAO(**new_auth_settings_values)
+
+        update_result = settings_writer.write(_id='date', data=new_auth_setting_instance.__dict__)
+
+        if update_result.acknowledged:
+            return DefaultResponse(settings_reader.get_section('date')).make_response()
+
+        abort(400, 'Could not update the DateSettings')
     except Exception as err:
-        return abort(400, err)
-
-    update_result = settings_writer.write(_id='date', data=new_auth_setting_instance.__dict__)
-
-    if update_result.acknowledged:
-        api_response = DefaultResponse(settings_reader.get_section('date'))
-
-        return api_response.make_response()
-
-    return abort(400, 'Could not update date settings')
+        LOGGER.error("[update_date_settings] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while updating the DateSettings!")

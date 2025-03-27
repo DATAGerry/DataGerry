@@ -13,16 +13,20 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of UserSettingType
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class UserSettingType(Enum):
     """
-    Type of user settings. Applied only on user application level.
-    SERVER means only backend settings. APPLICATION only the frontend.
-    Global means both.
+    Enum representing the type of user settings
+
+    Attributes:
+        - SERVER = only backend settings
+        - APPLICATION  = only frontend settings
+        - GLOBAL = frontend and backend settings
     """
     GLOBAL = 'GLOBAL'
     APPLICATION = 'APPLICATION'

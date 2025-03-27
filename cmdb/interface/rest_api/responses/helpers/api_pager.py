@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of APIPager
+"""
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -25,20 +26,20 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class APIPager:
     """
-    Pager for api responses.
-    Shows data of the current page and meta data of other pages.
+    A utility class for paginating API responses.
+    
+    This class provides metadata about the pagination state, including the current page,
+    page size, and total number of pages.
     """
-
-    __slots__ = 'page', 'page_size', 'total_pages'
 
     def __init__(self, page: int, page_size: int, total_pages: int = None):
         """
-        Constructor of the APIPager.
+        Initialises the APIPager
 
         Args:
-            page: Current page number.
-            page_size: Number of elements on this page.
-            total_pages: Total number of pages for this query.
+            page (int): The current page number
+            page_size (int): The number of items per page
+            total_pages (int, optional): The total number of pages. Defaults to None
         """
         self.page = page
         self.page_size = page_size
@@ -46,8 +47,12 @@ class APIPager:
 
 
     def to_dict(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Converts the APIPager properties to a dictionary
+
+        Returns:
+            dict: A dictionary containing APIPager properties
+        """
         return {
             'page': self.page,
             'page_size': self.page_size,

@@ -115,7 +115,7 @@ class ImpactManager(BaseManager):
             public_id (int): public_id of the IsmsImpact
 
         Raises:
-            ImpactManagerGetError: When an IsmsImpact could not be retrieved
+            ImpactManagerGetError: If an IsmsImpact could not be retrieved
 
         Returns:
             Optional[dict]: A dictionary representation of the IsmsImpact if successful, otherwise None
@@ -178,7 +178,7 @@ class ImpactManager(BaseManager):
             data: Union[IsmsImpact, dict]: The new data for the IsmsImpact
 
         Raises:
-            ImpactManagerUpdateError: When the update operation fails
+            ImpactManagerUpdateError: If the update operation fails
         """
         try:
             if isinstance(data, IsmsImpact):

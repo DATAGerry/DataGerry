@@ -83,22 +83,20 @@ def insert_cmdb_category(data: dict, request_user: CmdbUser):
         created_category = categories_manager.get_category(result_id)
 
         if created_category:
-            api_response = InsertSingleResponse(created_category, result_id)
+            return InsertSingleResponse(created_category, result_id).make_response()
 
-            return api_response.make_response()
-
-        return abort(404, "Could not retrieve the created Category from the database!")
+        abort(404, "Could not retrieve the created Category from the database!")
     except HTTPException as http_err:
         raise http_err
     except CategoriesManagerInsertError as err:
         LOGGER.error("[insert_cmdb_category] %s", err, exc_info=True)
-        return abort(400, "Failed to insert the new Category in the database!")
+        abort(400, "Failed to insert the new Category in the database!")
     except CategoriesManagerGetError as err:
         LOGGER.error("[insert_cmdb_category] %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created Category from the database!")
+        abort(400, "Failed to retrieve the created Category from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -150,13 +148,13 @@ def get_cmdb_categories(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except CategoriesManagerIterationError as err:
         LOGGER.error("[get_cmdb_categories] %s", err, exc_info=True)
-        return abort(400, "Could not retrieve Categories from database!")
+        abort(400, "Could not retrieve Categories from database!")
     except CategoriesManagerTreeInitError as err:
         LOGGER.error("[get_cmdb_categories] %s", err, exc_info=True)
-        return abort(500, "Failed to place the Categories into a tree structure!")
+        abort(500, "Failed to place the Categories into a tree structure!")
     except Exception as err:
         LOGGER.error("[get_cmdb_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @categories_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -184,15 +182,15 @@ def get_cmdb_category(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The Category with ID:{public_id} was not found!")
+        abort(404, f"The Category with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except CategoriesManagerGetError as err:
         LOGGER.error("[get_cmdb_category] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the requested Category with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the requested Category with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -228,18 +226,18 @@ def update_cmdb_category(public_id: int, data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The Category with ID:{public_id} was not found!")
+        abort(404, f"The Category with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except CategoriesManagerGetError as err:
         LOGGER.error("[update_cmdb_category] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the requested Category with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the requested Category with ID:{public_id} from the database!")
     except CategoriesManagerUpdateError as err:
         LOGGER.error("[update_cmdb_category] %s", err, exc_info=True)
-        return abort(400, "Failed to update the Category!")
+        abort(400, "Failed to update the Category!")
     except Exception as err:
         LOGGER.error("[update_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -274,18 +272,18 @@ def delete_cmdb_category(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The Category with ID:{public_id} was not found!")
+        abort(404, f"The Category with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except CategoriesManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_category] %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Category with the ID:{public_id}")
+        abort(400, f"Failed to delete the Category with the ID:{public_id}")
     except CategoriesManagerGetError as err:
         LOGGER.error("[delete_cmdb_category] %s", err, exc_info=True)
-        return abort(400, "Failed not retrieve a Category from the database!")
+        abort(400, "Failed not retrieve a Category from the database!")
     except CategoriesManagerUpdateError as err:
         LOGGER.error("[delete_cmdb_category] %s", err, exc_info=True)
-        return abort(500, "Could not update a child Category although the requested Category got deleted!")
+        abort(500, "Could not update a child Category although the requested Category got deleted!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

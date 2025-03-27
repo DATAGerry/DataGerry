@@ -25,7 +25,6 @@ from cmdb.manager import (
     DocapiTemplatesManager,
     LogsManager,
     UsersManager,
-    UsersSettingsManager,
     GroupsManager,
     MediaFilesManager,
     TypesManager,
@@ -52,6 +51,8 @@ from cmdb.manager import (
     ExtendableOptionsManager,
     ObjectGroupsManager,
     ThreatManager,
+    VulnerabilityManager,
+    UserSettingsManager
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -106,7 +107,7 @@ class ManagerProvider:
             ManagerType.LOGS: LogsManager,
             ManagerType.DOCAPI_TEMPLATES: DocapiTemplatesManager,
             ManagerType.USERS: UsersManager,
-            ManagerType.USERS_SETTINGS: UsersSettingsManager,
+            ManagerType.USER_SETTINGS: UserSettingsManager,
             ManagerType.GROUPS: GroupsManager,
             ManagerType.MEDIA_FILES: MediaFilesManager,
             ManagerType.TYPES: TypesManager,
@@ -132,6 +133,7 @@ class ManagerProvider:
             ManagerType.EXTENDABLE_OPTIONS: ExtendableOptionsManager,
             ManagerType.OBJECT_GROUP: ObjectGroupsManager,
             ManagerType.THREAT: ThreatManager,
+            ManagerType.VULNERABILITY: VulnerabilityManager,
         }
 
         return manager_classes.get(manager_type)

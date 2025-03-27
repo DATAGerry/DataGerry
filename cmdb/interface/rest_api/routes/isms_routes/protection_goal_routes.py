@@ -77,25 +77,31 @@ def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
-        result_id: int = protection_goal_manager.insert_protection_goal(data)
+        #Check if a ProtectionGoal with the name already exists
+        goal_with_name = protection_goal_manager.get_one_by({'name': data.get('name')})
 
-        created_protection_goal: dict = protection_goal_manager.get_protection_goal(result_id)
+        if goal_with_name:
+            abort(400, f"A ProtectionGoal with the name {data.get('name')} already exists!")
+
+        result_id = protection_goal_manager.insert_protection_goal(data)
+
+        created_protection_goal = protection_goal_manager.get_protection_goal(result_id)
 
         if created_protection_goal:
             return InsertSingleResponse(created_protection_goal, result_id).make_response()
 
-        return abort(404, "Could not retrieve the created ProtectionGoal from the database!")
+        abort(404, "Could not retrieve the created ProtectionGoal from the database!")
     except HTTPException as http_err:
         raise http_err
     except ProtectionGoalManagerInsertError as err:
         LOGGER.error("[insert_isms_protection_goal] ProtectionGoalManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new ProtectionGoal in the database!")
+        abort(400, "Failed to insert the new ProtectionGoal in the database!")
     except ProtectionGoalManagerGetError as err:
         LOGGER.error("[insert_isms_protection_goal] ProtectionGoalManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created ProtectionGoal from the database!")
+        abort(400, "Failed to retrieve the created ProtectionGoal from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_protection_goal] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An internal server error occured while creating the ProtectionGoal!")
+        abort(500, "An internal server error occured while creating the ProtectionGoal!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -138,10 +144,10 @@ def get_isms_protection_goals(params: CollectionParameters, request_user: CmdbUs
         return api_response.make_response()
     except ProtectionGoalManagerIterationError as err:
         LOGGER.error("[get_isms_protection_goals] ProtectionGoalManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve ProtectionGoals from the database!")
+        abort(400, "Failed to retrieve ProtectionGoals from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_protection_goals] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving ProtectionGoals!")
 
 
 @protection_goal_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -170,15 +176,15 @@ def get_isms_protection_goal(public_id: int, request_user: CmdbUser):
         if requested_protection_goal:
             return GetSingleResponse(requested_protection_goal, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
+        abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ProtectionGoalManagerGetError as err:
         LOGGER.error("[get_isms_protection_goal] ProtectionGoalManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ProtectionGoal with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ProtectionGoal with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_protection_goal] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the ProtectionGoal with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -201,7 +207,7 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
     """
     try:
         if public_id in [1,2,3]:
-            return abort(400, "The predefined ProtectionGoals can not be edited!")
+            abort(400, "The predefined ProtectionGoals can not be edited!")
 
         protection_goal_manager: ProtectionGoalManager = ManagerProvider.get_manager(
                                                                             ManagerType.PROTECTION_GOAL,
@@ -211,7 +217,13 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
         to_update_protection_goal = protection_goal_manager.get_protection_goal(public_id)
 
         if not to_update_protection_goal:
-            return abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
+            abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
+
+        #Check if a ProtectionGoal with the new name already exists
+        goal_with_name = protection_goal_manager.get_one_by({'name': data.get('name')})
+
+        if goal_with_name:
+            abort(400, f"A ProtectionGoal with the name {data.get('name')} already exists!")
 
         protection_goal = IsmsProtectionGoal.from_data(data)
 
@@ -222,13 +234,13 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
         raise http_err
     except ProtectionGoalManagerGetError as err:
         LOGGER.error("[update_isms_protection_goal] ProtectionGoalManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ProtectionGoal with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ProtectionGoal with ID: {public_id} from the database!")
     except ProtectionGoalManagerUpdateError as err:
         LOGGER.error("[update_isms_protection_goal] ProtectionGoalManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the ProtectionGoal with ID: {public_id}!")
+        abort(400, f"Failed to update the ProtectionGoal with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_protection_goal] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the ProtectionGoal with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -249,7 +261,7 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
     """
     try:
         if public_id in [1,2,3]:
-            return abort(400, "The predefined ProtectionGoals can not be deleted!")
+            abort(400, "The predefined ProtectionGoals can not be deleted!")
 
 
         protection_goal_manager: ProtectionGoalManager = ManagerProvider.get_manager(
@@ -260,7 +272,7 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
         to_delete_protection_goal = protection_goal_manager.get_protection_goal(public_id)
 
         if not to_delete_protection_goal:
-            return abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
+            abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
 
         protection_goal_manager.delete_protection_goal(public_id)
 
@@ -269,10 +281,10 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
         raise http_err
     except ProtectionGoalManagerDeleteError as err:
         LOGGER.error("[delete_isms_protection_goal] ProtectionGoalManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the ProtectionGoal with ID:{public_id}!")
+        abort(400, f"Failed to delete the ProtectionGoal with ID:{public_id}!")
     except ProtectionGoalManagerGetError as err:
         LOGGER.error("[delete_isms_protection_goal] ProtectionGoalManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ProtectionGoal with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the ProtectionGoal with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_protection_goal] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the ProtectionGoal with ID: {public_id}!")

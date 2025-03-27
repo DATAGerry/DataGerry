@@ -79,33 +79,33 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
 
         # Validate the OptionType
         if not is_valid_option_type(data.get('option_type')):
-            return abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
+            abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
 
         # Validate that the ExtendableOption does not exist
         existing_extendable_option = extendable_options_manager.get_one_by(data)
 
         if existing_extendable_option:
-            return abort(400, f"An Option with the value already exists: {data.get('value')}")
+            abort(400, f"An Option with the value already exists: {data.get('value')}")
 
         result_id: int = extendable_options_manager.insert_extendable_option(data)
 
         created_extendable_option: dict = extendable_options_manager.get_extendable_option(result_id)
 
         if not created_extendable_option:
-            return abort(404, "Could not retrieve the created ExtendableOption from the database!")
+            abort(404, "Could not retrieve the created ExtendableOption from the database!")
 
         return InsertSingleResponse(created_extendable_option, result_id).make_response()
     except HTTPException as http_err:
         raise http_err
     except ExtendableOptionsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_extendable_option] ExtendableOptionsManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new ExtendableOption in the database!")
+        abort(400, "Could not insert the new ExtendableOption in the database!")
     except ExtendableOptionsManagerGetError as err:
         LOGGER.error("[insert_cmdb_extendable_option] ExtendableOptionsManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created ExtendableOption from the database!")
+        abort(400, "Failed to retrieve the created ExtendableOption from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -148,10 +148,10 @@ def get_cmdb_extendable_options(params: CollectionParameters, request_user: Cmdb
         return api_response.make_response()
     except ExtendableOptionsManagerIterationError as err:
         LOGGER.error("[get_cmdb_extendable_options] ExtendableOptionsManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve ExtendableOptions from the database!")
+        abort(400, "Failed to retrieve ExtendableOptions from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_extendable_options] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @extendable_option_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -180,15 +180,15 @@ def get_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         if extendable_option:
             return GetSingleResponse(extendable_option, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
+        abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ExtendableOptionsManagerGetError as err:
         LOGGER.error("[get_cmdb_extendable_option] ExtendableOptionsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ExtendableOption with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ExtendableOption with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -216,16 +216,16 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
                                                                 )
         # Validate the OptionType
         if not is_valid_option_type(data.get('option_type')):
-            return abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
+            abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
 
         to_update_extendable_option = extendable_options_manager.get_extendable_option(public_id)
 
         if not to_update_extendable_option:
-            return abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
+            abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
 
         # Validate that the OptionType is not changed
         if data['option_type'] != to_update_extendable_option['option_type']:
-            return abort(400, "The OptionType of an ExtendableOption can not be changed!")
+            abort(400, "The OptionType of an ExtendableOption can not be changed!")
 
         # Validate that the ExtendableOption with the updated values does not exist
         existing_extendable_option = extendable_options_manager.get_one_by({
@@ -234,7 +234,7 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
                                                         })
 
         if existing_extendable_option:
-            return abort(400, f"An Option with the value already exists: {data.get('value')}")
+            abort(400, f"An Option with the value already exists: {data.get('value')}")
 
         extendable_option = CmdbExtendableOption.from_data(data)
 
@@ -245,13 +245,13 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
         raise http_err
     except ExtendableOptionsManagerGetError as err:
         LOGGER.error("[update_cmdb_extendable_option] ExtendableOptionsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ExtendableOption with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ExtendableOption with ID: {public_id} from the database!")
     except ExtendableOptionsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_extendable_option] ExtendableOptionsManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the ExtendableOption with ID: {public_id}!")
+        abort(400, f"Failed to update the ExtendableOption with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -279,7 +279,7 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         to_delete_extendable_option = extendable_options_manager.get_extendable_option(public_id)
 
         if not to_delete_extendable_option:
-            return abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
+            abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
 
         extendable_options_manager.delete_extendable_option(public_id)
 
@@ -288,13 +288,13 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         raise http_err
     except ExtendableOptionsManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_extendable_option] ExtendableOptionsManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the ExtendableOption with ID:{public_id}!")
+        abort(400, f"Failed to delete the ExtendableOption with ID:{public_id}!")
     except ExtendableOptionsManagerGetError as err:
         LOGGER.error("[delete_cmdb_extendable_option] ExtendableOptionsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ExtendableOption with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the ExtendableOption with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 

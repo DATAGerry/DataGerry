@@ -83,18 +83,18 @@ def insert_isms_impact_category(data: dict, request_user: CmdbUser):
         if created_impact:
             return InsertSingleResponse(created_impact, result_id).make_response()
 
-        return abort(404, "Could not retrieve the created ImpactCategory from the database!")
+        abort(404, "Could not retrieve the created ImpactCategory from the database!")
     except HTTPException as http_err:
         raise http_err
     except ImpactCategoryManagerInsertError as err:
         LOGGER.error("[insert_isms_impact_category] ImpactCategoryManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new ImpactCategory in the database!")
+        abort(400, "Could not insert the new ImpactCategory in the database!")
     except ImpactCategoryManagerGetError as err:
         LOGGER.error("[insert_isms_impact_category] ImpactCategoryManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created ImpactCategory from the database!")
+        abort(400, "Failed to retrieve the created ImpactCategory from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_impact_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the ImpactCategory!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -135,10 +135,10 @@ def get_isms_impact_categories(params: CollectionParameters, request_user: CmdbU
         return api_response.make_response()
     except ImpactCategoryManagerIterationError as err:
         LOGGER.error("[get_isms_impact_categories] ImpactCategoryManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve ImpactCategories from the database!")
+        abort(400, "Failed to retrieve ImpactCategories from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impact_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving ImpactCategories!")
 
 
 @impact_category_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -165,15 +165,15 @@ def get_isms_impact_category(public_id: int, request_user: CmdbUser):
         if requested_impact:
             return GetSingleResponse(requested_impact, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
+        abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ImpactCategoryManagerGetError as err:
         LOGGER.error("[get_isms_impact_category] ImpactCategoryManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ImpactCategory with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ImpactCategory with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impact_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the ImpactCategory with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -201,7 +201,7 @@ def update_isms_impact_category(public_id: int, data: dict, request_user: CmdbUs
         to_update_impact = impact_category_manager.get_impact_category(public_id)
 
         if not to_update_impact:
-            return abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
+            abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
 
         impact_category = IsmsImpactCategory.from_data(data)
 
@@ -212,13 +212,13 @@ def update_isms_impact_category(public_id: int, data: dict, request_user: CmdbUs
         raise http_err
     except ImpactCategoryManagerGetError as err:
         LOGGER.error("[update_isms_impact_category] ImpactCategoryManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ImpactCategory with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ImpactCategory with ID: {public_id} from the database!")
     except ImpactCategoryManagerUpdateError as err:
         LOGGER.error("[update_isms_impact_category] ImpactCategoryManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the ImpactCategory with ID: {public_id}!")
+        abort(400, f"Failed to update the ImpactCategory with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_impact_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the ImpactCategory with ID: {public_id}!")
 
 
 @impact_category_blueprint.route('/multiple', methods=['PUT', 'PATCH'])
@@ -297,7 +297,7 @@ def update_multiple_isms_impact_categories(request_user: CmdbUser):
         raise http_err
     except Exception as err:
         LOGGER.error("[update_multiple_isms_impact_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while updating multiple ImpactCategories!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -323,7 +323,7 @@ def delete_isms_impact_category(public_id: int, request_user: CmdbUser):
         to_delete_impact = impact_category_manager.get_impact_category(public_id)
 
         if not to_delete_impact:
-            return abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
+            abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
 
         impact_category_manager.delete_impact_category(public_id)
 
@@ -332,10 +332,10 @@ def delete_isms_impact_category(public_id: int, request_user: CmdbUser):
         raise http_err
     except ImpactCategoryManagerDeleteError as err:
         LOGGER.error("[delete_isms_impact_category] ImpactCategoryManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the ImpactCategory with ID:{public_id}!")
+        abort(400, f"Failed to delete the ImpactCategory with ID:{public_id}!")
     except ImpactCategoryManagerGetError as err:
         LOGGER.error("[delete_isms_impact_category] ImpactCategoryManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ImpactCategory with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the ImpactCategory with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_impact_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the ImpactCategory with ID: {public_id}!")

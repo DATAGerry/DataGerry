@@ -13,13 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of UserSettingPayload
+"""
 import logging
-from json import dumps
-from typing import Any
-
-from cmdb.database.database_utils import default
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -29,30 +26,30 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class UserSettingPayload:
     """
-    Payload wrapper user settings.
+    Payload wrapper for user settings
     """
     __slots__ = 'name', 'payload'
 
-    def __init__(self, payload: Any):
+    def __init__(self, payload: dict):
         """
-        Constructor of `UserSettingPayload`.
+        Initialises  of UserSettingPayload
 
         Args:
-            payload (Any): Settings option/body/payload.
+            payload (dict): Settings option/body/payload
         """
-        self.payload: Any = payload
+        self.payload = payload
 
 
     @classmethod
     def from_data(cls, data: dict) -> "UserSettingPayload":
         """
-        Create a `UserSettingEntry` instance from database.
+        Initialises a UserSettingPayload from a dict
 
         Args:
-            data (dict): Database user settings values.
+            data (dict): Data with which the UserSettingPayload should be initialised
 
         Returns:
-            UserSettingPayload: Instance of `UserSettingEntry`.
+            UserSettingPayload: UserSettingPayload with the given data
         """
         return cls(
             payload=data
@@ -60,28 +57,14 @@ class UserSettingPayload:
 
 
     @classmethod
-    def to_data(cls, instance: "UserSettingPayload") -> str:
+    def to_json(cls, instance: "UserSettingPayload") -> dict:
         """
-        Get the setting to database format.
+        Converts a UserSettingPayload into a json compatible dict
 
         Args:
-            instance (UserSettingPayload): Instance of `UserSettingPayload`.
+            instance (UserSettingPayload): The UserSettingPayload which should be converted
 
         Returns:
-            str: JSON dump data of `UserSettingPayload`.
-        """
-        return dumps(UserSettingPayload.to_dict(instance), default=default)
-
-
-    @classmethod
-    def to_dict(cls, instance: "UserSettingPayload") -> dict:
-        """
-        Get the dictionary values of `UserSettingEntry`
-
-        Args:
-            instance (UserSettingPayload): Instance of `UserSettingEntry`.
-
-        Returns:
-            dict: Return the `UserSettingEntry` as dict.
+            dict: Json compatible dict of the UserSettingPayload values
         """
         return instance.payload

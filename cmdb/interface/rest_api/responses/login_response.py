@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of LoginResponse
+"""
 import logging
 from werkzeug.wrappers import Response
 
@@ -30,17 +31,19 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class LoginResponse(BaseAPIResponse):
     """
-    Basic login instance for returning a login data
+    Represents a login response containing user details and authentication token
+    
+    Extends: BaseAPIResponse
     """
     def __init__(self, user: CmdbUser, token: bytes, token_issued_at: int, token_expire: int):
         """
-        Constructor of `LoginResponse`
+        Initializes a `LoginResponse` instance
 
         Args:
-            user (CmdbUser): Instance of the selected user
-            token (bytes): A valid JW Token
-            token_issued_at: The timestamp when the token was issued
-            token_expire: The timestamp when the token expires
+            user (CmdbUser): The authenticated user instance
+            token (bytes): A valid JWT authentication token
+            token_issued_at (int): The UNIX timestamp indicating when the token was issued
+            token_expire (int): The UNIX timestamp indicating when the token will expire
         """
         self.user = user
         self.token = token
@@ -52,10 +55,13 @@ class LoginResponse(BaseAPIResponse):
 
     def make_response(self, status: int = 200) -> Response:
         """
-        Make a valid http response.
+        Creates a valid HTTP response containing the login data
+
+        Args:
+            status (int, optional): HTTP status code for the response. Defaults to 200
 
         Returns:
-            Instance of Response
+            Response: An HTTP response instance containing the login data
         """
         response = self.make_api_response(self.export(), status)
 
@@ -63,8 +69,12 @@ class LoginResponse(BaseAPIResponse):
 
 
     def export(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Exports the login response data as a dictionary
+
+        Returns:
+            dict: A dictionary containing user data and authentication token details
+        """
         return {
             'user': CmdbUser.to_json(self.user),
             'token': self.token.decode('UTF-8'),

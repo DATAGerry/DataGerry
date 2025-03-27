@@ -76,7 +76,7 @@ def get_isms_config_status(request_user: CmdbUser):
         current_risk_matrix = risk_matrix_manager.get_risk_matrix(1)
 
         if not current_risk_matrix:
-            return abort(404, "The RiskMatrix with was not found in the database!")
+            abort(404, "The RiskMatrix with was not found in the database!")
 
         risk_matrix_risk_class_status = check_risk_classes_set_in_matrix(current_risk_matrix)
 
@@ -93,4 +93,4 @@ def get_isms_config_status(request_user: CmdbUser):
         raise http_err
     except Exception as err:
         LOGGER.error("[get_isms_config_status] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

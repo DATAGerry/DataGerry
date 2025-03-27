@@ -80,15 +80,15 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         impact_count = impact_manager.count_impacts()
 
         if impact_count >= 10:
-            return abort(403, "Only a maximum of 10 Impacts can be created!")
+            abort(403, "Only a maximum of 10 Impacts can be created!")
 
         try:
-            data['calculation_basis'] = f"{float(data['calculation_basis']):.2f}"
+            data['calculation_basis'] = float(f"{float(data['calculation_basis']):.2f}")
         except Exception:
-            return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
+            abort(400, "The calculation basis is either not provided or could not be converted to a float!")
 
         if impact_manager.impact_calculation_basis_exists(data['calculation_basis']):
-            return abort(400, "The calculation basis is already used by another Impact!")
+            abort(400, "The calculation basis is already used by another Impact!")
 
         result_id: int = impact_manager.insert_impact(data)
 
@@ -103,18 +103,18 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
 
             return InsertSingleResponse(created_impact, result_id).make_response()
 
-        return abort(404, "Could not retrieve the created Impact from the database!")
+        abort(404, "Could not retrieve the created Impact from the database!")
     except HTTPException as http_err:
         raise http_err
     except ImpactManagerInsertError as err:
         LOGGER.error("[insert_isms_impact] ImpactManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new Impact in the database!")
+        abort(400, "Could not insert the new Impact in the database!")
     except ImpactManagerGetError as err:
         LOGGER.error("[insert_isms_impact] ImpactManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created Impact from the database!")
+        abort(400, "Failed to retrieve the created Impact from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -153,10 +153,10 @@ def get_isms_impacts(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except ImpactManagerIterationError as err:
         LOGGER.error("[get_isms_impacts] ImpactManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Impacts from the database!")
+        abort(400, "Failed to retrieve Impacts from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impacts] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @impact_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -182,15 +182,15 @@ def get_isms_impact(public_id: int, request_user: CmdbUser):
         if requested_impact:
             return GetSingleResponse(requested_impact, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The Impact with ID:{public_id} was not found!")
+        abort(404, f"The Impact with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ImpactManagerGetError as err:
         LOGGER.error("[get_isms_impact] ImpactManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Impact with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Impact with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -217,7 +217,7 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
         to_update_impact = impact_manager.get_impact(public_id)
 
         if not to_update_impact:
-            return abort(404, f"The Impact with ID:{public_id} was not found!")
+            abort(404, f"The Impact with ID:{public_id} was not found!")
 
         impact = IsmsImpact.from_data(data)
 
@@ -231,13 +231,13 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
         raise http_err
     except ImpactManagerGetError as err:
         LOGGER.error("[update_isms_impact] ImpactManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Impact with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Impact with ID: {public_id} from the database!")
     except ImpactManagerUpdateError as err:
         LOGGER.error("[update_isms_impact] ImpactManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the Impact with ID: {public_id}!")
+        abort(400, f"Failed to update the Impact with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -264,7 +264,7 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
         to_delete_impact = impact_manager.get_impact(public_id)
 
         if not to_delete_impact:
-            return abort(404, f"The Impact with ID:{public_id} was not found!")
+            abort(404, f"The Impact with ID:{public_id} was not found!")
 
         impact_manager.delete_impact(public_id)
 
@@ -279,10 +279,10 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
         raise http_err
     except ImpactManagerDeleteError as err:
         LOGGER.error("[delete_isms_impact] ImpactManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Impact with ID:{public_id}!")
+        abort(400, f"Failed to delete the Impact with ID:{public_id}!")
     except ImpactManagerGetError as err:
         LOGGER.error("[delete_isms_impact] ImpactManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Impact with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the Impact with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

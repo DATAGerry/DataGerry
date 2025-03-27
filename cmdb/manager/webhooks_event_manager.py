@@ -22,7 +22,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.base_manager import BaseManager
 from cmdb.manager.query_builder import BuilderParameters
 
-from cmdb.models.webhook_model.cmdb_webhook_event_model import CmdbWebhookEvent
+from cmdb.models.webhook_model.cmdb_webhook_event import CmdbWebhookEvent
 from cmdb.framework.results import IterationResult
 
 from cmdb.errors.manager import BaseManagerInsertError, BaseManagerGetError, BaseManagerIterationError

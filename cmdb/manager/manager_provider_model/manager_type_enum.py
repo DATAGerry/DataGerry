@@ -26,7 +26,7 @@ class ManagerType(Enum):
     LOGS = 'LogsManager'
     DOCAPI_TEMPLATES = 'DocapiTemplatesManager'
     USERS = 'UsersManager'
-    USERS_SETTINGS = 'UsersSettingsManager'
+    USER_SETTINGS = 'UserSettingsManager'
     GROUPS = 'GroupsManager'
     MEDIA_FILES = 'MediaFilesManager'
     TYPES = 'TypesManager'
@@ -54,3 +54,4 @@ class ManagerType(Enum):
     PROTECTION_GOAL = 'ProtectionGoalManager'
     RISK_MATRIX = 'RiskMatrixManager'
     THREAT = 'ThreatManager'
+    VULNERABILITY = 'VulnerabilityManager'

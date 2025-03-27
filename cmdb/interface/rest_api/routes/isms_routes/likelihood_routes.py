@@ -79,15 +79,15 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
         likelihood_count = likelihood_manager.count_likelihoods()
 
         if likelihood_count >= 10:
-            return abort(403, "Only a maximum of 10 Likelihoods can be created!")
+            abort(403, "Only a maximum of 10 Likelihoods can be created!")
 
         try:
-            data['calculation_basis'] = f"{float(data['calculation_basis']):.2f}"
+            data['calculation_basis'] = float(f"{float(data['calculation_basis']):.2f}")
         except Exception:
-            return abort(400, "The calculation basis is either not provided or could not be converted to a float!")
+            abort(400, "The calculation basis is either not provided or could not be converted to a float!")
 
         if likelihood_manager.likelihood_calculation_basis_exists(data['calculation_basis']):
-            return abort(400, "The calculation basis is already used by another Likelihood!")
+            abort(400, "The calculation basis is already used by another Likelihood!")
 
         result_id: int = likelihood_manager.insert_likelihood(data)
 
@@ -99,18 +99,18 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
 
             return InsertSingleResponse(created_likelihood, result_id).make_response()
 
-        return abort(404, "Could not retrieve the created Likelihood from the database!")
+        abort(404, "Could not retrieve the created Likelihood from the database!")
     except HTTPException as http_err:
         raise http_err
     except LikelihoodManagerInsertError as err:
         LOGGER.error("[insert_isms_likelihood] LikelihoodManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Could not insert the new Likelihood in the database!")
+        abort(400, "Could not insert the new Likelihood in the database!")
     except LikelihoodManagerGetError as err:
         LOGGER.error("[insert_isms_likelihood] LikelihoodManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created Likelihood from the database!")
+        abort(400, "Failed to retrieve the created Likelihood from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_likelihood] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -149,10 +149,10 @@ def get_isms_likelihoods(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except LikelihoodManagerIterationError as err:
         LOGGER.error("[get_isms_likelihoods] LikelihoodManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Likelihood from the database!")
+        abort(400, "Failed to retrieve Likelihood from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_likelihoods] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @likelihood_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -178,15 +178,15 @@ def get_isms_likelihood(public_id: int, request_user: CmdbUser):
         if requested_likelihood:
             return GetSingleResponse(requested_likelihood, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The Likelihood with ID:{public_id} was not found!")
+        abort(404, f"The Likelihood with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except LikelihoodManagerGetError as err:
         LOGGER.error("[get_isms_likelihood] LikelihoodManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Likelihood with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Likelihood with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_likelihood] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -213,7 +213,7 @@ def update_isms_likelihood(public_id: int, data: dict, request_user: CmdbUser):
         to_update_likelihood = likelihood_manager.get_likelihood(public_id)
 
         if not to_update_likelihood:
-            return abort(404, f"The Likelihood with ID:{public_id} was not found!")
+            abort(404, f"The Likelihood with ID:{public_id} was not found!")
 
         likelihood = IsmsLikelihood.from_data(data)
 
@@ -227,13 +227,13 @@ def update_isms_likelihood(public_id: int, data: dict, request_user: CmdbUser):
         raise http_err
     except LikelihoodManagerGetError as err:
         LOGGER.error("[update_isms_likelihood] LikelihoodManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Likelihood with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Likelihood with ID: {public_id} from the database!")
     except LikelihoodManagerUpdateError as err:
         LOGGER.error("[update_isms_likelihood] LikelihoodManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the Likelihood with ID: {public_id}!")
+        abort(400, f"Failed to update the Likelihood with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_likelihood] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -258,7 +258,7 @@ def delete_isms_likelihood(public_id: int, request_user: CmdbUser):
         to_delete_likelihood = likelihood_manager.get_likelihood(public_id)
 
         if not to_delete_likelihood:
-            return abort(404, f"The Likelihood with ID:{public_id} was not found!")
+            abort(404, f"The Likelihood with ID:{public_id} was not found!")
 
         likelihood_manager.delete_likelihood(public_id)
 
@@ -270,10 +270,10 @@ def delete_isms_likelihood(public_id: int, request_user: CmdbUser):
         raise http_err
     except LikelihoodManagerDeleteError as err:
         LOGGER.error("[delete_isms_likelihood] LikelihoodManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Likelihood with ID:{public_id}!")
+        abort(400, f"Failed to delete the Likelihood with ID:{public_id}!")
     except LikelihoodManagerGetError as err:
         LOGGER.error("[delete_isms_likelihood] LikelihoodManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Likelihood with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the Likelihood with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_likelihood] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
