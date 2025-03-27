@@ -29,6 +29,7 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { RiskMatrixService } from '../../../services/risk-matrix.service';
 import { IsmsRiskMatrix, RiskMatrixCell } from 'src/app/toolbox/isms/models/risk-matrix.model';
+import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
 
 @Component({
   selector: 'app-isms-risk-calculation',
@@ -371,5 +372,22 @@ export class RiskCalculationComponent implements OnInit {
           this.toast.error(err?.error?.message);
         }
       });
+  }
+
+
+  /**
+   * getCellColor: Return background and text color for a cell based on its risk_class_id.
+   * If unassigned (0), returns light grey with default text color.
+   */
+  public getCellStyles(cell: RiskMatrixCell | null): { backgroundColor: string; color: string } {
+    if (!cell || cell.risk_class_id === 0) {
+      return { backgroundColor: '#f5f5f5', color: '#000' }; // Default grey background with black text
+    }
+
+    const rc = this.riskClasses.find(r => r.public_id === cell.risk_class_id);
+    const backgroundColor = rc?.color || '#f5f5f5';
+    const textColor = getTextColorBasedOnBackground(backgroundColor);
+
+    return { backgroundColor, color: textColor };
   }
 }

@@ -20,6 +20,7 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 import { RiskClassModalComponent } from './modal/add-risk-class-modal.component';
 import { Subject } from 'rxjs';
 import { Warning } from 'src/app/core/models/warning.model';
+import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
 
 @Component({
   selector: 'app-isms-risk-classes',
@@ -125,7 +126,11 @@ export class RiskClassesComponent implements OnInit {
       )
       .subscribe({
         next: (data) => {
-          this.riskClasses = data.results;
+          // this.riskClasses = data.results;
+          this.riskClasses = data.results.map((riskClass) => ({
+            ...riskClass,
+            textColor: getTextColorBasedOnBackground(riskClass.color)
+          }));
           this.totalRiskClasses = data.total;
 
           this.config.riskClasses = this.riskClasses;
