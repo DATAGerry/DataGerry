@@ -61,7 +61,7 @@ export class ImpactModalComponent implements OnInit {
             name: ['', Validators.required],
             description: ['', Validators.required],
             calculation_basis: [
-                '',
+                this.defaultCalculationBasis,
                 [
                     Validators.required,
                     numericOrDecimalValidator(),

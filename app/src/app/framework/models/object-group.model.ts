@@ -10,6 +10,7 @@ export interface ObjectGroup {
     public_id: number;
     value: string;
     option_type: string;
+    predefined: boolean;
   }
   
   export interface GenericObject {

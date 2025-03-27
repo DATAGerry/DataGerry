@@ -1,25 +1,42 @@
+/* Current step styling */
 ::ng-deep .steps-indicator li.current .step-indicator {
-  background-color: #d4643e  !important; /* Current step is always grey */
+  background-color: #d4643e !important; /* Orange for the current step */
+  color: white; /* Optional: text color for the current step */
 }
 
-// .steps-indicator li.done:not(.invalid-step) .step-indicator {
-//   background-color: green; /* Done and valid steps are green */
-// }
-
-// .steps-indicator li.done.invalid-step .step-indicator {
-//   background-color: red; /* Done and invalid steps are red */
-// }
-
-::ng-deep .steps-indicator li.invalid-step .step-indicator {
-  background-color: red !important; /* Invalid steps are red */
-}
-
-::ng-deep .steps-indicator li.valid-step .step-indicator {
-  background-color: #28a745; /* Green color */
+/* Valid step styling */
+::ng-deep .steps-indicator li.valid-step:not(.current) .step-indicator {
+  background-color: #28a745 !important; /* Green for valid steps */
   color: white; /* Optional: text color */
 }
 
-::ng-deep .steps-indicator li.invalid-step .step-indicator{
-  background-color: #dc3545; /* Red color */
+/* Invalid step styling */
+::ng-deep .steps-indicator li.invalid-step:not(.current) .step-indicator {
+  background-color: #dc3545 !important; /* Red for invalid steps */
   color: white; /* Optional: text color */
+}
+
+/* Step title styling */
+::ng-deep .steps-indicator li .label {
+  margin-top: 5px;
+  font-size: 14px;
+  text-align: center;
+  color: #6c757d !important; /* Default text color */
+}
+
+/* Highlight the current step title */
+::ng-deep .steps-indicator li.current .label {
+  font-weight: bold;
+  color: #d4643e !important; /* Highlighted color for the current step title */
+}
+
+/* Styling for completed steps */
+::ng-deep .steps-indicator li.done:not(.invalid-step):not(.current) .step-indicator {
+  background-color: #28a745 !important; /* Green for completed and valid steps */
+  color: white;
+}
+
+::ng-deep .steps-indicator li.done.invalid-step:not(.current) .step-indicator {
+  background-color: #dc3545 !important; /* Red for completed but invalid steps */
+  color: white;
 }

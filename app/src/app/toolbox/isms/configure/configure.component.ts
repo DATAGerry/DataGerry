@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, OnInit, ViewChild, AfterViewChecked, ChangeDetectorRef, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, ElementRef, AfterViewInit } from '@angular/core';
 import { WizardComponent } from '@rg-software/angular-archwizard';
 import { IsmsConfig } from '../models/isms-config.model';
 import { ISMSService } from '../services/isms.service';
@@ -27,12 +27,16 @@ import { IsmsConfigValidation } from '../models/isms-config-validation.model';
   styleUrls: ['./configure.component.scss']
 })
 export class ConfigureComponent implements OnInit, AfterViewInit {
+  @ViewChild('wizard') wizard: WizardComponent;
+
   public ismsConfig: IsmsConfig;
-  public totalSteps: number = 6; // Total number of steps in the wizard
+  public totalSteps: number = 6;
   public riskClassesCount: number = 0;
   public likelihoodCount: number = 0;
   public impactCount: number = 0;
   public impactCategoriesCount: number = 0;
+  public allowFreeNavigation: boolean = true;
+
   public validationStatus: IsmsConfigValidation = {
     impact_categories: true,
     impacts: true,
@@ -41,11 +45,11 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
     risk_matrix: true
   };
 
-  @ViewChild('wizard') wizard!: WizardComponent; // Reference to the wizard component
+  /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
+
 
   constructor(
     private ismsService: ISMSService,
-    private cdRef: ChangeDetectorRef,
     private elRef: ElementRef
   ) {
     this.ismsConfig = {
@@ -57,10 +61,15 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
       riskMatrix: null
     };
   }
+
+
   ngOnInit(): void {
-    // Existing code...
-    this.updateStepIndicatorColors();
+    this.ismsService.getIsmsValidationStatus().subscribe((validationStatus: IsmsConfigValidation) => {
+      this.validationStatus = validationStatus;
+      this.updateStepIndicatorColors(); // Update colors on page load
+    });
   }
+
 
   ngAfterViewInit(): void {
     if (!this.wizard) {
@@ -68,6 +77,7 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /* --------------------------------------------------- STEP NAVIGATION AND VALIDATION --------------------------------------------------- */
   /**
  * Validates the current step based on the number of items.
  */
@@ -93,76 +103,106 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
   }
 
   /**
- * Updates the step-indicator color based on validation.
- */
+   * Updates the step-indicator color based on validation status.
+   */
   updateStepIndicatorColors(): void {
     const steps = this.elRef.nativeElement.querySelectorAll('.steps-indicator li');
     steps.forEach((step: HTMLElement, index: number) => {
-      const isValid = this.validateStep(index);
+      let isValid = false;
+
+      switch (index) {
+        case 0: // Risk Classes
+          isValid = this.validationStatus.risk_classes;
+          break;
+        case 1: // Likelihood
+          isValid = this.validationStatus.likelihoods;
+          break;
+        case 2: // Impact
+          isValid = this.validationStatus.impacts;
+          break;
+        case 3: // Impact Categories
+          isValid = this.validationStatus.impact_categories;
+          break;
+        case 4: // Protection Goals
+          isValid = true; // Always green
+          break;
+        case 5: // Risk Calculation
+          isValid = this.validationStatus.risk_matrix;
+          break;
+        default:
+          isValid = true;
+      }
+
       if (isValid) {
-        step.classList.add('valid-step'); // Add green color class
-        step.classList.remove('invalid-step'); // Remove red color class
+        step.classList.add('valid-step');
+        step.classList.remove('invalid-step');
       } else {
-        step.classList.add('invalid-step'); // Add red color class
-        step.classList.remove('valid-step'); // Remove green color class
+        step.classList.add('invalid-step');
+        step.classList.remove('valid-step');
+      }
+
+      // Highlight the current step
+      if (index === this.wizard.currentStepIndex) {
+        step.classList.add('current');
+      } else {
+        step.classList.remove('current');
+      }
+
+      if (index === 3 && !this.validationStatus.impacts) {
+        step.setAttribute(
+          'title',
+          'Cannot enter Impact Categories because Impact step is not valid yet.'
+        );
+      } else {
+        // Remove any tooltip if conditions are satisfied
+        step.removeAttribute('title');
       }
     });
   }
 
+  /**
+  * Navigates to the next step if the current step is valid.
+  */
+  nextStep(): void {
+    this.ismsService.getIsmsValidationStatus().subscribe((validationStatus: IsmsConfigValidation) => {
+      this.validationStatus = validationStatus;
+      if (this.isStepValid()) {
+        const nextIndex = this.wizard.currentStepIndex + 1;
+        if (nextIndex < this.totalSteps) {
+          this.wizard.goToStep(nextIndex);
+        }
+      }
+      this.updateStepIndicatorColors(); // Update colors after navigation
+    });
+  }
 
 
   /**
-   * Validates a specific step.
+   * Navigates to the previous step.
    */
-  private validateStep(stepIndex: number): boolean {
-    switch (stepIndex) {
-      case 0: // Risk Classes
-        return this.riskClassesCount >= 3;
-      case 1: // Likelihood
-        return this.likelihoodCount >= 3;
-      case 2: // Impact
-        return this.impactCount >= 3;
-      case 3: // Impact Categories
-        return this.impactCategoriesCount >= 1;
-      case 4: // Protection Goals
-        return true; // Always valid
-      default:
-        return true;
-    }
-  }
-
-
-  // nextStep(): void {
-  //   const nextIndex = this.wizard.currentStepIndex + 1;
-  //   if (nextIndex < this.totalSteps) {
-  //     this.wizard.goToStep(nextIndex);
-  //   }
-  // }
-
-  // previousStep(): void {
-  //   const prevIndex = this.wizard.currentStepIndex - 1;
-  //   if (prevIndex >= 0) {
-  //     this.wizard.goToStep(prevIndex);
-  //   }
-  // }
-
-  nextStep(): void {
-    if (this.isStepValid()) {
-      const nextIndex = this.wizard.currentStepIndex + 1;
-      if (nextIndex < this.totalSteps) {
-        this.wizard.goToStep(nextIndex);
-      }
-    }
-    this.updateStepIndicatorColors();
-  }
-
   previousStep(): void {
-    const prevIndex = this.wizard.currentStepIndex - 1;
-    if (prevIndex >= 0) {
-      this.wizard.goToStep(prevIndex);
-    }
-    this.updateStepIndicatorColors();
+    this.ismsService.getIsmsValidationStatus().subscribe((validationStatus: IsmsConfigValidation) => {
+      this.validationStatus = validationStatus;
+      const prevIndex = this.wizard.currentStepIndex - 1;
+      if (prevIndex >= 0) {
+        this.wizard.goToStep(prevIndex);
+      }
+      this.updateStepIndicatorColors(); // Update colors after navigation
+    });
   }
+
+
+  /**
+   * Fetches the validation status and updates the step indicators.
+   */
+  private updateValidationStatusAndIndicators(): void {
+    this.ismsService.getIsmsValidationStatus().subscribe((validationStatus: IsmsConfigValidation) => {
+      this.validationStatus = validationStatus;
+      this.updateStepIndicatorColors();
+    });
+  }
+
+  /* --------------------------------------------------- CONFIGURATION CHANGE HANDLERS --------------------------------------------------- */
 
   public onConfigChange(updatedConfig: IsmsConfig): void {
     this.ismsConfig = updatedConfig;
@@ -171,17 +211,22 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
 
   public onRiskClassesCountChange(count: number): void {
     this.riskClassesCount = count;
+    this.updateValidationStatusAndIndicators();
   }
 
   public onLikelihoodCountChange(count: number): void {
     this.likelihoodCount = count;
+    this.updateValidationStatusAndIndicators();
   }
 
   public onImpactCountChange(count: number): void {
     this.impactCount = count;
+    this.updateValidationStatusAndIndicators();
   }
 
   public onImpactCategoriesCountChange(count: number): void {
     this.impactCategoriesCount = count;
+    this.updateValidationStatusAndIndicators();
   }
+
 }

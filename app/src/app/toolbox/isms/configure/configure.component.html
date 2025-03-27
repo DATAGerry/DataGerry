@@ -1,12 +1,12 @@
 <div class="wizard-container">
   <!-- Wizard Navigation with dynamic classes -->
-  <aw-wizard #wizard [defaultStepIndex]="0">
-    <aw-wizard-step [stepTitle]="'Risk Classes'"></aw-wizard-step>
-    <aw-wizard-step [stepTitle]="'Likelihood'"></aw-wizard-step>
-    <aw-wizard-step [stepTitle]="'Impact'"></aw-wizard-step>
-    <aw-wizard-step [stepTitle]="'Impact Categories'"></aw-wizard-step>
-    <aw-wizard-step [stepTitle]="'Protection Goals'"></aw-wizard-step>
-    <aw-wizard-step [stepTitle]="'Risk Calculation'"></aw-wizard-step>
+  <aw-wizard #wizard [awNavigationMode] navigateBackward="allow" navigateForward="allow" [defaultStepIndex]="0">
+    <aw-wizard-step [stepTitle]="'Risk Classes'" [canExit]="true"></aw-wizard-step>
+    <aw-wizard-step [stepTitle]="'Likelihood'" [canExit]="true"></aw-wizard-step>
+    <aw-wizard-step [stepTitle]="'Impact'" [canExit]="true"></aw-wizard-step>
+    <aw-wizard-step [stepTitle]="'Impact Categories'" [canEnter]="validationStatus.impacts" [canExit]="true"></aw-wizard-step>
+    <aw-wizard-step [stepTitle]="'Protection Goals'" [canExit]="true"></aw-wizard-step>
+    <aw-wizard-step [stepTitle]="'Risk Calculation'" [canExit]="true"></aw-wizard-step>
   </aw-wizard>
 
   <!-- Step Content -->
@@ -19,17 +19,10 @@
       (impactCountChange)="onImpactCountChange($event)"></app-isms-impact>
     <app-isms-impact-categories *ngSwitchCase="3" [config]="ismsConfig"
       (impactCategoriesCountChange)="onImpactCategoriesCountChange($event)"></app-isms-impact-categories>
-    <app-isms-protection-goals *ngSwitchCase="4" [config]="ismsConfig"
-      ></app-isms-protection-goals>
+    <app-isms-protection-goals *ngSwitchCase="4" [config]="ismsConfig"></app-isms-protection-goals>
     <app-isms-risk-calculation *ngSwitchCase="5" [config]="ismsConfig"
       (configChange)="ismsConfig = $event"></app-isms-risk-calculation>
   </div>
-
-  <!-- Navigation Buttons Below Components -->
-  <!-- <div class="navigation-buttons d-flex justify-content-between mt-3">
-    <button *ngIf="wizard.currentStepIndex > 0" class="btn btn-secondary" (click)="previousStep()">Previous Step</button>
-    <button *ngIf="wizard.currentStepIndex < totalSteps - 1" class="btn btn-primary" (click)="nextStep()">Next Step</button>
-  </div> -->
 
   <div class="navigation-buttons d-flex justify-content-between mt-3">
     <button *ngIf="wizard.currentStepIndex > 0" class="btn btn-secondary" (click)="previousStep()">Previous
