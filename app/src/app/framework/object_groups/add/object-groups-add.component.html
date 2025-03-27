@@ -115,11 +115,17 @@
   </form>
 </div>
 
-<app-category-manager
-  *ngIf="showCategoryManager"
-  [categoryOptions]="categoryOptions"
-  (close)="closeCategoryManager()">
-</app-category-manager>
+
+<app-extendable-option-manager
+*ngIf="showCategoryManager"
+[options]="categoryOptions"   
+[optionType]= "'OBJECT_GROUP'" 
+[modalTitle]="'Manage Categories'"
+[itemLabel]="'Category'"
+[itemLabelPlural]="'Categories'"
+(close)="closeCategoryManager()">
+</app-extendable-option-manager>
+     
 
 <app-loading-popup
   [isVisible]="isLoading$ | async"

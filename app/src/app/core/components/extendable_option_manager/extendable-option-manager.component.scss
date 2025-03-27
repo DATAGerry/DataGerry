@@ -3,7 +3,7 @@ $dg-primary-color: #e94d18;
 $dg-border-color: rgba(#dee2e6, 0.5);
 $dg-error-message-color: #dc3545;
 
-.category-manager-backdrop {
+.option-manager-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -18,7 +18,7 @@ $dg-error-message-color: #dc3545;
 }
 
 // MODAL WRAPPER
-.category-manager-modal {
+.option-manager-modal {
   background: white;
   width: 100%;
   max-width: 700px;
@@ -67,7 +67,7 @@ $dg-error-message-color: #dc3545;
   background: white;
   flex: 1 1 auto;
 
-  .add-category-inline {
+  .add-option-inline {
     input.form-control {
       border: 1px solid $dg-border-color;
       padding: 0.75rem 1rem;
@@ -81,7 +81,7 @@ $dg-error-message-color: #dc3545;
     }
   }
 
-  .category-table-container {
+  .option-table-container {
     max-height: 300px;
     overflow-y: auto;
     margin-top: 1rem;
@@ -107,7 +107,7 @@ $dg-error-message-color: #dc3545;
 
 // RESPONSIVE TWEAKS
 @media (max-width: 576px) {
-  .category-manager-backdrop {
+  .option-manager-backdrop {
     padding-top: 1rem;
     align-items: flex-start;
   }
@@ -122,7 +122,7 @@ $dg-error-message-color: #dc3545;
     font-size: 1.1rem;
   }
 
-  .category-manager-modal {
+  .option-manager-modal {
     max-width: 95%;
   }
 }
