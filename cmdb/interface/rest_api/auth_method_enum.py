@@ -13,12 +13,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of AuthMethod enumeration
+"""
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class AuthMethod(str, Enum):
-    """MDS modes"""
+    """
+    Enum representing different authentication methods
+
+    Attributes:
+        BASIC (str): Represents basic authentication method
+        JWT (str): Represents JSON Web Token (JWT) authentication method
+    """
     BASIC = 'Basic'
     JWT = 'JWT'

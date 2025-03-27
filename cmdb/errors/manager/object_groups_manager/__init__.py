@@ -36,3 +36,13 @@ __all__ = [
     'ObjectGroupsManagerDeleteError',
     'ObjectGroupsManagerIterationError',
 ]
+
+
+OBJECT_GROUPS_MANAGER_ERRORS = {
+    "init": ObjectGroupsManagerInitError,
+    "insert": ObjectGroupsManagerInsertError,
+    "get": ObjectGroupsManagerGetError,
+    "update": ObjectGroupsManagerUpdateError,
+    "delete": ObjectGroupsManagerDeleteError,
+    "iterate": ObjectGroupsManagerIterationError,
+}

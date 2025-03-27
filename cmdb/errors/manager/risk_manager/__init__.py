@@ -14,31 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of OptionType
+This module provides all errors for the RiskManager
 """
-from enum import Enum
+from .risk_manager_errors import (
+    RiskManagerError,
+    RiskManagerInitError,
+    RiskManagerInsertError,
+    RiskManagerGetError,
+    RiskManagerUpdateError,
+    RiskManagerDeleteError,
+    RiskManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class OptionType(str, Enum):
-    """
-    Available OptionTypes for CmdbExtendableOptions
-    """
-    OBJECT_GROUP = 'OBJECT_GROUP'
-    THREAT = 'THREAT'
-    VULNERABILITY = 'VULNERABILITY'
-    IMPLEMENTATION_STATE = 'IMPLEMENTATION_STATE'
-    MEASURE_CONTROL = 'MEASURE_CONTROL'
+__all__ = [
+    'RiskManagerError',
+    'RiskManagerInitError',
+    'RiskManagerInsertError',
+    'RiskManagerGetError',
+    'RiskManagerUpdateError',
+    'RiskManagerDeleteError',
+    'RiskManagerIterationError',
+]
 
 
-    @classmethod
-    def is_valid(cls, value: str) -> bool:
-        """
-        Checks if a given string is a valid OptionType
-
-        Args:
-            value (str): The string to check
-
-        Returns:
-            bool: True if the string matches an existing OptionType, False otherwise
-        """
-        return value in OptionType.__members__
+RISK_MANAGER_ERRORS = {
+    "init": RiskManagerInitError,
+    "insert": RiskManagerInsertError,
+    "get": RiskManagerGetError,
+    "update": RiskManagerUpdateError,
+    "delete": RiskManagerDeleteError,
+    "iterate": RiskManagerIterationError,
+}

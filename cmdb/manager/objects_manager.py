@@ -364,11 +364,9 @@ class ObjectsManager(BaseManager):
         """
         try:
             if criteria:
-                object_count = self.count_documents(self.collection, criteria=criteria)
-            else:
-                object_count = self.count_documents(self.collection)
+                return self.count_documents(self.collection, criteria=criteria)
 
-            return object_count
+            return self.count_documents(self.collection)
         except BaseManagerGetError as err:
             raise ObjectsManagerGetError(err) from err
 

@@ -16,8 +16,22 @@ from enum import Enum
 
 class RiskType(str, Enum):
     """
-    Available OptionTypes for CmdbExtendableOptions
+    Available RiskTypes for IsmsRisks
     """
     THREAT_X_VULNERABILITY = 'THREAT_X_VULNERABILITY'
     THREAT = 'THREAT'
     EVENT = 'EVENT'
+
+
+    @classmethod
+    def is_valid(cls, value: str) -> bool:
+        """
+        Checks if a given string is a valid RiskType
+
+        Args:
+            value (str): The string to check
+
+        Returns:
+            bool: True if the string matches an existing RiskType, False otherwise
+        """
+        return value in RiskType.__members__

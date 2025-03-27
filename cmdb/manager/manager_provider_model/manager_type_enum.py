@@ -55,3 +55,4 @@ class ManagerType(Enum):
     RISK_MATRIX = 'RiskMatrixManager'
     THREAT = 'ThreatManager'
     VULNERABILITY = 'VulnerabilityManager'
+    RISK = 'RiskManager'

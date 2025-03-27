@@ -131,7 +131,7 @@ class GenericManager(BaseManager):
             raise self.exceptions.get("iterate", Exception)(f"Iteration error: {err}") from err
 
 
-    def count_items(self) -> int:
+    def count_items(self, criteria: dict = None) -> int:
         """
         Counts the total number of items in the collection
 
@@ -142,6 +142,9 @@ class GenericManager(BaseManager):
             Custom get exception based on the specific manager
         """
         try:
+            if criteria:
+                return self.count_documents(self.collection, criteria=criteria)
+
             return self.count_documents(self.collection)
         except Exception as err:
             raise self.exceptions.get("get", Exception)(f"Counting error: {err}") from err

@@ -38,17 +38,20 @@ from cmdb.manager.types_manager import TypesManager
 from cmdb.manager.users_manager import UsersManager
 from cmdb.manager.webhooks_event_manager import WebhooksEventManager
 from cmdb.manager.webhooks_manager import WebhooksManager
+from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
+from cmdb.manager.object_groups_manager import ObjectGroupsManager
+from cmdb.manager.user_settings_manager import UserSettingsManager
+
+# ISMS Managers
 from cmdb.manager.isms_manager.risk_class_manager import RiskClassManager
 from cmdb.manager.isms_manager.likelihood_manager import LikelihoodManager
 from cmdb.manager.isms_manager.impact_manager import ImpactManager
 from cmdb.manager.isms_manager.impact_category_manager import ImpactCategoryManager
 from cmdb.manager.isms_manager.protection_goal_manager import ProtectionGoalManager
 from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
-from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
-from cmdb.manager.object_groups_manager import ObjectGroupsManager
 from cmdb.manager.isms_manager.threat_manager import ThreatManager
 from cmdb.manager.isms_manager.vulnerability_manager import VulnerabilityManager
-from cmdb.manager.user_settings_manager import UserSettingsManager
+from cmdb.manager.isms_manager.risk_manager import RiskManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -85,4 +88,5 @@ __all__ = [
     'ThreatManager',
     'VulnerabilityManager',
     'UserSettingsManager',
+    'RiskManager',
 ]

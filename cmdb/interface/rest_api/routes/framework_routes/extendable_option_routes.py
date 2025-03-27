@@ -20,7 +20,13 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import ExtendableOptionsManager
+from cmdb.manager import (
+    ExtendableOptionsManager,
+    ThreatManager,
+    VulnerabilityManager,
+    ObjectGroupsManager,
+)
+
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
@@ -76,9 +82,12 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
                                                                     ManagerType.EXTENDABLE_OPTIONS,
                                                                     request_user
                                                                 )
+        if data.get('predefined'):
+            abort(400, "Predefined ExtendableOptions cannot be created via API!")
+
 
         # Validate the OptionType
-        if not is_valid_option_type(data.get('option_type')):
+        if not OptionType.is_valid(data.get('option_type')):
             abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
 
         # Validate that the ExtendableOption does not exist
@@ -215,13 +224,17 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
                                                                     request_user
                                                                 )
         # Validate the OptionType
-        if not is_valid_option_type(data.get('option_type')):
+        if not OptionType.is_valid(data.get('option_type')):
             abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
 
         to_update_extendable_option = extendable_options_manager.get_extendable_option(public_id)
 
         if not to_update_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
+
+        # Predefined cannot be changed
+        if data.get('predefined') != to_update_extendable_option['predefined']:
+            abort(404, "The 'predefined' property of an ExtendableOption cannot be changed!")
 
         # Validate that the OptionType is not changed
         if data['option_type'] != to_update_extendable_option['option_type']:
@@ -281,6 +294,13 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         if not to_delete_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
 
+        # Predefined is undeletable
+        if to_delete_extendable_option['predefined']:
+            abort(404, "A predefined ExtendableOption cannot be deleted !")
+
+        if is_extendable_option_used(to_delete_extendable_option, request_user):
+            abort(400, f"Cannot delete the ExtendableOption with ID: {public_id} as it is in use by other resources!")
+
         extendable_options_manager.delete_extendable_option(public_id)
 
         return DeleteSingleResponse(to_delete_extendable_option).make_response()
@@ -298,14 +318,29 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
-def is_valid_option_type(value: str) -> bool:
+def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -> bool:
     """
-    Checks if a given string is a valid OptionType
+    Checks if a CmdbExtendableOption is used in other collections before deletion
 
     Args:
-        value (str): The string to check
+        extendable_option (dict): The public_id of the CmdbExtendableOption to check.
+        request_user (str): User requesting the check
 
     Returns:
-        bool: True if the string matches an existing OptionType, False otherwise
+        bool: True if the option is used, False otherwise.
     """
-    return value in OptionType.__members__
+    threat_manager: ThreatManager = ManagerProvider.get_manager(ManagerType.THREAT, request_user)
+    vulnerability_manager: VulnerabilityManager = ManagerProvider.get_manager(ManagerType.VULNERABILITY, request_user)
+    object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(ManagerType.OBJECT_GROUP, request_user)
+
+    if extendable_option.get('option_type') == OptionType.THREAT:
+        return threat_manager.count_items({"source": extendable_option.get('public_id')}) > 0
+
+    if extendable_option.get('option_type') == OptionType.VULNERABILITY:
+        return vulnerability_manager.count_items({"source": extendable_option.get('public_id')}) > 0
+
+    if extendable_option.get('option_type') == OptionType.OBJECT_GROUP:
+        return object_groups_manager.count_items({"categories": extendable_option.get('public_id')}) > 0
+
+    # If option_type is not recognized
+    return False

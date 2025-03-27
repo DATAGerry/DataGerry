@@ -53,7 +53,7 @@ class IsmsThreat(CmdbDAO):
             'empty': False
         },
         'source': {
-            'type': 'list',
+            'type': 'integer',
             'required': True,
             'empty': False
         },
@@ -71,7 +71,7 @@ class IsmsThreat(CmdbDAO):
             self,
             public_id: int,
             name: str,
-            source: list[int],
+            source: int,
             identifier: str = None,
             description: str = None,
         ):
@@ -81,7 +81,7 @@ class IsmsThreat(CmdbDAO):
         Args:
             public_id (int): public_id of the IsmsThreat
             name (str): The name of the IsmsThreat
-            source (list[int]): Source of the IsmsThreat
+            source (int): Source of the IsmsThreat
             identifier (str, optional): Identifier of the IsmsThreat
             description (str, optional): Description of the IsmsThreat
 

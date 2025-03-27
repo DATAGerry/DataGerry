@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of the ObjectGroupsManager
+This module contains the implementation of the RiskManager
 """
 import logging
 
@@ -22,21 +22,21 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.object_group_model import CmdbObjectGroup
+from cmdb.models.isms_model import IsmsRisk
 
-from cmdb.errors.manager.object_groups_manager import OBJECT_GROUPS_MANAGER_ERRORS
+from cmdb.errors.manager.risk_manager import RISK_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                              ObjectGroupsManager- CLASS                                              #
+#                                                  RiskManager - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
-class ObjectGroupsManager(GenericManager):
+class RiskManager(GenericManager):
     """
-    The ObjectGroupsManager manages the interaction between CmdbObjectGroups and the database
+    The RiskManager manages the interaction between IsmsRisks and the database
 
     Extends: GenericManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
-        super().__init__(dbm, CmdbObjectGroup, OBJECT_GROUPS_MANAGER_ERRORS, database)
+        super().__init__(dbm, IsmsRisk, RISK_MANAGER_ERRORS, database)
