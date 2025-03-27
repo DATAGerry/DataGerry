@@ -58,10 +58,12 @@
             </div>
           </td>
           <td *ngFor="let imp of orderedImpacts; let c = index" class="risk-cell"
-            [style.backgroundColor]="getCellColor(getCell(r, c))" (click)="openRiskClassModal(getCell(r, c))">
+            [style.backgroundColor]="getCellColor(getCell(r, c))" (click)="openRiskClassModal(getCell(r, c))"
+            [style.color]="getCellStyles(getCell(r, c)).color">
             <ng-container *ngIf="getCell(r, c) as cell">
               <div class="cell-content">
-                <div class="calculated-value">{{selectedMatrixUnit}}{{ cell.calculated_value }}</div>
+                <div class="calculated-value" [style.color]="getCellStyles(getCell(r, c)).color">
+                  {{selectedMatrixUnit}}{{ cell.calculated_value }}</div>
                 {{getRiskClassName(cell)}}
               </div>
             </ng-container>
@@ -81,7 +83,7 @@
         <div class="risk-class-options">
           <div *ngFor="let rc of riskClasses" class="risk-class-option" [style.backgroundColor]="rc.color"
             (click)="assignRiskClass(rc)">
-            <span class="risk-class-label">{{ rc.name }}</span>
+            <span class="risk-class-label" [style.color]="getTextColorBasedOnBackground(rc.color)">{{ rc.name }}</span>
           </div>
         </div>
       </div>

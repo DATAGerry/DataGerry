@@ -26,8 +26,14 @@
 </div>
 
 <!-- Color Template -->
-<ng-template #colorTemplate let-item="item">
+<!-- <ng-template #colorTemplate let-item="item">
   <div class="color-cell" [style.backgroundColor]="item.color">
+    {{ item.color }}
+  </div>
+</ng-template> -->
+
+<ng-template #colorTemplate let-item="item">
+  <div class="color-cell" [style.backgroundColor]="item.color" [style.color]="item.textColor">
     {{ item.color }}
   </div>
 </ng-template>
