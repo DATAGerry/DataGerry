@@ -69,8 +69,6 @@ export class ProtectionGoalModalComponent implements OnInit {
    */
   public checkDuplicateName(): void {
     const enteredName = this.form.get('name')?.value?.trim().toLowerCase();
-    console.log('enteredName', enteredName);
-    console.log('ProtectionGoals', this.protectionGoals);
     this.isDuplicateName = this.protectionGoals?.some(
       (goal) => goal.name.trim().toLowerCase() === enteredName
     ) || false;

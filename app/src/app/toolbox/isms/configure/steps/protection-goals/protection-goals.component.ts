@@ -103,7 +103,6 @@ export class ProtectionGoalsComponent implements OnInit {
   public addProtectionGoal(): void {
     const modalRef = this.modalService.open(ProtectionGoalModalComponent, { size: 'lg' });
     modalRef.componentInstance.protectionGoals = this.protectionGoals;
-    console.log(this.protectionGoals);
     modalRef.result.then(
       (result) => {
         if (result === 'saved') {

@@ -63,9 +63,8 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Ensure the wizard is initialized after the view is rendered
     if (!this.wizard) {
-      console.error('Wizard component is not initialized.');
+      return;
     }
   }
 
@@ -76,7 +75,7 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
     if (!this.wizard) {
       return false;
     }
-  
+
     switch (this.wizard.currentStepIndex) {
       case 0: // Risk Classes
         return this.riskClassesCount >= 3;
@@ -172,21 +171,17 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
 
   public onRiskClassesCountChange(count: number): void {
     this.riskClassesCount = count;
-    console.log('Updated risk classes count:', this.riskClassesCount);
   }
-  
+
   public onLikelihoodCountChange(count: number): void {
     this.likelihoodCount = count;
-    console.log('Updated likelihood count:', this.likelihoodCount);
   }
-  
+
   public onImpactCountChange(count: number): void {
     this.impactCount = count;
-    console.log('Updated impact count:', this.impactCount);
   }
-  
+
   public onImpactCategoriesCountChange(count: number): void {
     this.impactCategoriesCount = count;
-    console.log('Updated impact categories count:', this.impactCategoriesCount);
   }
 }
