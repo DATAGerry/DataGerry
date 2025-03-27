@@ -12,7 +12,6 @@ import {
   APIDeleteSingleResponse
 } from 'src/app/services/models/api-response';
 import { ImpactCategory } from '../models/impact-category.model';
-import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Injectable({
   providedIn: 'root'

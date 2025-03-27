@@ -25,6 +25,7 @@ export class ProtectionGoalsComponent implements OnInit {
   public limit = 10;
   public loading = false;
   public columns: Array<any> = [];
+  public defaultProtectionGoals = ["Confidentiality", "Integrity", "Availability"];
 
   constructor(
     private protectionGoalService: ProtectionGoalService,
@@ -101,6 +102,8 @@ export class ProtectionGoalsComponent implements OnInit {
    */
   public addProtectionGoal(): void {
     const modalRef = this.modalService.open(ProtectionGoalModalComponent, { size: 'lg' });
+    modalRef.componentInstance.protectionGoals = this.protectionGoals;
+    console.log(this.protectionGoals);
     modalRef.result.then(
       (result) => {
         if (result === 'saved') {

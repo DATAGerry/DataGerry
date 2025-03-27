@@ -12,7 +12,6 @@ import {
   APIDeleteSingleResponse,
   APIGetSingleResponse
 } from 'src/app/services/models/api-response';
-import { ToastService } from 'src/app/layout/toast/toast.service';
 import { ObjectGroup } from '../models/object-group.model';
 
 
@@ -28,9 +27,7 @@ export class ObjectGroupService<T = any> implements ApiServicePrefix {
   };
 
   constructor(
-    private api: ApiCallService,
-    private toast: ToastService
-  ) {}
+    private api: ApiCallService ) {}
 
   public getObjectGroups(
     params: CollectionParameters = { filter: '', limit: 10, page: 1, sort: 'name', order: 1 }

@@ -82,7 +82,6 @@ export const COOCKIENAME = 'onlyActiveObjCookie';
 export class ObjectService<T = CmdbObject | RenderResult> implements ApiServicePrefix {
     public objectActionSource = new Subject();
     public servicePrefix: string = 'objects';
-    private configItemsLimit$: Observable<number>;
 
 
     // A private property to store the last fetched count
@@ -98,7 +97,7 @@ export class ObjectService<T = CmdbObject | RenderResult> implements ApiServiceP
 
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
-    constructor(private api: ApiCallService, private modalService: NgbModal, private userService: UserService, private toast: ToastService) {
+    constructor(private api: ApiCallService, private modalService: NgbModal, private userService: UserService) {
 
     }
 

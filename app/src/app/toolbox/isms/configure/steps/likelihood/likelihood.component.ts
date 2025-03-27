@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -44,6 +44,8 @@ export class LikelihoodsComponent implements OnInit {
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
 
   @Input() config: IsmsConfig;
+  @Output() likelihoodCountChange = new EventEmitter<number>();
+
 
   public columns: Array<any>;
   public sort: Sort = { name: 'calculation_basis', order: SortDirection.DESCENDING } as Sort;
@@ -127,10 +129,14 @@ export class LikelihoodsComponent implements OnInit {
         next: (data) => {
           this.likelihoods = data.results;
           this.totalLikelihoods = data.total;
+
+          this.likelihoodCountChange.emit(this.likelihoods.length);
+
         },
         error: (err) => {
           this.likelihoods = [];
           this.totalLikelihoods = 0;
+          this.likelihoodCountChange.emit(0);
           this.toast.error(err?.error?.message);
         }
       });

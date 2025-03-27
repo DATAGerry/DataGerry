@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,6 +19,7 @@ import { Sort, SortDirection } from 'src/app/layout/table/table.types';
 export class ImpactComponent implements OnInit {
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
   @Input() config: IsmsConfig;
+  @Output() impactCountChange = new EventEmitter<number>();
 
 
   public impacts: Impact[] = [];
@@ -110,10 +111,12 @@ export class ImpactComponent implements OnInit {
         next: (data) => {
           this.impacts = data.results;
           this.totalImpacts = data.total;
+          this.impactCountChange.emit(this.impacts.length);
         },
         error: (err) => {
           this.impacts = [];
           this.totalImpacts = 0;
+          this.impactCountChange.emit(0);
           this.toast.error(err?.error?.message);
         }
       });

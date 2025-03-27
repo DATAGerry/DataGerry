@@ -23,4 +23,8 @@
     *permissionLink="'base.framework.objectGroup.delete'"></i>
 </ng-template>
 
+<ng-template #categoriesTemplate let-data="data" let-item="item">
+  <span style="font-weight: 600;">{{ getCategoryNames(data) }}</span>
+</ng-template>
+
 <app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>

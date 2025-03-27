@@ -1,7 +1,9 @@
 import {
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   TemplateRef,
   ViewChild
 } from '@angular/core';
@@ -17,6 +19,7 @@ import { IsmsConfig } from '../../../models/isms-config.model';
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
 import { RiskClassModalComponent } from './modal/add-risk-class-modal.component';
 import { Subject } from 'rxjs';
+import { Warning } from 'src/app/core/models/warning.model';
 
 @Component({
   selector: 'app-isms-risk-classes',
@@ -30,10 +33,12 @@ export class RiskClassesComponent implements OnInit {
   @ViewChild('colorTemplate', { static: true }) colorTemplate: TemplateRef<any>;
   //  pass a config from the wizard container
   @Input() config: IsmsConfig;
+  @Output() riskClassesCountChange = new EventEmitter<number>();
 
   private orderChangeSubject = new Subject<RiskClass[]>();
   public riskClasses: RiskClass[] = [];
   public totalRiskClasses: number = 0;
+  public warnings: Warning[] = [];
   public page = 1;
   public limit = 10;
   public loading = false;
@@ -122,10 +127,14 @@ export class RiskClassesComponent implements OnInit {
         next: (data) => {
           this.riskClasses = data.results;
           this.totalRiskClasses = data.total;
+
+          this.config.riskClasses = this.riskClasses;
+          this.riskClassesCountChange.emit(this.riskClasses.length);
+          this.updateWarnings();
         },
         error: (err) => {
           this.riskClasses = [];
-          this.totalRiskClasses = 0;
+          this.riskClassesCountChange.emit(0);
           this.toast.error(err?.error?.message);
         }
       });
@@ -266,6 +275,26 @@ export class RiskClassesComponent implements OnInit {
           this.toast.error(err?.error?.message);
         }
       });
+  }
+
+  private updateWarnings(): void {
+    this.warnings = [];
+
+    if (this.totalRiskClasses < 3) {
+      this.warnings.push({
+        iconClass: 'fas fa-exclamation-triangle',
+        title: 'Structural Advisory:',
+        message: 'At least three risk classes are required.'
+      });
+    }
+
+    if (this.totalRiskClasses > 0) {
+      this.warnings.push({
+        iconClass: 'fas fa-sort',
+        title: 'Structural Advisory:',
+        message: 'Please sort your risk classes from High to Low.'
+      });
+    }
   }
 
 }

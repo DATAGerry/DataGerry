@@ -14,12 +14,14 @@ import { ProtectionGoalService } from 'src/app/toolbox/isms/services/protection-
 })
 export class ProtectionGoalModalComponent implements OnInit {
   @Input() protectionGoal?: ProtectionGoal; // If provided => Edit mode.
+  @Input() protectionGoals?: ProtectionGoal[];
   @Input() isViewMode = false;
   @Input() isCopyMode = false;
 
   public form: FormGroup;
   public isSubmitting = false;
   public isEditMode = false;
+  public isDuplicateName = false;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -59,6 +61,24 @@ export class ProtectionGoalModalComponent implements OnInit {
     this.form.patchValue({
       name: this.protectionGoal.name
     });
+  }
+
+
+  /**
+   * Check if the entered name already exists in the ProtectionGoals list.
+   */
+  public checkDuplicateName(): void {
+    const enteredName = this.form.get('name')?.value?.trim().toLowerCase();
+    console.log('enteredName', enteredName);
+    console.log('ProtectionGoals', this.protectionGoals);
+    this.isDuplicateName = this.protectionGoals?.some(
+      (goal) => goal.name.trim().toLowerCase() === enteredName
+    ) || false;
+    if (this.isDuplicateName) {
+      this.form.get('name')?.setErrors({ duplicate: true });
+    } else {
+      this.form.get('name')?.setErrors(null);
+    }          
   }
 
 
