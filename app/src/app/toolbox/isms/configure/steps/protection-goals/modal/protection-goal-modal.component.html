@@ -34,6 +34,7 @@
         class="form-control"
         formControlName="name"
         placeholder="Enter protection goal name..."
+        (input)="checkDuplicateName()"
       />
       <!-- Error message if name is required -->
       <div
@@ -41,6 +42,13 @@
         *ngIf="form.get('name')?.touched && form.get('name')?.invalid"
       >
         Name is required.
+      </div>
+      <!-- Error message if name already exists -->
+      <div
+        class="invalid-feedback d-block"
+        *ngIf="isDuplicateName"
+      >
+        Name already exists.
       </div>
     </div>
 

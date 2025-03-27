@@ -4,12 +4,14 @@ import { LoadingPopupComponent } from './components/loading-popup/loading-popup.
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ObjectSelectorComponent } from './components/object_selector/object-selector.component';
 import { FormsModule } from '@angular/forms';
+import { WarningAlertComponent } from './components/warning-message/warning-alert.component';
 
 
 @NgModule({
   declarations: [
     LoadingPopupComponent,
-    ObjectSelectorComponent
+    ObjectSelectorComponent,
+    WarningAlertComponent
 
   ],
   imports: [
@@ -19,7 +21,8 @@ import { FormsModule } from '@angular/forms';
   ],
   exports: [
     LoadingPopupComponent,
-    ObjectSelectorComponent
+    ObjectSelectorComponent,
+    WarningAlertComponent
   ]
 })
 export class CoreModule { }

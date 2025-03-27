@@ -7,14 +7,15 @@
     </button>
   </div>
 
-  <div class="structural-warning-alert">
-    <div class="alert-content">
-      <i class="fas fa-exclamation-circle warning-icon"></i>
-      <div class="warning-text">
-        <strong>Structural Advisory:</strong> Please sort your risk classes from High to Low.
-      </div>      
-    </div>
-  </div>
+  <hr />
+  <!--  Warning Alert -->
+  <app-warning-alert *ngIf="this.riskClasses.length < 3" iconClass="fas fa-info-circle warning-icon"
+    title="Insufficient Risk Classes:" message="You need to define at least 3 risk classes to proceed.">
+  </app-warning-alert>
+
+  <app-warning-alert *ngIf="this.riskClasses.length >= 3" iconClass="fas fa-sort-amount-down warning-icon"
+    title="Structural Advisory:" message="Please ensure your risk classes are sorted from High to Low priority.">
+  </app-warning-alert>
 
   <!-- (cmdb-table) -->
   <cmdb-table [items]="riskClasses" [columns]="columns" [totalItems]="totalRiskClasses" [pageSize]="limit" [page]="page"
@@ -35,7 +36,8 @@
 <!-- Actions Template -->
 <ng-template #actionsTemplate let-item="item">
   <span *permissionLink="'base.isms.riskClass.edit'">
-    <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="editRiskClass(item)" title="Edit Risk Class"></i>
+    <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="editRiskClass(item)"
+      title="Edit Risk Class"></i>
   </span>
   <span *permissionLink="'base.isms.riskClass.delete'">
     <i class="far fa-trash-alt icon-delete" (click)="onDeleteRiskClass(item)" title="Delete Risk Class"></i>

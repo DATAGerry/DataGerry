@@ -8,11 +8,8 @@ import { Observable, timer, catchError, map, switchMap } from 'rxjs';
 import {
   ApiCallService,
   ApiServicePrefix,
-  HttpProtocolHelper,
   resp
 } from '../../services/api-call.service';
-import { ValidatorService } from '../../services/validator.service';
-import { UserService } from '../../management/services/user.service';
 import { SidebarService } from 'src/app/layout/services/sidebar.service';
 
 import {

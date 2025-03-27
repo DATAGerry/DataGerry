@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { debounceTime, distinctUntilChanged, finalize, switchMap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -25,6 +25,7 @@ export class ImpactCategoriesComponent implements OnInit {
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate: TemplateRef<any>;
   @ViewChild('impactDescriptionsTemplate', { static: true }) impactDescriptionsTemplate: TemplateRef<any>;
   @Input() config: IsmsConfig;
+  @Output() impactCategoriesCountChange = new EventEmitter<number>();
 
   public impactCategories: ImpactCategory[] = [];
   public totalImpactCategories = 0;
@@ -130,12 +131,14 @@ export class ImpactCategoriesComponent implements OnInit {
         next: (data) => {
           this.impactCategories = data.results;
           this.totalImpactCategories = data.total;
+          this.impactCategoriesCountChange.emit(this.impactCategories.length);
           // Reorder each category's impact_descriptions to follow the order from getImpacts
           this.reorderImpactDescriptions();
         },
         error: (err) => {
           this.impactCategories = [];
           this.totalImpactCategories = 0;
+          this.impactCategoriesCountChange.emit(0);
           this.toast.error(err?.error?.message);
         }
       });

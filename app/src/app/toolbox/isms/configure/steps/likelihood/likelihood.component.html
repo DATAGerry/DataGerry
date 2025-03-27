@@ -8,6 +8,11 @@
 
 <hr />
 
+  <!--  Warning Alert -->
+  <app-warning-alert *ngIf="this.likelihoods.length < 3" iconClass="fas fa-info-circle warning-icon"
+    title="Insufficient Likelihoods:" message="You need to define at least 3 Likelihoods to proceed.">
+  </app-warning-alert>
+
 <!-- Table (cmdb-table) -->
 <cmdb-table [items]="likelihoods" [columns]="columns" [totalItems]="totalLikelihoods" [pageSize]="limit" [page]="page"
     [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false" [searchEnabled]="false"
