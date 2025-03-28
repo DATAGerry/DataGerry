@@ -4,12 +4,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { IsmsComponent } from './isms.component';
 import { OverviewComponent } from './overview/overview.component';
 import { ConfigureComponent } from './configure/configure.component';
+import { ThreatsListComponent } from './threats/threats-list.component';
+import { ThreatsAddComponent } from './threats/add/threats-add.component';
 
 const routes: Routes = [
     {
         path: '',
         data: {
-            breadcrumb: 'Overview' // or breadcrumb: 'Overview'
+            breadcrumb: 'Overview'
           },
         component: IsmsComponent,
         children: [
@@ -23,7 +25,10 @@ const routes: Routes = [
                 component: ConfigureComponent
             },
         ]
-    }
+    },
+    { path: 'threats', component: ThreatsListComponent },
+    { path: 'threats/add', component: ThreatsAddComponent },
+    { path: 'threats/edit/:id', component: ThreatsAddComponent },
 ];
 
 @NgModule({

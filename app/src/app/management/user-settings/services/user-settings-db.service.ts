@@ -51,7 +51,7 @@ export class UserSettingsDBService<T = UserSetting, P = UserSettingPayload> impl
         this.userSettingsService.currentUserObservable.subscribe((user: User) => {
             if (user) {
                 this.syncSettings().then(() => {
-                console.log('User settings loaded');
+                // console.log('User settings loaded');
                 });
             }
         });

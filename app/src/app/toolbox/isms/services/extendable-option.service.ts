@@ -56,10 +56,11 @@ export class ExtendableOptionService<T = any> implements ApiServicePrefix {
    */
   public createExtendableOption(
     value: string,
-    optionType: string
+    optionType: string,
+    predefined: boolean
   ): Observable<APIInsertSingleResponse<T>> {
     const options = { ...this.options };
-    const payload = { value, option_type: optionType };
+    const payload = { value, option_type: optionType, predefined };
 
     return this.api.callPost<APIInsertSingleResponse<T>>(
       `${this.servicePrefix}/`,
@@ -79,7 +80,7 @@ export class ExtendableOptionService<T = any> implements ApiServicePrefix {
   public updateExtendableOption(
     public_id: number,
     data: Partial<ExtendableOption>
-  ): Observable<APIUpdateSingleResponse<T>> {
+    ): Observable<APIUpdateSingleResponse<T>> {
     const options = { ...this.options };
     return this.api.callPut<APIUpdateSingleResponse<T>>(
       `${this.servicePrefix}/${public_id}`,

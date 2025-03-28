@@ -1,0 +1,20 @@
+<div class="form-group">
+    <label *ngIf="label">
+      {{ label }}
+      <span *ngIf="required" class="text-danger">*</span>
+    </label>
+    <textarea
+      class="form-control"
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      [rows]="rows"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+    >{{ value }}</textarea>
+  
+    <!-- dedicated area for errors -->
+    <div class="invalid-feedback d-block" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+  </div>
+  
