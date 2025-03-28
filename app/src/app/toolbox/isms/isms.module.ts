@@ -26,6 +26,8 @@ import { LikelihoodModalComponent } from './configure/steps/likelihood/modal/lik
 import { ImpactModalComponent } from './configure/steps/impact/modal/impact-modal.component';
 import { ImpactCategoryModalComponent } from './configure/steps/impact-categories/modal/impact-category-modal.component';
 import { ProtectionGoalModalComponent } from './configure/steps/protection-goals/modal/protection-goal-modal.component';
+import { ThreatsListComponent } from './threats/threats-list.component';
+import { ThreatsAddComponent } from './threats/add/threats-add.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import { ProtectionGoalModalComponent } from './configure/steps/protection-goals
     LikelihoodModalComponent,
     ImpactModalComponent,
     ImpactCategoryModalComponent,
-    ProtectionGoalModalComponent
+    ProtectionGoalModalComponent,
+    ThreatsListComponent,
+    ThreatsAddComponent
   ],
   imports: [
     CommonModule,

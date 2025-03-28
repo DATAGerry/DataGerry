@@ -6,13 +6,17 @@ import { ObjectSelectorComponent } from './components/object_selector/object-sel
 import { FormsModule } from '@angular/forms';
 import { WarningAlertComponent } from './components/warning-message/warning-alert.component';
 import { ExtendableOptionManagerComponent } from './components/extendable_option_manager/extendable-option-manager.component';
+import { FormInputComponent } from './components/base/input/form-input.component';
+import { FormTextareaComponent } from './components/base/textarea/form-textarea.component';
 
 @NgModule({
   declarations: [
     LoadingPopupComponent,
     ObjectSelectorComponent,
     WarningAlertComponent,
-    ExtendableOptionManagerComponent
+    ExtendableOptionManagerComponent,
+    FormInputComponent,
+    FormTextareaComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +27,9 @@ import { ExtendableOptionManagerComponent } from './components/extendable_option
     LoadingPopupComponent,
     ObjectSelectorComponent,
     WarningAlertComponent,
-    ExtendableOptionManagerComponent
+    ExtendableOptionManagerComponent,
+    FormInputComponent,
+    FormTextareaComponent
   ]
 })
 export class CoreModule { }

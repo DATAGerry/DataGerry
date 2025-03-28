@@ -80,7 +80,7 @@ export class ExtendableOptionManagerComponent implements OnInit {
     if (!val) { return; }
 
     this.loaderService.show();
-    this.extendableOptionService.createExtendableOption(val, this.optionType)
+    this.extendableOptionService.createExtendableOption(val, this.optionType, false)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {
@@ -127,7 +127,8 @@ export class ExtendableOptionManagerComponent implements OnInit {
     const payload = {
       public_id: item.public_id,
       value: newVal,
-      option_type: item.option_type
+      option_type: item.option_type,
+      predefined: item.predefined
     };
     this.extendableOptionService.updateExtendableOption(item.public_id, payload)
       .pipe(finalize(() => this.loaderService.hide()))

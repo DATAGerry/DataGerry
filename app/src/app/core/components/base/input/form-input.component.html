@@ -1,0 +1,19 @@
+<div class="form-group">
+    <label *ngIf="label">
+      {{ label }}
+      <span *ngIf="required" class="text-danger">*</span>
+    </label>
+    <input
+      [type]="type"
+      class="form-control"
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      [value]="value"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+    />
+    <div class="invalid-feedback d-block" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+  </div>
+  
