@@ -44,7 +44,6 @@ export class ThreatService<T = any> implements ApiServicePrefix {
         const filter = JSON.stringify(params.filter);
         httpParams = httpParams.set('filter', filter);
       }
-    console.log('filter', params.filter);
 
     const options = { ...this.options };
     options.params = httpParams;
