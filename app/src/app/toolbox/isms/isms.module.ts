@@ -28,6 +28,8 @@ import { ImpactCategoryModalComponent } from './configure/steps/impact-categorie
 import { ProtectionGoalModalComponent } from './configure/steps/protection-goals/modal/protection-goal-modal.component';
 import { ThreatsListComponent } from './threats/threats-list.component';
 import { ThreatsAddComponent } from './threats/add/threats-add.component';
+import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-list.component';
+import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,9 @@ import { ThreatsAddComponent } from './threats/add/threats-add.component';
     ImpactCategoryModalComponent,
     ProtectionGoalModalComponent,
     ThreatsListComponent,
-    ThreatsAddComponent
+    ThreatsAddComponent,
+    VulnerabilitiesListComponent,
+    VulnerabilitiesAddComponent
   ],
   imports: [
     CommonModule,
