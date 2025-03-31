@@ -91,7 +91,7 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
 
         result_id: int = likelihood_manager.insert_item(data)
 
-        created_likelihood: dict = likelihood_manager.get_item(result_id)
+        created_likelihood: dict = likelihood_manager.get_item(result_id, as_dict=True)
 
         if created_likelihood:
             # Calculate the RiskMatrix
@@ -173,7 +173,7 @@ def get_isms_likelihood(public_id: int, request_user: CmdbUser):
     try:
         likelihood_manager: LikelihoodManager = ManagerProvider.get_manager(ManagerType.LIKELIHOOD, request_user)
 
-        requested_likelihood = likelihood_manager.get_item(public_id)
+        requested_likelihood = likelihood_manager.get_item(public_id, as_dict=True)
 
         if requested_likelihood:
             return GetSingleResponse(requested_likelihood, body = request.method == 'HEAD').make_response()
@@ -215,9 +215,7 @@ def update_isms_likelihood(public_id: int, data: dict, request_user: CmdbUser):
         if not to_update_likelihood:
             abort(404, f"The Likelihood with ID:{public_id} was not found!")
 
-        likelihood = IsmsLikelihood.from_data(data)
-
-        likelihood_manager.update_item(public_id, likelihood)
+        likelihood_manager.update_item(public_id, IsmsLikelihood.from_data(data))
 
         # Calculate the RiskMatrix
         calculate_risk_matrix(request_user)
@@ -255,7 +253,7 @@ def delete_isms_likelihood(public_id: int, request_user: CmdbUser):
     try:
         likelihood_manager: LikelihoodManager = ManagerProvider.get_manager(ManagerType.LIKELIHOOD, request_user)
 
-        to_delete_likelihood = likelihood_manager.get_item(public_id)
+        to_delete_likelihood = likelihood_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_likelihood:
             abort(404, f"The Likelihood with ID:{public_id} was not found!")

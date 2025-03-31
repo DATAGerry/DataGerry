@@ -77,7 +77,7 @@ def insert_isms_control_meassure(data: dict, request_user: CmdbUser):
 
         result_id: int = control_meassure_manager.insert_item(data)
 
-        created_control_meassure: dict = control_meassure_manager.get_item(result_id)
+        created_control_meassure: dict = control_meassure_manager.get_item(result_id, as_dict=True)
 
         if created_control_meassure:
             return InsertSingleResponse(created_control_meassure, result_id).make_response()
@@ -159,7 +159,7 @@ def get_isms_control_meassure(public_id: int, request_user: CmdbUser):
         control_meassure_manager: ControlMeassureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASSURE,
                                                                                        request_user)
 
-        requested_control_meassure = control_meassure_manager.get_item(public_id)
+        requested_control_meassure = control_meassure_manager.get_item(public_id, as_dict=True)
 
         if requested_control_meassure:
             return GetSingleResponse(requested_control_meassure, body = request.method == 'HEAD').make_response()
@@ -202,9 +202,7 @@ def update_isms_control_meassure(public_id: int, data: dict, request_user: CmdbU
         if not to_update_control_meassure:
             abort(404, f"The ControlMeassure with ID:{public_id} was not found!")
 
-        control_meassure = IsmsControlMeassure.from_data(data)
-
-        control_meassure_manager.update_item(public_id, control_meassure)
+        control_meassure_manager.update_item(public_id, IsmsControlMeassure.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -240,7 +238,7 @@ def delete_isms_control_meassure(public_id: int, request_user: CmdbUser):
         control_meassure_manager: ControlMeassureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASSURE,
                                                                                        request_user)
 
-        to_delete_control_meassure = control_meassure_manager.get_item(public_id)
+        to_delete_control_meassure = control_meassure_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_control_meassure:
             abort(404, f"The ControlMeassure with ID:{public_id} was not found!")

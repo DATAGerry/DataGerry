@@ -92,7 +92,7 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
 
         result_id: int = impact_manager.insert_item(data)
 
-        created_impact: dict = impact_manager.get_item(result_id)
+        created_impact: dict = impact_manager.get_item(result_id, as_dict=True)
 
         if created_impact:
             # Update all IsmsImpactCategories with new IsmsImpact
@@ -177,7 +177,7 @@ def get_isms_impact(public_id: int, request_user: CmdbUser):
     try:
         impact_manager: ImpactManager = ManagerProvider.get_manager(ManagerType.IMPACT, request_user)
 
-        requested_impact = impact_manager.get_item(public_id)
+        requested_impact = impact_manager.get_item(public_id, as_dict=True)
 
         if requested_impact:
             return GetSingleResponse(requested_impact, body = request.method == 'HEAD').make_response()
@@ -219,9 +219,7 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
         if not to_update_impact:
             abort(404, f"The Impact with ID:{public_id} was not found!")
 
-        impact = IsmsImpact.from_data(data)
-
-        impact_manager.update_item(public_id, impact)
+        impact_manager.update_item(public_id, IsmsImpact.from_data(data))
 
         # Calculate the RiskMatrix
         calculate_risk_matrix(request_user)
@@ -261,7 +259,7 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        to_delete_impact = impact_manager.get_item(public_id)
+        to_delete_impact = impact_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_impact:
             abort(404, f"The Impact with ID:{public_id} was not found!")

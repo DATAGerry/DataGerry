@@ -99,7 +99,7 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
 
         result_id: int = extendable_options_manager.insert_item(data)
 
-        created_extendable_option: dict = extendable_options_manager.get_item(result_id)
+        created_extendable_option: dict = extendable_options_manager.get_item(result_id, as_dict=True)
 
         if not created_extendable_option:
             abort(404, "Could not retrieve the created ExtendableOption from the database!")
@@ -187,7 +187,7 @@ def get_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
                                                                     request_user
                                                                 )
 
-        extendable_option = extendable_options_manager.get_item(public_id)
+        extendable_option = extendable_options_manager.get_item(public_id, as_dict=True)
 
         if extendable_option:
             return GetSingleResponse(extendable_option, body = request.method == 'HEAD').make_response()
@@ -230,17 +230,17 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
         if not OptionType.is_valid(data.get('option_type')):
             abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
 
-        to_update_extendable_option = extendable_options_manager.get_item(public_id)
+        to_update_extendable_option: CmdbExtendableOption = extendable_options_manager.get_item(public_id)
 
         if not to_update_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
 
         # Predefined cannot be changed
-        if data.get('predefined') != to_update_extendable_option['predefined']:
+        if data.get('predefined') != to_update_extendable_option.predefined:
             abort(404, "The 'predefined' property of an ExtendableOption cannot be changed!")
 
         # Validate that the OptionType is not changed
-        if data['option_type'] != to_update_extendable_option['option_type']:
+        if data['option_type'] != to_update_extendable_option.option_type:
             abort(400, "The OptionType of an ExtendableOption can not be changed!")
 
         # Validate that the ExtendableOption with the updated values does not exist
@@ -252,9 +252,7 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
         if existing_extendable_option:
             abort(400, f"An Option with the value already exists: {data.get('value')}")
 
-        extendable_option = CmdbExtendableOption.from_data(data)
-
-        extendable_options_manager.update_item(public_id, extendable_option)
+        extendable_options_manager.update_item(public_id, CmdbExtendableOption.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -292,7 +290,7 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
                                                                     request_user
                                                                 )
 
-        to_delete_extendable_option = extendable_options_manager.get_item(public_id)
+        to_delete_extendable_option = extendable_options_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")

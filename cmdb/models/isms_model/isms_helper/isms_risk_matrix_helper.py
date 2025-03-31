@@ -47,7 +47,7 @@ def calculate_risk_matrix(request_user: CmdbUser) -> None:
 
     # Only calculate the matrix if the minimum requirements are met
     if len(all_risk_classes) > 0 and len(all_likelihoods) > 0 and len(all_impacts) > 0:
-        current_risk_matrix = risk_matrix_manager.get_item(1)
+        current_risk_matrix = risk_matrix_manager.get_item(1, as_dict=True)
 
         new_risk_matrix_values = __generate_risk_matrix(all_impacts, all_likelihoods)
 
@@ -72,7 +72,7 @@ def remove_deleted_risk_class_from_matrix(deleted_risk_class_id: int, request_us
     """
     risk_matrix_manager: RiskMatrixManager = ManagerProvider.get_manager(ManagerType.RISK_MATRIX, request_user)
 
-    current_risk_matrix = risk_matrix_manager.get_item(1)
+    current_risk_matrix = risk_matrix_manager.get_item(1, as_dict=True)
 
     for cell in current_risk_matrix['risk_matrix']:
         if cell["risk_class_id"] == deleted_risk_class_id:

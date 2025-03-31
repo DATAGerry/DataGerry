@@ -79,7 +79,7 @@ def insert_cmdb_object_group(data: dict, request_user: CmdbUser):
 
         result_id: int = object_groups_manager.insert_item(data)
 
-        created_object_group: dict = object_groups_manager.get_item(result_id)
+        created_object_group: dict = object_groups_manager.get_item(result_id, as_dict=True)
 
         if created_object_group:
             return InsertSingleResponse(created_object_group, result_id).make_response()
@@ -165,7 +165,7 @@ def get_cmdb_object_group(public_id: int, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
-        requested_object_group = object_groups_manager.get_item(public_id)
+        requested_object_group = object_groups_manager.get_item(public_id, as_dict=True)
 
         if requested_object_group:
             return GetSingleResponse(requested_object_group, body = request.method == 'HEAD').make_response()
@@ -210,9 +210,7 @@ def update_cmdb_object_group(public_id: int, data: dict, request_user: CmdbUser)
         if not to_update_object_group:
             abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
 
-        object_group = CmdbObjectGroup.from_data(data)
-
-        object_groups_manager.update_item(public_id, object_group)
+        object_groups_manager.update_item(public_id, CmdbObjectGroup.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -250,7 +248,7 @@ def delete_cmdb_object_group(public_id: int, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
-        to_delete_object_group = object_groups_manager.get_item(public_id)
+        to_delete_object_group = object_groups_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_object_group:
             abort(404, f"The ObjectGroup with ID:{public_id} was not found!")

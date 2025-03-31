@@ -15,8 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-DATAGERRY is a flexible asset management tool and
-open-source configurable management database
+DATAGERRY is a flexible asset management tool and open-source configurable management database
 """
 import logging.config
 import signal
@@ -37,7 +36,7 @@ from cmdb.startup_routines.check_status_enum import CheckStatus
 from cmdb.startup_routines.update_status_enum import UpdateStatus
 from cmdb.utils.logger import get_logging_conf
 from cmdb.utils.system_config_reader import SystemConfigReader
-import cmdb.process_management.process_manager
+from cmdb.process_management.process_manager import ProcessManager
 
 from cmdb.errors.database import ServerTimeoutError, DatabaseConnectionError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -47,7 +46,7 @@ logging.config.dictConfig(get_logging_conf())
 
 LOGGER = logging.getLogger(__name__)
 
-app_manager = cmdb.process_management.process_manager.ProcessManager()
+app_manager = ProcessManager()
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -204,6 +203,7 @@ def _check_database():
 def build_arg_parser() -> Namespace:
     """
     Generate application parameter parser
+
     Returns: instance of OptionParser
     """
     _parser = ArgumentParser(prog='DATAGERRY', usage=f"usage: {__title__} [options]")
@@ -292,7 +292,9 @@ def _init_config_reader(config_file: str):
 
 
 def _start_app():
-    """Starting application services"""
+    """
+    Starting application services
+    """
     # install signal handler
     signal.signal(signal.SIGTERM, _stop_app)
 
@@ -302,7 +304,9 @@ def _start_app():
 
 
 def _stop_app():
-    """Stop application services"""
+    """
+    Stop application services
+    """
     app_manager.stop_app()
 
 # --------------------------------------------------- INTIALISATION -------------------------------------------------- #
@@ -341,10 +345,10 @@ if __name__ == "__main__":
         print(WELCOME_STRING.format(options.__dict__))
         print(LICENSE_STRING)
         main(options)
-    except RuntimeError as err:
+    except Exception as err:
         if cmdb.__MODE__ == 'DEBUG':
             traceback.print_exc()
 
-        LOGGER.critical("%s: %s",type(err).__name__, err)
+        LOGGER.critical("%s: %s",type(err).__name__, err, exc_info=True)
         LOGGER.info("DATAGERRY stopped!")
         sys.exit(1)

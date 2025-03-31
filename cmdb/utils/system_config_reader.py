@@ -41,6 +41,7 @@ class SystemConfigReader:
     def __new__(cls, config_name=None, config_location=None):
         if not SystemConfigReader.instance:
             SystemConfigReader.instance = ConfigFileReader(config_name, config_location)
+
         return SystemConfigReader.instance
 
 

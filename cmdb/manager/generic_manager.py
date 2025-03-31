@@ -90,7 +90,7 @@ class GenericManager(BaseManager):
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-    def get_item(self, public_id: int) -> Optional[CmdbDAO]:
+    def get_item(self, public_id: int, as_dict: bool = False) -> Optional[Union[CmdbDAO, dict]]:
         """
         Retrieves an item from the database by its public_id
 
@@ -101,11 +101,15 @@ class GenericManager(BaseManager):
             Custom get exception based on the specific manager
 
         Returns:
-            Optional[CmdbDAO]: An instance of the model if found, else None
+            Optional[Union[CmdbDAO, dict]]: An instance of the model if found, else None
         """
         try:
             data = self.get_one(public_id)
-            return self.model.from_data(data) if data else None
+
+            if not data:
+                return None
+
+            return data if as_dict else self.model.from_data(data)
         except Exception as err:
             raise self.exceptions.get("get", Exception)(f"Retrieval error: {err}") from err
 

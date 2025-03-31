@@ -68,7 +68,7 @@ def get_isms_risk_matrix(public_id: int, request_user: CmdbUser):
                                                                     request_user
                                                                          )
 
-        requested_risk_matrix = risk_matrix_manager.get_item(public_id)
+        requested_risk_matrix = risk_matrix_manager.get_item(public_id, as_dict=True)
 
         if requested_risk_matrix:
             return GetSingleResponse(requested_risk_matrix, body = request.method == 'HEAD').make_response()
@@ -113,9 +113,7 @@ def update_isms_risk_matrix(public_id: int, data: dict, request_user: CmdbUser):
         if not to_update_risk_matrix:
             abort(404, f"The RiskMatrix with ID:{public_id} was not found!")
 
-        risk_matrix = IsmsRiskMatrix.from_data(data)
-
-        risk_matrix_manager.update_item(public_id, risk_matrix)
+        risk_matrix_manager.update_item(public_id, IsmsRiskMatrix.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
