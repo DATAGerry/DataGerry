@@ -23,9 +23,11 @@ from .isms_impact_category import IsmsImpactCategory
 from .isms_protection_goal import IsmsProtectionGoal
 from .isms_risk_matrix import IsmsRiskMatrix
 from .risk_type_enum import RiskType
+from .control_meassure_type_enum import ControlMeassureType
 from .isms_risk import IsmsRisk
 from .isms_threat import IsmsThreat
 from .isms_vulnerability import IsmsVulnerability
+from .isms_control_meassure import IsmsControlMeassure
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -36,7 +38,9 @@ __all__ = [
     'IsmsProtectionGoal',
     'IsmsRiskMatrix',
     'RiskType',
+    'ControlMeassureType',
     'IsmsRisk',
     'IsmsThreat',
     'IsmsVulnerability',
+    'IsmsControlMeassure',
 ]

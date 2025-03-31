@@ -36,3 +36,13 @@ __all__ = [
     'ImpactManagerDeleteError',
     'ImpactManagerIterationError',
 ]
+
+
+IMPACT_MANAGER_ERRORS = {
+    "init": ImpactManagerInitError,
+    "insert": ImpactManagerInsertError,
+    "get": ImpactManagerGetError,
+    "update": ImpactManagerUpdateError,
+    "delete": ImpactManagerDeleteError,
+    "iterate": ImpactManagerIterationError,
+}

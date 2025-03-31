@@ -76,9 +76,9 @@ def insert_isms_impact_category(data: dict, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        result_id: int = impact_category_manager.insert_impact_category(data)
+        result_id: int = impact_category_manager.insert_item(data)
 
-        created_impact: dict = impact_category_manager.get_impact_category(result_id)
+        created_impact: dict = impact_category_manager.get_item(result_id)
 
         if created_impact:
             return InsertSingleResponse(created_impact, result_id).make_response()
@@ -122,7 +122,7 @@ def get_isms_impact_categories(params: CollectionParameters, request_user: CmdbU
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[IsmsImpactCategory] = impact_category_manager.iterate(builder_params)
+        iteration_result: IterationResult[IsmsImpactCategory] = impact_category_manager.iterate_items(builder_params)
         impact_categories_list = [IsmsImpactCategory.to_json(impact_category) for impact_category
                                   in iteration_result.results]
 
@@ -160,7 +160,7 @@ def get_isms_impact_category(public_id: int, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        requested_impact = impact_category_manager.get_impact_category(public_id)
+        requested_impact = impact_category_manager.get_item(public_id)
 
         if requested_impact:
             return GetSingleResponse(requested_impact, body = request.method == 'HEAD').make_response()
@@ -198,14 +198,14 @@ def update_isms_impact_category(public_id: int, data: dict, request_user: CmdbUs
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        to_update_impact = impact_category_manager.get_impact_category(public_id)
+        to_update_impact = impact_category_manager.get_item(public_id)
 
         if not to_update_impact:
             abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
 
         impact_category = IsmsImpactCategory.from_data(data)
 
-        impact_category_manager.update_impact_category(public_id, impact_category)
+        impact_category_manager.update_item(public_id, impact_category)
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -250,7 +250,7 @@ def update_multiple_isms_impact_categories(request_user: CmdbUser):
                 continue
 
             try:
-                to_update_impact = impact_category_manager.get_impact_category(public_id)
+                to_update_impact = impact_category_manager.get_item(public_id)
                 if not to_update_impact:
                     results.append({
                         "public_id": public_id,
@@ -260,7 +260,7 @@ def update_multiple_isms_impact_categories(request_user: CmdbUser):
                     continue
 
                 impact_category = IsmsImpactCategory.from_data(item)
-                impact_category_manager.update_impact_category(public_id, impact_category)
+                impact_category_manager.update_item(public_id, impact_category)
 
                 results.append({"public_id": public_id, "status": "success"})
             except ImpactCategoryManagerGetError as err:
@@ -320,12 +320,12 @@ def delete_isms_impact_category(public_id: int, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        to_delete_impact = impact_category_manager.get_impact_category(public_id)
+        to_delete_impact = impact_category_manager.get_item(public_id)
 
         if not to_delete_impact:
             abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
 
-        impact_category_manager.delete_impact_category(public_id)
+        impact_category_manager.delete_item(public_id)
 
         return DeleteSingleResponse(to_delete_impact).make_response()
     except HTTPException as http_err:

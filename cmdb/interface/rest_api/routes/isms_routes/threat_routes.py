@@ -134,7 +134,7 @@ def get_isms_threats(params: CollectionParameters, request_user: CmdbUser):
         abort(400, "Failed to retrieve Threats from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_threats] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error while retrieving Threats!")
+        abort(500, "An internal server error occured while retrieving Threats!")
 
 
 @threat_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -168,7 +168,7 @@ def get_isms_threat(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the Threat with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"Internal server error while retrieving the Threat with ID: {public_id}!")
+        abort(500, f"An internal server error occured while retrieving the Threat with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -212,7 +212,7 @@ def update_isms_threat(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, f"Failed to update the Threat with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"Internal server error while updating the Threat with ID: {public_id}!")
+        abort(500, f"An internal server error occured while updating the Threat with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -252,4 +252,4 @@ def delete_isms_threat(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the Threat with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_threat] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"Internal server error while deleting the Threat with ID: {public_id}!")
+        abort(500, f"An internal server error occured while deleting the Threat with ID: {public_id}!")

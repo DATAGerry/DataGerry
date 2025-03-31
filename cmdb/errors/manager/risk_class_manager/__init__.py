@@ -36,3 +36,13 @@ __all__ = [
     'RiskClassManagerDeleteError',
     'RiskClassManagerIterationError',
 ]
+
+
+RISK_CLASS_MANAGER_ERRORS = {
+    "init": RiskClassManagerInitError,
+    "insert": RiskClassManagerInsertError,
+    "get": RiskClassManagerGetError,
+    "update": RiskClassManagerUpdateError,
+    "delete": RiskClassManagerDeleteError,
+    "iterate": RiskClassManagerIterationError,
+}

@@ -77,7 +77,7 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
         # There is a Limit of 10 Impact classes
-        impact_count = impact_manager.count_impacts()
+        impact_count = impact_manager.count_items()
 
         if impact_count >= 10:
             abort(403, "Only a maximum of 10 Impacts can be created!")
@@ -90,9 +90,9 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         if impact_manager.impact_calculation_basis_exists(data['calculation_basis']):
             abort(400, "The calculation basis is already used by another Impact!")
 
-        result_id: int = impact_manager.insert_impact(data)
+        result_id: int = impact_manager.insert_item(data)
 
-        created_impact: dict = impact_manager.get_impact(result_id)
+        created_impact: dict = impact_manager.get_item(result_id)
 
         if created_impact:
             # Update all IsmsImpactCategories with new IsmsImpact
@@ -114,7 +114,7 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         abort(400, "Failed to retrieve the created Impact from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the Impact!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -141,7 +141,7 @@ def get_isms_impacts(params: CollectionParameters, request_user: CmdbUser):
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[IsmsImpact] = impact_manager.iterate(builder_params)
+        iteration_result: IterationResult[IsmsImpact] = impact_manager.iterate_items(builder_params)
         impact_list = [IsmsImpact.to_json(impact) for impact in iteration_result.results]
 
         api_response = GetMultiResponse(impact_list,
@@ -156,7 +156,7 @@ def get_isms_impacts(params: CollectionParameters, request_user: CmdbUser):
         abort(400, "Failed to retrieve Impacts from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impacts] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving Impacts!")
 
 
 @impact_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -177,7 +177,7 @@ def get_isms_impact(public_id: int, request_user: CmdbUser):
     try:
         impact_manager: ImpactManager = ManagerProvider.get_manager(ManagerType.IMPACT, request_user)
 
-        requested_impact = impact_manager.get_impact(public_id)
+        requested_impact = impact_manager.get_item(public_id)
 
         if requested_impact:
             return GetSingleResponse(requested_impact, body = request.method == 'HEAD').make_response()
@@ -190,7 +190,7 @@ def get_isms_impact(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the Impact with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the Impact with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -214,14 +214,14 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
     try:
         impact_manager: ImpactManager = ManagerProvider.get_manager(ManagerType.IMPACT, request_user)
 
-        to_update_impact = impact_manager.get_impact(public_id)
+        to_update_impact = impact_manager.get_item(public_id)
 
         if not to_update_impact:
             abort(404, f"The Impact with ID:{public_id} was not found!")
 
         impact = IsmsImpact.from_data(data)
 
-        impact_manager.update_impact(public_id, impact)
+        impact_manager.update_item(public_id, impact)
 
         # Calculate the RiskMatrix
         calculate_risk_matrix(request_user)
@@ -237,7 +237,7 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, f"Failed to update the Impact with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the Impact with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -261,12 +261,12 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        to_delete_impact = impact_manager.get_impact(public_id)
+        to_delete_impact = impact_manager.get_item(public_id)
 
         if not to_delete_impact:
             abort(404, f"The Impact with ID:{public_id} was not found!")
 
-        impact_manager.delete_impact(public_id)
+        impact_manager.delete_item(public_id)
 
         # Delete the IsmsImpact from all the IsmsImpactCategories
         impact_category_manager.remove_deleted_impact_from_categories(public_id)
@@ -285,4 +285,4 @@ def delete_isms_impact(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the Impact with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_impact] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the Impact with ID: {public_id}!")

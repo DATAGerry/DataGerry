@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of the RiskMatrixManager
+This module contains the implementation of the ControlMeassureManager
 """
 import logging
 
@@ -22,21 +22,21 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.isms_model import IsmsRiskMatrix
+from cmdb.models.isms_model import IsmsControlMeassure
 
-from cmdb.errors.manager.risk_matrix_manager import RISK_MATRIX_MANAGER_ERRORS
+from cmdb.errors.manager.control_meassure_manager import CONTROL_MEASSURE_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                             RiskMatrixManager - CLASS                                            #
+#                                            ControlMeassureManager - CLASS                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
-class RiskMatrixManager(GenericManager):
+class ControlMeassureManager(GenericManager):
     """
-    The RiskMatrixManager manages the interaction between IsmsRiskMatrices and the database
+    The ControlMeassureManager manages the interaction between IsmsControlMeassures and the database
 
     Extends: GenericManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
-        super().__init__(dbm, IsmsRiskMatrix, RISK_MATRIX_MANAGER_ERRORS, database)
+        super().__init__(dbm, IsmsControlMeassure, CONTROL_MEASSURE_MANAGER_ERRORS, database)

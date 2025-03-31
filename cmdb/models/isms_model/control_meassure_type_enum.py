@@ -1,8 +1,3 @@
-# DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2025 becon GmbH
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 #
@@ -14,11 +9,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all CmdbObject relevant classes
+Implementation of ControlMeassureType enumeration
 """
-from .cmdb_object import CmdbObject
+from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'CmdbObject',
-]
+class ControlMeassureType(str, Enum):
+    """
+    Available ControlMeassureTypes for IsmsControlMeassures
+    """
+    CONTROL = 'CONTROL'
+    REQUIREMENT = 'REQUIREMENT'
+    MEASURE = 'MEASURE'
+
+
+    @classmethod
+    def is_valid(cls, value: str) -> bool:
+        """
+        Checks if a given string is a valid ControlMeassureType
+
+        Args:
+            value (str): The string to check
+
+        Returns:
+            bool: True if the string matches an existing ControlMeassureType, False otherwise
+        """
+        return value in ControlMeassureType.__members__

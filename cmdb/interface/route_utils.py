@@ -40,7 +40,12 @@ from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.token.validator import TokenValidator
 from cmdb.security.token.generator import TokenGenerator
 from cmdb.models.isms_model import IsmsProtectionGoal, IsmsRiskMatrix
-from cmdb.models.isms_model.isms_helper import get_default_protection_goals, get_default_risk_matrix
+from cmdb.models.extendable_option_model import CmdbExtendableOption
+from cmdb.models.isms_model.isms_helper import (
+    get_default_protection_goals,
+    get_default_risk_matrix,
+    get_predefined_isms_extendable_options,
+)
 from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.user_model import CmdbUser
@@ -90,7 +95,7 @@ def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
         decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
     except TokenValidationError as err:
         LOGGER.debug("[user_has_right] Error: %s", err)
-        return abort(401, "Invalid token!")
+        abort(401, "Invalid token!")
 
     try:
         user_id = decrypted_token['DATAGERRY']['value']['user']['public_id']
@@ -134,10 +139,10 @@ def insert_request_user(func):
                 decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
         except TokenValidationError:
             #TODO: ERROR-FIX
-            return abort(401)
+            abort(401)
         except Exception as err:
             LOGGER.debug("[insert_request_user] Token Exception: %s, Type: %s", err, type(err))
-            return abort(401)
+            abort(401)
 
         try:
             user_id = decrypted_token['DATAGERRY']['value']['user']['public_id']
@@ -151,12 +156,12 @@ def insert_request_user(func):
             if user:
                 kwargs.update({'request_user': user})
             else:
-                return abort(401, "Invalid user!")
+                abort(401, "Invalid user!")
         except ValueError:
-            return abort(401)
+            abort(401)
         except Exception as err:
             LOGGER.debug("[insert_request_user] User Exception: %s, Type: %s", err, type(err))
-            return abort(401)
+            abort(401)
 
         return func(*args, **kwargs)
 
@@ -191,13 +196,13 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
                         if user_model:
                             kwargs.update({'request_user': user_model})
                         else:
-                            return abort(403, "User not found!")
+                            abort(403, "User not found!")
 
                     if not __check_api_level(user_instance, required_api_level):
-                        return abort(403, "No permission for this action!")
+                        abort(403, "No permission for this action!")
             except Exception as err:
                 LOGGER.warning("[verify_api_access] Exception: %s", err)
-                return abort(400, "Invalid request!")
+                abort(400, "Invalid request!")
 
             return func(*args, **kwargs)
         return wrapper
@@ -271,10 +276,10 @@ def __get_request_auth_method() -> Optional["AuthMethod"]:
             if auth_header.startswith('Bearer '):
                 return AuthMethod.JWT
 
-        return abort(400, "Invalid auth method!")
+        abort(400, "Invalid auth method!")
     except Exception as err:
         LOGGER.debug("[__get_request_auth_method] Exception: %s, Type: %s", err, type(err))
-        return abort(400, "Invalid auth method!")
+        abort(400, "Invalid auth method!")
 
 
 def __check_api_level(user_instance: dict = None, required_api_level: ApiLevel = ApiLevel.NO_API) -> bool:
@@ -323,7 +328,7 @@ def right_required(required_right: str):
 
                 current_user: CmdbUser = kwargs['request_user']
             except KeyError:
-                return abort(400, 'No request user was provided')
+                abort(400, 'No request user was provided')
             try:
                 if current_app.cloud_mode:
                     groups_manager = GroupsManager(current_app.database_manager, current_user.database)
@@ -332,11 +337,11 @@ def right_required(required_right: str):
                 has_right = group.has_right(required_right)
 
                 if not has_right and not group.has_extended_right(required_right):
-                    return abort(403, 'Request user does not have the right for this action!')
+                    abort(403, 'Request user does not have the right for this action!')
             except GroupsManagerGetError:
-                return abort(404, "Group or right does not exist!")
+                abort(404, "Group or right does not exist!")
             except Exception:
-                return abort(403, "Could not verify authorisation with the provided data!")
+                abort(403, "Could not verify authorisation with the provided data!")
 
             return func(*args, **kwargs)
 
@@ -610,6 +615,12 @@ def init_db_routine(db_name: str) -> None:
     # Create the default IsmsRiskMatrix
     current_app.database_manager.insert(IsmsRiskMatrix.COLLECTION, get_default_risk_matrix())
     LOGGER.info("Created default RiskMatrix!")
+
+    predefined_isms_options = get_predefined_isms_extendable_options()
+
+    for predefined_isms_option in predefined_isms_options:
+        current_app.database_manager.insert(CmdbExtendableOption.COLLECTION, predefined_isms_option)
+        LOGGER.info("Created ISMS Option: '%s'!", predefined_isms_option['value'])
 
 
 def set_admin_user(user_data: dict, subscription: dict):

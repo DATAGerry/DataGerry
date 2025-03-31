@@ -51,3 +51,15 @@ class RiskMatrixManagerUpdateError(RiskMatrixManagerError):
     """
     Raised when RiskMatrixManager could not update an IsmsRiskMatrix
     """
+
+
+class RiskMatrixManagerDeleteError(RiskMatrixManagerError):
+    """
+    Raised when RiskMatrixManager could not delete an IsmsRiskMatrix
+    """
+
+
+class RiskMatrixManagerIterationError(RiskMatrixManagerError):
+    """
+    Raised when RiskMatrixManager could not iterate over IsmsRiskMatrices
+    """

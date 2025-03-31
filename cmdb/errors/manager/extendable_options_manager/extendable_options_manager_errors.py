@@ -35,6 +35,7 @@ class ExtendableOptionsManagerInitError(ExtendableOptionsManagerError):
     Raised when ExtendableOptionsManager could not be initialised
     """
 
+
 class ExtendableOptionsManagerInsertError(ExtendableOptionsManagerError):
     """
     Raised when ExtendableOptionsManager could not insert an IsmsImpact

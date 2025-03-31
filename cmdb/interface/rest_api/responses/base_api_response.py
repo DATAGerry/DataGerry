@@ -100,8 +100,8 @@ class BaseAPIResponse:
             response = flask_response(dumps(body, default=default, indent=indent), status)
             response.mimetype = mime or DEFAULT_MIME_TYPE
             response.headers['X-API-Version'] = API_VERSION
+
+            return response
         except Exception as err:
             LOGGER.debug("[make_response] Exception: %s, Type: %s", err, type(err))
-            return abort(500, "Could not create response from data!")
-
-        return response
+            abort(500, "Could not create response from data!")

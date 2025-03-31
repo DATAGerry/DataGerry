@@ -36,3 +36,13 @@ __all__ = [
     'ExtendableOptionsManagerDeleteError',
     'ExtendableOptionsManagerIterationError',
 ]
+
+
+EXTENDABLE_OPTIONS_MANAGER_ERRORS = {
+    "init": ExtendableOptionsManagerInitError,
+    "insert": ExtendableOptionsManagerInsertError,
+    "get": ExtendableOptionsManagerGetError,
+    "update": ExtendableOptionsManagerUpdateError,
+    "delete": ExtendableOptionsManagerDeleteError,
+    "iterate": ExtendableOptionsManagerIterationError,
+}

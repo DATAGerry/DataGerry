@@ -52,6 +52,7 @@ from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 from cmdb.manager.isms_manager.threat_manager import ThreatManager
 from cmdb.manager.isms_manager.vulnerability_manager import VulnerabilityManager
 from cmdb.manager.isms_manager.risk_manager import RiskManager
+from cmdb.manager.isms_manager.control_meassure_manager import ControlMeassureManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -89,4 +90,5 @@ __all__ = [
     'VulnerabilityManager',
     'UserSettingsManager',
     'RiskManager',
+    'ControlMeassureManager',
 ]

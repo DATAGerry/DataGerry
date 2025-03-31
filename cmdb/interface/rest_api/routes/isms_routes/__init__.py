@@ -26,6 +26,7 @@ from .isms_config_routes import isms_config_blueprint
 from .threat_routes import threat_blueprint
 from .vulnerability_routes import vulnerability_blueprint
 from .risk_routes import risk_blueprint
+from .control_meassure_routes import control_meassure_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -39,4 +40,5 @@ __all__ = [
     'threat_blueprint',
     'vulnerability_blueprint',
     'risk_blueprint',
+    'control_meassure_blueprint',
 ]

@@ -72,7 +72,7 @@ def export_objects(params: CollectionParameters, request_user: CmdbUser):
     except ModuleNotFoundError as err:
         LOGGER.debug("[export_objects] ModuleNotFoundError: %s", err)
         #TODO: ERROR-FIX
-        return abort(400, "Module not found for export!")
+        abort(400, "Module not found for export!")
     except Exception as err:
         LOGGER.debug("[export_objects] Exception: %s, Type: %s", err, type(err))
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
