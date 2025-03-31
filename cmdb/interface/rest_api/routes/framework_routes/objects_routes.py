@@ -110,7 +110,7 @@ def insert_cmdb_object(request_user: CmdbUser):
 
         if current_app.cloud_mode:
             if check_config_item_limit_reached(request_user, objects_count):
-                return abort(400, "The maximum amout of objects is reached!")
+                return abort(400, "The maximum amout of ConfigItems is reached!")
 
         new_object_data = json.loads(new_object_json, object_hook=json_util.object_hook)
 

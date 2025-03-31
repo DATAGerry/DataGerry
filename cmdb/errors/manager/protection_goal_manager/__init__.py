@@ -36,3 +36,13 @@ __all__ = [
     'ProtectionGoalManagerDeleteError',
     'ProtectionGoalManagerIterationError',
 ]
+
+
+PROTECTION_GOAL_MANAGER_ERRORS = {
+    "init": ProtectionGoalManagerInitError,
+    "insert": ProtectionGoalManagerInsertError,
+    "get": ProtectionGoalManagerGetError,
+    "update": ProtectionGoalManagerUpdateError,
+    "delete": ProtectionGoalManagerDeleteError,
+    "iterate": ProtectionGoalManagerIterationError,
+}

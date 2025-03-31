@@ -65,10 +65,10 @@ class APIBlueprint(Blueprint):
                                     try:
                                         route_parameter = kwargs[exe_value]
                                     except KeyError:
-                                        return abort(403, f'User has not the required right {right}')
+                                        abort(403, f'User has not the required right {right}')
 
                                     if exe_key not in user_dict:
-                                        return abort(403, f'User has not the required right {right}')
+                                        abort(403, f'User has not the required right {right}')
 
                                     if user_dict[exe_key] == route_parameter:
                                         return f(*args, **kwargs)
@@ -82,7 +82,7 @@ class APIBlueprint(Blueprint):
                                 try:
                                     decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
                                 except TokenValidationError:
-                                    return abort(401, "Invalid Token")
+                                    abort(401, "Invalid Token")
 
                                 try:
                                     user_id = decrypted_token['DATAGERRY']['value']['user']['public_id']
@@ -98,17 +98,17 @@ class APIBlueprint(Blueprint):
                                         try:
                                             route_parameter = kwargs[exe_value]
                                         except KeyError:
-                                            return abort(403, f'User has not the required right {right}')
+                                            abort(403, f'User has not the required right {right}')
 
                                         if exe_key not in user_dict:
-                                            return abort(403, f'User has not the required right {right}')
+                                            abort(403, f'User has not the required right {right}')
 
                                         if user_dict[exe_key] == route_parameter:
                                             return f(*args, **kwargs)
                                 except (UsersManagerGetError, Exception):
-                                    return abort(403, "Could not retrieve user!")
+                                    abort(403, "Could not retrieve user!")
 
-                        return abort(403, f'User has not the required right {right}')
+                        abort(403, f'User has not the required right {right}')
 
                 return f(*args, **kwargs)
 
@@ -172,7 +172,7 @@ class APIBlueprint(Blueprint):
                         str(request.query_string, 'utf-8'), **{**optional, **request.args.to_dict()}
                     )
                 except Exception as e:
-                    return abort(400, str(e))
+                    abort(400, str(e))
 
                 return f(params=params, *args, **kwargs)
 
@@ -191,7 +191,7 @@ class APIBlueprint(Blueprint):
                 try:
                     request_args = request.args.to_dict()
                 except Exception as err:
-                    return abort(400, err)
+                    abort(400, err)
 
                 return f(params=request_args, *args, **kwargs)
 
@@ -220,7 +220,7 @@ class APIBlueprint(Blueprint):
                         str(request.query_string, 'utf-8'), **{**optional, **request.args.to_dict()}
                     )
                 except Exception as e:
-                    return abort(400, str(e))
+                    abort(400, str(e))
 
                 return f(params=params, *args, **kwargs)
 

@@ -32,6 +32,7 @@ class RootBlueprint(Blueprint):
         super().__init__(*args, **kwargs)
         self.nested_blueprints = []
 
+
     def register_nested_blueprint(self, nested_blueprint):
         """Add a 'sub' blueprint to root element
         Args:
@@ -50,7 +51,7 @@ class RootBlueprint(Blueprint):
                 try:
                     location_args = request.args.to_dict()
                 except Exception as err:
-                    return abort(400, err)
+                    abort(400, err)
 
                 return f(location_args)
 

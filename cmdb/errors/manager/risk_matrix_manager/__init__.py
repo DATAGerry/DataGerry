@@ -22,6 +22,8 @@ from .risk_matrix_manager_errors import (
     RiskMatrixManagerInsertError,
     RiskMatrixManagerUpdateError,
     RiskMatrixManagerGetError,
+    RiskMatrixManagerDeleteError,
+    RiskMatrixManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -31,4 +33,16 @@ __all__ = [
     'RiskMatrixManagerInsertError',
     'RiskMatrixManagerUpdateError',
     'RiskMatrixManagerGetError',
+    'RiskMatrixManagerDeleteError',
+    'RiskMatrixManagerIterationError',
 ]
+
+
+RISK_MATRIX_MANAGER_ERRORS = {
+    "init": RiskMatrixManagerInitError,
+    "insert": RiskMatrixManagerInsertError,
+    "get": RiskMatrixManagerGetError,
+    "update": RiskMatrixManagerUpdateError,
+    "delete": RiskMatrixManagerDeleteError,
+    "iterate": RiskMatrixManagerIterationError,
+}

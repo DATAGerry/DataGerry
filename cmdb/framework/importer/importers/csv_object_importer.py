@@ -44,12 +44,13 @@ LOGGER = logging.getLogger(__name__)
 class CsvObjectImporter(ObjectImporter, CSVContent):
     """document"""
     #TODO: DOCUMENT-FIX
-    def __init__(self,
-                 file=None,
-                 config: CsvObjectImporterConfig = None,
-                 parser: JsonObjectParser = None,
-                 objects_manager: ObjectsManager = None,
-                 request_user: CmdbUser = None):
+    def __init__(
+            self,
+            file=None,
+            config: CsvObjectImporterConfig = None,
+            parser: JsonObjectParser = None,
+            objects_manager: ObjectsManager = None,
+            request_user: CmdbUser = None):
         super().__init__(
                     file=file,
                     file_type=self.FILE_TYPE,
@@ -137,20 +138,32 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
 
 
     def start_import(self) -> ImporterObjectResponse:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initiates the import process by parsing a CSV file, generating objects, 
+        and importing them into the system
+
+        Returns:
+            ImporterObjectResponse: The result of the import process
+
+        Raises:
+            ImportRuntimeError: If parsing or importing fails
+        """
         try:
             parsed_response: CsvObjectParserResponse = self.parser.parse(self.file)
 
 
             type_instance_fields: list[dict] = self.objects_manager.get_object_type(
-                                                                        self.config.get_type_id()
-                                                                    ).get_fields()
+                self.config.get_type_id()
+            ).get_fields()
 
             import_objects: list[dict] = self._generate_objects(parsed_response, fields=type_instance_fields)
             import_result: ImporterObjectResponse = self._import(import_objects)
 
             return import_result
-        except (ParserRuntimeError, Exception) as err:
-            LOGGER.error("[start_import] Exception: %s. Type: %s", err, type(err), exc_info=True)
-            raise ImportRuntimeError(err) from err
+        except ParserRuntimeError as err:
+            LOGGER.error("[start_import] Parsing error: %s", err, exc_info=True)
+            raise ImportRuntimeError(f"Parsing failed: {err}") from err
+
+        except Exception as err:
+            LOGGER.error("[start_import] Unexpected error: %s. Type: %s", err, type(err), exc_info=True)
+            raise ImportRuntimeError(f"Unexpected error: {err}") from err

@@ -25,6 +25,7 @@ from cmdb.manager import (
     ThreatManager,
     VulnerabilityManager,
     ObjectGroupsManager,
+    ControlMeassureManager,
 )
 
 from cmdb.manager.query_builder import BuilderParameters
@@ -96,9 +97,9 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
         if existing_extendable_option:
             abort(400, f"An Option with the value already exists: {data.get('value')}")
 
-        result_id: int = extendable_options_manager.insert_extendable_option(data)
+        result_id: int = extendable_options_manager.insert_item(data)
 
-        created_extendable_option: dict = extendable_options_manager.get_extendable_option(result_id)
+        created_extendable_option: dict = extendable_options_manager.get_item(result_id)
 
         if not created_extendable_option:
             abort(404, "Could not retrieve the created ExtendableOption from the database!")
@@ -114,7 +115,7 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
         abort(400, "Failed to retrieve the created ExtendableOption from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the ExtendableOption!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -144,7 +145,9 @@ def get_cmdb_extendable_options(params: CollectionParameters, request_user: Cmdb
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[CmdbExtendableOption] = extendable_options_manager.iterate(builder_params)
+        iteration_result: IterationResult[CmdbExtendableOption] = extendable_options_manager.iterate_items(
+                                                                    builder_params
+                                                                  )
         extendable_option_list = [CmdbExtendableOption.to_json(extendable_option) for extendable_option
                                   in iteration_result.results]
 
@@ -160,7 +163,7 @@ def get_cmdb_extendable_options(params: CollectionParameters, request_user: Cmdb
         abort(400, "Failed to retrieve ExtendableOptions from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_extendable_options] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving ExtendableOptions!")
 
 
 @extendable_option_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -184,7 +187,7 @@ def get_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
                                                                     request_user
                                                                 )
 
-        extendable_option = extendable_options_manager.get_extendable_option(public_id)
+        extendable_option = extendable_options_manager.get_item(public_id)
 
         if extendable_option:
             return GetSingleResponse(extendable_option, body = request.method == 'HEAD').make_response()
@@ -197,7 +200,7 @@ def get_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the ExtendableOption with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the ExtendableOption with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -227,7 +230,7 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
         if not OptionType.is_valid(data.get('option_type')):
             abort(400, f"Invalid OptionType provided: {data.get('option_type')}")
 
-        to_update_extendable_option = extendable_options_manager.get_extendable_option(public_id)
+        to_update_extendable_option = extendable_options_manager.get_item(public_id)
 
         if not to_update_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
@@ -251,7 +254,7 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
 
         extendable_option = CmdbExtendableOption.from_data(data)
 
-        extendable_options_manager.update_extendable_option(public_id, extendable_option)
+        extendable_options_manager.update_item(public_id, extendable_option)
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -264,7 +267,7 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
         abort(400, f"Failed to update the ExtendableOption with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the ExtendableOption with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -289,7 +292,7 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
                                                                     request_user
                                                                 )
 
-        to_delete_extendable_option = extendable_options_manager.get_extendable_option(public_id)
+        to_delete_extendable_option = extendable_options_manager.get_item(public_id)
 
         if not to_delete_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
@@ -301,7 +304,7 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         if is_extendable_option_used(to_delete_extendable_option, request_user):
             abort(400, f"Cannot delete the ExtendableOption with ID: {public_id} as it is in use by other resources!")
 
-        extendable_options_manager.delete_extendable_option(public_id)
+        extendable_options_manager.delete_item(public_id)
 
         return DeleteSingleResponse(to_delete_extendable_option).make_response()
     except HTTPException as http_err:
@@ -314,7 +317,7 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the ExtendableOption with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_extendable_option] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the ExtendableOption with ID: {public_id}!")
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
@@ -332,6 +335,8 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
     threat_manager: ThreatManager = ManagerProvider.get_manager(ManagerType.THREAT, request_user)
     vulnerability_manager: VulnerabilityManager = ManagerProvider.get_manager(ManagerType.VULNERABILITY, request_user)
     object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(ManagerType.OBJECT_GROUP, request_user)
+    control_meassure_manager: ControlMeassureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASSURE,
+                                                                                   request_user)
 
     if extendable_option.get('option_type') == OptionType.THREAT:
         return threat_manager.count_items({"source": extendable_option.get('public_id')}) > 0
@@ -341,6 +346,12 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
 
     if extendable_option.get('option_type') == OptionType.OBJECT_GROUP:
         return object_groups_manager.count_items({"categories": extendable_option.get('public_id')}) > 0
+
+    if extendable_option.get('option_type') == OptionType.CONTROL_MEASSURE:
+        return control_meassure_manager.count_items({"source": extendable_option.get('public_id')}) > 0
+
+    if extendable_option.get('option_type') == OptionType.IMPLEMENTATION_STATE:
+        return control_meassure_manager.count_items({"implementation_state": extendable_option.get('public_id')}) > 0
 
     # If option_type is not recognized
     return False

@@ -138,7 +138,7 @@ def get_isms_risks(params: CollectionParameters, request_user: CmdbUser):
         abort(400, "Failed to retrieve Risks from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_risks] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error while retrieving Risks!")
+        abort(500, "An internal server error occured while retrieving Risks!")
 
 
 @risk_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -172,7 +172,7 @@ def get_isms_risk(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the Risk with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_risk] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"Internal server error while retrieving the Risk with ID: {public_id}!")
+        abort(500, f"An internal server error occured while retrieving the Risk with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -220,7 +220,7 @@ def update_isms_risk(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, f"Failed to update the Risk with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_risk] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"Internal server error while updating the Risk with ID: {public_id}!")
+        abort(500, f"An internal server error occured while updating the Risk with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -260,4 +260,4 @@ def delete_isms_risk(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the Risk with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_risk] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"Internal server error while deleting the Risk with ID: {public_id}!")
+        abort(500, f"An internal server error occured while deleting the Risk with ID: {public_id}!")

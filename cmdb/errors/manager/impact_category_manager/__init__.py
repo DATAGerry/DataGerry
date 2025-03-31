@@ -36,3 +36,13 @@ __all__ = [
     'ImpactCategoryManagerDeleteError',
     'ImpactCategoryManagerIterationError',
 ]
+
+
+IMPACT_CATEGORY_MANAGER_ERRORS = {
+    "init": ImpactCategoryManagerInitError,
+    "insert": ImpactCategoryManagerInsertError,
+    "get": ImpactCategoryManagerGetError,
+    "update": ImpactCategoryManagerUpdateError,
+    "delete": ImpactCategoryManagerDeleteError,
+    "iterate": ImpactCategoryManagerIterationError,
+}

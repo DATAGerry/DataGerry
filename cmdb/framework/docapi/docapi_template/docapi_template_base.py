@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of TemplateManagementBase
+"""
 import logging
 
 from pymongo import IndexModel
@@ -27,8 +28,19 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 #TODO: REFACTOR-FIX (CmdbDAO as base for DocapiTemplates instead of this)
 class TemplateManagementBase:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Base class for managing template-related database operations
+    
+    Attributes:
+        ASCENDING (int): Constant representing ascending sort order
+        DESCENDING (int): Constant representing descending sort order
+        COLLECTION (str): Collection pattern for document storage
+        SUPER_INDEX_KEYS (list): Default index keys for unique constraints
+        IGNORED_INIT_KEYS (list): List of keys to be ignored during initialization
+        REQUIRED_INIT_KEYS (list): List of keys that are required for initialization
+        INDEX_KEYS (list): Custom index keys specific to derived classes
+    """
+
     ASCENDING = 1
     DESCENDING = -1
     COLLECTION = 'docapi.*'
@@ -41,24 +53,34 @@ class TemplateManagementBase:
     INDEX_KEYS = []
 
     def __init__(self, **kwargs):
-        self.public_id = None
+        """
+        Initializes the TemplateManagementBase instance with given keyword arguments
+        
+        Args:
+            **kwargs: Arbitrary keyword arguments representing document fields
+        """
+        self.public_id: int = None
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
 
     @classmethod
-    def get_index_keys(cls):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        index_list = []
-        for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS:
-            index_list.append(IndexModel(**index))
+    def get_index_keys(cls) -> list[IndexModel]:
+        """
+        Retrieves the list of index models for database indexing.
+        
+        Returns:
+            list[IndexModel]: A list of pymongo IndexModel instances representing indexes.
+        """
+        return [IndexModel(**index) for index in cls.INDEX_KEYS + cls.SUPER_INDEX_KEYS]
 
-        return index_list
 
-
-    def to_database(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def to_database(self) -> dict:
+        """
+        Converts the instance attributes to a dictionary for database storage
+        
+        Returns:
+            dict: A dictionary representation of the instance
+        """
         return self.__dict__

@@ -83,9 +83,9 @@ def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
         if goal_with_name:
             abort(400, f"A ProtectionGoal with the name {data.get('name')} already exists!")
 
-        result_id = protection_goal_manager.insert_protection_goal(data)
+        result_id = protection_goal_manager.insert_item(data)
 
-        created_protection_goal = protection_goal_manager.get_protection_goal(result_id)
+        created_protection_goal = protection_goal_manager.get_item(result_id)
 
         if created_protection_goal:
             return InsertSingleResponse(created_protection_goal, result_id).make_response()
@@ -131,7 +131,7 @@ def get_isms_protection_goals(params: CollectionParameters, request_user: CmdbUs
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[IsmsProtectionGoal] = protection_goal_manager.iterate(builder_params)
+        iteration_result: IterationResult[IsmsProtectionGoal] = protection_goal_manager.iterate_items(builder_params)
         protection_goals_list = [IsmsProtectionGoal.to_json(protection_goal) for protection_goal
                                  in iteration_result.results]
 
@@ -171,7 +171,7 @@ def get_isms_protection_goal(public_id: int, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
-        requested_protection_goal = protection_goal_manager.get_protection_goal(public_id)
+        requested_protection_goal = protection_goal_manager.get_item(public_id)
 
         if requested_protection_goal:
             return GetSingleResponse(requested_protection_goal, body = request.method == 'HEAD').make_response()
@@ -214,7 +214,7 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
                                                                             request_user
                                                                          )
 
-        to_update_protection_goal = protection_goal_manager.get_protection_goal(public_id)
+        to_update_protection_goal = protection_goal_manager.get_item(public_id)
 
         if not to_update_protection_goal:
             abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
@@ -227,7 +227,7 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
 
         protection_goal = IsmsProtectionGoal.from_data(data)
 
-        protection_goal_manager.update_protection_goal(public_id, protection_goal)
+        protection_goal_manager.update_item(public_id, protection_goal)
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -274,7 +274,7 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
         if not to_delete_protection_goal:
             abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
 
-        protection_goal_manager.delete_protection_goal(public_id)
+        protection_goal_manager.delete_item(public_id)
 
         return DeleteSingleResponse(to_delete_protection_goal).make_response()
     except HTTPException as http_err:

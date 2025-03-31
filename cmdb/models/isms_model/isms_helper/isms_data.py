@@ -16,6 +16,8 @@
 """
 This module stores all static data and methods for ISMS
 """
+from cmdb.models.extendable_option_model import OptionType
+# -------------------------------------------------------------------------------------------------------------------- #
 
 def get_default_protection_goals() -> list:
     """
@@ -52,3 +54,29 @@ def get_default_risk_matrix() -> dict:
         'risk_matrix': [],
         'matrix_unit': None
     }
+
+
+def get_predefined_isms_extendable_options() -> list:
+    """
+    All predefined CmdbExtendableOptions as data. Used when DataGerry is setup
+
+    Returns:
+        list: All default CmdbExtendableOptions as data
+    """
+    return [
+        {
+            'value': 'Open',
+            'option_type': OptionType.IMPLEMENTATION_STATE,
+            'predefined': True,
+        },
+        {
+            'value': 'In Progress',
+            'option_type': OptionType.IMPLEMENTATION_STATE,
+            'predefined': True,
+        },
+        {
+            'value': 'Implemented',
+            'option_type': OptionType.IMPLEMENTATION_STATE,
+            'predefined': True,
+        }
+    ]

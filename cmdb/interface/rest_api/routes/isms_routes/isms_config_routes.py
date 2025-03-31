@@ -68,12 +68,12 @@ def get_isms_config_status(request_user: CmdbUser):
                                                                                      request_user)
         risk_matrix_manager: RiskMatrixManager = ManagerProvider.get_manager(ManagerType.RISK_MATRIX, request_user)
 
-        risk_class_amount = risk_class_manager.count_risk_classes()
-        likelihood_amount = likelihood_manager.count_likelihoods()
-        impact_amount = impact_manager.count_impacts()
-        impact_category_amount = impact_category_manager.count_impact_categories()
+        risk_class_amount = risk_class_manager.count_items()
+        likelihood_amount = likelihood_manager.count_items()
+        impact_amount = impact_manager.count_items()
+        impact_category_amount = impact_category_manager.count_items()
 
-        current_risk_matrix = risk_matrix_manager.get_risk_matrix(1)
+        current_risk_matrix = risk_matrix_manager.get_item(1)
 
         if not current_risk_matrix:
             abort(404, "The RiskMatrix with was not found in the database!")

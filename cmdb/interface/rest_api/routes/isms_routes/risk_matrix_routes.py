@@ -68,7 +68,7 @@ def get_isms_risk_matrix(public_id: int, request_user: CmdbUser):
                                                                     request_user
                                                                          )
 
-        requested_risk_matrix = risk_matrix_manager.get_risk_matrix(public_id)
+        requested_risk_matrix = risk_matrix_manager.get_item(public_id)
 
         if requested_risk_matrix:
             return GetSingleResponse(requested_risk_matrix, body = request.method == 'HEAD').make_response()
@@ -81,7 +81,7 @@ def get_isms_risk_matrix(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the RiskMatrix with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_risk_matrix] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the RiskMatrix!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -108,14 +108,14 @@ def update_isms_risk_matrix(public_id: int, data: dict, request_user: CmdbUser):
                                                                     request_user
                                                                          )
 
-        to_update_risk_matrix = risk_matrix_manager.get_risk_matrix(public_id)
+        to_update_risk_matrix = risk_matrix_manager.get_item(public_id)
 
         if not to_update_risk_matrix:
             abort(404, f"The RiskMatrix with ID:{public_id} was not found!")
 
         risk_matrix = IsmsRiskMatrix.from_data(data)
 
-        risk_matrix_manager.update_risk_matrix(public_id, risk_matrix)
+        risk_matrix_manager.update_item(public_id, risk_matrix)
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -128,4 +128,4 @@ def update_isms_risk_matrix(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, f"Failed to update the RiskMatrix with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_risk_matrix] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the RiskMatrix with ID: {public_id}!")

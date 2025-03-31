@@ -16,6 +16,8 @@
 """
 Implementation of DocapiTemplate
 """
+from typing import Optional
+
 from cmdb.framework.docapi.docapi_template.docapi_template_base import TemplateManagementBase
 from cmdb.models.docapi_model import DocapiTemplateType
 from cmdb.models.cmdb_dao import CmdbDAO
@@ -34,16 +36,18 @@ class DocapiTemplate(TemplateManagementBase):
         {'keys': [('name', CmdbDAO.DAO_ASCENDING)], 'name': 'name', 'unique': True}
     ]
 
+    #pylint: disable=too-many-arguments
+    #pylint: disable=too-many-positional-arguments
     def __init__(self,
-                 name,
-                 label=None,
-                 description=None,
-                 active=None,
-                 author_id=None,
-                 template_data=None,
-                 template_style=None,
-                 template_type=None,
-                 template_parameters=None,
+                 name: str,
+                 label: str = None,
+                 description: str = None,
+                 active: bool = None,
+                 author_id: int = None,
+                 template_data = None,
+                 template_style = None,
+                 template_type = None,
+                 template_parameters = None,
                  **kwargs):
         """
         Args:
@@ -71,26 +75,40 @@ class DocapiTemplate(TemplateManagementBase):
 
     @classmethod
     def from_data(cls, data: dict) -> "DocapiTemplate":
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initialises a DocapiTemplate from a dict
+
+        Args:
+            data (dict): Data with which the DocapiTemplate should be initialised
+
+        Returns:
+            DocapiTemplate: DocapiTemplate with the given data
+        """
         return cls(
-            public_id=data.get('public_id'),
-            name=data.get('name'),
-            label=data.get('label', None),
-            description=data.get('description', None),
-            active=data.get('active', None),
-            author_id=data.get('author_id', None),
-            template_data=data.get('template_data', None),
-            template_style=data.get('template_style', None),
-            template_type=data.get('template_type', None),
-            template_parameters=data.get('template_parameters', None),
+            public_id = data.get('public_id'),
+            name = data.get('name'),
+            label = data.get('label', None),
+            description = data.get('description', None),
+            active = data.get('active', None),
+            author_id = data.get('author_id', None),
+            template_data = data.get('template_data', None),
+            template_style = data.get('template_style', None),
+            template_type = data.get('template_type', None),
+            template_parameters = data.get('template_parameters', None),
         )
 
 
     @classmethod
     def to_json(cls, instance: "DocapiTemplate") -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Converts a IsmsControlMeassure into a json compatible dict
+
+        Args:
+            instance (IsmsControlMeassure): The IsmsControlMeassure which should be converted
+
+        Returns:
+            dict: Json compatible dict of the IsmsControlMeassure values
+        """
         return {
             'public_id': instance.public_id,
             'name': instance.name,
@@ -127,67 +145,68 @@ class DocapiTemplate(TemplateManagementBase):
     def get_name(self) -> str:
         """
         Get the name of the template
+        
         Returns:
-            str: display name
+            str: Display name or empty string if None
         """
-        if self.name is None:
-            return ""
-
-        return self.name
+        return self.name if self.name is not None else ""
 
 
     def get_label(self) -> str:
         """
         Get the label of the template
+        
         Returns:
-            str: display label
+            str: Display label or empty string if None
         """
-        if self.label is None:
-            return ""
-
-        return self.label
+        return self.label if self.label is not None else ""
 
 
     def get_description(self) -> str:
         """
         Get the description of the template
+        
         Returns:
-            str: description
+            str: Description or empty string if None
         """
-        if self.description is None:
-            return ""
-
-        return self.description
+        return self.description if self.description is not None else ""
 
 
     def get_active(self) -> bool:
         """
-        Get active state of the template
+        Get the active state of the template
+        
         Returns:
-            bool: is template executable
+            bool: True if active, otherwise False
         """
-        if self.active is None:
-            return ""
-
-        return self.active
+        return self.active is True
 
 
-    def get_author_id(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_author_id(self) -> Optional[int]:
+        """
+        Get the author ID of the template
+        
+        Returns:
+            Optional[int]: Author ID or None if not set
+        """
         return self.author_id
 
 
     def get_template_data(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Get the template data
+        
+        Returns:
+            Template data or None if not set
+        """
         return self.template_data
 
 
     def get_template_style(self):
         """
-        Get style of this template
+        Get the style of this template
+        
         Returns:
-            str:
+            Template style if set else None
         """
         return self.template_style

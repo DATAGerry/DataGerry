@@ -47,7 +47,7 @@ def calculate_risk_matrix(request_user: CmdbUser) -> None:
 
     # Only calculate the matrix if the minimum requirements are met
     if len(all_risk_classes) > 0 and len(all_likelihoods) > 0 and len(all_impacts) > 0:
-        current_risk_matrix = risk_matrix_manager.get_risk_matrix(1)
+        current_risk_matrix = risk_matrix_manager.get_item(1)
 
         new_risk_matrix_values = __generate_risk_matrix(all_impacts, all_likelihoods)
 
@@ -56,7 +56,7 @@ def calculate_risk_matrix(request_user: CmdbUser) -> None:
 
         current_risk_matrix['risk_matrix'] = new_matrix_with_risk_classes
 
-        risk_matrix_manager.update_risk_matrix(1, current_risk_matrix)
+        risk_matrix_manager.update_item(1, current_risk_matrix)
 
 
 def remove_deleted_risk_class_from_matrix(deleted_risk_class_id: int, request_user: CmdbUser) -> None:
@@ -72,13 +72,13 @@ def remove_deleted_risk_class_from_matrix(deleted_risk_class_id: int, request_us
     """
     risk_matrix_manager: RiskMatrixManager = ManagerProvider.get_manager(ManagerType.RISK_MATRIX, request_user)
 
-    current_risk_matrix = risk_matrix_manager.get_risk_matrix(1)
+    current_risk_matrix = risk_matrix_manager.get_item(1)
 
     for cell in current_risk_matrix['risk_matrix']:
         if cell["risk_class_id"] == deleted_risk_class_id:
             cell["risk_class_id"] = 0  # Reset to default
 
-    risk_matrix_manager.update_risk_matrix(1, current_risk_matrix)
+    risk_matrix_manager.update_item(1, current_risk_matrix)
 
 
 def check_risk_classes_set_in_matrix(risk_matrix: dict) -> bool:
@@ -92,6 +92,7 @@ def check_risk_classes_set_in_matrix(risk_matrix: dict) -> bool:
         bool: True if all cells have a risk_class_id greater than 0, otherwise False
     """
     return all(cell.get("risk_class_id", 0) > 0 for cell in risk_matrix.get("risk_matrix", []))
+
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
 def __generate_risk_matrix(impacts: list[dict], likelihoods: list[dict]) -> list[dict]:
@@ -136,7 +137,6 @@ def __transfer_risk_classes(old_matrix: list[dict], new_matrix: list[dict]) -> l
     Returns:
         list[dict]: Updated new risk matrix with transferred risk_class_id values
     """
-
     # Create a lookup dictionary from the old matrix using (impact_id, likelihood_id) as key
     old_risk_lookup: list[Tuple[int, int], int] = {
         (cell["impact_id"], cell["likelihood_id"]): cell["risk_class_id"]

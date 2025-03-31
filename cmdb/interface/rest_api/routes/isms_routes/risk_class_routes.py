@@ -77,15 +77,15 @@ def insert_isms_risk_class(data: dict, request_user: CmdbUser):
         risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
 
         # There is a Limit of 10 Risk classes
-        risk_class_count = risk_class_manager.count_risk_classes()
+        risk_class_count = risk_class_manager.count_items()
 
         if risk_class_count >= 10:
             abort(403, "Only a maximum of 10 RiskClasses can be created!")
 
 
-        result_id: int = risk_class_manager.insert_risk_class(data)
+        result_id: int = risk_class_manager.insert_item(data)
 
-        created_risk_class: dict = risk_class_manager.get_risk_class(result_id)
+        created_risk_class: dict = risk_class_manager.get_item(result_id)
 
         if created_risk_class:
             return InsertSingleResponse(created_risk_class, result_id).make_response()
@@ -101,7 +101,7 @@ def insert_isms_risk_class(data: dict, request_user: CmdbUser):
         abort(400, "Failed to retrieve the created RiskClass from the database!")
     except Exception as err:
         LOGGER.error("[insert_isms_risk_class] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the RiskClass!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -128,7 +128,7 @@ def get_isms_risk_classes(params: CollectionParameters, request_user: CmdbUser):
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[IsmsRiskClass] = risk_class_manager.iterate(builder_params)
+        iteration_result: IterationResult[IsmsRiskClass] = risk_class_manager.iterate_items(builder_params)
         risk_class_list = [IsmsRiskClass.to_json(risk_class) for risk_class in iteration_result.results]
 
         api_response = GetMultiResponse(risk_class_list,
@@ -143,7 +143,7 @@ def get_isms_risk_classes(params: CollectionParameters, request_user: CmdbUser):
         abort(400, "Failed to retrieve RiskClasses from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_risk_classes] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving RiskClasses!")
 
 
 @risk_class_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -164,7 +164,7 @@ def get_isms_risk_class(public_id: int, request_user: CmdbUser):
     try:
         risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
 
-        requested_risk_class = risk_class_manager.get_risk_class(public_id)
+        requested_risk_class = risk_class_manager.get_item(public_id)
 
         if requested_risk_class:
             return GetSingleResponse(requested_risk_class, body = request.method == 'HEAD').make_response()
@@ -177,7 +177,7 @@ def get_isms_risk_class(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the RiskClass with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_isms_risk_class] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the RiskClass with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -201,14 +201,14 @@ def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
     try:
         risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
 
-        to_update_risk_class = risk_class_manager.get_risk_class(public_id)
+        to_update_risk_class = risk_class_manager.get_item(public_id)
 
         if not to_update_risk_class:
             abort(404, f"The RiskCLass with ID:{public_id} was not found!")
 
         risk_class = IsmsRiskClass.from_data(data)
 
-        risk_class_manager.update_risk_class(public_id, risk_class)
+        risk_class_manager.update_item(public_id, risk_class)
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -221,7 +221,7 @@ def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, f"Failed to update the RiskCLass with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_isms_risk_class] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the RiskClass with ID: {public_id}!")
 
 
 @risk_class_blueprint.route('/multiple', methods=['PUT', 'PATCH'])
@@ -253,7 +253,7 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
                 continue
 
             try:
-                to_update_risk_class = risk_class_manager.get_risk_class(public_id)
+                to_update_risk_class = risk_class_manager.get_item(public_id)
                 if not to_update_risk_class:
                     results.append(
                         {"public_id": public_id, "status": "failed", "message": f"RiskClass ID:{public_id} not found"}
@@ -261,7 +261,7 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
                     continue
 
                 risk_class = IsmsRiskClass.from_data(item)
-                risk_class_manager.update_risk_class(public_id, risk_class)
+                risk_class_manager.update_item(public_id, risk_class)
 
                 results.append({"public_id": public_id, "status": "success"})
             except RiskClassManagerGetError as err:
@@ -292,7 +292,8 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
         raise http_err
     except Exception as err:
         LOGGER.error("[update_multiple_isms_risk_classes] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while updating multiple RiskClasses!")
+
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
 @risk_class_blueprint.route('/<int:public_id>', methods=['DELETE'])
@@ -318,7 +319,7 @@ def delete_isms_risk_class(public_id: int, request_user: CmdbUser):
         if not to_delete_risk_class:
             abort(404, f"The RiskClass with ID:{public_id} was not found!")
 
-        risk_class_manager.delete_risk_class(public_id)
+        risk_class_manager.delete_item(public_id)
 
         # Remove the risk_class from the RiskMatrix
         remove_deleted_risk_class_from_matrix(public_id, request_user)
@@ -334,4 +335,4 @@ def delete_isms_risk_class(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the RiskClass with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_isms_risk_class] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the RiskClass with ID: {public_id}!")

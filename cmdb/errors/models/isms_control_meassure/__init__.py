@@ -14,35 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for the LikelihoodManager
+This module provides all errors for IsmsControlMeassures
 """
-from .likelihood_manager_errors import (
-    LikelihoodManagerError,
-    LikelihoodManagerInitError,
-    LikelihoodManagerInsertError,
-    LikelihoodManagerGetError,
-    LikelihoodManagerUpdateError,
-    LikelihoodManagerDeleteError,
-    LikelihoodManagerIterationError,
+from .isms_control_meassure_errors import (
+    IsmsControlMeassureError,
+    IsmsControlMeassureInitError,
+    IsmsControlMeassureInitFromDataError,
+    IsmsControlMeassureToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'LikelihoodManagerError',
-    'LikelihoodManagerInitError',
-    'LikelihoodManagerInsertError',
-    'LikelihoodManagerGetError',
-    'LikelihoodManagerUpdateError',
-    'LikelihoodManagerDeleteError',
-    'LikelihoodManagerIterationError',
+    'IsmsControlMeassureError',
+    'IsmsControlMeassureInitError',
+    'IsmsControlMeassureInitFromDataError',
+    'IsmsControlMeassureToJsonError',
 ]
-
-
-LIKELIHOOD_MANAGER_ERRORS = {
-    "init": LikelihoodManagerInitError,
-    "insert": LikelihoodManagerInsertError,
-    "get": LikelihoodManagerGetError,
-    "update": LikelihoodManagerUpdateError,
-    "delete": LikelihoodManagerDeleteError,
-    "iterate": LikelihoodManagerIterationError,
-}

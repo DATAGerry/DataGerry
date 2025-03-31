@@ -32,7 +32,7 @@ from cmdb.framework.results import IterationResult
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                             ProtectionGoalManager - CLASS                                            #
+#                                                GenericManager - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class GenericManager(BaseManager):
     """

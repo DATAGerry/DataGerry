@@ -67,7 +67,7 @@ def trigger_error_handler(status_code: int):
     Returns:
         Response: An error response with the provided status code
     """
-    return abort(status_code)
+    abort(status_code)
 
 
 @debug_blueprint.route('/error/<int:status_code>/<string:description>', methods=['GET', 'POST'])
@@ -85,4 +85,4 @@ def trigger_error_handler_with_description(status_code: int, description: str):
     Returns:
         Response: An error response with the provided status code and description
     """
-    return abort(status_code, description=description)
+    abort(status_code, description=description)

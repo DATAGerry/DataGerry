@@ -20,7 +20,9 @@ from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class ManagerType(Enum):
-    """Enum of the different Managers which are used by the API routes"""
+    """
+    Enum of the different Managers which are used by the API routes
+    """
     CATEGORIES = 'CategoriesManager'
     OBJECTS = 'ObjectsManager'
     LOGS = 'LogsManager'
@@ -56,3 +58,4 @@ class ManagerType(Enum):
     THREAT = 'ThreatManager'
     VULNERABILITY = 'VulnerabilityManager'
     RISK = 'RiskManager'
+    CONTROL_MEASSURE = 'ControlMeassureManager'
