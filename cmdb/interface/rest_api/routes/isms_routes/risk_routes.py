@@ -80,7 +80,7 @@ def insert_isms_risk(data: dict, request_user: CmdbUser):
 
         result_id: int = risk_manager.insert_item(data)
 
-        created_risk: dict = risk_manager.get_item(result_id)
+        created_risk: dict = risk_manager.get_item(result_id, as_dict=True)
 
         if created_risk:
             return InsertSingleResponse(created_risk, result_id).make_response()
@@ -159,7 +159,7 @@ def get_isms_risk(public_id: int, request_user: CmdbUser):
     try:
         risk_manager: RiskManager = ManagerProvider.get_manager(ManagerType.RISK, request_user)
 
-        requested_risk = risk_manager.get_item(public_id)
+        requested_risk = risk_manager.get_item(public_id, as_dict=True)
 
         if requested_risk:
             return GetSingleResponse(requested_risk, body = request.method == 'HEAD').make_response()
@@ -205,9 +205,7 @@ def update_isms_risk(public_id: int, data: dict, request_user: CmdbUser):
         if not to_update_risk:
             abort(404, f"The Risk with ID:{public_id} was not found!")
 
-        risk = IsmsRisk.from_data(data)
-
-        risk_manager.update_item(public_id, risk)
+        risk_manager.update_item(public_id, IsmsRisk.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -242,7 +240,7 @@ def delete_isms_risk(public_id: int, request_user: CmdbUser):
     try:
         risk_manager: RiskManager = ManagerProvider.get_manager(ManagerType.RISK, request_user)
 
-        to_delete_risk = risk_manager.get_item(public_id)
+        to_delete_risk = risk_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_risk:
             abort(404, f"The Risk with ID:{public_id} was not found!")

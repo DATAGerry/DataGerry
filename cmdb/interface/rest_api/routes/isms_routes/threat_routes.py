@@ -76,7 +76,7 @@ def insert_isms_threat(data: dict, request_user: CmdbUser):
 
         result_id: int = threat_manager.insert_item(data)
 
-        created_threat: dict = threat_manager.get_item(result_id)
+        created_threat: dict = threat_manager.get_item(result_id, as_dict=True)
 
         if created_threat:
             return InsertSingleResponse(created_threat, result_id).make_response()
@@ -155,7 +155,7 @@ def get_isms_threat(public_id: int, request_user: CmdbUser):
     try:
         threat_manager: ThreatManager = ManagerProvider.get_manager(ManagerType.THREAT, request_user)
 
-        requested_threat = threat_manager.get_item(public_id)
+        requested_threat = threat_manager.get_item(public_id, as_dict=True)
 
         if requested_threat:
             return GetSingleResponse(requested_threat, body = request.method == 'HEAD').make_response()
@@ -197,9 +197,7 @@ def update_isms_threat(public_id: int, data: dict, request_user: CmdbUser):
         if not to_update_threat:
             abort(404, f"The Threat with ID:{public_id} was not found!")
 
-        threat = IsmsThreat.from_data(data)
-
-        threat_manager.update_item(public_id, threat)
+        threat_manager.update_item(public_id, IsmsThreat.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -234,7 +232,7 @@ def delete_isms_threat(public_id: int, request_user: CmdbUser):
     try:
         threat_manager: ThreatManager = ManagerProvider.get_manager(ManagerType.THREAT, request_user)
 
-        to_delete_threat = threat_manager.get_item(public_id)
+        to_delete_threat = threat_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_threat:
             abort(404, f"The Threat with ID:{public_id} was not found!")

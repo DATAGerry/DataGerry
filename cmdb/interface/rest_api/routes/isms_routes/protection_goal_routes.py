@@ -85,7 +85,7 @@ def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
 
         result_id = protection_goal_manager.insert_item(data)
 
-        created_protection_goal = protection_goal_manager.get_item(result_id)
+        created_protection_goal = protection_goal_manager.get_item(result_id, as_dict=True)
 
         if created_protection_goal:
             return InsertSingleResponse(created_protection_goal, result_id).make_response()
@@ -171,7 +171,7 @@ def get_isms_protection_goal(public_id: int, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
-        requested_protection_goal = protection_goal_manager.get_item(public_id)
+        requested_protection_goal = protection_goal_manager.get_item(public_id, as_dict=True)
 
         if requested_protection_goal:
             return GetSingleResponse(requested_protection_goal, body = request.method == 'HEAD').make_response()
@@ -225,9 +225,7 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
         if goal_with_name:
             abort(400, f"A ProtectionGoal with the name {data.get('name')} already exists!")
 
-        protection_goal = IsmsProtectionGoal.from_data(data)
-
-        protection_goal_manager.update_item(public_id, protection_goal)
+        protection_goal_manager.update_item(public_id, IsmsProtectionGoal.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:

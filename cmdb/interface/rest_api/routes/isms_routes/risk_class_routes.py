@@ -85,7 +85,7 @@ def insert_isms_risk_class(data: dict, request_user: CmdbUser):
 
         result_id: int = risk_class_manager.insert_item(data)
 
-        created_risk_class: dict = risk_class_manager.get_item(result_id)
+        created_risk_class: dict = risk_class_manager.get_item(result_id, as_dict=True)
 
         if created_risk_class:
             return InsertSingleResponse(created_risk_class, result_id).make_response()
@@ -164,7 +164,7 @@ def get_isms_risk_class(public_id: int, request_user: CmdbUser):
     try:
         risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
 
-        requested_risk_class = risk_class_manager.get_item(public_id)
+        requested_risk_class = risk_class_manager.get_item(public_id, as_dict=True)
 
         if requested_risk_class:
             return GetSingleResponse(requested_risk_class, body = request.method == 'HEAD').make_response()
@@ -206,9 +206,7 @@ def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
         if not to_update_risk_class:
             abort(404, f"The RiskCLass with ID:{public_id} was not found!")
 
-        risk_class = IsmsRiskClass.from_data(data)
-
-        risk_class_manager.update_item(public_id, risk_class)
+        risk_class_manager.update_item(public_id, IsmsRiskClass.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
@@ -254,14 +252,14 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
 
             try:
                 to_update_risk_class = risk_class_manager.get_item(public_id)
+
                 if not to_update_risk_class:
                     results.append(
                         {"public_id": public_id, "status": "failed", "message": f"RiskClass ID:{public_id} not found"}
                     )
                     continue
 
-                risk_class = IsmsRiskClass.from_data(item)
-                risk_class_manager.update_item(public_id, risk_class)
+                risk_class_manager.update_item(public_id, IsmsRiskClass.from_data(item))
 
                 results.append({"public_id": public_id, "status": "success"})
             except RiskClassManagerGetError as err:
@@ -314,7 +312,7 @@ def delete_isms_risk_class(public_id: int, request_user: CmdbUser):
     try:
         risk_class_manager: RiskClassManager = ManagerProvider.get_manager(ManagerType.RISK_CLASS, request_user)
 
-        to_delete_risk_class = risk_class_manager.get_risk_class(public_id)
+        to_delete_risk_class = risk_class_manager.get_item(public_id, as_dict=True)
 
         if not to_delete_risk_class:
             abort(404, f"The RiskClass with ID:{public_id} was not found!")
@@ -324,7 +322,7 @@ def delete_isms_risk_class(public_id: int, request_user: CmdbUser):
         # Remove the risk_class from the RiskMatrix
         remove_deleted_risk_class_from_matrix(public_id, request_user)
 
-        return DeleteSingleResponse(raw=to_delete_risk_class).make_response()
+        return DeleteSingleResponse(to_delete_risk_class).make_response()
     except HTTPException as http_err:
         raise http_err
     except RiskClassManagerDeleteError as err:
