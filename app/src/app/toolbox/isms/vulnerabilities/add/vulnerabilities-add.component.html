@@ -1,0 +1,61 @@
+<div class="container" [formGroup]="vulnerabilityForm">
+    <h2 class="mb-3">{{ isEditMode ? 'Edit Vulnerability' : 'Add Vulnerability' }}</h2>
+
+    <form autocomplete="off" class="needs-validation" (ngSubmit)="onSave()" [formGroup]="vulnerabilityForm">
+
+        <!-- Vulnerability Name -->
+        <app-form-input formControlName="name" label="Name" [required]="true" [errorMessage]="
+          hasError('name', 'required')
+            ? 'Name is required'
+            : ''
+        ">
+        </app-form-input>
+
+        <!-- Vulnerability Identifier (not required) -->
+        <app-form-input formControlName="identifier" label="Identifier" [required]="false">
+        </app-form-input>
+
+        <!-- Source (extendable) -->
+        <div class="form-group mt-3">
+            <label>Source:<span class="required">*</span></label>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <ng-select [items]="sourceOptions" bindLabel="value" bindValue="public_id" [multiple]="false"
+                    placeholder="Select vulnerability sources..." formControlName="source" class="flex-grow-1">
+                </ng-select>
+
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openSourceManager()">
+                    Manage Sources
+                </button>
+            </div>
+
+            <!-- Optional error message for Source -->
+            <div class="invalid-feedback d-block mt-1" *ngIf="hasError('source', 'required')">
+                Source is required
+            </div>
+        </div>
+
+        <!-- Description (Required) using FormTextareaComponent -->
+        <app-form-textarea formControlName="description" label="Description" [rows]="5" [required]="false">
+        </app-form-textarea>
+
+        <!-- Footer -->
+        <div class="mt-4 d-flex justify-content-between">
+            <button class="btn btn-secondary mr-2" type="button" (click)="onCancel()">
+                Cancel
+            </button>
+            <button class="btn btn-success" type="submit" [disabled]="vulnerabilityForm.invalid">
+                {{ isEditMode ? 'Save Changes' : 'Create Vulnerability' }}
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Option Manager Modal -->
+<app-extendable-option-manager *ngIf="showSourceManager" [options]="sourceOptions" [optionType]="'VULNERABILITY'"
+    [modalTitle]="'Manage Vulnerability Sources'" [itemLabel]="'Vulnerability Source'" [itemLabelPlural]="'Vulnerability Sources'"
+    (close)="closeSourceManager()">
+</app-extendable-option-manager>
+
+<!-- Loading Spinner -->
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data...">
+</app-loading-popup>

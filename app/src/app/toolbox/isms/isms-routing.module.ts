@@ -6,6 +6,8 @@ import { OverviewComponent } from './overview/overview.component';
 import { ConfigureComponent } from './configure/configure.component';
 import { ThreatsListComponent } from './threats/threats-list.component';
 import { ThreatsAddComponent } from './threats/add/threats-add.component';
+import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-list.component';
+import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
 
 const routes: Routes = [
     {
@@ -29,6 +31,9 @@ const routes: Routes = [
     { path: 'threats', component: ThreatsListComponent },
     { path: 'threats/add', component: ThreatsAddComponent },
     { path: 'threats/edit/:id', component: ThreatsAddComponent },
+    { path: 'vulnerabilities', component: VulnerabilitiesListComponent },
+    { path: 'vulnerabilities/add', component: VulnerabilitiesAddComponent },
+    { path: 'vulnerabilities/edit', component: VulnerabilitiesAddComponent },
 ];
 
 @NgModule({
