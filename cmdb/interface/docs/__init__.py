@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of helper functions for the docs server
+"""
 import logging
 
 import cmdb
@@ -27,8 +28,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 def create_docs_server():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Initializes and configures the documentation server
+    
+    Returns:
+        Flask: A configured Flask application instance for serving documentation
+    """
     app = BaseCmdbApp(__name__)
 
     if cmdb.__MODE__ == 'DEBUG':
@@ -36,9 +41,11 @@ def create_docs_server():
     else:
         config = app_config['production']
 
+    # Set application root for documentation
     config.APPLICATION_ROOT = '/docs/'
     app.config.from_object(config)
 
+    # Register the documentation blueprint
     app.register_blueprint(doc_pages, url_prefix="/")
 
     return app

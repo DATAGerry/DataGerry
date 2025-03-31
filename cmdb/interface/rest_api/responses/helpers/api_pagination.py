@@ -127,8 +127,12 @@ class APIPagination:
 
 
     def to_dict(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Converts the attributes of the IsmsVulnerability into a json compatible dict
+
+        Returns:
+            dict: Json compatible dict of the IsmsVulnerability attributes
+        """
         return {
             'current': self.current,
             'first': self.first,

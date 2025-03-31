@@ -19,9 +19,17 @@ Implementation of GridFsResponse
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class GridFsResponse:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Represents a response object for GridFS queries
+    """
     def __init__(self, result, total: int = None):
+        """
+        Initializes a GridFsResponse instance
+        
+        Args:
+            result (list): The list of results retrieved
+            total (int, optional): The total number of available items. Defaults to 0
+        """
         self.result = result
         self.count = len(result)
         self.total = total or 0
