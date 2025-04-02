@@ -166,7 +166,7 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
                 sections: [],
                 externals: [],
                 summary: {
-                    fields: undefined
+                    fields: []                
                 }
             };
 
