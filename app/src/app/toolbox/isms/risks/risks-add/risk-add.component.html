@@ -1,0 +1,100 @@
+<div class="container" [formGroup]="riskForm">
+  <h2 class="mb-3">
+    {{ isEditMode ? 'Edit Risk' : 'Add Risk' }}
+  </h2>
+
+  <form autocomplete="off" class="needs-validation" (ngSubmit)="onSave()" [formGroup]="riskForm">
+
+    <!-- Name (Required) -->
+    <app-form-input formControlName="name" label="Name:" [required]="true" [errorMessage]="
+        hasError('name', 'required')
+          ? 'Name is required'
+          : ''
+      ">
+    </app-form-input>
+
+    <!-- Identifier (Optional) -->
+    <app-form-input formControlName="identifier" label="Identifier:" [required]="false">
+    </app-form-input>
+
+    <!-- Risk Type (Radio Buttons) -->
+    <div class="form-group mt-3">
+      <label>Risk Type:<span class="required">*</span></label>
+      <app-radio label="Threat x Vulnerability" [value]="'THREAT_X_VULNERABILITY'" name="riskTypeGroup" id="riskTypeTV"
+        formControlName="risk_type"></app-radio>
+      <app-radio label="Threat" [value]="'THREAT'" name="riskTypeGroup" id="riskTypeThreat"
+        formControlName="risk_type"></app-radio>
+      <app-radio label="Event" [value]="'EVENT'" name="riskTypeGroup" id="riskTypeEvent"
+        formControlName="risk_type"></app-radio>
+    </div>
+
+    <!-- Threats (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY or THREAT -->
+    <!-- <div class="form-group mt-3" *ngIf="showThreats()">
+      <label>Threats:</label>
+      <ng-select [items]="threatOptions" bindLabel="name" bindValue="public_id" [multiple]="true"
+        placeholder="Select one or more threats..." formControlName="threats">
+      </ng-select>
+    </div> -->
+
+
+
+    <!-- Vulnerabilities (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY -->
+    <!-- <div class="form-group mt-3" *ngIf="showVulnerabilities()">
+      <label>Vulnerabilities:</label>
+      <ng-select [items]="vulnerabilityOptions" bindLabel="name" bindValue="public_id" [multiple]="true"
+        placeholder="Select one or more vulnerabilities..." formControlName="vulnerabilities">
+      </ng-select>
+    </div> -->
+
+    <!-- Threats (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY or THREAT -->
+    <div class="form-group mt-3" *ngIf="showThreats()">
+      <app-form-select label="Threats:" [items]="threatOptions" bindLabel="name" bindValue="public_id" [multiple]="true"
+        placeholder="Select one or more threats..." form ControlName="threats"></app-form-select>
+    </div>
+
+    <!-- Vulnerabilities (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY -->
+    <div class="form-group mt-3" *ngIf="showVulnerabilities()">
+      <app-form-select label="Vulnerabilities:" [items]="vulnerabilityOptions" bindLabel="name" bindValue="public_id"
+        [multiple]="true" placeholder="Select one or more vulnerabilities..."
+        formControlName="vulnerabilities"></app-form-select>
+    </div>
+
+
+    <!-- Consequences (Textarea) Shown if risk_type = THREAT or EVENT -->
+    <app-form-textarea formControlName="consequences" label="Consequences:" [rows]="4"
+      *ngIf="showConsequences()"></app-form-textarea>
+
+    <!-- Description (Textarea) -->
+    <app-form-textarea formControlName="description" label="Description:" [rows]="4">
+    </app-form-textarea>
+
+    <!-- Protection Goals (Checkboxes) -->
+    <div class="form-group mt-3">
+      <label>Affected Protection Goals:<span class="required">*</span></label>
+      <div class="d-flex flex-wrap gap-3 flex-column">
+        <ng-container *ngFor="let pg of protectionGoalOptions">
+          <app-checkbox [id]="'pg-' + pg.public_id" [label]="pg.name"
+            [checked]="selectedProtectionGoals.includes(pg.public_id)"
+            (checkedChange)="onProtectionGoalChange(pg.public_id, $event)">
+          </app-checkbox>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="mt-4 d-flex justify-content-between">
+      <!-- Cancel Button -->
+      <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
+        (clicked)="onCancel()"></app-button>
+
+      <!-- Submit Button -->
+      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
+        [disabled]="riskForm.invalid"></app-button>
+
+    </div>
+  </form>
+</div>
+
+<!-- Loading Spinner -->
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data...">
+</app-loading-popup>
