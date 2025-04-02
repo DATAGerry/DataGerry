@@ -1,0 +1,24 @@
+<!-- form-select.component.html -->
+<div class="form-group">
+    <!-- Label -->
+    <label *ngIf="label" class="form-label">
+      {{ label }}
+      <span *ngIf="required" class="required">*</span>
+    </label>
+  
+    <!-- The actual ng-select -->
+    <ng-select
+      [items]="items"
+      [bindLabel]="bindLabel"
+      [bindValue]="bindValue"
+      [multiple]="multiple"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [clearable]="true"
+      [(ngModel)]="value"
+      (change)="onValueChange($event)"
+      (blur)="onTouched()"
+    >
+    </ng-select>
+  </div>
+  
