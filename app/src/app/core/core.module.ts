@@ -8,6 +8,10 @@ import { WarningAlertComponent } from './components/warning-message/warning-aler
 import { ExtendableOptionManagerComponent } from './components/extendable_option_manager/extendable-option-manager.component';
 import { FormInputComponent } from './components/base/input/form-input.component';
 import { FormTextareaComponent } from './components/base/textarea/form-textarea.component';
+import { ButtonComponent } from './components/base/button/app-button.component';
+import { CheckboxComponent } from './components/base/checkbox/checkbox.component';
+import { RadioComponent } from './components/base/radio/radio.component';
+import { SelectComponent } from './components/base/select/select.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +20,11 @@ import { FormTextareaComponent } from './components/base/textarea/form-textarea.
     WarningAlertComponent,
     ExtendableOptionManagerComponent,
     FormInputComponent,
-    FormTextareaComponent
+    FormTextareaComponent,
+    ButtonComponent,
+    CheckboxComponent,
+    RadioComponent,
+    SelectComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +37,11 @@ import { FormTextareaComponent } from './components/base/textarea/form-textarea.
     WarningAlertComponent,
     ExtendableOptionManagerComponent,
     FormInputComponent,
-    FormTextareaComponent
+    FormTextareaComponent,
+    ButtonComponent,
+    CheckboxComponent,
+    RadioComponent,
+    SelectComponent
   ]
 })
 export class CoreModule { }

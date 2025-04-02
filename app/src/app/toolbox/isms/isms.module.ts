@@ -30,6 +30,8 @@ import { ThreatsListComponent } from './threats/threats-list.component';
 import { ThreatsAddComponent } from './threats/add/threats-add.component';
 import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-list.component';
 import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
+import { RiskAddComponent } from './risks/risks-add/risks-add.component';
+import { RisksListComponent } from './risks/risks-list/risks-list.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,9 @@ import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabiliti
     ThreatsListComponent,
     ThreatsAddComponent,
     VulnerabilitiesListComponent,
-    VulnerabilitiesAddComponent
+    VulnerabilitiesAddComponent,
+    RiskAddComponent,
+    RisksListComponent
   ],
   imports: [
     CommonModule,

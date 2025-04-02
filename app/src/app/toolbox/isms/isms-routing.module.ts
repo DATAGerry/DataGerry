@@ -8,13 +8,15 @@ import { ThreatsListComponent } from './threats/threats-list.component';
 import { ThreatsAddComponent } from './threats/add/threats-add.component';
 import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-list.component';
 import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
+import { RisksListComponent } from './risks/risks-list/risks-list.component';
+import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 
 const routes: Routes = [
     {
         path: '',
         data: {
             breadcrumb: 'Overview'
-          },
+        },
         component: IsmsComponent,
         children: [
             { path: '', redirectTo: 'overview', pathMatch: 'full' },
@@ -34,6 +36,9 @@ const routes: Routes = [
     { path: 'vulnerabilities', component: VulnerabilitiesListComponent },
     { path: 'vulnerabilities/add', component: VulnerabilitiesAddComponent },
     { path: 'vulnerabilities/edit', component: VulnerabilitiesAddComponent },
+    { path: 'risks', component: RisksListComponent },
+    { path: 'risks/add', component: RiskAddComponent },
+    { path: 'risks/edit', component: RiskAddComponent },
 ];
 
 @NgModule({
