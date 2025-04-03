@@ -17,15 +17,20 @@
 Registration of all REST API Routes for the FlaskApp
 """
 import logging
+import sys
 from flask_cors import CORS
 
 from cmdb.database import MongoDatabaseManager
+from cmdb.database.database_services import (
+    get_db_names_from_service_portal,
+    CollectionValidator,
+    DatabaseUpdater,
+)
 
 import cmdb
 from cmdb.interface.cmdb_app import BaseCmdbApp
 from cmdb.interface.config import app_config
 from cmdb.interface.custom_converters import RegexConverter
-
 from cmdb.interface.rest_api.responses.error_handlers import (
     internal_server_error,
     page_gone,
@@ -37,12 +42,14 @@ from cmdb.interface.rest_api.responses.error_handlers import (
     bad_request,
     service_unavailable,
 )
+
+from cmdb.utils.system_config_reader import SystemConfigReader
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def create_rest_api(database_manager: MongoDatabaseManager) -> BaseCmdbApp:
+def create_rest_api(database_maanger: MongoDatabaseManager) -> BaseCmdbApp:
     """
     Initialisation of the Flask App
 
@@ -52,7 +59,11 @@ def create_rest_api(database_manager: MongoDatabaseManager) -> BaseCmdbApp:
     Returns:
         BaseCmdbApp: The Flask App
     """
-    app = BaseCmdbApp(__name__, database_manager=database_manager)
+    # dbm = MongoDatabaseManager(
+    #     **SystemConfigReader().get_all_values_from_section('Database')
+    # )
+
+    app = BaseCmdbApp(__name__, database_manager=database_maanger)
     app.url_map.strict_slashes = True
 
     # Import App Extensions
@@ -72,6 +83,21 @@ def create_rest_api(database_manager: MongoDatabaseManager) -> BaseCmdbApp:
         register_converters(app)
         register_error_pages(app)
         register_blueprints(app)
+
+        if cmdb.__MODE__ != 'TESTING':
+            try:
+                LOGGER.info("Starting DataGerry Routine!")
+
+                if not cmdb.__CLOUD_MODE__:
+                    start_datagerry_setup(database_maanger)
+                else:
+                    # Check for updates in __CLOUD_MODE__
+                    execute_update_checks(database_maanger)
+            except Exception as err:
+                LOGGER.error(
+                    "Initialisation of DataGerry failed. Exception: %s. Type: %s", err, type(err), exc_info=True
+                )
+                sys.exit(1)
 
     return app
 
@@ -212,3 +238,35 @@ def register_error_pages(app: BaseCmdbApp):
     app.register_error_handler(410, page_gone)
     app.register_error_handler(500, internal_server_error)
     app.register_error_handler(503, service_unavailable)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+
+def start_datagerry_setup(dbm: MongoDatabaseManager) -> None:
+    """document"""
+    #TODO: DOCUMENT-FIX
+    db_name = SystemConfigReader().get_value('database_name', 'Database')
+
+    CollectionValidator(db_name, dbm, local_mode=True).validate_collections()
+
+    database_updater = DatabaseUpdater(dbm, db_name)
+
+    if database_updater.is_update_available():
+        database_updater.run_updates()
+
+
+def execute_update_checks(dbm: MongoDatabaseManager) -> None:
+    """document"""
+    #TODO: DOCUMENT-FIX
+
+    # First retrieve all database names
+    db_names = get_db_names_from_service_portal()
+
+    # # Check each database if it is up to date
+    for db_name in db_names:
+        # Validate Collections
+        CollectionValidator(db_name, dbm).validate_collections()
+
+        database_updater = DatabaseUpdater(dbm, db_name)
+
+        if database_updater.is_update_available():
+            database_updater.run_updates()

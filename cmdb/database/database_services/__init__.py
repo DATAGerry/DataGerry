@@ -14,16 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the UpdateStatus Enumeration
+This package provides all helper functions for database updates
 """
-from enum import Enum
+from .updater_helpers import get_db_names_from_service_portal
+from .collection_validator import CollectionValidator
+from .database_updater import DatabaseUpdater
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class UpdateStatus(Enum):
-    """
-    The different states the update routine of DataGerry can have
-    """
-    NOT = 0
-    RUNNING = 1
-    ERROR = 2
-    FINISHED = 3
+__all__ = [
+    'get_db_names_from_service_portal',
+    'CollectionValidator',
+    'DatabaseUpdater',
+]

@@ -13,18 +13,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
-Provides all ISMS relevant helper methods
-"""
-from .isms_risk_matrix_helper import (
-    calculate_risk_matrix,
-    remove_deleted_risk_class_from_matrix,
-    check_risk_classes_set_in_matrix,
-)
+"""document"""
+#TODO: DOCUMENT
+import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'calculate_risk_matrix',
-    'remove_deleted_risk_class_from_matrix',
-    'check_risk_classes_set_in_matrix',
-]
+LOGGER = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------------------------------------------------- #
+
+
+def post_fork(server, worker):
+    """Ensures MongoDB connections are properly reinitialized after forking."""
+
+    if hasattr(worker, 'app') and\
+       hasattr(worker.app, 'application') and\
+       hasattr(worker.app.application, 'database_manager'):
+        # Access the `database_manager` and reset the connection
+        worker.app.application.database_manager.reset_connection()

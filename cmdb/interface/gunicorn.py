@@ -55,11 +55,12 @@ class WebCmdbService(AbstractCmdbService):
 
         # get WSGI app
         app = DispatcherMiddleware(
-            app=create_app(),
-            mounts={
-                '/docs': create_docs_server(),
-                '/rest': create_rest_api(dbm)
-            }
+                app=create_app(),
+                dbm=dbm,
+                mounts={
+                    '/docs': create_docs_server(),
+                    '/rest': create_rest_api(dbm)
+                }
         )
 
         # get gunicorn options

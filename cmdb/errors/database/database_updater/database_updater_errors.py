@@ -14,17 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant helper methods
+This module contains the classes of all DatabaseUpdater errors
 """
-from .isms_risk_matrix_helper import (
-    calculate_risk_matrix,
-    remove_deleted_risk_class_from_matrix,
-    check_risk_classes_set_in_matrix,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'calculate_risk_matrix',
-    'remove_deleted_risk_class_from_matrix',
-    'check_risk_classes_set_in_matrix',
-]
+class DatabaseUpdaterError(Exception):
+    """
+    Raised to catch all DatabaseUpdater related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all DatabaseUpdater related errors
+        """
+        super().__init__(err)
+
+# ------------------------------------------- DatabaseUpdater - ERRORS ------------------------------------------- #
+
+class DatabaseUpdaterInitError(DatabaseUpdaterError):
+    """
+    Raised when the DatabaseUpdater could not be initialised
+    """

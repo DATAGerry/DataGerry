@@ -92,6 +92,7 @@ def insert_cmdb_type(data: dict, request_user: CmdbUser):
         InsertSingleResponse: The new CmdbType and its public_id
     """
     try:
+        LOGGER.debug(f"Create Dict:{data}")
         types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
@@ -172,6 +173,7 @@ def get_cmdb_types(params: TypeIterationParameters, request_user: CmdbUser):
     except Exception as err:
         LOGGER.error("[get_cmdb_types] Exception: %s. Type: %s", err, type(err), exc_info=True)
         return abort(500, "Internal server error!")
+
 
 @types_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user

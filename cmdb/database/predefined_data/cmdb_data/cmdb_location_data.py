@@ -14,17 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant helper methods
+This package provides all predefined data for CmdbLocations
 """
-from .isms_risk_matrix_helper import (
-    calculate_risk_matrix,
-    remove_deleted_risk_class_from_matrix,
-    check_risk_classes_set_in_matrix,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'calculate_risk_matrix',
-    'remove_deleted_risk_class_from_matrix',
-    'check_risk_classes_set_in_matrix',
-]
+def get_root_location_data() -> dict:
+    """
+    This method holds the correct data for the Root of CmdbLocations
+    Returns:
+        (dict): Returns valid data for the Root of CmdbLocations
+    """
+    return {
+        "public_id":1,
+        "name":"Root",
+        "parent":0,
+        "object_id":0,
+        "type_id":0,
+        "type_label":"Root",
+        "type_icon":"fas fa-globe",
+        "type_selectable":True
+    }

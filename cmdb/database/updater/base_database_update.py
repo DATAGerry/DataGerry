@@ -14,84 +14,76 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of Updater
+Implementation of BaseUpdate
 """
 import logging
 from abc import abstractmethod
 
 from cmdb.database import MongoDatabaseManager
 
-from cmdb.manager.base_manager import BaseManager
 from cmdb.manager import (
     TypesManager,
     CategoriesManager,
     ObjectsManager,
     SettingsWriterManager,
-    SettingsReaderManager,
 )
 
 from cmdb.utils.system_config_reader import SystemConfigReader
-from cmdb.updater.updater_settings import UpdateSettings
-
-from cmdb.errors.updater import UpdaterException
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                    Updater - CLASS                                                   #
+#                                              BaseDatabaseUpdate - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
-class Updater(BaseManager):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    def __init__(self):
+class BaseDatabaseUpdate:
+    """
+    Base class for database updates
+    """
+    def __init__(self, dbm:MongoDatabaseManager= None):
         scr = SystemConfigReader()
-        self.dbm = MongoDatabaseManager(**scr.get_all_values_from_section('Database'))
+        self.dbm = dbm if dbm else MongoDatabaseManager(**scr.get_all_values_from_section('Database'))
         self.categories_manager = CategoriesManager(self.dbm)
         self.objects_manager = ObjectsManager(self.dbm)
         self.types_manager = TypesManager(self.dbm)
-
-        #TODO: REFACTOR-FIX (get the correct database)
-        super().__init__(scr.get_value('database_name', 'Database'), self.dbm)
+        self.settings_writer = SettingsWriterManager(self.dbm)
 
 
     @abstractmethod
-    def creation_date(self):
+    def creation_date(self) -> int:
         """
-        When was the file created
-        Returns: date
+        Returns the creation date of the update
+        
+        Returns:
+            int: The update creation date as a single interger in format {year}{month}{day}
         """
         return NotImplementedError
 
 
     @abstractmethod
-    def description(self):
+    def description(self) -> str:
         """
-        What does the update
-        Returns: name
+        Provides a brief description of the update
+        
+        Returns:
+            str: A description of the update
         """
         return NotImplementedError
 
 
     @abstractmethod
-    def start_update(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def start_update(self) -> None:
+        """
+        Starts the update process. This method should be implemented in subclasses to define specific update logic
+        """
         return NotImplementedError
 
 
     def increase_updater_version(self, value: int):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        settings_reader = SettingsReaderManager(self.dbm)
-        settings_writer = SettingsWriterManager(self.dbm)
-        updater_settings_values = settings_reader.get_all_values_from_section('updater')
-        updater_setting_instance = UpdateSettings(**updater_settings_values)
-        updater_setting_instance.version = value
-        settings_writer.write(_id='updater', data=updater_setting_instance.__dict__)
-
-
-    def error(self, msg: str) -> None:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        raise UpdaterException(msg)
+        """
+        Increments the updater version number in the database
+        
+        Args:
+            value (int): The new version number to be set
+        """
+        self.settings_writer.write(_id='updater', data={'_id':'updater', 'version': value})

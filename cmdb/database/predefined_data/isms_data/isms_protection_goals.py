@@ -14,16 +14,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the SetupStatus Enumeration
+This package provides all predefined data for the IsmsProtectionGoals
 """
-from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class SetupStatus(Enum):
+def get_default_protection_goals() -> list:
     """
-    The different states of the DataGerry setup routine
+    All default IsmsProtectionGoals as data. Used when DataGerry is setup
+
+    Returns:
+        list: All default IsmsProtectionGoals as data
     """
-    NOT = 0
-    RUNNING = 1
-    ERROR = 2
-    FINISHED = 3
+    return [
+        {
+            'public_id': 1,
+            'name': 'Confidentiality'
+        },
+        {
+            'public_id': 2,
+            'name': 'Integrity'
+        },
+        {
+            'public_id': 3,
+            'name': 'Availability'
+        }
+    ]

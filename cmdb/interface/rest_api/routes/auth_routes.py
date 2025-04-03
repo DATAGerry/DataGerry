@@ -64,7 +64,7 @@ LOGGER = logging.getLogger(__name__)
 auth_blueprint = APIBlueprint('auth', __name__)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
-
+#TODO: REFACTOR-FIX (reduce complexity)
 @auth_blueprint.route('/login', methods=['POST'])
 def post_login():
     """document"""

@@ -267,7 +267,7 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
-        to_delete_protection_goal = protection_goal_manager.get_protection_goal(public_id)
+        to_delete_protection_goal = protection_goal_manager.get_item(public_id)
 
         if not to_delete_protection_goal:
             abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")

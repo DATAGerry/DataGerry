@@ -14,17 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant helper methods
+This package provide all constants for the Database section
 """
-from .isms_risk_matrix_helper import (
-    calculate_risk_matrix,
-    remove_deleted_risk_class_from_matrix,
-    check_risk_classes_set_in_matrix,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'calculate_risk_matrix',
-    'remove_deleted_risk_class_from_matrix',
-    'check_risk_classes_set_in_matrix',
-]
+PUBLIC_ID_COUNTER_COLLECTION = "datastorage.counter"
+MIN_CLOUD_UPDATER_VERSION = 20240603
