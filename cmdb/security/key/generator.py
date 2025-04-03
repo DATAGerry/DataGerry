@@ -13,15 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of KeyGenerator
+"""
 import logging
 from Crypto import Random
 from Crypto.PublicKey import RSA
 
 from cmdb.database import MongoDatabaseManager
 
-from cmdb.manager import SettingsWriterManager
+from cmdb.manager import SettingsManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class KeyGenerator:
     """document"""
     #TODO: DOCUMENT-FIX
     def __init__(self, dbm: MongoDatabaseManager):
-        self.settings_writer = SettingsWriterManager(dbm)
+        self.settings_manager = SettingsManager(dbm)
 
 
     def generate_rsa_keypair(self):
@@ -51,7 +52,7 @@ class KeyGenerator:
             'public': public_key
         }
 
-        self.settings_writer.write('security', {'asymmetric_key': asymmetric_key})
+        self.settings_manager.write('security', {'asymmetric_key': asymmetric_key})
 
 
     def generate_symmetric_aes_key(self):
@@ -60,4 +61,4 @@ class KeyGenerator:
         symmetric_aes_key = Random.get_random_bytes(32)
         # LOGGER.error(f"symmetric_aes_key: {symmetric_aes_key}")
 
-        self.settings_writer.write('security', {'symmetric_aes_key': symmetric_aes_key})
+        self.settings_manager.write('security', {'symmetric_aes_key': symmetric_aes_key})

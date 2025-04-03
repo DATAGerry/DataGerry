@@ -17,15 +17,15 @@
 Implementation of all database updater helpers
 """
 import logging
-# import os
-# import requests
+import os
+import requests
 
-# from cmdb.errors.security import (
-#     InvalidCloudUserError,
-#     NoAccessTokenError,
-#     RequestTimeoutError,
-#     RequestError,
-# )
+from cmdb.errors.security import (
+    InvalidCloudUserError,
+    NoAccessTokenError,
+    RequestTimeoutError,
+    RequestError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -45,27 +45,25 @@ def get_db_names_from_service_portal(local_mode: bool = False) -> list[str]:
     if local_mode:
         return []
 
-    return []
+    x_access_token = os.getenv("X-ACCESS-TOKEN")
 
-    # x_access_token = os.getenv("X-ACCESS-TOKEN")
+    if not x_access_token:
+        raise NoAccessTokenError("No x-access-token provided!")
 
-    # if not x_access_token:
-    #     raise NoAccessTokenError("No x-access-token provided!")
+    headers = {
+        "x-access-token": x_access_token
+    }
 
-    # headers = {
-    #     "x-access-token": x_access_token
-    # }
+    target = os.getenv("SP_ALL_DB_NAMES_URL")
 
-    # target = os.getenv("SERVICE-PORTAL-DATABASES-URL")
+    try:
+        response = requests.post(target, headers=headers, timeout=3)
 
-    # try:
-    #     response = requests.post(target, headers=headers, timeout=3)
+        if response.status_code == 200:
+            return response.json()
 
-    #     if response.status_code == 200:
-    #         return response.json()
-
-    #     raise InvalidCloudUserError(response.json()['message'])
-    # except requests.exceptions.Timeout as err:
-    #     raise RequestTimeoutError(err) from err
-    # except requests.exceptions.RequestException as err:
-    #     raise RequestError(err) from err
+        raise InvalidCloudUserError(response.json()['message'])
+    except requests.exceptions.Timeout as err:
+        raise RequestTimeoutError(err) from err
+    except requests.exceptions.RequestException as err:
+        raise RequestError(err) from err

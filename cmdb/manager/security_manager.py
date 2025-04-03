@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of SecurityManager
+"""
 import os
 import base64
 import logging
@@ -28,8 +29,7 @@ from bson.json_util import dumps
 from flask import current_app
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager #TODO: CYCLIC-IMPORT-FIX
-from cmdb.manager.settings_reader_manager import SettingsReaderManager #TODO: CYCLIC-IMPORT-FIX
+from cmdb.manager.system_manager.settings_manager import SettingsManager #TODO: IMPORT-FIX(circular)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -48,8 +48,7 @@ class SecurityManager:
         if database:
             dbm.connector.set_database(database)
 
-        self.settings_reader = SettingsReaderManager(dbm)
-        self.settings_writer = SettingsWriterManager(dbm)
+        self.settings_manager = SettingsManager(dbm)
         self.salt = "cmdb"
 
 
@@ -107,7 +106,7 @@ class SecurityManager:
     def generate_symmetric_aes_key(self):
         """document"""
         #TODO: DOCUMENT-FIX
-        return self.settings_writer.write('security', {'symmetric_aes_key': Random.get_random_bytes(32)})
+        return self.settings_manager.write('security', {'symmetric_aes_key': Random.get_random_bytes(32)})
 
 
     def get_symmetric_aes_key(self):
@@ -126,11 +125,11 @@ class SecurityManager:
                 return symmetric_key
 
 
-            symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
+            symmetric_key = self.settings_manager.get_value('symmetric_aes_key', 'security')
 
             if not symmetric_key:
                 self.generate_symmetric_aes_key()
-                symmetric_key = self.settings_reader.get_value('symmetric_aes_key', 'security')
+                symmetric_key = self.settings_manager.get_value('symmetric_aes_key', 'security')
 
             return symmetric_key
 

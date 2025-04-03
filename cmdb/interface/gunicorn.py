@@ -27,7 +27,7 @@ from cmdb.interface.docs import create_docs_server
 from cmdb.interface.dispatcher_middleware import DispatcherMiddleware
 from cmdb.interface.http_server import HTTPServer
 from cmdb.interface.rest_api.init_rest_api import create_rest_api
-from cmdb.utils.system_config_reader import SystemConfigReader
+from cmdb.manager.system_manager.system_config_reader import SystemConfigReader
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

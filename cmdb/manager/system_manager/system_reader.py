@@ -19,38 +19,46 @@ Collection of system readers which loads configuration files and settings
 from typing import Any
 # -------------------------------------------------------------------------------------------------------------------- #
 
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                 SystemReader - CLASS                                                 #
+# -------------------------------------------------------------------------------------------------------------------- #
 class SystemReader:
     """
-    Reader super class
+    Base class for system readers
     """
 
     def get_value(self, name: str, section: str) -> Any:
         """
-        get specific value from a section
+        Retrieve a specific value from a section
+
         Args:
-            name: key name of value
-            section: section identifier
+            name (str): key name of value
+            section (str): section identifier
+
         Returns:
-            value
+            Any: The requested value if any
         """
         raise NotImplementedError
 
 
     def get_sections(self) -> list[str]:
         """
-        get all sections from config
+        Get all sections from config
+        
         Returns:
-            list of config names
+            list: list of config names
         """
         raise NotImplementedError
 
 
     def get_all_values_from_section(self, section: str) -> dict:
         """
-        get list of all values in section
+        Get a dict of all values in section
+        
         Args:
-            section: section key
+            section (str): section key
+
         Returns:
-            key/value list of all values inside a section
+            dict: Dict of all values inside a section
         """
         raise NotImplementedError

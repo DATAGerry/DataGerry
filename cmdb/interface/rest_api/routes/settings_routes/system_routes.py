@@ -21,8 +21,8 @@ import time
 import logging
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
-from cmdb.manager import SettingsReaderManager
-from cmdb.utils.system_config_reader import SystemConfigReader
+from cmdb.manager import SettingsManager
+from cmdb.manager.system_manager.system_config_reader import SystemConfigReader
 
 from cmdb import __title__, __version__, __runtime__
 from cmdb.interface.rest_api.routes.framework_routes.setting_routes import settings_blueprint
@@ -45,11 +45,10 @@ system_blueprint = NestedBlueprint(settings_blueprint, url_prefix='/system')
 def get_datagerry_information(request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                               request_user)
+    settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
 
     try:
-        db_version = settings_reader.get_all_values_from_section('updater').get('version')
+        db_version = settings_manager.get_all_values_from_section('updater').get('version')
     except Exception as err:
         LOGGER.warning(err)
         db_version = 0

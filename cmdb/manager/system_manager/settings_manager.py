@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of SettingsReaderManager
+Implementation of SettingsManager
 """
 import logging
 from typing import Union
+from pymongo.results import UpdateResult
 
 from cmdb.database import MongoDatabaseManager
 
-from cmdb.utils.system_reader import SystemReader
+from cmdb.manager.system_manager.system_reader import SystemReader
 
 from cmdb.errors.system_config import SectionError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -29,10 +30,9 @@ from cmdb.errors.system_config import SectionError
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                             SystemSettingsReader - CLASS                                             #
+#                                                SettingsManager - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
-#TODO: BASECLASS-FIX (make the base class 'BaseManager')
-class SettingsReaderManager(SystemReader):
+class SettingsManager(SystemReader):
     """
     Settings reader loads settings from database
     """
@@ -54,7 +54,7 @@ class SettingsReaderManager(SystemReader):
 
     def get_value(self, name, section) -> Union[dict, list]:
         """
-        get a value from a given section
+        Retrieve a value from a given section
         Args:
             name: key of value
             section: section of the value
@@ -62,14 +62,14 @@ class SettingsReaderManager(SystemReader):
         Returns:
             value
         """
-        return self.dbm.find_one_by(collection=SettingsReaderManager.COLLECTION, filter={'_id': section})[name]
+        return self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter={'_id': section})[name]
 
 
     def get_section(self, section_name: str) -> dict:
         """document"""
         #TODO: DOCUMENT-FIX
         query_filter = {'_id': section_name}
-        return self.dbm.find_one_by(collection=SettingsReaderManager.COLLECTION, filter=query_filter)
+        return self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter=query_filter)
 
 
     def get_sections(self):
@@ -78,7 +78,7 @@ class SettingsReaderManager(SystemReader):
         Returns:
             list of sections inside a config
         """
-        return self.dbm.find_all(collection=SettingsReaderManager.COLLECTION, projection={'_id': 1})
+        return self.dbm.find_all(collection=SettingsManager.COLLECTION, projection={'_id': 1})
 
 
     def get_all_values_from_section(self, section, default=None) -> dict:
@@ -92,7 +92,7 @@ class SettingsReaderManager(SystemReader):
             key value dict of all elements inside section
         """
 
-        section_values = self.dbm.find_one_by(collection=SettingsReaderManager.COLLECTION, filter={'_id': section})
+        section_values = self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter={'_id': section})
 
         if not section_values:
             if default:
@@ -103,7 +103,15 @@ class SettingsReaderManager(SystemReader):
         return section_values
 
 
-    def get_all(self) -> list:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        return self.dbm.find_all(collection=SettingsReaderManager.COLLECTION)
+    def write(self, _id: str, data: dict) -> UpdateResult:
+        """
+        Writes a new setting value in the database
+
+        Args:
+            _id (str): Identifier of the setting
+            data (dict): The new data of the setting
+
+        Returns:
+            UpdateResult: The result of the update operation
+        """
+        return self.dbm.update(collection=self.COLLECTION, criteria={'_id': _id}, data=data, upsert=True)

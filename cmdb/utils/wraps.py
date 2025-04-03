@@ -28,7 +28,7 @@ string_types = (type(b''), type(''))
 
 LOGGER = logging.getLogger(__name__)
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
 def deprecated(message):
     """
     This is a decorator which can be used to mark functions as deprecated.

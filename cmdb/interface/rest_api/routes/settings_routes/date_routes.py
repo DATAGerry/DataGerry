@@ -21,8 +21,7 @@ from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
-from cmdb.manager import SettingsReaderManager, SettingsWriterManager
-
+from cmdb.manager import SettingsManager
 from cmdb.settings.date_settings import DateSettingsDAO
 from cmdb.models.user_model import CmdbUser
 from cmdb.interface.rest_api.responses import DefaultResponse
@@ -51,10 +50,9 @@ def get_date_settings(request_user: CmdbUser):
         DefaultResponse: The HTTP response containing the date settings
     """
     try:
-        settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                             request_user)
+        settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
 
-        date_settings = settings_reader.get_all_values_from_section('date', DateSettingsDAO.__DEFAULT_SETTINGS__)
+        date_settings = settings_manager.get_all_values_from_section('date', DateSettingsDAO.__DEFAULT_SETTINGS__)
 
         date_settings = DateSettingsDAO(**date_settings)
 
@@ -84,20 +82,17 @@ def update_date_settings(request_user: CmdbUser):
     try:
         new_auth_settings_values = request.get_json()
 
-        settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                                request_user)
-        settings_writer: SettingsWriterManager = ManagerProvider.get_manager(ManagerType.SETTINGS_WRITER,
-                                                                                request_user)
+        settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
 
         if not new_auth_settings_values:
             abort(400, 'No new data was provided')
 
         new_auth_setting_instance = DateSettingsDAO(**new_auth_settings_values)
 
-        update_result = settings_writer.write(_id='date', data=new_auth_setting_instance.__dict__)
+        update_result = settings_manager.write(_id='date', data=new_auth_setting_instance.__dict__)
 
         if update_result.acknowledged:
-            return DefaultResponse(settings_reader.get_section('date')).make_response()
+            return DefaultResponse(settings_manager.get_section('date')).make_response()
 
         abort(400, 'Could not update the DateSettings')
     except Exception as err:

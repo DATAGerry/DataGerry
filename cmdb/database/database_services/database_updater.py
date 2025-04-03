@@ -21,7 +21,7 @@ import logging
 from cmdb.database.database_constants import MIN_CLOUD_UPDATER_VERSION
 from cmdb.database.mongo_database_manager import MongoDatabaseManager
 
-from cmdb.manager import SettingsReaderManager, SettingsWriterManager
+from cmdb.manager import SettingsManager
 
 from cmdb.utils.helpers import process_bar, load_class
 
@@ -51,8 +51,7 @@ class DatabaseUpdater:
         if db_name:
             self.dbm = dbm.connector.set_database(db_name)
 
-        self.settings_reader_manager = SettingsReaderManager(dbm, db_name)
-        self.settings_writer_manager = SettingsWriterManager(dbm, db_name)
+        self.settings_manager = SettingsManager(dbm, db_name)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -95,7 +94,7 @@ class DatabaseUpdater:
             'version': version
         }
 
-        self.settings_writer_manager.write(_id='updater', data=new_version)
+        self.settings_manager.write(_id='updater', data=new_version)
 
 
     def get_current_update_version(self) -> int:
@@ -112,13 +111,11 @@ class DatabaseUpdater:
                         }
 
         try:
-            current_version = self.settings_reader_manager.get_all_values_from_section('updater')
+            current_version = self.settings_manager.get_all_values_from_section('updater')
             return current_version.get('version')
         except SectionError:
             # No Updater Version => Set it
-            self.settings_writer_manager.write(
-                                            _id='updater',
-                                            data=default_version)
+            self.settings_manager.write(_id='updater', data=default_version)
 
             return default_version.get('version', 0)
 
