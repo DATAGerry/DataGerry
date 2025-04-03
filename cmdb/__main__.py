@@ -24,24 +24,15 @@ from argparse import ArgumentParser, Namespace
 import os
 import sys
 
-from cmdb.database import MongoDatabaseManager
-
 import cmdb
 from cmdb import __title__
-from cmdb.startup_routines.check_routine import CheckRoutine
-from cmdb.startup_routines.update_routine import UpdateRoutine
-from cmdb.startup_routines.setup_routine import SetupRoutine
-from cmdb.startup_routines.setup_status_enum import SetupStatus
-from cmdb.startup_routines.check_status_enum import CheckStatus
-from cmdb.startup_routines.update_status_enum import UpdateStatus
+
 from cmdb.utils.logger import get_logging_conf
 from cmdb.utils.system_config_reader import SystemConfigReader
 from cmdb.process_management.process_manager import ProcessManager
-
-from cmdb.errors.database import ServerTimeoutError, DatabaseConnectionError
 # -------------------------------------------------------------------------------------------------------------------- #
 
-# setup logging for startup
+# Setup logging
 logging.config.dictConfig(get_logging_conf())
 
 LOGGER = logging.getLogger(__name__)
@@ -57,8 +48,8 @@ def main(args: Namespace):
         args: start-options
     """
     try:
-        dbm = None
-        LOGGER.info("DATAGERRY starting...")
+        # dbm = None
+        LOGGER.info("Starting DataGerry...")
 
         __activate_debug_mode(args)
         __activate_cloud_mode(args)
@@ -67,136 +58,8 @@ def main(args: Namespace):
 
         if args.start:
             _start_app()
-            LOGGER.info("DATAGERRY successfully started")
-
-        if args.start and not args.cloud:
-            try:
-                dbm: MongoDatabaseManager = _check_database()
-
-                if not dbm:
-                    raise DatabaseConnectionError('Could not establish connection to db')
-
-                LOGGER.info("Database connection established.")
-
-            except DatabaseConnectionError as err:
-                LOGGER.critical("%s: %s",type(err), err)
-                sys.exit(1)
-
-        # check db-settings and run update if needed
-        if args.start and not args.cloud:
-            _start_check_routines(dbm)
-
-        if args.keys and not args.cloud:
-            _start_key_routine(dbm)
-
     except Exception as err:
         raise RuntimeError(err) from err
-
-# ----------------------------------------------- ROUTINES AND CHECKERS ---------------------------------------------- #
-
-def _start_key_routine(dbm: MongoDatabaseManager):
-    """
-    Starts key generation routine
-    Args:
-        dbm (MongoDatabaseManager): Database Connector
-    """
-    setup_routine = SetupRoutine(dbm)
-    setup_status = None
-
-    try:
-        setup_routine.init_keys()
-    except RuntimeError as error:
-        LOGGER.error(error)
-        setup_status = setup_routine.get_setup_status()
-        LOGGER.warning('The key generation did not go through as expected - Status %s', setup_status)
-
-    if setup_status == SetupStatus.FINISHED:
-        sys.exit(0)
-    else:
-        sys.exit(1)
-
-
-def _start_check_routines(dbm: MongoDatabaseManager):
-    """
-    Starts validation of database structure
-    Args:
-        dbm (MongoDatabaseManager): Database Connector
-    """
-    check_routine = CheckRoutine(dbm)
-        # check db-settings
-    try:
-        check_status = check_routine.checker()
-    except RuntimeError as error:
-        LOGGER.debug("[_start_check_routines] Error: %s", error)
-        LOGGER.error('The check did not go through as expected. Please run an update. \n Error: %s', error)
-        check_status = check_routine.get_check_status()
-
-    if check_status == CheckStatus.HAS_UPDATES:
-        # run update
-        update_routine = UpdateRoutine(dbm)
-
-        try:
-            update_status = update_routine.start_update()
-        except RuntimeError as error:
-            LOGGER.error(error)
-            update_status = update_routine.get_updater_status()
-            LOGGER.warning('The update did not go through as expected - Status %s', update_status)
-
-        if update_status == UpdateStatus.FINISHED:
-            check_status = CheckStatus.FINISHED
-        else:
-            sys.exit(1)
-
-    if check_status == CheckStatus.FINISHED:
-        # run setup if needed
-        setup_routine = SetupRoutine(dbm)
-
-        try:
-            setup_status = setup_routine.setup()
-        except RuntimeError as error:
-            LOGGER.error(error)
-            setup_status = setup_routine.get_setup_status()
-            LOGGER.warning('The setup did not go through as expected - Status %s', setup_status)
-
-        if setup_status == SetupStatus.FINISHED:
-            pass
-        else:
-            sys.exit(1)
-
-
-def _check_database():
-    """
-    Checks whether the specified connection of the configuration is reachable.
-    Returns: Datebase if response
-    """
-    ssc = SystemConfigReader()
-    LOGGER.info('Checking database connection with %s data',ssc.config_name)
-    database_options = ssc.get_all_values_from_section('Database')
-    dbm = MongoDatabaseManager(**database_options)
-
-    try:
-        connection_test = dbm.connector.is_connected()
-    except ServerTimeoutError:
-        connection_test = False
-    LOGGER.debug('Database status is %s',connection_test)
-
-    if connection_test is True:
-        return dbm
-
-    retries = 0
-
-    while retries < 3:
-        retries += 1
-        LOGGER.warning(
-            'Retry %i: Checking database connection with %s data', retries, SystemConfigReader.DEFAULT_CONFIG_NAME
-        )
-
-        connection_test = dbm.connector.is_connected()
-
-        if connection_test:
-            return dbm
-
-    return None
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
 
@@ -208,50 +71,62 @@ def build_arg_parser() -> Namespace:
     """
     _parser = ArgumentParser(prog='DATAGERRY', usage=f"usage: {__title__} [options]")
 
-    _parser.add_argument('--keys',
-                         action='store_true',
-                         default=False,
-                         dest='keys',
-                         help="init keys")
+    _parser.add_argument(
+        '--keys',
+        action='store_true',
+        default=False,
+        dest='keys',
+        help="init keys"
+    )
 
-    _parser.add_argument('--cloud',
-                         action='store_true',
-                         default=False,
-                         dest='cloud',
-                         help="init cloud mode")
+    _parser.add_argument(
+        '--cloud',
+        action='store_true',
+        default=False,
+        dest='cloud',
+        help="init cloud mode"
+    )
 
-    _parser.add_argument('--local',
-                         action='store_true',
-                         default=False,
-                         dest='local',
-                         help="init local mode")
+    _parser.add_argument(
+        '--local',
+        action='store_true',
+        default=False,
+        dest='local',
+        help="init local mode"
+    )
 
-    _parser.add_argument('-d',
-                         '--debug',
-                         action='store_true',
-                         default=False,
-                         dest='debug',
-                         help="enable debug mode: DO NOT USE ON PRODUCTIVE SYSTEMS")
+    _parser.add_argument(
+        '-d',
+        '--debug',
+        action='store_true',
+        default=False,
+        dest='debug',
+        help="enable debug mode: DO NOT USE ON PRODUCTIVE SYSTEMS"
+    )
 
-    _parser.add_argument('-s',
-                         '--start',
-                         action='store_true',
-                         default=False,
-                         dest='start',
-                         help="starting cmdb core system - enables services")
+    _parser.add_argument(
+        '-s',
+        '--start',
+        action='store_true',
+        default=False,
+        dest='start',
+        help="starting cmdb core system - enables services"
+    )
 
-    _parser.add_argument('-c',
-                         '--config',
-                         default='./etc/cmdb.conf',
-                         dest='config_file',
-                         help="optional path to config file")
+    _parser.add_argument(
+        '-c',
+        '--config',
+        default='./etc/cmdb.conf',
+        dest='config_file',
+        help="optional path to config file"
+    )
 
     return _parser.parse_args()
 
 
 def __activate_debug_mode(args: Namespace):
     """
-    Activate the debug mode if set
+    Sets the __MODE__ to DEBUG if activated
     """
     if args.debug:
         cmdb.__MODE__ = 'DEBUG'
@@ -260,7 +135,7 @@ def __activate_debug_mode(args: Namespace):
 
 def __activate_local_mode(args: Namespace):
     """
-    Activate the debug mode if set
+    Activates __LOCAL_MODE__ if set
     """
     if args.local:
         cmdb.__LOCAL_MODE__ = True
@@ -268,7 +143,9 @@ def __activate_local_mode(args: Namespace):
 
 
 def __activate_cloud_mode(args: Namespace):
-    """ Activates cloud mode if set"""
+    """
+    Activates __CLOUD_MODE__ if set
+    """
     if args.cloud:
         cmdb.__CLOUD_MODE__ = True
         LOGGER.info("CLOUD MODE enabled")
@@ -277,6 +154,7 @@ def __activate_cloud_mode(args: Namespace):
 def _init_config_reader(config_file: str):
     """
     Initialises the config file reader
+
     Args:
         config_file (str): Path to config file as a string
     """
@@ -291,7 +169,7 @@ def _init_config_reader(config_file: str):
     SystemConfigReader(SystemConfigReader.RUNNING_CONFIG_NAME, SystemConfigReader.RUNNING_CONFIG_LOCATION)
 
 
-def _start_app():
+def _start_app() -> None:
     """
     Starting application services
     """

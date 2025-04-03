@@ -14,54 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module stores all static data and methods for ISMS
+This package provides all predefined data for CmdbExtendableOptions required for ISMS
 """
 from cmdb.models.extendable_option_model import OptionType
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def get_default_protection_goals() -> list:
-    """
-    All default IsmsProtectionGoals as data. Used when DataGerry is setup
-
-    Returns:
-        list: All default IsmsProtectionGoals as data
-    """
-    return [
-        {
-            'public_id': 1,
-            'name': 'Confidentiality'
-        },
-        {
-            'public_id': 2,
-            'name': 'Integrity'
-        },
-        {
-            'public_id': 3,
-            'name': 'Availability'
-        }
-    ]
-
-
-def get_default_risk_matrix() -> dict:
-    """
-    The default IsmsRiskMatrix. Used when DataGerry is setup
-
-    Returns:
-        list: The default IsmsRiskMatrix
-    """
-    return {
-        'public_id': 1,
-        'risk_matrix': [],
-        'matrix_unit': None
-    }
-
-
-def get_predefined_isms_extendable_options() -> list:
+def get_default_isms_extendable_options() -> list:
     """
     All predefined CmdbExtendableOptions as data. Used when DataGerry is setup
 
     Returns:
-        list: All default CmdbExtendableOptions as data
+        list: All default CmdbExtendableOptions for ISMS as data
     """
     return [
         {

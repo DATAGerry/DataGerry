@@ -27,6 +27,7 @@ import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
 
+from cmdb.database.database_services import CollectionValidator, DatabaseUpdater
 from cmdb.manager import (
     UsersManager,
     GroupsManager,
@@ -39,18 +40,9 @@ from cmdb.interface.rest_api.auth_method_enum import AuthMethod
 from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.token.validator import TokenValidator
 from cmdb.security.token.generator import TokenGenerator
-from cmdb.models.isms_model import IsmsProtectionGoal, IsmsRiskMatrix
-from cmdb.models.extendable_option_model import CmdbExtendableOption
-from cmdb.models.isms_model.isms_helper import (
-    get_default_protection_goals,
-    get_default_risk_matrix,
-    get_predefined_isms_extendable_options,
-)
+
 from cmdb.models.group_model import CmdbUserGroup
-from cmdb.models.location_model.cmdb_location import CmdbLocation
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.section_template_model.cmdb_section_template import CmdbSectionTemplate
-from cmdb.models.reports_model.cmdb_report_category import CmdbReportCategory
 from cmdb.models.user_management_constants import (
     __FIXED_GROUPS__,
     __COLLECTIONS__ as USER_MANAGEMENT_COLLECTION,
@@ -571,56 +563,15 @@ def init_db_routine(db_name: str) -> None:
     Creates a database with the given name and all corresponding collections
 
     Args:
-        `db_name` (str): Name of the database
+        db_name (str): Name of the database
     """
-    new_db = current_app.database_manager.create_database(db_name)
-    current_app.database_manager.connector.set_database(new_db.name)
+    # Initialise the database
+    collection_validator = CollectionValidator(db_name, current_app.database_manager)
+    collection_validator.validate_collections()
 
-    with current_app.app_context():
-        groups_manager = GroupsManager(current_app.database_manager)
-
-    # Generate framework collections
-    for collection in FRAMEWORK_CLASSES:
-        current_app.database_manager.create_collection(collection.COLLECTION)
-        # set unique indexes
-        current_app.database_manager.create_indexes(collection.COLLECTION, collection.get_index_keys())
-
-    # Generate user management collections
-    for collection in USER_MANAGEMENT_COLLECTION:
-        current_app.database_manager.create_collection(collection.COLLECTION)
-        # set unique indexes
-        current_app.database_manager.create_indexes(collection.COLLECTION, collection.get_index_keys())
-
-    # Generate groups
-    for group in __FIXED_GROUPS__:
-        groups_manager.insert_group(group)
-
-    # Generate the root location
-    current_app.database_manager.set_root_location(CmdbLocation.COLLECTION, create=True)
-    LOGGER.info("Created 'Root'-Location!")
-
-    # Generate predefined section templates
-    current_app.database_manager.init_predefined_templates(CmdbSectionTemplate.COLLECTION)
-
-    # Generate 'General' report category
-    current_app.database_manager.create_general_report_category(CmdbReportCategory.COLLECTION)
-
-    # Create the default IsmsProtectionGoals
-    default_protection_goals = get_default_protection_goals()
-
-    for protection_goal in default_protection_goals:
-        current_app.database_manager.insert(IsmsProtectionGoal.COLLECTION, protection_goal)
-        LOGGER.info("Created ProtectionGoal '%s'!", protection_goal['name'])
-
-    # Create the default IsmsRiskMatrix
-    current_app.database_manager.insert(IsmsRiskMatrix.COLLECTION, get_default_risk_matrix())
-    LOGGER.info("Created default RiskMatrix!")
-
-    predefined_isms_options = get_predefined_isms_extendable_options()
-
-    for predefined_isms_option in predefined_isms_options:
-        current_app.database_manager.insert(CmdbExtendableOption.COLLECTION, predefined_isms_option)
-        LOGGER.info("Created ISMS Option: '%s'!", predefined_isms_option['value'])
+    # Sets the update version to the newest version
+    database_updater = DatabaseUpdater(current_app.database_manager, db_name)
+    database_updater.set_update_version(database_updater.get_highest_update_version())
 
 
 def set_admin_user(user_data: dict, subscription: dict):

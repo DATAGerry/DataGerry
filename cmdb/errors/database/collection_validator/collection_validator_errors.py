@@ -14,17 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant helper methods
+This module contains the classes of all CollectionValidator errors
 """
-from .isms_risk_matrix_helper import (
-    calculate_risk_matrix,
-    remove_deleted_risk_class_from_matrix,
-    check_risk_classes_set_in_matrix,
-)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-__all__ = [
-    'calculate_risk_matrix',
-    'remove_deleted_risk_class_from_matrix',
-    'check_risk_classes_set_in_matrix',
-]
+class CollectionValidatorError(Exception):
+    """
+    Raised to catch all CollectionValidator related errors
+    """
+    def __init__(self, err: str):
+        """
+        Raised to catch all CollectionValidator related errors
+        """
+        super().__init__(err)
+
+# ------------------------------------------- CollectionValidator - ERRORS ------------------------------------------- #
+
+class CollectionValidatorInitError(CollectionValidatorError):
+    """
+    Raised when the CollectionValidator could not be initialised
+    """
+
+
+class CollectionInitError(CollectionValidatorError):
+    """
+    Raised when the initialisation of a Collection failed
+    """
+
+
+class CollectionValidationError(CollectionValidatorError):
+    """
+    Raised when the valdation of Collections failed
+    """

@@ -17,12 +17,10 @@
 Provides CmdbLocation related classes and methods
 """
 from .location_utils import (
-    get_root_location_data,
     validate_root_location,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'get_root_location_data',
     'validate_root_location',
 ]

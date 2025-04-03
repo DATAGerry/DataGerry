@@ -22,6 +22,7 @@ from gunicorn.app.base import BaseApplication
 
 from cmdb import __MODE__
 from cmdb.utils.logger import get_logging_conf
+from cmdb.interface.gunicorn_config import post_fork
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -41,11 +42,15 @@ class HTTPServer(BaseApplication):
         if 'workers' not in self.options:
             self.options['workers'] = HTTPServer.number_of_workers()
 
+        # Explicitly disable preload
+        self.options['preload_app'] = False  # Disable preload
         self.options['worker_class'] = 'sync'
         self.options['disable_existing_loggers'] = False
         self.options['logconfig_dict'] = get_logging_conf()
         self.options['timeout'] = 120
         self.options['daemon'] = True
+
+        self.options['post_fork'] = post_fork
 
         if __MODE__ in ('DEBUG','TESTING'):
             self.options['reload'] = True
@@ -68,8 +73,16 @@ class HTTPServer(BaseApplication):
         return self.application
 
 
+    # def post_fork(self, worker):
+    #     """
+    #     Ensures MongoDB connections are properly reinitialized after forking
+    #     """
+    #     post_fork(self, worker)  # Call post_fork with the worker
+
+
     def init(self, parser, opts, args):
         raise NotImplementedError()
+
 
     @staticmethod
     def number_of_workers() -> int:

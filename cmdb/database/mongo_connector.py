@@ -49,23 +49,48 @@ class MongoConnector:
         Raises:
             `DatabaseConnectionError`: When the connection initialisation failed
         """
-        try:
-            connection_string = os.getenv('CONNECTION_STRING')
+        # try:
+        #     connection_string = os.getenv('CONNECTION_STRING')
 
-            if connection_string:
-                self.client = MongoClient(connection_string)
+        #     if connection_string:
+        #         self.client = MongoClient(connection_string)
+        #     else:
+        #         # Use the provided host and port to create the client
+        #         if client_options:
+        #             self.client = MongoClient(host=host, port=int(port), connect=False, **client_options)
+        #         else:
+        #             self.client = MongoClient(host=host, port=int(port), connect=False)
+
+        #     self.database: Database = self.client.get_database(database_name)
+        #     self.host = host
+        #     self.port = port
+        # except Exception as err:
+        #     raise DatabaseConnectionError(err) from err
+        self.connection_string = os.getenv('CONNECTION_STRING')
+        self.host = host
+        self.port = int(port)
+        self.database_name = database_name
+        self.client_options = client_options or {}
+        self._client = None  # Lazy-loaded MongoClient
+        self._database = None  # Lazy-loaded Database reference
+
+
+    @property
+    def client(self):
+        """Lazy-loads MongoClient to prevent pre-fork initialization issues."""
+        if self._client is None:
+            if self.connection_string:
+                self._client = MongoClient(self.connection_string)
             else:
-                # Use the provided host and port to create the client
-                if client_options:
-                    self.client = MongoClient(host=host, port=int(port), connect=False, **client_options)
-                else:
-                    self.client = MongoClient(host=host, port=int(port), connect=False)
+                self._client = MongoClient(host=self.host, port=self.port, connect=False, **self.client_options)
+        return self._client
 
-            self.database: Database = self.client.get_database(database_name)
-            self.host = host
-            self.port = port
-        except Exception as err:
-            raise DatabaseConnectionError(err) from err
+    @property
+    def database(self) -> Database:
+        """Lazy-loads the database reference."""
+        if self._database is None:
+            self._database = self.client.get_database(self.database_name)
+        return self._database
 
 
     def __exit__(self, *err):
@@ -74,7 +99,7 @@ class MongoConnector:
         """
         self.disconnect()
 
-
+# -------------------------------------------------------------------------------------------------------------------- #
 
     def set_database(self, db_name: str) -> None:
         """
@@ -87,7 +112,7 @@ class MongoConnector:
             `SetDatabaseError`: Raised when not possible to set connector to `db_name`
         """
         try:
-            self.database = self.client.get_database(db_name)
+            self._database = self.client.get_database(db_name)
         except Exception as err:
             raise SetDatabaseError(err) from err
 
@@ -120,8 +145,10 @@ class MongoConnector:
             ConnectionStatus: The status indicating the disconnection result
         """
         try:
-            if self.client:
-                self.client.close()
+            if self._client:
+                self._client.close()
+                self._client = None
+                self._database = None
                 return ConnectionStatus(connected=False, message="Successfully disconnected from the database.")
 
             return ConnectionStatus(connected=False, message="No active database connection to close.")

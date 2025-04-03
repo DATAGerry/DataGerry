@@ -14,17 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the CheckStatus Enumeration
+This package provides all predefined data for the IsmsRiskMatrix
 """
-from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class CheckStatus(Enum):
+def get_default_risk_matrix() -> dict:
     """
-    The different states the check routine of DataGerry can have while checking collections validity and availability
-    of updates 
+    The default IsmsRiskMatrix. Used when DataGerry is setup
+
+    Returns:
+        list: The default IsmsRiskMatrix
     """
-    NOT = 0
-    RUNNING = 1
-    HAS_UPDATES = 2
-    FINISHED = 3
+    return {
+        'public_id': 1,
+        'risk_matrix': [],
+        'matrix_unit': None
+    }

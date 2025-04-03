@@ -37,7 +37,7 @@ LOGGER = logging.getLogger(__name__)
 setup_blueprint = APIBlueprint('setup', __name__)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
-
+#TODO: REFACTOR-FIX (create specific errors)
 @setup_blueprint.route('/subscriptions', methods=['POST'])
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 def create_subscription():
@@ -70,12 +70,11 @@ def create_subscription():
     # Create database and a new admin user
     init_db_routine(database)
 
-    api_response = DefaultResponse(True)
 
-    return api_response.make_response()
+    return DefaultResponse(True).make_response()
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
-
+#TODO: REFACTOR-FIX (create specific errors)
 @setup_blueprint.route('/subscriptions', methods=['DELETE'])
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 def delete_subscription():
@@ -106,6 +105,4 @@ def delete_subscription():
         LOGGER.error("[delete_subscription] Error: %s, Type: %s", err, type(err))
         return abort(400, "An issue occured while deleting the subscription!")
 
-    api_response = DefaultResponse(True)
-
-    return api_response.make_response()
+    return DefaultResponse(True).make_response()

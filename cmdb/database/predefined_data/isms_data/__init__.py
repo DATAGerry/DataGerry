@@ -14,17 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Provides all ISMS relevant helper methods
+This package provides all predefined data for CmdbDAO subclasses
 """
-from .isms_risk_matrix_helper import (
-    calculate_risk_matrix,
-    remove_deleted_risk_class_from_matrix,
-    check_risk_classes_set_in_matrix,
-)
+from .isms_risk_matrix_data import get_default_risk_matrix
+from .isms_extendable_options import get_default_isms_extendable_options
+from .isms_protection_goals import get_default_protection_goals
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'calculate_risk_matrix',
-    'remove_deleted_risk_class_from_matrix',
-    'check_risk_classes_set_in_matrix',
+    'get_default_risk_matrix',
+    'get_default_isms_extendable_options',
+    'get_default_protection_goals',
 ]

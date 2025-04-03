@@ -14,28 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the Root Location data
+This module contains helper methods for CmdbLocations
 """
+from cmdb.database.predefined_data.cmdb_data import get_root_location_data
 # -------------------------------------------------------------------------------------------------------------------- #
-
-def get_root_location_data() -> dict:
-    """
-    This method holds the correct root location data
-    
-    Returns:
-        (dict): Returns valid root location data
-    """
-    return {
-        "public_id":1,
-        "name":"Root",
-        "parent":0,
-        "object_id":0,
-        "type_id":0,
-        "type_label":"Root",
-        "type_icon":"fas fa-globe",
-        "type_selectable":True
-    }
-
 
 def validate_root_location(tested_location: dict) -> bool:
     """

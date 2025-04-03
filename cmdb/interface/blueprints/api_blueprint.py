@@ -130,9 +130,11 @@ class APIBlueprint(Blueprint):
                 try:
                     validation_result = validator.validate(data)
                 except Exception as err:
+                    LOGGER.error("[validate] Exception %s. Type: %s", err, type(err), exc_info=True)
                     abort(400, f"Schema '{schema}' validation failed")
 
                 if not validation_result:
+                    LOGGER.debug("[VALIDATION] Error: %s", validator.errors or "No validation errors found!")
                     #TODO: proper error message
                     # {
                     #     "description": "The browser (or proxy) sent a request that this server could not understand.",

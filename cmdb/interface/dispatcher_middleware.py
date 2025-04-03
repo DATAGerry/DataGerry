@@ -17,6 +17,8 @@
 Server module for web-based services
 """
 import logging
+
+from cmdb.database.mongo_database_manager import MongoDatabaseManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +34,7 @@ class DispatcherMiddleware:
     delegates requests to the appropriate sub-application based on the URL path
     """
 
-    def __init__(self, app, mounts=None):
+    def __init__(self, app, dbm: MongoDatabaseManager, mounts=None):
         """
         Initializes the MountableApp instance
 
@@ -45,6 +47,7 @@ class DispatcherMiddleware:
         """
         self.app = app
         self.mounts = mounts or {}
+        self.database_manager = dbm
 
 
     def __call__(self, environ, start_response):

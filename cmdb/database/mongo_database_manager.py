@@ -27,9 +27,7 @@ from pymongo.cursor import Cursor
 from pymongo.results import DeleteResult, UpdateResult
 
 from cmdb.database.mongo_connector import MongoConnector
-
-from cmdb.models.location_model import get_root_location_data
-from cmdb.framework.section_templates.section_template_creator import SectionTemplateCreator
+from cmdb.database.database_constants import PUBLIC_ID_COUNTER_COLLECTION
 
 from cmdb.errors.database import (
     CollectionAlreadyExistsError,
@@ -51,8 +49,6 @@ from cmdb.errors.database import (
 
 LOGGER = logging.getLogger(__name__)
 
-PUBLIC_ID_COUNTER_COLLECTION = "datastorage.counter"
-
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                             MongoDatabaseManager - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -61,7 +57,16 @@ class MongoDatabaseManager:
     PyMongo (MongoDB) implementation of the Database Manager
     """
     def __init__(self, host: str, port: int, database_name: str, **kwargs):
+        self.host = host
+        self.port = port
+        self.database_name = database_name
+        self.kwargs = kwargs
         self.connector = MongoConnector(host, port, database_name, kwargs)
+
+
+    def reset_connection(self):
+        """Reset the MongoConnector to create a fresh MongoDB connection."""
+        self.connector = MongoConnector(self.host, self.port, self.database_name, self.kwargs)
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -294,7 +299,7 @@ class MongoDatabaseManager:
             raise DocumentInsertError(f"Failed to insert document into collection '{collection}': {err}") from err
 
 
-    def __init_public_id_counter(self, collection: str) -> int:
+    def init_public_id_counter(self, collection: str) -> int:
         """
         Initializes a public ID counter for the given collection
 
@@ -465,7 +470,7 @@ class MongoDatabaseManager:
 
             if not counter_doc:
                 # If the counter document does not exist, initialize it
-                self.__init_public_id_counter(collection)
+                self.init_public_id_counter(collection)
                 counter_doc = working_collection.find_one(query)
 
             if increment:
@@ -688,7 +693,7 @@ class MongoDatabaseManager:
             if found_counter:
                 new_id = found_counter['counter'] + 1
             else:
-                docs_count = self.__init_public_id_counter(collection)
+                docs_count = self.init_public_id_counter(collection)
                 new_id = docs_count + 1
 
             self.update_public_id_counter(collection)
@@ -739,130 +744,3 @@ class MongoDatabaseManager:
             return self.get_collection(collection).delete_many(requirements)
         except Exception as err:
             raise DocumentDeleteError(f"Error deleting documents from collection '{collection}': {err}") from err
-
-# ---------------------------------------------- CmdbLocation - SECTION ---------------------------------------------- #
-
-    #TODO: REFACTOR-FIX (Move to seperate file)
-    def set_root_location(self, collection: str, create: bool = False) -> UpdateResult:
-        """
-        Set up the root location. If no counter for locations exists, it will be created
-
-        Args:
-            collection (str): The framework.locations collection
-            create (bool): If true the root location will be created, else it will be updated
-
-        Raises:
-            DocumentUpdateError: If there is an error during the root location setup, including issues with the
-                                 database operation or creation of the public ID counter
-            
-        Returns:
-            status: status of location creation or update
-        """
-        try:
-            # If creation is requested, ensure the counter exists
-            if create:
-                # Check if the counter exists, if not initialize it
-                if not self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection}):
-                    self.__init_public_id_counter(collection)
-
-                # Insert root location data
-                status = self.insert(collection, get_root_location_data())
-
-            else:
-                # Update the root location data
-                status = self.update(collection, {'public_id': 1}, get_root_location_data())
-
-            return status
-
-        except Exception as err:
-            raise DocumentUpdateError(f"Error setting up root location for collection '{collection}': {err}") from err
-
-# ------------------------------------------- CmdbSectionTemplate - Section ------------------------------------------ #
-
-    #TODO: REFACTOR-FIX (Move to seperate file)
-    def init_predefined_templates(self, collection: str) -> None:
-        """
-        Checks if all predefined templates are created, else creates them.
-
-        Args:
-            collection (str): The name of the collection where templates are stored
-
-        Raises:
-            DocumentInsertError: If there is an error inserting predefined templates into the collection
-            DocumentGetError: If there is an error fetching data from the collection, such as when checking
-                              for existing templates or counters
-        """
-        try:
-            counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
-
-            if not counter:
-                self.__init_public_id_counter(collection)
-
-            predefined_template_creator = SectionTemplateCreator()
-            predefined_templates: list[dict] = predefined_template_creator.get_predefined_templates()
-
-            for predefined_template in predefined_templates:
-                # First, check if the template already exists
-                template_name = predefined_template['name']
-                result = self.get_collection(collection).find_one({'name': template_name})
-
-                if not result:
-                    # The template does not exist, create it
-                    LOGGER.info("Creating Template: %s", template_name)
-                    self.insert(collection, predefined_template)
-        except DocumentGetError as err:
-            raise DocumentGetError(
-                f"Error retrieving templates or counter for collection '{collection}': {err}"
-            ) from err
-        except Exception as err:
-            raise DocumentInsertError(
-                f"Error initializing predefined templates for collection '{collection}': {err}"
-            ) from err
-
-# ----------------------------------------------- CmdbReport - Section ----------------------------------------------- #
-
-    #TODO: REFACTOR-FIX (Move to seperate file)
-    def create_general_report_category(self, collection: str) -> None:
-        """
-        Creates the General Report Category if it does not already exist
-
-        Args:
-            collection (str): The name of the collection where the general report category is stored
-
-        Raises:
-            DocumentGetError: If there is an error fetching the counter or the report category
-            DocumentInsertError: If there is an error inserting the general report category into the collection
-        """
-        try:
-            counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
-
-            if not counter:
-                self.__init_public_id_counter(collection)
-
-            result = self.get_collection(collection).find_one({'name': 'General'})
-
-            if not result:
-                # The category does not exist, create it
-                LOGGER.info("Creating 'General' Report Category")
-
-                general_category = {
-                    'name': 'General',
-                    'predefined': True,
-                }
-
-                self.insert(collection, general_category)
-        except DocumentGetError as err:
-            LOGGER.error("[create_general_report_category] Error fetching document. Error: %s", err)
-            raise DocumentGetError(
-                f"Error retrieving counter or report category for collection '{collection}': {err}"
-            ) from err
-        except DocumentInsertError as err:
-            LOGGER.error("[create_general_report_category] Error inserting report category. Error: %s", err)
-            raise DocumentInsertError(
-                f"Error creating 'General' report category for collection '{collection}': {err}"
-            ) from err
-        except Exception as err:
-            LOGGER.error("[create_general_report_category] Unexpected error. Error: %s", err)
-            raise DocumentInsertError(
-                f"Unexpected error while creating 'General' report category for collection '{collection}': {err}"
-            ) from err
