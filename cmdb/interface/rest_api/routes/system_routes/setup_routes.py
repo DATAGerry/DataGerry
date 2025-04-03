@@ -18,6 +18,7 @@ These routes are used to setup databases and the correspondig user in DATAGerry
 """
 import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse
@@ -37,7 +38,7 @@ LOGGER = logging.getLogger(__name__)
 setup_blueprint = APIBlueprint('setup', __name__)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
-#TODO: REFACTOR-FIX (create specific errors)
+
 @setup_blueprint.route('/subscriptions', methods=['POST'])
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
 def create_subscription():
@@ -50,28 +51,33 @@ def create_subscription():
         "database"(str): Name of database,
     }
     """
-    if not request.args:
-        return abort(400, 'No request arguments provided!')
-
-    setup_data: dict = request.args.to_dict()
-
-    # Confirm the data is complete
     try:
-        database = setup_data['database']
-    except KeyError:
-        return abort(400, "A required field in data is missing!")
-    except (TypeError, ValueError):
-        return abort(400, "Could not covert some required fields to Integers!")
+        if not request.args:
+            abort(400, 'No request arguments provided!')
 
-    ### Early out if databse already exists
-    if check_db_exists(database):
-        return abort(400, f"The database with the name {database} already exists!")
+        setup_data: dict = request.args.to_dict()
 
-    # Create database and a new admin user
-    init_db_routine(database)
+        # Confirm the data is complete
+        try:
+            database = setup_data['database']
+        except KeyError:
+            abort(400, "A required field in data is missing!")
+        except (TypeError, ValueError):
+            abort(400, "Could not covert some required fields to Integers!")
 
+        ### Early out if databse already exists
+        if check_db_exists(database):
+            abort(400, f"The database with the name {database} already exists!")
 
-    return DefaultResponse(True).make_response()
+        # Create database and a new admin user
+        init_db_routine(database)
+
+        return DefaultResponse(True).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[create_subscription] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while creating the subscription!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 #TODO: REFACTOR-FIX (create specific errors)
@@ -87,22 +93,28 @@ def delete_subscription():
         "database"(str): Name of database
     }
     """
-    if not request.args:
-        return abort(400, "No request arguments provided!")
-
-    delete_data: dict = request.args.to_dict()
-
     try:
-        subscrption_database = delete_data['database']
-    except KeyError:
-        return abort(400, "Database name was not provided!")
+        if not request.args:
+            abort(400, "No request arguments provided!")
 
-    try:
-        delete_database(subscrption_database)
-    except DatabaseNotFoundError:
-        return abort(400, f"The database with the name {subscrption_database} does not exist!")
+        delete_data: dict = request.args.to_dict()
+
+        try:
+            subscrption_database = delete_data['database']
+        except KeyError:
+            abort(400, "Database name was not provided!")
+
+        try:
+            delete_database(subscrption_database)
+        except DatabaseNotFoundError:
+            abort(400, f"The database with the name {subscrption_database} does not exist!")
+        except Exception as err:
+            LOGGER.error("[delete_subscription] Error: %s, Type: %s", err, type(err))
+            abort(400, "An issue occured while deleting the subscription!")
+
+        return DefaultResponse(True).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except Exception as err:
-        LOGGER.error("[delete_subscription] Error: %s, Type: %s", err, type(err))
-        return abort(400, "An issue occured while deleting the subscription!")
-
-    return DefaultResponse(True).make_response()
+        LOGGER.error("[delete_subscription] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while deleting the subscription!")

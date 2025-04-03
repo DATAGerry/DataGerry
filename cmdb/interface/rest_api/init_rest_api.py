@@ -43,7 +43,7 @@ from cmdb.interface.rest_api.responses.error_handlers import (
     service_unavailable,
 )
 
-from cmdb.utils.system_config_reader import SystemConfigReader
+from cmdb.manager.system_manager.system_config_reader import SystemConfigReader
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -90,9 +90,11 @@ def create_rest_api(database_maanger: MongoDatabaseManager) -> BaseCmdbApp:
 
                 if not cmdb.__CLOUD_MODE__:
                     start_datagerry_setup(database_maanger)
-                else:
+                elif not cmdb.__LOCAL_MODE__:
                     # Check for updates in __CLOUD_MODE__
                     execute_update_checks(database_maanger)
+                else:
+                    pass # LOCAL_MODE does not need to run updates
             except Exception as err:
                 LOGGER.error(
                     "Initialisation of DataGerry failed. Exception: %s. Type: %s", err, type(err), exc_info=True
@@ -242,8 +244,12 @@ def register_error_pages(app: BaseCmdbApp):
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def start_datagerry_setup(dbm: MongoDatabaseManager) -> None:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Setup of DataGerry and runs database updates
+
+    Args:
+        dbm (MongoDatabaseManager): Manager for interaction with database
+    """
     db_name = SystemConfigReader().get_value('database_name', 'Database')
 
     CollectionValidator(db_name, dbm, local_mode=True).validate_collections()
@@ -255,9 +261,12 @@ def start_datagerry_setup(dbm: MongoDatabaseManager) -> None:
 
 
 def execute_update_checks(dbm: MongoDatabaseManager) -> None:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Setup of DataGerry and runs database updates
 
+    Args:
+        dbm (MongoDatabaseManager): Manager for interaction with database
+    """
     # First retrieve all database names
     db_names = get_db_names_from_service_portal()
 

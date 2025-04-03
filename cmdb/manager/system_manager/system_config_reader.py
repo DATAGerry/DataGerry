@@ -18,7 +18,7 @@ Implementation of SystemConfigReader
 """
 import os
 
-from cmdb.utils.config_file_reader import ConfigFileReader
+from cmdb.manager.system_manager.config_file_reader import ConfigFileReader
 # -------------------------------------------------------------------------------------------------------------------- #
 
 # -------------------------------------------------------------------------------------------------------------------- #

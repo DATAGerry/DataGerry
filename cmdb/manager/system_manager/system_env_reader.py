@@ -19,7 +19,7 @@ Implementation of SystemEnvironmentReader
 import os
 import re
 
-from cmdb.utils.system_reader import SystemReader
+from cmdb.manager.system_manager.system_reader import SystemReader
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class SystemEnvironmentReader(SystemReader):

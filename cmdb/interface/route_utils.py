@@ -32,7 +32,7 @@ from cmdb.manager import (
     UsersManager,
     GroupsManager,
     SecurityManager,
-    SettingsReaderManager,
+    SettingsManager,
 )
 
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
@@ -43,11 +43,6 @@ from cmdb.security.token.generator import TokenGenerator
 
 from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.user_management_constants import (
-    __FIXED_GROUPS__,
-    __COLLECTIONS__ as USER_MANAGEMENT_COLLECTION,
-)
-from cmdb.framework.constants import __COLLECTIONS__ as FRAMEWORK_CLASSES
 
 from cmdb.errors.security import (
     TokenValidationError,
@@ -161,8 +156,19 @@ def insert_request_user(func):
 
 
 def verify_api_access(*, required_api_level: ApiLevel = None):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Decorator to verify API access based on authentication method and required API level
+
+    Args:
+        required_api_level (ApiLevel, optional): Minimum API access level required to execute the decorated function
+    
+    Behavior:
+    - If the user does not meet the required API level, the request is aborted with a 403 status
+    - If authentication fails or an error occurs, the request is aborted with a 400 status
+
+    Returns:
+        function: A decorated function with API access control
+    """
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -387,10 +393,9 @@ def parse_authorization_header(header):
 
                 users_manager = UsersManager(current_app.database_manager)
                 security_manager = SecurityManager(current_app.database_manager)
-                settings_reader = SettingsReaderManager(current_app.database_manager)
+                settings_manager = SettingsManager(current_app.database_manager)
 
-                auth_settings = settings_reader.get_all_values_from_section('auth',
-                                                                            AuthModule.__DEFAULT_SETTINGS__)
+                auth_settings = settings_manager.get_all_values_from_section('auth', AuthModule.__DEFAULT_SETTINGS__)
                 auth_module = AuthModule(auth_settings,
                                          security_manager=security_manager,
                                          users_manager=users_manager)
@@ -477,13 +482,13 @@ def validate_password(user_name: str, password: str, database: str = None) -> Un
     if database:
         users_manager = UsersManager(current_app.database_manager, database)
         security_manager = SecurityManager(current_app.database_manager, database)
-        settings_reader = SettingsReaderManager(current_app.database_manager, database)
+        settings_manager = SettingsManager(current_app.database_manager, database)
     else:
         users_manager = UsersManager(current_app.database_manager)
         security_manager = SecurityManager(current_app.database_manager)
-        settings_reader = SettingsReaderManager(current_app.database_manager)
+        settings_manager = SettingsManager(current_app.database_manager)
 
-    auth_settings = settings_reader.get_all_values_from_section('auth', AuthModule.__DEFAULT_SETTINGS__)
+    auth_settings = settings_manager.get_all_values_from_section('auth', AuthModule.__DEFAULT_SETTINGS__)
     auth_module = AuthModule(auth_settings,
                                 security_manager=security_manager,
                                 users_manager=users_manager)

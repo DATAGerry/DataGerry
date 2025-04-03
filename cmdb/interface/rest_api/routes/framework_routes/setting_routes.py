@@ -20,7 +20,7 @@ import logging
 from flask import current_app
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
-from cmdb.manager import SettingsReaderManager
+from cmdb.manager import SettingsManager
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.interface.route_utils import insert_request_user, right_required, verify_api_access
@@ -47,17 +47,15 @@ with current_app.app_context():
 def get_settings_from_section(section: str, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                               request_user)
+    settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
 
-    section_settings = settings_reader.get_all_values_from_section(section=section)
+    section_settings = settings_manager.get_all_values_from_section(section=section)
 
     if len(section_settings) < 1:
         return DefaultResponse([]).make_response(204)
 
-    api_response = DefaultResponse(section_settings)
+    return DefaultResponse(section_settings).make_response()
 
-    return api_response.make_response()
 
 #TODO: ROUTE-FIX (Remove one route)
 @settings_blueprint.route('/<string:section>/<string:name>/', methods=['GET'])
@@ -68,14 +66,11 @@ def get_settings_from_section(section: str, request_user: CmdbUser):
 def get_value_from_section(section: str, name: str, request_user: CmdbUser):
     """document"""
     #TODO: DOCUMENT-FIX
-    settings_reader: SettingsReaderManager = ManagerProvider.get_manager(ManagerType.SETTINGS_READER,
-                                                                               request_user)
+    settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
 
-    section_settings = settings_reader.get_value(name=name, section=section)
+    section_settings = settings_manager.get_value(name, section)
 
     if len(section_settings) < 1:
         return DefaultResponse([]).make_response(204)
 
-    api_response = DefaultResponse(section_settings)
-
-    return api_response.make_response()
+    return DefaultResponse(section_settings).make_response()

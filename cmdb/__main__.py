@@ -28,7 +28,7 @@ import cmdb
 from cmdb import __title__
 
 from cmdb.utils.logger import get_logging_conf
-from cmdb.utils.system_config_reader import SystemConfigReader
+from cmdb.manager.system_manager.system_config_reader import SystemConfigReader
 from cmdb.process_management.process_manager import ProcessManager
 # -------------------------------------------------------------------------------------------------------------------- #
 

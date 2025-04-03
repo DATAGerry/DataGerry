@@ -13,19 +13,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of TokenGenerator
+"""
 import logging
 from datetime import datetime, timedelta, timezone
 from authlib.jose import jwt
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.manager import SettingsReaderManager
+from cmdb.manager import SettingsManager
 
 from cmdb import __title__
 from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.key.holder import KeyHolder
-from cmdb.security.token import DEFAULT_TOKEN_LIFETIME
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -50,9 +50,9 @@ class TokenGenerator:
         }
 
         #TODO: REFACTOR-FIX
-        settings_reader = SettingsReaderManager(dbm)
+        settings_manager = SettingsManager(dbm)
         self.auth_module = AuthModule(
-                                settings_reader.get_all_values_from_section(
+                                settings_manager.get_all_values_from_section(
                                                             'auth',
                                                             AuthModule.__DEFAULT_SETTINGS__
                                                           )

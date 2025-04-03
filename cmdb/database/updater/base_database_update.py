@@ -25,10 +25,10 @@ from cmdb.manager import (
     TypesManager,
     CategoriesManager,
     ObjectsManager,
-    SettingsWriterManager,
+    SettingsManager,
 )
 
-from cmdb.utils.system_config_reader import SystemConfigReader
+from cmdb.manager.system_manager.system_config_reader import SystemConfigReader
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class BaseDatabaseUpdate:
         self.categories_manager = CategoriesManager(self.dbm)
         self.objects_manager = ObjectsManager(self.dbm)
         self.types_manager = TypesManager(self.dbm)
-        self.settings_writer = SettingsWriterManager(self.dbm)
+        self.settings_manager = SettingsManager(self.dbm)
 
 
     @abstractmethod
@@ -86,4 +86,4 @@ class BaseDatabaseUpdate:
         Args:
             value (int): The new version number to be set
         """
-        self.settings_writer.write(_id='updater', data={'_id':'updater', 'version': value})
+        self.settings_manager.write(_id='updater', data={'_id':'updater', 'version': value})

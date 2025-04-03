@@ -13,15 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of KeyHolder
+"""
 import os
 import base64
 import logging
 from flask import current_app
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.manager import SettingsReaderManager
+from cmdb.manager import SettingsManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class KeyHolder:
         Args:
             key_directory: key based directory
         """
-        self.settings_reader = SettingsReaderManager(dbm)
+        self.settings_manager = SettingsManager(dbm)
         self.rsa_public = self.get_public_key()
         self.rsa_private = self.get_private_key()
 
@@ -57,7 +58,7 @@ class KeyHolder:
 
             return public_key
 
-        return self.settings_reader.get_value('asymmetric_key', 'security')['public']
+        return self.settings_manager.get_value('asymmetric_key', 'security')['public']
 
 
     def get_private_key(self):
@@ -75,4 +76,4 @@ class KeyHolder:
 
             return private_key
 
-        return self.settings_reader.get_value('asymmetric_key', 'security')['private']
+        return self.settings_manager.get_value('asymmetric_key', 'security')['private']

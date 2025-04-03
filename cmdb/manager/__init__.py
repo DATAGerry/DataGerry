@@ -32,8 +32,6 @@ from cmdb.manager.reports_manager import ReportsManager
 from cmdb.manager.rights_manager import RightsManager
 from cmdb.manager.section_templates_manager import SectionTemplatesManager
 from cmdb.manager.security_manager import SecurityManager
-from cmdb.manager.settings_reader_manager import SettingsReaderManager
-from cmdb.manager.settings_writer_manager import SettingsWriterManager
 from cmdb.manager.types_manager import TypesManager
 from cmdb.manager.users_manager import UsersManager
 from cmdb.manager.webhooks_event_manager import WebhooksEventManager
@@ -41,6 +39,9 @@ from cmdb.manager.webhooks_manager import WebhooksManager
 from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
 from cmdb.manager.object_groups_manager import ObjectGroupsManager
 from cmdb.manager.user_settings_manager import UserSettingsManager
+
+# System Managers
+from cmdb.manager.system_manager.settings_manager import SettingsManager
 
 # ISMS Managers
 from cmdb.manager.isms_manager.risk_class_manager import RiskClassManager
@@ -72,8 +73,7 @@ __all__ = [
     'RightsManager',
     'SectionTemplatesManager',
     'SecurityManager',
-    'SettingsReaderManager',
-    'SettingsWriterManager',
+    'SettingsManager',
     'TypesManager',
     'UsersManager',
     'WebhooksEventManager',
