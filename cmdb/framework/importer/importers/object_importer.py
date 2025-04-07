@@ -146,7 +146,7 @@ class ObjectImporter(BaseImporter):
                                                         objects_count)
 
                             if not success:
-                                raise Exception("Status code was not 200!")
+                                raise Exception("Status code was not 200!") from err
                     except Exception as error:
                         LOGGER.error("Could not sync config items count to service portal. Error: %s", error)
                 except ObjectsManagerInsertError as error:

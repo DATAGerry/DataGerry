@@ -28,7 +28,7 @@ class CmdbExtendableOptionError(Exception):
         """
         super().__init__(err)
 
-# --------------------------------------------- CmdbExtendableOption - ERRORS --------------------------------------------- #
+# ------------------------------------------- CmdbExtendableOption - ERRORS ------------------------------------------ #
 
 class CmdbExtendableOptionInitError(CmdbExtendableOptionError):
     """

@@ -20,7 +20,7 @@ import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
 
-from cmdb.models.isms_model import ControlMeassureType
+from cmdb.models.isms_model.control_meassure_type_enum import ControlMeassureType
 from cmdb.errors.models.isms_control_meassure import (
     IsmsControlMeassureInitError,
     IsmsControlMeassureInitFromDataError,
@@ -85,8 +85,7 @@ class IsmsControlMeassure(CmdbDAO):
         }
     }
 
-    #pylint: disable=too-many-arguments
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0913, R0917
     def __init__(
             self,
             public_id: int,

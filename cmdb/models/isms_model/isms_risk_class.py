@@ -65,7 +65,7 @@ class IsmsRiskClass(CmdbDAO):
     }
 
 
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0917
     def __init__(self, public_id: int, name: str, color: str, sort: int = None, description: str = None):
         """
         Initialises an IsmsRiskClass

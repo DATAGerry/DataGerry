@@ -31,7 +31,7 @@ from cmdb.models.log_model.cmdb_object_log import CmdbObjectLog
 from cmdb.framework.results import IterationResult
 from cmdb.security.acl.permission import AccessControlPermission
 
-from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError, BaseManagerInsertError
+from cmdb.errors.manager import BaseManagerIterationError, BaseManagerInsertError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

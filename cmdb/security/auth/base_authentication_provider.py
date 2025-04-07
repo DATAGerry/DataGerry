@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseAuthenticationProvider
+"""
 import logging
 
 from cmdb.manager import (
@@ -32,19 +33,35 @@ LOGGER = logging.getLogger(__name__)
 #                                          BaseAuthenticationProvider - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseAuthenticationProvider:
-    """Provider super class"""
+    """
+    Base class for authentication providers
+
+    This is the super class for all authentication providers. It defines common attributes and methods
+    that can be used or overridden by subclasses to implement specific authentication mechanisms. 
+
+    Attributes:
+        PASSWORD_ABLE (bool): Flag indicating if the provider supports password-based authentication
+        EXTERNAL_PROVIDER (bool): Flag indicating if the provider is an external authentication provider
+        PROVIDER_CONFIG_CLASS (type): The configuration class used by the authentication provider
+    """
     PASSWORD_ABLE: bool = True
     EXTERNAL_PROVIDER: bool = False
     PROVIDER_CONFIG_CLASS: 'BaseAuthProviderConfig' = BaseAuthProviderConfig
 
-    def __init__(self,
-                 config: BaseAuthProviderConfig = None,
-                 security_manager: SecurityManager = None,
-                 users_manager: UsersManager = None):
+    def __init__(
+        self,
+        config: BaseAuthProviderConfig = None,
+        security_manager: SecurityManager = None,
+        users_manager: UsersManager = None):
         """
-        Init constructor for provider classes
+        Initializes the base authentication provider
+
         Args:
-            config: Configuration object
+            config (BaseAuthProviderConfig, optional): The configuration object for the provider.
+                                                       If not provided, the default configuration is used.
+            security_manager (SecurityManager, optional): The security manager used for password hashing
+                                                          and HMAC generation.
+            users_manager (UsersManager, optional): The users manager used to retrieve and manage users
         """
         self.users_manager = users_manager
         self.security_manager = security_manager
@@ -52,25 +69,54 @@ class BaseAuthenticationProvider:
 
 
     def authenticate(self, user_name: str, password: str) -> CmdbUser:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Authenticates a user using the provided username and password.
+
+        This method must be implemented by subclasses as the authentication mechanism can vary 
+        depending on the provider.
+
+        Args:
+            user_name (str): The username of the user attempting to authenticate
+            password (str): The password provided by the user for authentication
+
+        Returns:
+            CmdbUser: The authenticated user object
+
+        Raises:
+            NotImplementedError: If this method is not overridden by a subclass
+        """
         raise NotImplementedError
 
 
     def get_config(self) -> BaseAuthProviderConfig:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Returns the configuration object for the authentication provider
+
+        Returns:
+            BaseAuthProviderConfig: The configuration object associated with this provider
+        """
         return self.config
 
 
     @classmethod
     def is_password_able(cls):
-        """check if auth needs an password"""
+        """
+        Checks if the authentication provider supports password-based authentication
+
+        Returns:
+            bool: Returns `True` if the provider supports password authentication, otherwise `False`
+        """
         return cls.PASSWORD_ABLE
 
 
     @classmethod
     def get_name(cls):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Returns the name of the authentication provider class
+
+        This can be used to identify the provider class in logs, error messages, etc
+
+        Returns:
+            str: The fully qualified name of the provider class
+        """
         return cls.__qualname__

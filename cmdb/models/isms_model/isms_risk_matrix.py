@@ -50,7 +50,7 @@ class IsmsRiskMatrix(CmdbDAO):
         'risk_matrix':{
             'type': 'list',
              "schema": {
-                "type": "dict", 
+                "type": "dict",
                     "schema": {
                         'row': {
                             'type': 'integer',
@@ -158,6 +158,3 @@ class IsmsRiskMatrix(CmdbDAO):
             }
         except Exception as err:
             raise IsmsRiskMatrixToJsonError(err) from err
-
-# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
-

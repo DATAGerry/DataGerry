@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of LdapAuthenticationProviderConfig
+"""
 import logging
 
 from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
@@ -55,8 +56,15 @@ class LdapAuthenticationProviderConfig(BaseAuthProviderConfig):
         }
     }
 
-    def __init__(self, active: bool = None, default_group: int = None, server_config: dict = None,
-                 connection_config: dict = None, search: dict = None, groups: dict = None, *args, **kwargs):
+    def __init__(
+        self,
+        active: bool = None,
+        default_group: int = None,
+        server_config: dict = None,
+        connection_config: dict = None,
+        search: dict = None,
+        groups: dict = None,
+        *args, **kwargs):
         active = active or False
         self.default_group = int(default_group or LdapAuthenticationProviderConfig. \
                                  DEFAULT_CONFIG_VALUES.get('default_group'))
