@@ -39,6 +39,7 @@ from cmdb.manager.webhooks_manager import WebhooksManager
 from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
 from cmdb.manager.object_groups_manager import ObjectGroupsManager
 from cmdb.manager.user_settings_manager import UserSettingsManager
+from cmdb.manager.persons_manager import PersonsManager
 
 # System Managers
 from cmdb.manager.system_manager.settings_manager import SettingsManager
@@ -91,4 +92,5 @@ __all__ = [
     'UserSettingsManager',
     'RiskManager',
     'ControlMeassureManager',
+    'PersonsManager',
 ]

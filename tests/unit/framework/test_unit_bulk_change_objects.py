@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Bulk change objects - Tests
+"""
 import logging
 import copy
 from datetime import datetime, timezone
@@ -41,8 +42,10 @@ LOGGER = logging.getLogger(__name__)
 
 @fixture(scope='module', name="example_type")
 def fixture_example_type():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides an example CMDB Type fixture for testing.
+    Returns a CmdbType instance with predefined fields, sections, and ACL settings.
+    """
     return CmdbType(
         public_id=1,
         name='test',
@@ -74,8 +77,10 @@ def fixture_example_type():
 
 @fixture(scope='module', name="example_object")
 def fixture_example_object():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides an example CMDB Object fixture for testing.
+    Returns a CmdbObject instance with predefined fields and attributes.
+    """
     return CmdbObject(
         public_id=1,
         type_id=1,
@@ -100,8 +105,8 @@ def fixture_example_object():
 @fixture(scope='module', name="change_object")
 def fixture_change_object() -> dict:
     """
-    The 'active' property must be undefined.
-    This setting is required for object validation via CmdbObject.SCHEMA Validation
+    Provides a sample object change request payload.
+    Ensures 'active' property remains undefined for schema validation.
     """
     return {
         "type_id": 1,
@@ -118,17 +123,21 @@ def fixture_change_object() -> dict:
 
 @fixture(scope='module', name="collection")
 def fixture_collection(connector, database_name):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides a MongoDB collection fixture for CMDB Types
+    """
     client: MongoClient = connector.client
     collection: Collection = client.get_database(database_name).get_collection(CmdbType.COLLECTION)
+
     return collection
 
 
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Setup fixture to insert example CMDB Type into the database.
+    Cleans up the collection after tests run.
+    """
     collection.insert_one(document=CmdbType.to_json(example_type))
 
     def drop_collection():
@@ -137,14 +146,17 @@ def setup(request, collection, example_type):
     request.addfinalizer(drop_collection)
 
 class TestBulkChangeFrameworkObjects:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Test suite for bulk object modification in CMDB.
+    Includes tests for inserting objects, modifying field values, and changing active states.
+    """
     OBJECT_COLLECTION: str = CmdbObject.COLLECTION
     ROUTE_URL: str = '/objects'
 
     def test_insert_object(self, rest_api, example_object, full_access_user):
         """
-        Prepare data for mass change with access control
+        Tests insertion of multiple CMDB objects.
+        Ensures objects are inserted successfully and can be retrieved.
         """
         i = 0
         while i < 3:
@@ -160,8 +172,10 @@ class TestBulkChangeFrameworkObjects:
 
 
     def test_bulk_change_object_field_value(self, rest_api, change_object, full_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests bulk modification of CMDB object field values.
+        Ensures updated values persist correctly across multiple objects.
+        """
         expectations = rest_api.get(f'{self.ROUTE_URL}/').get_json()['results']
         params = {'objectIDs': [1, 2, 3]}
 
@@ -188,8 +202,10 @@ class TestBulkChangeFrameworkObjects:
 
 
     def test_bulk_change_object_active_state(self, rest_api, change_object, full_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests bulk modification of CMDB object field values.
+        Ensures updated values persist correctly across multiple objects.
+        """
         expectations = rest_api.get(f'{self.ROUTE_URL}/').get_json()['results']
         params = {'objectIDs': [1, 2, 3]}
 

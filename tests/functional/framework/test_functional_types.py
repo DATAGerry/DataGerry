@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CmdbType tests
+"""
 from json import dumps
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -35,8 +36,10 @@ from cmdb.security.acl.group_acl import GroupACL
 
 @fixture(scope='module')
 def example_type():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture providing an example CMDB type.
+    Returns a pre-defined type instance with specific fields and metadata.
+    """
     return CmdbType(
         public_id=1,
         name='test',
@@ -74,19 +77,24 @@ def example_type():
 
 @fixture(scope='module')
 def collection(connector, database_name):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture for retrieving the MongoDB collection used for testing.
+    Returns a reference to the collection object.
+    """
     from pymongo.mongo_client import MongoClient
     from pymongo.collection import Collection
     mongo_client: MongoClient = connector.client
     a_collection: Collection = mongo_client.get_database(database_name).get_collection(TestFrameworkTypes.COLLECTION)
+
     return a_collection
 
 
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture for setting up the test environment.
+    Inserts an example type into the database and ensures cleanup after tests.
+    """
     collection.insert_one(document=CmdbType.to_json(example_type))
 
     def drop_collection():
@@ -96,16 +104,20 @@ def setup(request, collection, example_type):
 
 
 class TestFrameworkTypes(RestAPITestSuite):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Test suite for managing CMDB types.
+    Includes CRUD operations and access control tests.
+    """
     importorskip('cmdb.framework')
 
     COLLECTION: str = CmdbType.COLLECTION
     ROUTE_URL: str = '/types'
 
     def test_get_types(self, rest_api, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests retrieving a list of CMDB types.
+        Ensures response is valid and filtering mechanisms function correctly.
+        """
         # Route callable
         default_response = rest_api.get(f'{self.ROUTE_URL}/')
         assert default_response.status_code == HTTPStatus.OK
@@ -148,8 +160,10 @@ class TestFrameworkTypes(RestAPITestSuite):
 
 
     def test_get_type(self, rest_api, example_type, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests retrieving a single CMDB type by ID.
+        Ensures correct response for existing and non-existing types.
+        """
         # Route callable
         default_response = rest_api.get(f'{self.ROUTE_URL}/{example_type.public_id}')
         assert default_response.status_code == HTTPStatus.OK
@@ -179,8 +193,10 @@ class TestFrameworkTypes(RestAPITestSuite):
 
 
     def test_insert_type(self, rest_api, example_type, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests inserting a new CMDB type.
+        Ensures correct validation, insertion, and error handling for duplicates.
+        """
         example_type.public_id = 2
         example_type.name = 'test2'
 

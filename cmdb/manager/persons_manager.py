@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of the ExtendableOptionsManager
+This module contains the implementation of the PersonsManager
 """
 import logging
 
@@ -22,21 +22,21 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.extendable_option_model import CmdbExtendableOption
+from cmdb.models.person_model import CmdbPerson
 
-from cmdb.errors.manager.extendable_options_manager import EXTENDABLE_OPTIONS_MANAGER_ERRORS
+from cmdb.errors.manager.persons_manager import PERSONS_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                           ExtendableOptionsManager - CLASS                                           #
+#                                                PersonsManager - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
-class ExtendableOptionsManager(GenericManager):
+class PersonsManager(GenericManager):
     """
-    The ExtendableOptionsManager manages the interaction between CmdbExtendableOptions and the database
+    The PersonsManager manages the interaction between CmdbPersons and the database
 
     Extends: GenericManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
-        super().__init__(dbm, CmdbExtendableOption, EXTENDABLE_OPTIONS_MANAGER_ERRORS, database)
+        super().__init__(dbm, CmdbPerson, PERSONS_MANAGER_ERRORS, database)

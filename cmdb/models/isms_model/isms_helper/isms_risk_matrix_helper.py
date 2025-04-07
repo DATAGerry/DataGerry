@@ -138,9 +138,8 @@ def __transfer_risk_classes(old_matrix: list[dict], new_matrix: list[dict]) -> l
         list[dict]: Updated new risk matrix with transferred risk_class_id values
     """
     # Create a lookup dictionary from the old matrix using (impact_id, likelihood_id) as key
-    old_risk_lookup: list[Tuple[int, int], int] = {
-        (cell["impact_id"], cell["likelihood_id"]): cell["risk_class_id"]
-        for cell in old_matrix
+    old_risk_lookup: dict[Tuple[int, int], int] = {
+        (cell["impact_id"], cell["likelihood_id"]): cell["risk_class_id"] for cell in old_matrix
     }
 
     # Iterate over new matrix and transfer risk_class_id if match is found

@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CmdbObject Tests
+"""
 from json import dumps
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -36,8 +37,10 @@ from cmdb.security.acl.group_acl import GroupACL
 
 @fixture(scope='module', name="example_type")
 def fixture_example_type():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture providing an example CMDB type.
+    Returns a pre-defined type instance with specific fields and metadata.
+    """
     return CmdbType(
         public_id=1,
         name='test',
@@ -63,8 +66,10 @@ def fixture_example_type():
 
 @fixture(scope='module', name="example_object")
 def fixture_example_object():
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture providing an example CMDB object.
+    Returns a pre-defined object instance associated with a type.
+    """
     return CmdbObject(
         public_id=1,
         type_id=1,
@@ -79,8 +84,10 @@ def fixture_example_object():
 
 @fixture(scope='module', name="collection")
 def fixture_collection(connector, database_name):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture for retrieving the MongoDB collection used for testing.
+    Returns a reference to the collection object.
+    """
     mongo_client: MongoClient = connector.client
     type_collection: Collection = mongo_client.get_database(database_name).get_collection(
                                                                              TestFrameworkObjects.TYPE_COLLECTION
@@ -90,8 +97,10 @@ def fixture_collection(connector, database_name):
 
 @fixture(scope='module', autouse=True)
 def setup(request, collection, example_type):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Fixture for setting up the test environment.
+    Inserts an example type into the database and ensures cleanup after tests.
+    """
     collection.insert_one(document=CmdbType.to_json(example_type))
     dummy_type = example_type
     dummy_type.public_id = 2
@@ -121,16 +130,18 @@ def setup(request, collection, example_type):
 
 
 class TestFrameworkObjects:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Test suite for managing CMDB objects.
+    Includes CRUD operations and access control tests.
+    """
     OBJECT_COLLECTION: str = CmdbObject.COLLECTION
     TYPE_COLLECTION: str = CmdbType.COLLECTION
     ROUTE_URL: str = '/objects'
 
     def test_insert_object(self, rest_api, example_object, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        # Test default
+        """
+        Test inserting an object.
+        """
         default_response = rest_api.post(f'{self.ROUTE_URL}/', json=CmdbObject.to_json(example_object))
         assert default_response.status_code == HTTPStatus.OK
 
