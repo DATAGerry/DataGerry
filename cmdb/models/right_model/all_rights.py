@@ -21,7 +21,12 @@ from cmdb.models.right_model.import_rights import ImportRight, ImportObjectRight
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.system_rights import SystemRight
 from cmdb.models.right_model.constants import GLOBAL_RIGHT_IDENTIFIER
-from cmdb.models.right_model.user_management_rights import UserManagementRight, UserRight, GroupRight
+from cmdb.models.right_model.user_management_rights import (
+    UserManagementRight,
+    UserRight,
+    GroupRight,
+    PersonRight,
+)
 from cmdb.models.right_model.framework_rights import (
     FrameworkRight,
     ObjectRight,
@@ -265,18 +270,25 @@ USER_MANAGEMENT_RIGHTS = (
     (
         UserRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage users'),
         (
-            UserRight('view', description='View user'),
-            UserRight('add', description='Add user'),
-            UserRight('edit', Levels.SECURE, description='Edit user'),
-            UserRight('delete', Levels.SECURE, description='Delete user')
+            UserRight('view', description='View users'),
+            UserRight('add', description='Add users'),
+            UserRight('edit', Levels.SECURE, description='Edit users'),
+            UserRight('delete', Levels.SECURE, description='Delete users')
         ),
         GroupRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage groups'),
         (
-            GroupRight('view', description='View group'),
-            GroupRight('add', Levels.DANGER, description='Add group'),
-            GroupRight('edit', Levels.DANGER, description='Edit group'),
-            GroupRight('delete', Levels.SECURE, description='Delete group')
-        )
+            GroupRight('view', description='View groups'),
+            GroupRight('add', Levels.DANGER, description='Add groups'),
+            GroupRight('edit', Levels.DANGER, description='Edit groups'),
+            GroupRight('delete', Levels.SECURE, description='Delete groups')
+        ),
+        PersonRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage persons'),
+        (
+            PersonRight('view', description='View persons'),
+            PersonRight('add', description='Add persons'),
+            PersonRight('edit', Levels.SECURE, description='Edit persons'),
+            PersonRight('delete', Levels.SECURE, description='Delete persons')
+        ),
     )
 )
 

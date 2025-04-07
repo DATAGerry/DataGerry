@@ -24,8 +24,6 @@ from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import (
-    check_db_exists,
-    init_db_routine,
     delete_database,
     verify_api_access,
 )
@@ -37,49 +35,8 @@ LOGGER = logging.getLogger(__name__)
 
 setup_blueprint = APIBlueprint('setup', __name__)
 
-# --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
-
-@setup_blueprint.route('/subscriptions', methods=['POST'])
-@verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)
-def create_subscription():
-    """
-    Creates a database and the given user
-
-    Hint:
-    Expects a dict with the following keys:
-    {
-        "database"(str): Name of database,
-    }
-    """
-    try:
-        if not request.args:
-            abort(400, 'No request arguments provided!')
-
-        setup_data: dict = request.args.to_dict()
-
-        # Confirm the data is complete
-        try:
-            database = setup_data['database']
-        except KeyError:
-            abort(400, "A required field in data is missing!")
-        except (TypeError, ValueError):
-            abort(400, "Could not covert some required fields to Integers!")
-
-        ### Early out if databse already exists
-        if check_db_exists(database):
-            abort(400, f"The database with the name {database} already exists!")
-
-        # Create database and a new admin user
-        init_db_routine(database)
-
-        return DefaultResponse(True).make_response()
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as err:
-        LOGGER.error("[create_subscription] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "An internal server error occured while creating the subscription!")
-
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
+
 #TODO: REFACTOR-FIX (create specific errors)
 @setup_blueprint.route('/subscriptions', methods=['DELETE'])
 @verify_api_access(required_api_level=ApiLevel.SUPER_ADMIN)

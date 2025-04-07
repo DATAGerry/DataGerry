@@ -63,7 +63,7 @@ class IsmsProtectionGoal(CmdbDAO):
             name (str): The name of the IsmsProtectionGoal
 
         Raises:
-            IsmsProtectionGoalInitError: When the IsmsImpact could not be initialised
+            IsmsProtectionGoalInitError: When the IsmsProtectionGoal could not be initialised
         """
         try:
             self.name = name

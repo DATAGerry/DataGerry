@@ -1,0 +1,255 @@
+# DATAGERRY - OpenSource Enterprise CMDB
+# Copyright (C) 2025 becon GmbH
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+Implementation of all API routes for CmdbPersons
+"""
+import logging
+from flask import request, abort
+from werkzeug.exceptions import HTTPException
+
+from cmdb.manager import PersonsManager
+from cmdb.manager.query_builder import BuilderParameters
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
+
+from cmdb.models.user_model import CmdbUser
+from cmdb.models.person_model import CmdbPerson
+
+from cmdb.framework.results import IterationResult
+from cmdb.interface.blueprints import APIBlueprint
+from cmdb.interface.route_utils import insert_request_user, verify_api_access
+from cmdb.interface.rest_api.api_level_enum import ApiLevel
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
+from cmdb.interface.rest_api.responses import (
+    InsertSingleResponse,
+    GetMultiResponse,
+    GetSingleResponse,
+    UpdateSingleResponse,
+    DeleteSingleResponse,
+)
+
+from cmdb.errors.manager.persons_manager import (
+    PersonsManagerInsertError,
+    PersonsManagerGetError,
+    PersonsManagerUpdateError,
+    PersonsManagerDeleteError,
+    PersonsManagerIterationError,
+)
+# -------------------------------------------------------------------------------------------------------------------- #
+
+LOGGER = logging.getLogger(__name__)
+
+person_blueprint = APIBlueprint('person', __name__)
+
+# ---------------------------------------------------- CRUD-CREATE --------------------------------------------------- #
+
+@person_blueprint.route('/', methods=['POST'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@person_blueprint.protect(auth=True, right='base.user-management.person.add')
+@person_blueprint.validate(CmdbPerson.SCHEMA)
+def insert_cmdb_person(data: dict, request_user: CmdbUser):
+    """
+    HTTP `POST` route to insert an CmdbPerson into the database
+
+    Args:
+        data (CmdbPerson.SCHEMA): Data of the CmdbPerson which should be inserted
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        InsertSingleResponse: The new CmdbPerson and its public_id
+    """
+    try:
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
+
+        result_id = persons_manager.insert_item(data)
+
+        created_person = persons_manager.get_item(result_id, as_dict=True)
+
+        if created_person:
+            return InsertSingleResponse(created_person, result_id).make_response()
+
+        abort(404, "Could not retrieve the created Person from the database!")
+    except HTTPException as http_err:
+        raise http_err
+    except PersonsManagerInsertError as err:
+        LOGGER.error("[insert_cmdb_person] PersonsManagerInsertError: %s", err, exc_info=True)
+        abort(400, "Failed to insert the new Person in the database!")
+    except PersonsManagerGetError as err:
+        LOGGER.error("[insert_cmdb_person] PersonsManagerGetError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve the created Person from the database!")
+    except Exception as err:
+        LOGGER.error("[insert_cmdb_person] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while creating the Person!")
+
+# ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
+
+@person_blueprint.route('/', methods=['GET', 'HEAD'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@person_blueprint.protect(auth=True, right='base.user-management.person.view')
+@person_blueprint.parse_collection_parameters()
+def get_cmdb_persons(params: CollectionParameters, request_user: CmdbUser):
+    """
+    HTTP `GET`/`HEAD` route for getting multiple CmdbPersons
+
+    Args:
+        params (CollectionParameters): Filter for requested CmdbPersons
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        GetMultiResponse: All the CmdbPersons matching the CollectionParameters
+    """
+    try:
+        body = request.method == 'HEAD'
+
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
+
+        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
+
+        iteration_result: IterationResult[CmdbPerson] = persons_manager.iterate_items(builder_params)
+        persons_list = [CmdbPerson.to_json(person) for person in iteration_result.results]
+
+        api_response = GetMultiResponse(persons_list,
+                                        iteration_result.total,
+                                        params,
+                                        request.url,
+                                        body)
+
+        return api_response.make_response()
+    except PersonsManagerIterationError as err:
+        LOGGER.error("[get_cmdb_persons] PersonsManagerIterationError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve Persons from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_persons] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving Persons!")
+
+
+@person_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@person_blueprint.protect(auth=True, right='base.user-management.person.view')
+def get_cmdb_person(public_id: int, request_user: CmdbUser):
+    """
+    HTTP `GET`/`HEAD` route to retrieve a single CmdbPerson
+
+    Args:
+        public_id (int): public_id of the CmdbPerson
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        GetSingleResponse: The requested CmdbPerson
+    """
+    try:
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
+
+        requested_person = persons_manager.get_item(public_id, as_dict=True)
+
+        if requested_person:
+            return GetSingleResponse(requested_person, body = request.method == 'HEAD').make_response()
+
+        abort(404, f"The Person with ID:{public_id} was not found!")
+    except HTTPException as http_err:
+        raise http_err
+    except PersonsManagerGetError as err:
+        LOGGER.error("[get_cmdb_person] PersonsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Person with ID: {public_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_person] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while retrieving the Person with ID: {public_id}!")
+
+# --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
+
+@person_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@person_blueprint.protect(auth=True, right='base.user-management.person.edit')
+@person_blueprint.validate(CmdbPerson.SCHEMA)
+def update_cmdb_person(public_id: int, data: dict, request_user: CmdbUser):
+    """
+    HTTP `PUT`/`PATCH` route to update a single CmdbPerson
+
+    Args:
+        public_id (int): public_id of the CmdbPerson which should be updated
+        data (CmdbPerson.SCHEMA): New CmdbPerson data
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        UpdateSingleResponse: The new data of the CmdbPerson
+    """
+    try:
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
+
+        #Check if a Person with the new name already exists
+        to_update_person = persons_manager.get_item(public_id)
+
+        if not to_update_person:
+            abort(404, f"The Person with ID:{public_id} was not found!")
+
+        persons_manager.update_item(public_id, CmdbPerson.from_data(data))
+
+        return UpdateSingleResponse(data).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except PersonsManagerGetError as err:
+        LOGGER.error("[update_cmdb_person] PersonsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Person with ID: {public_id} from the database!")
+    except PersonsManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_person] PersonsManagerUpdateError: %s", err, exc_info=True)
+        abort(400, f"Failed to update the Person with ID: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[update_cmdb_person] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while updating the Person with ID: {public_id}!")
+
+# --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
+
+@person_blueprint.route('/<int:public_id>', methods=['DELETE'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@person_blueprint.protect(auth=True, right='base.user-management.person.delete')
+def delete_cmdb_person(public_id: int, request_user: CmdbUser):
+    """
+    HTTP `DELETE` route to delete a single CmdbPerson
+
+    Args:
+        public_id (int): public_id of the CmdbPerson which should be deleted
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        DeleteSingleResponse: The deleted CmdbPerson data
+    """
+    try:
+
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
+
+        to_delete_person = persons_manager.get_item(public_id)
+
+        if not to_delete_person:
+            abort(404, f"The Person with ID:{public_id} was not found!")
+
+        persons_manager.delete_item(public_id)
+
+        return DeleteSingleResponse(to_delete_person).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except PersonsManagerDeleteError as err:
+        LOGGER.error("[delete_cmdb_person] PersonsManagerDeleteError: %s", err, exc_info=True)
+        abort(400, f"Failed to delete the Person with ID:{public_id}!")
+    except PersonsManagerGetError as err:
+        LOGGER.error("[delete_cmdb_person] PersonsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Person with ID:{public_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[delete_cmdb_person] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while deleting the Person with ID: {public_id}!")

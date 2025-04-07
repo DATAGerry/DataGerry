@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of CmdbUser Tests
+"""
 from http import HTTPStatus
 
 from flask import Response
@@ -23,13 +24,17 @@ from tests.utils.response_tester import default_response_tests
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class TestManagementUser:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Test suite for user management endpoints.
+    Includes tests for user retrieval, iteration, and error handling.
+    """
     ROUTE_URL = '/users'
 
     def test_user_iterate(self, rest_api):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests user listing and filtering functionality.
+        Ensures valid responses and handles invalid filter queries.
+        """
         get_response: Response = rest_api.get(f'{self.ROUTE_URL}/')
         default_response_tests(get_response)
         get_response_data: dict = get_response.get_json()
@@ -44,14 +49,19 @@ class TestManagementUser:
 
 
     def test_user_get(self, rest_api):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Tests retrieval of individual users by ID.
+        Ensures valid user IDs return HTTP 200, while invalid ones return HTTP 404.
+        """
         assert rest_api.get(f'{self.ROUTE_URL}/1').status_code == HTTPStatus.OK
         assert rest_api.get(f'{self.ROUTE_URL}/2').status_code == HTTPStatus.NOT_FOUND
 
 
     # def test_user_insert(self, rest_api):
-
+    #     """
+    #     Tests inserting a new user into the system.
+    #     Ensures correct response type and status code upon creation.
+    #     """
     #     test_user = {
     #         'public_id': 2,
     #         'user_name': 'test',
@@ -66,6 +76,10 @@ class TestManagementUser:
 
 
     # def test_user_update(self, rest_api):
+    #     """
+    #     Tests updating an existing user's information.
+    #     Ensures user update is accepted and reflected correctly.
+    #     """
     #     test_user = {
     #         'public_id': 2,
     #         'user_name': 'test',
@@ -79,6 +93,10 @@ class TestManagementUser:
 
 
     # def test_user_delete(self, rest_api):
+    #     """
+    #     Tests deleting a user from the system.
+    #     Ensures the deletion is accepted and the correct response type is returned.
+    #     """
     #     insert_response: Response = rest_api.delete(f'{self.ROUTE_URL}/2')
     #     assert insert_response.content_type == 'application/json'
     #     assert insert_response.status_code == HTTPStatus.ACCEPTED
