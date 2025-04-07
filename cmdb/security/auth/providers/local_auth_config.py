@@ -13,13 +13,31 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of LocalAuthenticationProviderConfig
+"""
 from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
 # -------------------------------------------------------------------------------------------------------------------- #
 
 class LocalAuthenticationProviderConfig(BaseAuthProviderConfig):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Configuration class for the LocalAuthenticationProvider
+
+    This class holds the configuration settings specific to the local authentication provider, 
+    such as whether the provider is active.
+
+    Extends: BaseAuthProviderConfig
+    """
+
     def __init__(self, active: bool = None, **kwargs):
+        """
+        Initializes the configuration for the LocalAuthenticationProvider
+
+        Args:
+            active (bool, optional): A flag indicating whether the authentication provider is active
+            **kwargs: Any additional keyword arguments passed to the base class initialization
+
+        Inherited Attributes:
+            active (bool): Set to True if the provider is enabled, otherwise False
+        """
         super().__init__(active, **kwargs)

@@ -47,6 +47,7 @@ class ManagerType(Enum):
     EXTENDABLE_OPTIONS = 'ExtendableOptionsManager'
     OBJECT_GROUP = 'ObjectGroupsManager'
     PERSON = 'PersonsManager'
+    PERSON_GROUP = 'PersonGroupsManager'
 
     #ISMS Managers
     RISK_CLASS = 'RiskClassManager'

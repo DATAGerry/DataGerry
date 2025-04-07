@@ -31,21 +31,42 @@ LOGGER = logging.getLogger(__name__)
 #                                                   KeyHolder - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class KeyHolder:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A class responsible for managing RSA public and private keys used for encryption and decryption
+
+    This class retrieves the RSA keys from different sources depending on the environment:
+    - In cloud mode, it retrieves keys from the `current_app` or environment variables
+    - In local mode, it retrieves keys from the application's configuration settings
+    """
+
     def __init__(self, dbm: MongoDatabaseManager):
         """
+        Initializes the KeyHolder instance, loading the RSA public and private keys
+
         Args:
-            key_directory: key based directory
+            dbm (MongoDatabaseManager): The database manager used for retrieving application settings
+
+        Attributes:
+            settings_manager (SettingsManager): Manages the settings for the application
+            rsa_public (bytes): The RSA public key used for encryption
+            rsa_private (bytes): The RSA private key used for decryption
         """
         self.settings_manager = SettingsManager(dbm)
         self.rsa_public = self.get_public_key()
         self.rsa_private = self.get_private_key()
 
 
-    def get_public_key(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_public_key(self) -> bytes:
+        """
+        Retrieves the RSA public key
+
+        The public key is retrieved from the following sources based on the environment:
+        - In cloud mode, it checks the `current_app` or environment variable for the public key
+        - In local mode, it fetches the public key from the application settings
+
+        Returns:
+            bytes: The RSA public key, decoded from base64 if retrieved from environment variables
+        """
         if current_app.cloud_mode:
             # return current_app.asymmetric_key['public']
             if current_app.local_mode:
@@ -61,9 +82,17 @@ class KeyHolder:
         return self.settings_manager.get_value('asymmetric_key', 'security')['public']
 
 
-    def get_private_key(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def get_private_key(self) -> bytes:
+        """
+        Retrieves the RSA private key
+
+        Similar to `get_public_key`, the private key is retrieved from different sources depending on the environment:
+        - In cloud mode, it checks the `current_app` or environment variable for the private key
+        - In local mode, it fetches the private key from the application settings
+
+        Returns:
+            bytes: The RSA private key, decoded from base64 if retrieved from environment variables
+        """
         if current_app.cloud_mode:
             # return current_app.asymmetric_key['private']
             if current_app.local_mode:

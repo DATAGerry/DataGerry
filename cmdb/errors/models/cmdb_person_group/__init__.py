@@ -13,3 +13,20 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+This module provides all errors for CmdbPersonGroups
+"""
+from .cmdb_person_group_errors import (
+    CmdbPersonGroupError,
+    CmdbPersonGroupInitError,
+    CmdbPersonGroupInitFromDataError,
+    CmdbPersonGroupToJsonError,
+)
+# -------------------------------------------------------------------------------------------------------------------- #
+
+__all__ = [
+    'CmdbPersonGroupError',
+    'CmdbPersonGroupInitError',
+    'CmdbPersonGroupInitFromDataError',
+    'CmdbPersonGroupToJsonError',
+]

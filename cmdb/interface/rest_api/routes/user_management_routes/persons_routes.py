@@ -192,7 +192,6 @@ def update_cmdb_person(public_id: int, data: dict, request_user: CmdbUser):
     try:
         persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
 
-        #Check if a Person with the new name already exists
         to_update_person = persons_manager.get_item(public_id)
 
         if not to_update_person:
@@ -231,7 +230,6 @@ def delete_cmdb_person(public_id: int, request_user: CmdbUser):
         DeleteSingleResponse: The deleted CmdbPerson data
     """
     try:
-
         persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
 
         to_delete_person = persons_manager.get_item(public_id)

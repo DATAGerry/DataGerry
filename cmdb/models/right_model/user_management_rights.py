@@ -66,3 +66,15 @@ class PersonRight(UserManagementRight):
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
+
+
+class PersonGroupRight(UserManagementRight):
+    """
+    Base class for CmdbPersonGroup rights
+    """
+    MIN_LEVEL = Levels.SECURE
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{UserManagementRight.PREFIX}.personGroup'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)
