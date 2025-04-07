@@ -40,6 +40,7 @@ from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
 from cmdb.manager.object_groups_manager import ObjectGroupsManager
 from cmdb.manager.user_settings_manager import UserSettingsManager
 from cmdb.manager.persons_manager import PersonsManager
+from cmdb.manager.person_groups_manager import PersonGroupsManager
 
 # System Managers
 from cmdb.manager.system_manager.settings_manager import SettingsManager
@@ -93,4 +94,5 @@ __all__ = [
     'RiskManager',
     'ControlMeassureManager',
     'PersonsManager',
+    'PersonGroupsManager',
 ]

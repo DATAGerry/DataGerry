@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of LocalAuthenticationProvider
+"""
 import logging
 from flask import current_app
 
@@ -37,22 +38,51 @@ LOGGER = logging.getLogger(__name__)
 #                                          LocalAuthenticationProvider - CLASS                                         #
 # -------------------------------------------------------------------------------------------------------------------- #
 class LocalAuthenticationProvider(BaseAuthenticationProvider):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Provides authentication services using a local username and password system.
+
+    This provider is responsible for authenticating users based on their username (or email in cloud mode)
+    and comparing the hashed password stored in the system with the provided password during login.
+
+    Extends: BaseAuthenticationProvider
+    """
     PROVIDER_CONFIG_CLASS = LocalAuthenticationProviderConfig
 
-    def __init__(self,
-                 config: LocalAuthenticationProviderConfig = None,
-                 security_manager: SecurityManager = None,
-                 users_manager: UsersManager = None):
+    def __init__(
+            self,
+            config: LocalAuthenticationProviderConfig = None,
+            security_manager: SecurityManager = None,
+            users_manager: UsersManager = None):
+        """
+        Initializes the LocalAuthenticationProvider
+
+        Args:
+            config (LocalAuthenticationProviderConfig, optional): The configuration for the authentication provider
+            security_manager (SecurityManager, optional): The security manager used for password hashing and
+                                                          HMAC generation
+            users_manager (UsersManager, optional): The manager responsible for user data retrieval and management
+        """
         super().__init__(config=config,
                          security_manager=security_manager,
                          users_manager=users_manager)
 
 
     def authenticate(self, user_name: str, password: str) -> CmdbUser:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Authenticates a user by verifying their username (or email in cloud mode) and password.
+
+        This method checks if the provided username exists and if the password matches the stored password hash (HMAC).
+
+        Args:
+            user_name (str): The username (or email in cloud mode) of the user attempting to authenticate.
+            password (str): The plain-text password provided by the user.
+
+        Raises:
+            AuthenticationError: If the user is not found or the password does not match the stored hash
+
+        Returns:
+            CmdbUser: The authenticated user object if the credentials are valid
+        """
         try:
             if current_app.cloud_mode:
                 user = self.users_manager.get_user_by({'email': user_name})
@@ -73,5 +103,12 @@ class LocalAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def is_active(self) -> bool:
-        """Local auth is always activated"""
+        """
+        Checks if the local authentication provider is active
+
+        Since this provider always supports local authentication, it will always return True
+
+        Returns:
+            bool: Always returns True, indicating that the local authentication provider is active
+        """
         return True

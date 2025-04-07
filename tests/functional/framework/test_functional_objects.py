@@ -138,9 +138,20 @@ class TestFrameworkObjects:
     TYPE_COLLECTION: str = CmdbType.COLLECTION
     ROUTE_URL: str = '/objects'
 
-    def test_insert_object(self, rest_api, example_object, full_access_user, none_access_user):
+    def test_insert_object(
+            self,
+            rest_api,
+            example_object,
+            full_access_user,
+            none_access_user):
         """
-        Test inserting an object.
+        Test the POST operation for inserting a new object into the API
+
+        This test covers:
+        - Inserting a new object and verifying the response status is OK
+        - Modifying the object and re-inserting it, ensuring it’s successfully added
+        - Validating that the inserted object can be retrieved successfully
+        - Attempting to insert a duplicate object and ensuring the response returns a BAD_REQUEST status
         """
         default_response = rest_api.post(f'{self.ROUTE_URL}/', json=CmdbObject.to_json(example_object))
         assert default_response.status_code == HTTPStatus.OK
@@ -196,8 +207,15 @@ class TestFrameworkObjects:
 
 
     def test_get_objects(self, rest_api, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Test the GET operation for retrieving multiple objects from the API endpoint
+
+        This test covers:
+        - Fetching all available objects (default behavior)
+        - Validating that the response is correctly parsed and the object list matches the total count header
+        - Ensuring at least one object is returned and properly deserialized
+        - Filtering objects by a specific field (`public_id`) and verifying the filtered result
+        """
         default_response = rest_api.get(f'{self.ROUTE_URL}/')
         assert default_response.status_code == HTTPStatus.OK
 
@@ -237,9 +255,21 @@ class TestFrameworkObjects:
         # assert none_get_types_response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-    def test_get_object(self, rest_api, example_object, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def test_get_object(
+            self,
+            rest_api,
+            example_object,
+            full_access_user,
+            none_access_user):
+        """
+        Test the GET operation on the object API endpoint
+
+        This test covers:
+        - Retrieving an object without specifying a user (default behavior)
+        - Ensuring the retrieved response can be parsed into a valid object
+        - Fetching the object with a user who has full access (expected to succeed)
+        - Attempting to fetch the object without authentication (expected to be unauthorized)
+        """
         default_response = rest_api.get(f'{self.ROUTE_URL}/{"native"}/{example_object.public_id}')
         assert default_response.status_code == HTTPStatus.OK
 
@@ -265,9 +295,21 @@ class TestFrameworkObjects:
         assert none_get_types_response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-    def test_update_object(self, rest_api, example_object, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def test_update_object(
+            self,
+            rest_api,
+            example_object,
+            full_access_user,
+            none_access_user):
+        """
+        Test the PUT (update) operation on the object API endpoint
+
+        This test covers:
+        - Updating an object without specifying a user (default behavior)
+        - Validating that the object is updated and has a new last edit timestamp
+        - Updating an object with a user who has full access (expected to succeed)
+        - Confirming the object remains accessible after update
+        """
         example_object.editor_id = 1
         example_object.creation_time = None
 
@@ -305,9 +347,21 @@ class TestFrameworkObjects:
         # example_object.name = 'test'
 
 
-    def test_delete_object(self, rest_api, example_object, full_access_user, none_access_user):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def test_delete_object(
+            self,
+            rest_api,
+            example_object,
+            full_access_user,
+            none_access_user):
+        """
+        Test the DELETE operation on the object API endpoint
+
+        This test covers:
+        - Deleting an object without authentication (default route)
+        - Deleting an object with a user who has full access (expected to succeed)
+        - Verifying that the object no longer exists after successful deletion
+        - Attempting deletion without authorization (expected to be unauthorized)
+        """
         # Test default route
         rest_api.post(f'{self.ROUTE_URL}/', json=CmdbObject.to_json(example_object))
 

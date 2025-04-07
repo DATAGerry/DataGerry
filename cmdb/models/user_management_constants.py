@@ -22,6 +22,8 @@ from cmdb.manager import RightsManager
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.group_model import CmdbUserGroup
 from cmdb.models.settings_model import CmdbUserSetting
+from cmdb.models.person_model import CmdbPerson
+from cmdb.models.person_group_model import CmdbPersonGroup
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.all_rights import __all__ as rights
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -32,6 +34,8 @@ __COLLECTIONS__: list = [
     CmdbUser,
     CmdbUserSetting,
     CmdbUserGroup,
+    CmdbPerson,
+    CmdbPersonGroup,
 ]
 
 __ADMIN_GROUP_RIGHTS__: list[BaseRight] = [

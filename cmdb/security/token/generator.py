@@ -34,8 +34,13 @@ LOGGER = logging.getLogger(__name__)
 #                                                TokenGenerator - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class TokenGenerator:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A class to handle JWT token generation and related operations.
+
+    This class is responsible for generating secure tokens with specific claims
+    and expiration times. It includes methods for setting token expiration,
+    and generating tokens based on a provided payload with optional additional claims.
+    """
     DEFAULT_CLAIMS = {
         'iss': {
             'essential': True,
@@ -44,7 +49,14 @@ class TokenGenerator:
     }
 
     def __init__(self, dbm: MongoDatabaseManager = None):
+        """
+        Initializes the TokenGenerator
+
+        Args:
+            dbm (MongoDatabaseManager, optional): Database manager to interact with the database
+        """
         self.key_holder = KeyHolder(dbm)
+
         self.header = {
             'alg': 'RS512'
         }
@@ -52,23 +64,38 @@ class TokenGenerator:
         #TODO: REFACTOR-FIX
         settings_manager = SettingsManager(dbm)
         self.auth_module = AuthModule(
-                                settings_manager.get_all_values_from_section(
-                                                            'auth',
-                                                            AuthModule.__DEFAULT_SETTINGS__
-                                                          )
-                           )
+            settings_manager.get_all_values_from_section(
+                'auth',
+                AuthModule.__DEFAULT_SETTINGS__
+            )
+        )
 
 
     def get_expire_time(self) -> datetime:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Calculates the expiration time of the token based on the configured lifetime
+
+        Returns:
+            datetime: The calculated expiration time, set to the current time plus the token lifetime
+        """
         expire_time = int(self.auth_module.settings.get_token_lifetime())
         return datetime.now(timezone.utc) + timedelta(minutes=expire_time)
 
 
     def generate_token(self, payload: dict, optional_claims: dict = None) -> bytes:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Generates a JWT token using the provided payload and optional additional claims.
+
+        This method combines default claims, token-specific claims (like `iat` and `exp`),
+        and any optional claims provided to generate a signed JWT token.
+
+        Args:
+            payload (dict): The main payload to be included in the token's claims
+            optional_claims (dict, optional): Additional claims to be included in the token
+
+        Returns:
+            bytes: The encoded JWT token as a byte string
+        """
         optional_claims = optional_claims or {}
 
         token_claims = {

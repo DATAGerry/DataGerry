@@ -14,13 +14,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module caontains the implementation of the AuthSettingsDAO
+Implementation of AuthSettingsDAO
 """
-from cmdb.security.token import DEFAULT_TOKEN_LIFETIME
+import logging
 
 from cmdb.errors.security.security_errors import AuthSettingsInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
+LOGGER = logging.getLogger(__name__)
+
+DEFAULT_TOKEN_LIFETIME = 1400
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#                                                AuthSettingsDAO - CLASS                                               #
+# -------------------------------------------------------------------------------------------------------------------- #
 class AuthSettingsDAO:
     """
     This class stores all required data for an authentification
@@ -75,10 +82,14 @@ class AuthSettingsDAO:
 
 
     def get_provider_list(self) -> list[dict]:
-        """Get the list of providers with config"""
+        """
+        Get the list of providers with config
+        """
         return self.providers
 
 
     def get_provider_settings(self, class_name: str) -> dict:
-        """Get a specific provider list element by name"""
+        """
+        Get a specific provider list element by name
+        """
         return next(config for config in self.get_provider_list() if config['class_name'] == class_name)['config']

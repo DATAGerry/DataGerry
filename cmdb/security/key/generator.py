@@ -31,21 +31,40 @@ LOGGER = logging.getLogger(__name__)
 #                                                 KeyGenerator - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class KeyGenerator:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A class to generate cryptographic keys, including RSA key pairs and symmetric AES keys
+
+    This class is responsible for generating:
+    - RSA key pairs (public and private keys) for asymmetric encryption
+    - AES keys for symmetric encryption
+    
+    The generated keys are then stored in the application's settings via the `SettingsManager`
+    """
+
     def __init__(self, dbm: MongoDatabaseManager):
+        """
+        Initializes the KeyGenerator
+
+        Args:
+            dbm (MongoDatabaseManager): The database manager used to interact with the application's settings
+        """
         self.settings_manager = SettingsManager(dbm)
 
 
-    def generate_rsa_keypair(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def generate_rsa_keypair(self) -> None:
+        """
+        Generates an RSA key pair (private and public) for asymmetric encryption.
+
+        The RSA key pair is 2048 bits in size and is exported in a format suitable for storage.
+        The generated keys are saved in the application's settings under the 'security' section.
+
+        The generated keys are:
+        - Private key: Used for decryption or signing operations
+        - Public key: Used for encryption or verification operations
+        """
         key = RSA.generate(2048)
         private_key = key.export_key()
         public_key = key.publickey().export_key()
-
-        # LOGGER.error(f"private_key: {private_key}")
-        # LOGGER.error(f"public_key: {public_key}")
 
         asymmetric_key = {
             'private': private_key,
@@ -55,10 +74,12 @@ class KeyGenerator:
         self.settings_manager.write('security', {'asymmetric_key': asymmetric_key})
 
 
-    def generate_symmetric_aes_key(self):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def generate_symmetric_aes_key(self) -> None:
+        """
+        Generates a 256-bit AES key for symmetric encryption.
+
+        This method generates a random AES key using the `Random` module and stores it in the application's settings.
+        """
         symmetric_aes_key = Random.get_random_bytes(32)
-        # LOGGER.error(f"symmetric_aes_key: {symmetric_aes_key}")
 
         self.settings_manager.write('security', {'symmetric_aes_key': symmetric_aes_key})
