@@ -30,12 +30,9 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbWebhookEvent(CmdbDAO):
     """
-    Attributes:
-        COLLECTION (str):    Name of the database collection
-        MODEL (Model):              Name of the DAO
-        DEFAULT_VERSION (str):      The default "starting" version number
-        SCHEMA (dict):              The validation schema for this DAO
-        INDEX_KEYS (list):          List of index keys for the database
+    Implementation of CmdbWebhookEvent
+
+    Extends: CmdbDAO
     """
     #TODO: DOCUMENT-FIX
 

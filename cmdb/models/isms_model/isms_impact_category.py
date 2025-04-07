@@ -72,7 +72,7 @@ class IsmsImpactCategory(CmdbDAO):
     }
 
 
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0917
     def __init__(self, public_id: int, name: str, impact_descriptions: list, sort: int = None):
         """
         Initialises an IsmsImpactCategory

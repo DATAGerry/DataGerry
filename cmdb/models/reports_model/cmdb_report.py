@@ -81,6 +81,7 @@ class CmdbReport(CmdbDAO):
 
 # ---------------------------------------------------- CONSTRUCTOR --------------------------------------------------- #
 
+    #pylint: disable=R0913, R0917
     def __init__(
             self,
             report_category_id: int,

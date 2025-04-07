@@ -65,7 +65,6 @@ class IsmsLikelihood(CmdbDAO):
     }
 
 
-    #pylint: disable=too-many-positional-arguments
     def __init__(self, public_id: int, name: str, calculation_basis: str, description: str):
         """
         Initialises an IsmsLikelihood

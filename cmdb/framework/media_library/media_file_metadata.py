@@ -40,7 +40,7 @@ class FileMetadata:
         mime_type (str): The MIME type of the file, default is "application/json"
     """
 
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0917
     def __init__(
             self,
             author_id,

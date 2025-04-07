@@ -26,7 +26,7 @@ class ObjectImporterConfig(BaseImporterConfig):
     Extends: BaseImporterConfig
     """
 
-    def __init__(self, 
+    def __init__(self,
                  type_id: int,
                  mapping: list = None,
                  start_element: int = 0,

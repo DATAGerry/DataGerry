@@ -69,7 +69,7 @@ class CmdbObjectGroup(CmdbDAO):
         },
     }
 
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0917
     def __init__(
             self,
             public_id: int,

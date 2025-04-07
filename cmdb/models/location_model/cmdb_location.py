@@ -75,7 +75,7 @@ class CmdbLocation(CmdbDAO):
     }
 
 
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0913, R0917
     def __init__(self,
                  public_id: int,
                  name: str,

@@ -19,7 +19,7 @@ Implementation of IsmsRisk in DataGerry - ISMS
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
-from cmdb.models.isms_model import RiskType
+from cmdb.models.isms_model.risk_type_enum import RiskType
 
 from cmdb.errors.models.isms_risk import (
     IsmsRiskInitError,
@@ -42,6 +42,7 @@ class IsmsRisk(CmdbDAO):
     """
     COLLECTION = "isms.risk"
     MODEL = 'Risk'
+
     # pylint: disable=R0801
     SCHEMA: dict = {
         'public_id': {
@@ -81,8 +82,7 @@ class IsmsRisk(CmdbDAO):
     }
 
 
-    #pylint: disable=too-many-arguments
-    #pylint: disable=too-many-positional-arguments
+    #pylint: disable=R0913, R0917
     def __init__(
             self,
             public_id: int,

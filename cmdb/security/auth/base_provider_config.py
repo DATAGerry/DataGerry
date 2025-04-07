@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of BaseAuthProviderConfig
+"""
 import logging
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -24,25 +25,43 @@ LOGGER = logging.getLogger(__name__)
 #                                              AuthProviderConfig - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class BaseAuthProviderConfig:
-    """Base provider config"""
+    """
+    Base configuration class for authentication providers.
+
+    This class serves as the base configuration for authentication providers, 
+    handling the activation state (`active`) and providing a mechanism to store 
+    additional configuration parameters as attributes. Subclasses should extend this 
+    class to define more specific configuration for their respective authentication providers.
+
+    Attributes:
+        active (bool): A flag indicating whether the authentication provider is active
+    """
 
     DEFAULT_CONFIG_VALUES = {
         'active': True
     }
 
     def __init__(self, active: bool, **kwargs):
-        """Base init constructor
+        """
+        Initializes the configuration for an authentication provider
+
         Args:
-            active: is provider activated/deactivated
-            **kwargs:
+            active (bool): A flag indicating whether the authentication provider is activated (`True`)
+                           or deactivated (`False`)
+            **kwargs: Any additional keyword arguments are dynamically set as attributes on the configuration object
         """
         self.active: bool = active
-        # auto set parameters as attribute
+
+        # Set additional configuration values as object attributes
         for key, value in kwargs.items():
             setattr(self, key, value)
 
 
     def is_active(self) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Checks if the authentication provider is active
+
+        Returns:
+            bool: Returns `True` if the provider is active, otherwise `False`
+        """
         return self.active
