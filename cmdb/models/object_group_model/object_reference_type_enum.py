@@ -14,28 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of ObjectGroupMode enumeration
+Implementation of ObjectReferenceType enumeration
 """
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectGroupMode(str, Enum):
+class ObjectReferenceType(str, Enum):
     """
-    Available ObjectGroupModes for CmdbObjectGroups
+    Enumeration of available reference types for CmdbObjects.
+
+    This enumeration defines the different modes of referencing objects in the system. 
+    Each reference type corresponds to how a CmdbObject or CmdbObjectGroup is linked or identified.
+
+    Attributes:
+        OBJECT (str): A reference to a single CmdbObject
+        OBJECT_GROUP (str): A reference to a CmdbObjectGroup, which is a collection of CmdbObjects
     """
-    STATIC = 'STATIC'
-    DYNAMIC = 'DYNAMIC'
+    OBJECT = 'OBJECT'
+    OBJECT_GROUP = 'OBJECT_GROUP'
 
 
     @classmethod
     def is_valid(cls, value: str) -> bool:
         """
-        Checks if a given string is a valid ObjectGroupMode
+        Checks if a given string is a valid ObjectReferenceType
 
         Args:
             value (str): The string to check
 
         Returns:
-            bool: True if the string matches an existing ObjectGroupMode, False otherwise
+            bool: True if the string matches an existing ObjectReferenceType, False otherwise
         """
-        return value in ObjectGroupMode.__members__
+        return value in ObjectReferenceType.__members__

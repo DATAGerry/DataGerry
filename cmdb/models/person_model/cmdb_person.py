@@ -73,7 +73,7 @@ class CmdbPerson(CmdbDAO):
         },
     }
 
-
+    #pylint: disable=R0917
     def __init__(
             self,
             public_id: int,

@@ -35,6 +35,7 @@ class ProtectionGoalManagerInitError(ProtectionGoalManagerError):
     Raised when ProtectionGoalManager could not be initialised
     """
 
+
 class ProtectionGoalManagerInsertError(ProtectionGoalManagerError):
     """
     Raised when ProtectionGoalManager could not insert an IsmsProtectionGoal
@@ -61,5 +62,5 @@ class ProtectionGoalManagerDeleteError(ProtectionGoalManagerError):
 
 class ProtectionGoalManagerIterationError(ProtectionGoalManagerError):
     """
-    Raised when ProtectionGoalManager could not iterate over IsmsProtectionGoal
+    Raised when ProtectionGoalManager could not iterate over IsmsProtectionGoals
     """

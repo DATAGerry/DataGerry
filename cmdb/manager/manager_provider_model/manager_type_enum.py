@@ -60,3 +60,4 @@ class ManagerType(Enum):
     VULNERABILITY = 'VulnerabilityManager'
     RISK = 'RiskManager'
     CONTROL_MEASSURE = 'ControlMeassureManager'
+    RISK_ASSESSMENT = 'RiskAssessmentManager'

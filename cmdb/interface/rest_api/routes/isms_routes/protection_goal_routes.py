@@ -77,6 +77,9 @@ def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
+        if data.get('predefined'):
+            abort(400, "Predefined ProtectionGoals cannot be created via API!")
+
         #Check if a ProtectionGoal with the name already exists
         goal_with_name = protection_goal_manager.get_one_by({'name': data.get('name')})
 
@@ -206,18 +209,21 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
         UpdateSingleResponse: The new data of the IsmsProtectionGoal
     """
     try:
-        if public_id in [1,2,3]:
-            abort(400, "The predefined ProtectionGoals can not be edited!")
-
         protection_goal_manager: ProtectionGoalManager = ManagerProvider.get_manager(
                                                                             ManagerType.PROTECTION_GOAL,
                                                                             request_user
                                                                          )
 
-        to_update_protection_goal = protection_goal_manager.get_item(public_id)
+        to_update_protection_goal: IsmsProtectionGoal = protection_goal_manager.get_item(public_id)
 
         if not to_update_protection_goal:
             abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
+
+        if data.get('predefined') != to_update_protection_goal.predefined:
+            abort(400, "The predefined property of ProtectionGoals cannot be edited!")
+
+        if to_update_protection_goal.predefined is True:
+            abort(400, "The predefined ProtectionGoals can not be edited!")
 
         #Check if a ProtectionGoal with the new name already exists
         goal_with_name = protection_goal_manager.get_one_by({'name': data.get('name')})
@@ -258,19 +264,18 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
         DeleteSingleResponse: The deleted IsmsProtectionGoal data
     """
     try:
-        if public_id in [1,2,3]:
-            abort(400, "The predefined ProtectionGoals can not be deleted!")
-
-
         protection_goal_manager: ProtectionGoalManager = ManagerProvider.get_manager(
                                                                             ManagerType.PROTECTION_GOAL,
                                                                             request_user
                                                                          )
 
-        to_delete_protection_goal = protection_goal_manager.get_item(public_id)
+        to_delete_protection_goal: IsmsProtectionGoal = protection_goal_manager.get_item(public_id)
 
         if not to_delete_protection_goal:
             abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
+
+        if to_delete_protection_goal.predefined is True:
+            abort(400, "The predefined ProtectionGoals cannot be deleted!")
 
         protection_goal_manager.delete_item(public_id)
 

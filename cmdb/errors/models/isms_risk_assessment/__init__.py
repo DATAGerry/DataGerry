@@ -14,28 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of ObjectGroupMode enumeration
+This module provides all errors for IsmsRiskAssessments
 """
-from enum import Enum
+from .isms_risk_assessment_errors import (
+    IsmsRiskAssessmentError,
+    IsmsRiskAssessmentInitError,
+    IsmsRiskAssessmentInitFromDataError,
+    IsmsRiskAssessmentToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectGroupMode(str, Enum):
-    """
-    Available ObjectGroupModes for CmdbObjectGroups
-    """
-    STATIC = 'STATIC'
-    DYNAMIC = 'DYNAMIC'
-
-
-    @classmethod
-    def is_valid(cls, value: str) -> bool:
-        """
-        Checks if a given string is a valid ObjectGroupMode
-
-        Args:
-            value (str): The string to check
-
-        Returns:
-            bool: True if the string matches an existing ObjectGroupMode, False otherwise
-        """
-        return value in ObjectGroupMode.__members__
+__all__ = [
+    'IsmsRiskAssessmentError',
+    'IsmsRiskAssessmentInitError',
+    'IsmsRiskAssessmentInitFromDataError',
+    'IsmsRiskAssessmentToJsonError',
+]

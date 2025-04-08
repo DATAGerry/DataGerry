@@ -1,8 +1,3 @@
-# DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2025 becon GmbH
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 #
@@ -14,28 +9,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of ObjectGroupMode enumeration
+Implementation of Priority enumeration
 """
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectGroupMode(str, Enum):
+class Priority(int, Enum):
     """
-    Available ObjectGroupModes for CmdbObjectGroups
+    Available Priority for IsmsRiskAssesssments
     """
-    STATIC = 'STATIC'
-    DYNAMIC = 'DYNAMIC'
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    VERY_HIGH = 4
 
 
     @classmethod
-    def is_valid(cls, value: str) -> bool:
+    def is_valid(cls, value: int) -> bool:
         """
-        Checks if a given string is a valid ObjectGroupMode
+        Checks if a given string is a valid Priority
 
         Args:
             value (str): The string to check
 
         Returns:
-            bool: True if the string matches an existing ObjectGroupMode, False otherwise
+            bool: True if the string matches an existing Priority, False otherwise
         """
-        return value in ObjectGroupMode.__members__
+        return value in cls._value2member_map_

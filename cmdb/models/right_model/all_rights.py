@@ -54,6 +54,7 @@ from cmdb.models.right_model.isms_rights import (
     VulnerabilityRight,
     RiskRight,
     ControlMeassureRight,
+    RiskAssessmentRight,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -239,6 +240,13 @@ ISMS_RIGHTS = (
             ControlMeassureRight('add', description='Add ISMS ControlMeassures'),
             ControlMeassureRight('edit', Levels.PROTECTED, description='Edit ISMS ControlMeassures'),
             ControlMeassureRight('delete', Levels.SECURE, description='Delete ISMS ControlMeassures'),
+        ),
+        RiskAssessmentRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage RiskAssessments of ISMS'),
+        (
+            RiskAssessmentRight('view', description='View ISMS RiskAssessments'),
+            RiskAssessmentRight('add', description='Add ISMS RiskAssessments'),
+            RiskAssessmentRight('edit', Levels.PROTECTED, description='Edit ISMS RiskAssessments'),
+            RiskAssessmentRight('delete', Levels.SECURE, description='Delete ISMS RiskAssessments'),
         ),
     ),
 )

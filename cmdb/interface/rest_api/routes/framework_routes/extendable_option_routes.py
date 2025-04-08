@@ -83,9 +83,9 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
                                                                     ManagerType.EXTENDABLE_OPTIONS,
                                                                     request_user
                                                                 )
+
         if data.get('predefined'):
             abort(400, "Predefined ExtendableOptions cannot be created via API!")
-
 
         # Validate the OptionType
         if not OptionType.is_valid(data.get('option_type')):

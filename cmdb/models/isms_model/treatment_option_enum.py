@@ -1,8 +1,3 @@
-# DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2025 becon GmbH
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 #
@@ -14,28 +9,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of ObjectGroupMode enumeration
+Implementation of TreatmentOption enumeration
 """
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ObjectGroupMode(str, Enum):
+class TreatmentOption(str, Enum):
     """
-    Available ObjectGroupModes for CmdbObjectGroups
+    Available TreatmentOptions for IsmsRiskAssesssments
     """
-    STATIC = 'STATIC'
-    DYNAMIC = 'DYNAMIC'
+    AVOID = 'AVOID'
+    ACCEPT = 'ACCEPT'
+    REDUCE = 'REDUCE'
+    TRANSFER_SHARE = 'TRANSFER_SHARE'
 
 
     @classmethod
     def is_valid(cls, value: str) -> bool:
         """
-        Checks if a given string is a valid ObjectGroupMode
+        Checks if a given string is a valid TreatmentOption
 
         Args:
             value (str): The string to check
 
         Returns:
-            bool: True if the string matches an existing ObjectGroupMode, False otherwise
+            bool: True if the string matches an existing TreatmentOption, False otherwise
         """
-        return value in ObjectGroupMode.__members__
+        return value in TreatmentOption.__members__

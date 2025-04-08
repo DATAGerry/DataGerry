@@ -28,14 +28,17 @@ def get_default_protection_goals() -> list:
     return [
         {
             'public_id': 1,
-            'name': 'Confidentiality'
+            'name': 'Confidentiality',
+            'predefined': True,
         },
         {
             'public_id': 2,
-            'name': 'Integrity'
+            'name': 'Integrity',
+            'predefined': True,
         },
         {
             'public_id': 3,
-            'name': 'Availability'
+            'name': 'Availability',
+            'predefined': True,
         }
     ]

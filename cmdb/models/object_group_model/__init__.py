@@ -17,10 +17,12 @@
 Provides all CmdbOptionGroup relevant classes
 """
 from .object_group_mode_enum import ObjectGroupMode
+from .object_reference_type_enum import ObjectReferenceType
 from .cmdb_object_group import CmdbObjectGroup
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
     'ObjectGroupMode',
+    'ObjectReferenceType',
     'CmdbObjectGroup',
 ]
