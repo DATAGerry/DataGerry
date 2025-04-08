@@ -50,7 +50,7 @@ class CmdbObject(CmdbDAO):
     REQUIRED_INIT_KEYS = ['type_id', 'creation_time', 'author_id', 'active', 'fields', 'version']
     SCHEMA: dict = get_cmdb_object_schema()
 
-    #pylint: disable=too-many-arguments
+    #pylint: disable=R0913, R0917
     def __init__(self,
                  type_id: int,
                  creation_time: datetime,

@@ -50,6 +50,7 @@ from cmdb.models.isms_model import (
     IsmsVulnerability,
     IsmsControlMeassure,
     IsmsRiskMatrix,
+    IsmsRiskAssessment,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -83,4 +84,5 @@ __COLLECTIONS__ = [
     IsmsImpactCategory,
     IsmsProtectionGoal,
     IsmsRiskMatrix,
+    IsmsRiskAssessment,
 ]

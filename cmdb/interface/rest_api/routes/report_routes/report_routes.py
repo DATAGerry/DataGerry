@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all CmdbReport API routes
+"""
 import re
 import logging
 import json
@@ -54,6 +55,8 @@ from cmdb.errors.database import NoDocumentFoundError
 LOGGER = logging.getLogger(__name__)
 
 reports_blueprint = APIBlueprint('reports', __name__)
+
+DATETIME_PATTERN = r"datetime\.datetime\((.*?)\)"
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
@@ -209,6 +212,7 @@ def run_report_query(public_id: int, request_user: CmdbUser):
                                         query_str.replace("datetime.datetime", "datetime"))
 
         safe_globals = {"datetime": datetime}
+        #pylint: disable=W0123
         report_query = eval(processed_query_string, safe_globals)
 
         result = {}
@@ -325,14 +329,25 @@ def delete_report(public_id: int, request_user: CmdbUser):
 
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 
-DATETIME_PATTERN = r"datetime\.datetime\((.*?)\)"
 
-# Replace matches with actual datetime objects
+
 def replace_datetime(match):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    # Extract arguments from the match (e.g., "2025, 11, 26, 0, 0")
-    args = match.group(1)
-    # Convert arguments into a Python datetime object
+    """
+    Replaces a regex match containing datetime arguments with a Python datetime object
 
+    Args:
+        match (re.Match): A regular expression match object containing 
+                          a string of datetime arguments (e.g., "2025, 11, 26, 0, 0").
+
+    Returns:
+        str: A string representation (repr) of the evaluated datetime object.
+
+    Notes:
+        - This function expects the match to contain arguments suitable for datetime().
+        - The returned value is the repr of the datetime object, 
+          which can be used in source code or serialization.
+    """
+    args = match.group(1)
+
+    #pylint: disable=W0123
     return repr(eval(f"datetime({args})"))

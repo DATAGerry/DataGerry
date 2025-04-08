@@ -475,31 +475,6 @@ def validate_right_cloud_api(required_right: str, request_user: CmdbUser) -> boo
         return False
 
 
-# TODO: UNUSED-FIX
-def validate_password(user_name: str, password: str, database: str = None) -> Union[CmdbUser, None]:
-    """document"""
-    #TODO: DOCUMENT-FIX
-    if database:
-        users_manager = UsersManager(current_app.database_manager, database)
-        security_manager = SecurityManager(current_app.database_manager, database)
-        settings_manager = SettingsManager(current_app.database_manager, database)
-    else:
-        users_manager = UsersManager(current_app.database_manager)
-        security_manager = SecurityManager(current_app.database_manager)
-        settings_manager = SettingsManager(current_app.database_manager)
-
-    auth_settings = settings_manager.get_all_values_from_section('auth', AuthModule.__DEFAULT_SETTINGS__)
-    auth_module = AuthModule(auth_settings,
-                                security_manager=security_manager,
-                                users_manager=users_manager)
-
-    try:
-        # Returns the CmdbUser
-        return auth_module.login(user_name, password)
-    except Exception:
-        return None
-
-
 def check_user_in_service_portal(mail: str, password: str, x_api_key: str = None) -> Optional[dict]:
     """Check if a user exists in the service portal
 

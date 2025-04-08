@@ -20,7 +20,7 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import PersonsManager
+from cmdb.manager import PersonsManager, PersonGroupsManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
@@ -73,8 +73,14 @@ def insert_cmdb_person(data: dict, request_user: CmdbUser):
     """
     try:
         persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
+        person_groups_manager: PersonGroupsManager = ManagerProvider.get_manager(ManagerType.PERSON_GROUP,
+                                                                                 request_user)
 
         result_id = persons_manager.insert_item(data)
+
+        # Add the person to the selected groups
+        selected_groups = data.get('groups')
+        #TODO: Add the person to the groups
 
         created_person = persons_manager.get_item(result_id, as_dict=True)
 

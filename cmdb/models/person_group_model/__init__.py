@@ -17,8 +17,10 @@
 Provides all CmdbPersonGroup relevant classes
 """
 from .cmdb_person_group import CmdbPersonGroup
+from .person_reference_type_enum import PersonReferenceType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
     'CmdbPersonGroup',
+    'PersonReferenceType',
 ]
