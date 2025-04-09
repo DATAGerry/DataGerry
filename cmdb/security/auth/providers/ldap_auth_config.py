@@ -29,9 +29,14 @@ LOGGER = logging.getLogger(__name__)
 #                                       LdapAuthenticationProviderConfig - CLASS                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 class LdapAuthenticationProviderConfig(BaseAuthProviderConfig):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Configuration class for the LDAP Authentication Provider.
 
+    This class holds all settings needed to connect to an LDAP server,
+    search for users, and optionally map LDAP groups to internal application groups.
+
+    Extends: BaseAuthProviderConfig
+    """
     DEFAULT_CONFIG_VALUES = {
         'active': False,
         'default_group': 2,
@@ -65,8 +70,20 @@ class LdapAuthenticationProviderConfig(BaseAuthProviderConfig):
         search: dict = None,
         groups: dict = None,
         *args, **kwargs):
+        """
+        Initialize an LDAP Authentication Provider Configuration instance
+
+        Args:
+            active (bool, optional): Whether the LDAP provider is active. Defaults to False
+            default_group (int, optional): Default group ID for users. Defaults to 2
+            server_config (dict, optional): Configuration for the LDAP server (host, port, SSL)
+            connection_config (dict, optional): Configuration for the LDAP connection (bind user, password, version)
+            search (dict, optional): Search parameters for finding users
+            groups (dict, optional): Group mapping settings
+
+        """
         active = active or False
-        self.default_group = int(default_group or LdapAuthenticationProviderConfig. \
+        self.default_group = int(default_group or LdapAuthenticationProviderConfig.
                                  DEFAULT_CONFIG_VALUES.get('default_group'))
         self.server_config: dict = server_config or LdapAuthenticationProviderConfig. \
             DEFAULT_CONFIG_VALUES.get('server_config')
@@ -76,11 +93,23 @@ class LdapAuthenticationProviderConfig(BaseAuthProviderConfig):
             DEFAULT_CONFIG_VALUES.get('search')
         self.groups: dict = groups or LdapAuthenticationProviderConfig. \
             DEFAULT_CONFIG_VALUES.get('groups')
+
         super().__init__(active)
 
 
     def mapping(self, group_dn: str) -> int:
-        """Get a group mapping by the group_dn"""
+        """
+        Get the internal group ID mapped to a specific LDAP group distinguished name (DN)
+
+        Args:
+            group_dn (str): The distinguished name (DN) of the LDAP group
+
+        Raises:
+            GroupMappingError: If no mapping is found for the given group DN
+
+        Returns:
+            int: The corresponding internal group ID
+        """
         try:
             return next(int(group['group_id']) for group in self.groups['mapping'] if
                         group['group_dn'].lower() == group_dn.lower())

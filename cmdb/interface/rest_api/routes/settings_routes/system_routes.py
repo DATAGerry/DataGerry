@@ -61,9 +61,7 @@ def get_datagerry_information(request_user: CmdbUser):
         'starting_parameters': sys.argv
     }
 
-    api_response = DefaultResponse(datagerry_infos)
-
-    return api_response.make_response()
+    return DefaultResponse(datagerry_infos).make_response()
 
 
 @system_blueprint.route('/config/', methods=['GET'])

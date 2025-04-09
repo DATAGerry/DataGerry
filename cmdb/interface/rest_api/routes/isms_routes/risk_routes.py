@@ -78,6 +78,9 @@ def insert_isms_risk(data: dict, request_user: CmdbUser):
         if not RiskType.is_valid(data.get('risk_type')):
             abort(400, f"Invalid RiskType provided: {data.get('risk_type')} !")
 
+        if not is_risk_data_valid(data):
+            abort(400, "Incomplete Risk data, no creation possible!")
+
         result_id: int = risk_manager.insert_item(data)
 
         created_risk: dict = risk_manager.get_item(result_id, as_dict=True)
@@ -196,14 +199,17 @@ def update_isms_risk(public_id: int, data: dict, request_user: CmdbUser):
     try:
         risk_manager: RiskManager = ManagerProvider.get_manager(ManagerType.RISK, request_user)
 
-        # Validate the RiskType
-        if not RiskType.is_valid(data.get('risk_type')):
-            abort(400, f"Invalid RiskType provided: {data.get('risk_type')} !")
-
         to_update_risk = risk_manager.get_item(public_id)
 
         if not to_update_risk:
             abort(404, f"The Risk with ID:{public_id} was not found!")
+
+        # Validate the RiskType
+        if not RiskType.is_valid(data.get('risk_type')):
+            abort(400, f"Invalid RiskType provided: {data.get('risk_type')} !")
+
+        if not is_risk_data_valid(data):
+            abort(400, "Incomplete Risk data, no update possible!")
 
         risk_manager.update_item(public_id, IsmsRisk.from_data(data))
 
@@ -259,3 +265,46 @@ def delete_isms_risk(public_id: int, request_user: CmdbUser):
     except Exception as err:
         LOGGER.error("[delete_isms_risk] Exception: %s. Type: %s", err, type(err), exc_info=True)
         abort(500, f"An internal server error occured while deleting the Risk with ID: {public_id}!")
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+def is_risk_data_valid(data: dict) -> bool:
+    """
+    Validates the risk data dictionary based on the specified risk type
+
+    Depending on the risk_type, additional fields are required:
+      - For THREAT_X_VULNERABILITY: 'threats' and 'vulnerabilities' must be provided
+      - For THREAT: 'threats' and 'description' must be provided
+      - For EVENT: 'consequences' and 'description' must be provided
+
+    Args:
+        data (dict): The risk data to validate
+
+    Returns:
+        bool: True if the risk data is valid, False otherwise
+    """
+    data_risk_type = data.get('risk_type')
+
+    if not RiskType.is_valid(data_risk_type):
+        return False
+
+    if data_risk_type == RiskType.THREAT_X_VULNERABILITY:
+        if not data.get('threats'):
+            return False
+
+        if not data.get('vulnerabilities'):
+            return False
+
+    if data_risk_type == RiskType.THREAT:
+        if not data.get('threats'):
+            return False
+
+
+    if data_risk_type == RiskType.EVENT:
+        if not data.get('consequences'):
+            return False
+
+        if not data.get('description'):
+            return False
+
+    return True

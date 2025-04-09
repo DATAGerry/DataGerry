@@ -47,29 +47,37 @@ def get_isms_risk_assessment_schema() -> dict:
             'empty': False
         },
         ### Risk calculation before treatment ###
-        'sliders_before': {
+        'risk_calculation_before': {
             'type': 'dict',
             'required': True,
             'empty': False,
             'schema': {
-                'impacts': {
+                'impacts': { # All impact category sliders
                     'type': 'list',
                     'schema': {
                         'type': 'dict',
                         'schema': {
-                            'impact_category_id': {
+                            'impact_category_id': { # public_id of IsmsImpactCategory
                                 'type': 'integer',
                             },
-                            'impact_id':{
+                            'impact_id':{ # public_id of IsmsImpact (empty = unrated)
                                 'type': 'integer',
                             }
                         }
                     }
                 },
-                'likelihood': {
+                'likelihood_id': { # public_id of IsmsLikelihood (empty = unrated)
                     'type': 'integer',
                 },
-                'risk_level': {
+                'likelihood_value': { # calculation_basis of selected IsmsLikelihood
+                    'type':'float',
+                    'min': 0.0
+                },
+                'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
+                    'type':'float',
+                    'min': 0.0
+                },
+                'risk_level_value': { # The calculated risk value
                     'type':'float',
                     'min': 0.0
                 }
@@ -92,7 +100,8 @@ def get_isms_risk_assessment_schema() -> dict:
         },
         'risk_assessment_date': { # Date of risk calculation before treatment
             'type': 'dict',
-            'nullable': True
+            'required': True,
+            'empty': False
         },
         'additional_info': { # Additional information field value
             'type': 'string'
@@ -116,7 +125,9 @@ def get_isms_risk_assessment_schema() -> dict:
             'nullable': True
         },
         'implementation_status': { # public_id of CmdbExtendableOption 'IMPLEMENTATION_STATE'
-            'type': 'integer'
+            'type': 'integer',
+            'required': True,
+            'empty': False
         },
         'finished_implementation_date': { # Date of finished implementation
             'type': 'dict',
@@ -135,29 +146,37 @@ def get_isms_risk_assessment_schema() -> dict:
             'type': 'integer'
         },
         ### Risk calculation after treatment
-        'sliders_after': {
+        'risk_calculation_after': {
             'type': 'dict',
             'required': True,
             'empty': False,
             'schema': {
-                'impacts': {
+                'impacts': { # All impact category sliders
                     'type': 'list',
                     'schema': {
                         'type': 'dict',
                         'schema': {
-                            'impact_category_id': {
+                            'impact_category_id': { # public_id of IsmsImpactCategory
                                 'type': 'integer',
                             },
-                            'impact_id':{
+                            'impact_id':{ # public_id of IsmsImpact (empty = unrated)
                                 'type': 'integer',
                             }
                         }
                     }
                 },
-                'likelihood': {
+                'likelihood_id': { # public_id of IsmsLikelihood (empty = unrated)
                     'type': 'integer',
                 },
-                'risk_level': {
+                'likelihood_value': { # calculation_basis of selected IsmsLikelihood
+                    'type':'float',
+                    'min': 0.0
+                },
+                'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
+                    'type':'float',
+                    'min': 0.0
+                },
+                'risk_level_value': { # The calculated risk value
                     'type':'float',
                     'min': 0.0
                 }

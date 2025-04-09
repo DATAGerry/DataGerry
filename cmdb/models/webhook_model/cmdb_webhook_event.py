@@ -34,8 +34,6 @@ class CmdbWebhookEvent(CmdbDAO):
 
     Extends: CmdbDAO
     """
-    #TODO: DOCUMENT-FIX
-
     COLLECTION = 'framework.webhookEvents'
     MODEL = 'Webhook_Event'
     DEFAULT_VERSION: str = '1.0.0'

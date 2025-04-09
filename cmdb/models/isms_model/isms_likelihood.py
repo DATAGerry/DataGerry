@@ -53,14 +53,12 @@ class IsmsLikelihood(CmdbDAO):
         },
         'calculation_basis': {
             'type': 'float',
-            'min': 0.0,
+            'min': 1e-9,
             'required': True,
             'empty': False
         },
         'description': {
             'type': 'string',
-            'required': True,
-            'empty': False
         }
     }
 

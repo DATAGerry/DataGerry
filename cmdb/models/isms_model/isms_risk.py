@@ -61,8 +61,6 @@ class IsmsRisk(CmdbDAO):
         },
         'protection_goals': {
             'type': 'list',
-            'required': True,
-            'empty': False
         },
         'threats': {
             'type': 'list',

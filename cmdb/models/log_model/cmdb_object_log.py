@@ -128,7 +128,9 @@ class CmdbObjectLog(CmdbMetaLog):
 
     @classmethod
     def to_json(cls, instance: "CmdbObjectLog") -> dict:
-        """Convert a type instance to json conform data"""
+        """
+        Convert a type instance to json conform data
+        """
         return {
             'public_id': instance.public_id,
             'log_time': instance.log_time,

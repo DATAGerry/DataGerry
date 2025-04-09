@@ -42,8 +42,17 @@ LOGGER = logging.getLogger(__name__)
 #                                          LdapAuthenticationProvider - CLASS                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 class LdapAuthenticationProvider(BaseAuthenticationProvider):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    LDAP authentication provider that integrates with an LDAP server to authenticate users
+    and manage their user group mappings
+
+    Extends: BaseAuthenticationProvider
+
+    Attributes:
+        PASSWORD_ABLE (bool): Flag indicating if the provider supports password-based authentication
+        EXTERNAL_PROVIDER (bool): Flag indicating if the provider is an external authentication source
+        PROVIDER_CONFIG_CLASS: The associated configuration class for this provider
+    """
     PASSWORD_ABLE: bool = False
     EXTERNAL_PROVIDER: bool = True
     PROVIDER_CONFIG_CLASS = LdapAuthenticationProviderConfig
@@ -52,7 +61,14 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                  config: LdapAuthenticationProviderConfig = None,
                  security_manager: SecurityManager = None,
                  users_manager: UsersManager = None):
+        """
+        Initialize the LDAP authentication provider.
 
+        Args:
+            config (LdapAuthenticationProviderConfig, optional): The LDAP provider configuration
+            security_manager (SecurityManager, optional): The security manager instance
+            users_manager (UsersManager, optional): The users manager instance
+        """
         self.__ldap_server = Server(**config.server_config)
         self.__ldap_connection = Connection(self.__ldap_server, **config.connection_config)
         super().__init__(config,
@@ -60,22 +76,42 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                          users_manager=users_manager)
 
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """
+        Close the LDAP connection when exiting the context
+
+        Args:
+            exc_type (Type[BaseException]): Exception type
+            exc_val (BaseException): Exception value
+            exc_tb (TracebackType): Traceback object
+        """
         if self.__ldap_connection:
             self.__ldap_connection.unbind()
 
 
     def connect(self) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Attempt to bind (connect) to the LDAP server
+
+        Returns:
+            bool: True if the connection is successful, False otherwise
+        """
         return self.__ldap_connection.bind()
 
 
     def __map_group(self, possible_user_groups: list[str]) -> int:
-        """Get the user group for this user by the ldap user list"""
+        """
+        Determine the user's group based on LDAP group memberships
+
+        Args:
+            possible_user_groups (list[str]): List of LDAP group names the user belongs to
+
+        Returns:
+            int: The internal group ID mapped from the user's LDAP groups
+        """
         user_group = self.config.default_group
-        if not self.config.groups['mapping'] or len(self.config.groups['mapping']) == 0 or len(
-                possible_user_groups) == 0:
+        if not self.config.groups['mapping'] or len(self.config.groups['mapping']) == 0 or\
+           len(possible_user_groups) == 0:
             return user_group
 
         mappings = self.config.groups['mapping']
@@ -91,8 +127,19 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def authenticate(self, user_name: str, password: str) -> CmdbUser:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Authenticate a user against the LDAP server using username and password
+
+        Args:
+            user_name (str): The username to authenticate
+            password (str): The password for the user
+
+        Raises:
+            AuthenticationError: If authentication fails at any point
+
+        Returns:
+            CmdbUser: The authenticated CMDB user object
+        """
         #TODO: REFACTOR-FIX
         try:
             ldap_connection_status = self.connect()
@@ -180,6 +227,10 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
 
 
     def is_active(self) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Check if the LDAP authentication provider is active
+
+        Returns:
+            bool: True if the provider is active, False otherwise
+        """
         return self.config.active

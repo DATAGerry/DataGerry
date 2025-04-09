@@ -54,8 +54,6 @@ class IsmsThreat(CmdbDAO):
         },
         'source': {
             'type': 'integer',
-            'required': True,
-            'empty': False
         },
         'identifier': {
             'type': 'string',

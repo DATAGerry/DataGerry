@@ -40,6 +40,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                              IsmsRiskAssessment - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
+#pylint: disable=R0902
 class IsmsRiskAssessment(CmdbDAO):
     """
     Implementation of IsmsRiskAssessment
@@ -59,7 +60,7 @@ class IsmsRiskAssessment(CmdbDAO):
             risk_id: int,
             object_id_ref_type: ObjectReferenceType,
             object_id: int,
-            sliders_before: dict,
+            risk_calculation_before: dict,
             risk_assessor_id: int,
             risk_owner_id_ref_type: PersonReferenceType,
             risk_owner_id: int,
@@ -77,7 +78,7 @@ class IsmsRiskAssessment(CmdbDAO):
             costs_for_implementation: float,
             costs_for_implementation_currency: str,
             priority: Priority,
-            sliders_after: dict,
+            risk_calculation_after: dict,
             audit_done_date: datetime,
             auditor_id_ref_type: PersonReferenceType,
             auditor_id: int,
@@ -90,7 +91,7 @@ class IsmsRiskAssessment(CmdbDAO):
             risk_id (int): public_id of referenced IsmsRisk
             object_id_ref_type (ObjectReferenceType): ObjectReferenceType Enum
             object_id (int): public_id of referenced CmdbObject or CmdbObjectGroup
-            sliders_before (dict): sliders before treatment
+            risk_calculation_before (dict): sliders before treatment
             risk_assessor_id (int): public_id of CmdbPerson
             risk_owner_id_ref_type (PersonReferenceType): PersonReferenceType Enum
             risk_owner_id (int): public_id of CmdbPerson or CmdbPersonGroup
@@ -108,7 +109,7 @@ class IsmsRiskAssessment(CmdbDAO):
             costs_for_implementation (float): Costs for implementation
             costs_for_implementation_currency (str): Costs for implementation currency
             priority (Priority): Priority enum (1 = Low, 2 = Medium, 3 = High, 4 = Very high)
-            sliders_after (dict): sliders after treatment
+            risk_calculation_after (dict): sliders after treatment
             audit_done_date (datetime): Audit done date
             auditor_id_ref_type (PersonReferenceType): PersonReferenceType Enum
             auditor_id (int): public_id of CmdbPerson or CmdbPersonGroup
@@ -121,7 +122,7 @@ class IsmsRiskAssessment(CmdbDAO):
             self.risk_id = risk_id
             self.object_id_ref_type = object_id_ref_type
             self.object_id = object_id
-            self.sliders_before = sliders_before
+            self.risk_calculation_before = risk_calculation_before
             self.risk_assessor_id = risk_assessor_id
             self.risk_owner_id_ref_type = risk_owner_id_ref_type
             self.risk_owner_id = risk_owner_id
@@ -139,7 +140,7 @@ class IsmsRiskAssessment(CmdbDAO):
             self.costs_for_implementation = costs_for_implementation
             self.costs_for_implementation_currency = costs_for_implementation_currency
             self.priority = priority
-            self.sliders_after = sliders_after
+            self.risk_calculation_after = risk_calculation_after
             self.audit_done_date = audit_done_date
             self.auditor_id_ref_type = auditor_id_ref_type
             self.auditor_id = auditor_id
@@ -188,7 +189,7 @@ class IsmsRiskAssessment(CmdbDAO):
                 risk_id = data.get('risk_id'),
                 object_id_ref_type = data.get('object_id_ref_type'),
                 object_id = data.get('object_id'),
-                sliders_before = data.get('sliders_before'),
+                risk_calculation_before = data.get('risk_calculation_before'),
                 risk_assessor_id = data.get('risk_assessor_id'),
                 risk_owner_id_ref_type = data.get('risk_owner_id_ref_type'),
                 risk_owner_id = data.get('risk_owner_id'),
@@ -206,7 +207,7 @@ class IsmsRiskAssessment(CmdbDAO):
                 costs_for_implementation = data.get('costs_for_implementation'),
                 costs_for_implementation_currency = data.get('costs_for_implementation_currency'),
                 priority = data.get('priority'),
-                sliders_after = data.get('sliders_after'),
+                risk_calculation_after = data.get('risk_calculation_after'),
                 audit_done_date = audit_done_date,
                 auditor_id_ref_type = data.get('auditor_id_ref_type'),
                 auditor_id = data.get('auditor_id'),
@@ -236,7 +237,7 @@ class IsmsRiskAssessment(CmdbDAO):
                 'risk_id': instance.risk_id,
                 'object_id_ref_type': instance.object_id_ref_type,
                 'object_id': instance.object_id,
-                'sliders_before': instance.sliders_before,
+                'risk_calculation_before': instance.risk_calculation_before,
                 'risk_assessor_id': instance.risk_assessor_id,
                 'risk_owner_id_ref_type': instance.risk_owner_id_ref_type,
                 'risk_owner_id': instance.risk_owner_id,
@@ -254,7 +255,7 @@ class IsmsRiskAssessment(CmdbDAO):
                 'costs_for_implementation': instance.costs_for_implementation,
                 'costs_for_implementation_currency': instance.costs_for_implementation_currency,
                 'priority': instance.priority,
-                'sliders_after': instance.sliders_after,
+                'risk_calculation_after': instance.risk_calculation_after,
                 'audit_done_date': instance.audit_done_date,
                 'auditor_id_ref_type': instance.auditor_id_ref_type,
                 'auditor_id': instance.auditor_id,
