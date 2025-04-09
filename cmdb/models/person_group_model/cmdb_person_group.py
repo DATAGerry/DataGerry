@@ -57,8 +57,10 @@ class CmdbPersonGroup(CmdbDAO):
         },
         'group_members': {
             'type': 'list',
-            'required': True,
-            'empty': False
+            'schema': {
+                'type': 'integer',
+                'min': 1,
+            },
         },
     }
 

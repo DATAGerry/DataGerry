@@ -28,6 +28,11 @@ def get_default_isms_extendable_options() -> list:
     """
     return [
         {
+            'value': 'None',
+            'option_type': OptionType.IMPLEMENTATION_STATE,
+            'predefined': True,
+        },
+        {
             'value': 'Open',
             'option_type': OptionType.IMPLEMENTATION_STATE,
             'predefined': True,

@@ -20,7 +20,7 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import PersonGroupsManager
+from cmdb.manager import PersonGroupsManager, PersonsManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
@@ -74,8 +74,13 @@ def insert_cmdb_person_group(data: dict, request_user: CmdbUser):
     try:
         person_groups_manager: PersonGroupsManager = ManagerProvider.get_manager(ManagerType.PERSON_GROUP,
                                                                                  request_user)
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
 
         result_id = person_groups_manager.insert_item(data)
+
+        # Add the person to the selected groups
+        # selected_person_ids = data.get('group_members', [])
+        # persons_manager.add_group_to_persons(result_id, selected_person_ids)
 
         created_person_group = person_groups_manager.get_item(result_id, as_dict=True)
 
@@ -195,11 +200,21 @@ def update_cmdb_person_group(public_id: int, data: dict, request_user: CmdbUser)
     try:
         person_groups_manager: PersonGroupsManager = ManagerProvider.get_manager(ManagerType.PERSON_GROUP,
                                                                                  request_user)
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
 
         to_update_person_group = person_groups_manager.get_item(public_id)
 
         if not to_update_person_group:
             abort(404, f"The PersonGroup with ID:{public_id} was not found!")
+
+        # Check for added or removed persons
+        # existing_persons = set(to_update_person_group.get('group_members', []))  # old person public_ids
+        # updated_persons = set(data.get('group_members', []))  # new person public_ids
+
+        # persons_to_add = updated_persons - existing_persons  # New persons
+        # persons_to_remove = existing_persons - updated_persons  # Removed persons
+
+        # persons_manager.update_group_in_persons(public_id, persons_to_add, persons_to_remove)
 
         person_groups_manager.update_item(public_id, CmdbPersonGroup.from_data(data))
 
@@ -236,6 +251,7 @@ def delete_cmdb_person_group(public_id: int, request_user: CmdbUser):
     try:
         person_groups_manager: PersonGroupsManager = ManagerProvider.get_manager(ManagerType.PERSON_GROUP,
                                                                                  request_user)
+        persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
 
         to_delete_person_group = person_groups_manager.get_item(public_id)
 
@@ -243,6 +259,9 @@ def delete_cmdb_person_group(public_id: int, request_user: CmdbUser):
             abort(404, f"The PersonGroup with ID:{public_id} was not found!")
 
         person_groups_manager.delete_item(public_id)
+
+        # Delete the group from all persons
+        # persons_manager.delete_group_from_persons(public_id)
 
         return DeleteSingleResponse(to_delete_person_group).make_response()
     except HTTPException as http_err:

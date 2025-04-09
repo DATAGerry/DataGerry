@@ -25,16 +25,35 @@ LOGGER = logging.getLogger(__name__)
 #                                                NestedBlueprint - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
 class NestedBlueprint:
-    """Default Blueprint class but with parent prefix route
     """
-    def __init__(self, blueprint, url_prefix):
+    Blueprint wrapper that automatically prefixes all routes with a parent URL prefix.
+
+    This is useful for grouping related routes under a common path without manually adding
+    the prefix to each route.
+    """
+    def __init__(self, blueprint, url_prefix: str):
+        """
+        Initialize the NestedBlueprint
+
+        Args:
+            blueprint (Blueprint): The Flask Blueprint instance to wrap
+            url_prefix (str): The URL prefix to add to all routes in the blueprint
+        """
         self.blueprint = blueprint
         self.prefix = '/' + url_prefix
         super().__init__()
 
 
     def route(self, rule, **options):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Register a new route on the wrapped blueprint with the parent URL prefix applied
+
+        Args:
+            rule (str): The URL rule as a string (e.g., '/list', '/create')
+            **options: Additional options to pass to the Flask Blueprint `route` method (e.g., methods, endpoint)
+
+        Returns:
+            function: The original route decorator from the underlying blueprint, now with the prefix applied
+        """
         rule = self.prefix + rule
         return self.blueprint.route(rule, **options)

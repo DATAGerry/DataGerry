@@ -97,17 +97,15 @@ def post_login():
             if current_app.cloud_mode:
                 request_user_name = request_user_name.lower()
                 user_data = check_user_in_service_portal(request_user_name, request_password)
-                # LOGGER.debug(f"[post_login] user_data: {user_data}")
 
                 if not user_data:
-                    LOGGER.error("Could not retrieve User from ServicePortal!")
+                    LOGGER.error("[post_login] Could not retrieve User from ServicePortal!")
                     abort(401, 'Could not login')
 
                 user_database = None
 
                 # If only one subscription directly login the user
                 if len(user_data['subscriptions']) == 1:
-                    # LOGGER.debug("[post_login] only 1 subscription")
                     user_database = user_data['subscriptions'][0]['database']
 
                     if not check_db_exists(user_database):
@@ -117,7 +115,6 @@ def post_login():
 
                 # In this case the user selected a subscription in the frontend
                 elif request_subscription:
-                    # LOGGER.debug(f"[post_login] subscription from frontend: {request_subscription}")
                     user_database = request_subscription['database']
 
                     if not check_db_exists(user_database):
@@ -126,7 +123,6 @@ def post_login():
                     set_admin_user(user_data, request_subscription)
                 # User have multiple subscriptions, send them to frontend to select
                 elif len(user_data['subscriptions']) > 1:
-                    # LOGGER.debug(f"[post_login] multiple_subscriptions: {user_data['subscriptions']}")
                     return DefaultResponse(user_data['subscriptions']).make_response()
                 # There are either no subscriptions or something went wrong => failed path
                 else:
@@ -155,22 +151,22 @@ def post_login():
             LOGGER.error("[post_login] NoAccessTokenError: %s", err)
             abort(500, "No access token found!")
         except InvalidCloudUserError as err:
-            LOGGER.error("[post_login] %s", err)
+            LOGGER.error("[post_login] InvalidCloudUserError: %s", err)
             abort(403, "Invalid credentials!")
         except RequestTimeoutError as err:
             LOGGER.error("[post_login] RequestTimeoutError: %s", err)
             abort(500, "Login request timed out!")
         except RequestError as err:
-            LOGGER.error("[post_login] %s", err)
+            LOGGER.error("[post_login] RequestError: %s", err)
             abort(500, "Login failed due a malformed request!")
         except UsersManagerGetError as err:
-            LOGGER.error("[post_login] UsersManagerGetError: %s", err)
+            LOGGER.error("[post_login] UsersManagerGetError: %s", err, exc_info=True)
             abort(500, "Could not login because user can't be retrieved from database!")
         except UsersManagerInsertError as err:
-            LOGGER.error("[post_login] UsersManagerInsertError: %s", err)
+            LOGGER.error("[post_login] UsersManagerInsertError: %s", err, exc_info=True)
             abort(500, "Could not login because user can't be inserted in database!")
         except Exception as err: #pylint: disable=broad-exception-caught
-            LOGGER.error("[post_login] Exception: %s, Type: %s", err, type(err))
+            LOGGER.error("[post_login] Exception: %s, Type: %s", err, type(err), exc_info=True)
             abort(500, "Could not login")
 
         # PATH when its not cloud mode
@@ -201,7 +197,7 @@ def post_login():
         except AuthenticationProviderNotFoundError:
             abort(400, "The authentication provider was not found!")
         except Exception as err: #pylint: disable=broad-exception-caught
-            LOGGER.debug("[post_login] Exception: %s, Type: %s", err, type(err))
+            LOGGER.error("[post_login] Exception: %s, Type: %s", err, type(err))
             abort(500, "Could not login")
     except Exception as err:
         LOGGER.error("[post_login] Exception: %s. Type: %s", err, type(err), exc_info=True)

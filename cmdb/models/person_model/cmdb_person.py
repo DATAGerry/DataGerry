@@ -70,6 +70,10 @@ class CmdbPerson(CmdbDAO):
         },
         'groups': {
             'type': 'list',
+            'schema': {
+                'type': 'integer',
+                'min': 1,
+            },
         },
     }
 
