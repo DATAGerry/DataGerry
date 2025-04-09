@@ -48,13 +48,15 @@ export class ConnectionService {
 
     public constructor(private backend: HttpBackend) {
         this.http = new HttpClient(backend);
+        const storedConnection = JSON.parse(localStorage.getItem("connection"));
         this.connectionSubject = new BehaviorSubject<string>(
-            JSON.parse(localStorage.getItem("connection"))
+            this.validateUrl(storedConnection) ? storedConnection : null
         );
         this.connection = this.connectionSubject.asObservable();
 
         if (this.currentConnection === null) {
             this.setDefaultConnection();
+
         }
 
         try {
@@ -84,6 +86,8 @@ export class ConnectionService {
     }
 
 
+
+
     /**
      * Tests the current connection by attempting to connect to the backend.
      * @returns A promise resolving to `true` if the connection is successful, otherwise `false`.
@@ -104,14 +108,16 @@ export class ConnectionService {
      * @returns A promise resolving to the backend's connection response.
      */
     private async connect() {
-        // console.log(
-        //     `### CONNECTION TRY with URL: ${this.currentConnection}/rest/ ###`
-        // );
-        const conn_result$ = this.http.get<any>(
-            `${this.currentConnection}/rest/`
-        );
-
-        return await lastValueFrom(conn_result$);
+        try {
+            const conn_result$ = this.http.get<any>(
+                `${this.currentConnection}/rest/`
+            );
+            return await lastValueFrom(conn_result$);
+        } catch (error) {
+            localStorage.removeItem("connection");
+            this.connectionSubject.next(null);
+            throw error;
+        }
     }
 
 
@@ -153,5 +159,20 @@ export class ConnectionService {
 
         localStorage.setItem("connection", JSON.stringify(href));
         this.connectionSubject.next(href);
+    }
+
+
+    /**
+     * URL validation function to check if the provided URL is valid.
+     * @param url - The URL to validate.
+     * @returns `true` if the URL is valid, otherwise `false`.
+     */
+    private validateUrl(url: string): boolean {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
     }
 }
