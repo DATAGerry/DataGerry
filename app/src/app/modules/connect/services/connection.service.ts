@@ -47,6 +47,7 @@ export class ConnectionService {
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     public constructor(private backend: HttpBackend) {
+        localStorage.removeItem("connection");
         this.http = new HttpClient(backend);
         const storedConnection = JSON.parse(localStorage.getItem("connection"));
         this.connectionSubject = new BehaviorSubject<string>(
