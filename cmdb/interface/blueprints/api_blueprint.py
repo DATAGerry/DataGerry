@@ -45,8 +45,9 @@ class APIBlueprint(Blueprint):
 
     @staticmethod
     def protect(auth: bool = True, right: str = None, excepted: dict = None):
-        """Active auth and right protection for flask routes"""
-
+        """
+        Active auth and right protection for flask routes
+        """
         def _protect(f):
             @wraps(f)
             def _decorate(*args, **kwargs):
@@ -119,8 +120,21 @@ class APIBlueprint(Blueprint):
 
     @classmethod
     def validate(cls, schema=None):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Decorator to validate incoming JSON request data against a provided schema
+
+        Args:
+            schema (dict, optional): A validation schema used by the Cerberus Validator
+                                    Defines the required structure and rules for the incoming data
+
+        Returns:
+            function: A decorator that injects validated and normalized data into the decorated function
+
+        Raises:
+            400 Bad Request:
+                - If the incoming request body is not valid JSON
+                - If the data does not conform to the provided schema
+        """
         validator = Validator(schema, purge_unknown=True)
 
         def _validate(f):
@@ -164,8 +178,19 @@ class APIBlueprint(Blueprint):
 
     @classmethod
     def parse_parameters(cls, parameters_class, **optional):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Decorator to parse and validate HTTP request query parameters using a specified parameters class
+
+        Args:
+            parameters_class (Type): A class that defines the structure and validation of the request parameters
+            **optional: Additional optional keyword arguments to pass to the parameters class
+
+        Returns:
+            function: A decorator that injects parsed parameters into the decorated function
+
+        Raises:
+            400 Bad Request: If parameter parsing or validation fails
+        """
         def _parse(f):
             @wraps(f)
             def _decorate(*args, **kwargs):
@@ -173,8 +198,9 @@ class APIBlueprint(Blueprint):
                     params = parameters_class.from_http(
                         str(request.query_string, 'utf-8'), **{**optional, **request.args.to_dict()}
                     )
-                except Exception as e:
-                    abort(400, str(e))
+                except Exception as err:
+                    LOGGER.error("[parse_parameters] Exception %s. Type: %s", err, type(err))
+                    abort(400, "Failed to parse the request parameters!")
 
                 return f(params=params, *args, **kwargs)
 
@@ -185,15 +211,26 @@ class APIBlueprint(Blueprint):
 
     @classmethod
     def parse_request_parameters(cls, **optional):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Decorator to extract raw HTTP request query parameters and pass them to the decorated function
+
+        Args:
+            **optional: (Currently unused) Additional optional keyword arguments
+
+        Returns:
+            function: A decorator that injects request query parameters as a dictionary into the decorated function
+
+        Raises:
+            400 Bad Request: If request argument extraction fails
+        """
         def _parse(f):
             @wraps(f)
             def _decorate(*args, **kwargs):
                 try:
                     request_args = request.args.to_dict()
                 except Exception as err:
-                    abort(400, err)
+                    LOGGER.error("[parse_request_parameters] Exception %s. Type: %s", err, type(err))
+                    abort(400, "Failed to parse the request parameters!")
 
                 return f(params=request_args, *args, **kwargs)
 
@@ -221,8 +258,9 @@ class APIBlueprint(Blueprint):
                     params = CollectionParameters.from_http(
                         str(request.query_string, 'utf-8'), **{**optional, **request.args.to_dict()}
                     )
-                except Exception as e:
-                    abort(400, str(e))
+                except Exception as err:
+                    LOGGER.error("[parse_collection_parameters] Exception %s. Type: %s", err, type(err))
+                    abort(400, "Failed to parse the request parameters!")
 
                 return f(params=params, *args, **kwargs)
 
