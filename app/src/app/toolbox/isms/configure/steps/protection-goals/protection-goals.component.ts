@@ -181,7 +181,7 @@ export class ProtectionGoalsComponent implements OnInit {
    * Checks if a protection goal is a default (cannot be deleted).
    */
   public isDefaultProtectionGoal(item: ProtectionGoal): boolean {
-    return [1, 2, 3].includes(item.public_id);
+    return item.predefined === true;
   }
 
 }
