@@ -94,7 +94,8 @@ export class ProtectionGoalModalComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.form.value;
     const payload: Partial<ProtectionGoal> = {
-      name: formValue.name
+      name: formValue.name,
+      predefined: false,
     };
 
     if (this.isEditMode) {
