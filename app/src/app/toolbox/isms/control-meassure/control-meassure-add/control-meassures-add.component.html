@@ -1,0 +1,130 @@
+<div class="container" [formGroup]="controlMeassureForm">
+  <h2 class="mb-3">
+    {{ isEditMode ? 'Edit Control/Measure' : 'Add Control/Measure' }}
+  </h2>
+
+  <form autocomplete="off" class="needs-validation" [formGroup]="controlMeassureForm" (ngSubmit)="onSave()">
+    <!-- Title (Required) -->
+    <app-form-input formControlName="title" label="Name:" [required]="true" [errorMessage]="
+        hasError('name','required')
+          ? 'Name is required'
+          : ''
+      "></app-form-input>
+
+    <!-- Control Measure Type (Radio Buttons) -->
+    <div class="form-group mt-3">
+      <label>Type:<span class="required">*</span></label>
+      <app-radio label="Control" [value]="'CONTROL'" name="cmTypeGroup" id="typeControl"
+        formControlName="control_meassure_type"></app-radio>
+      <app-radio label="Requirement" [value]="'REQUIREMENT'" name="cmTypeGroup" id="typeRequirement"
+        formControlName="control_meassure_type"></app-radio>
+      <app-radio label="Measure" [value]="'MEASURE'" name="cmTypeGroup" id="typeMeasure"
+        formControlName="control_meassure_type"></app-radio>
+    </div>
+
+    <!-- Identifier -->
+    <app-form-input formControlName="identifier" label="Identifier:"></app-form-input>
+
+
+    <!-- Source (Single-select) -->
+    <div class="form-group mt-3">
+      <label class="form-label">Source:</label>
+      <div class="d-flex align-items-start gap-2">
+        <div class="flex-grow-1">
+          <app-form-select [items]="sourceOptions" bindLabel="value" bindValue="public_id" [multiple]="false"
+            placeholder="Select a source..." formControlName="source"></app-form-select>
+        </div>
+        <div>
+          <!-- <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openSourceManager()">
+            Manage Sources
+          </button> -->
+
+          <!-- Source Manage Button -->
+          <app-button [bootstrapClass]="'btn-outline-secondary'" size="sm" label="Manage Sources"
+            (clicked)="openSourceManager()" type="button">
+          </app-button>
+        </div>
+      </div>
+
+      <div class="invalid-feedback d-block mt-1" *ngIf="hasError('source','required')">
+        Source is required
+      </div>
+    </div>
+
+
+    <!-- Chapter -->
+    <app-form-input formControlName="chapter" label="Chapter:"></app-form-input>
+
+    <!-- Description -->
+    <app-form-textarea formControlName="description" label="Description:" [rows]="3"></app-form-textarea>
+
+    <!-- is_applicable -->
+    <div class="form-group mt-3">
+      <label>Is Applicable?</label>
+      <app-checkbox [id]="'is_applicable'" [label]="'Yes, it is applicable'"
+        [checked]="controlMeassureForm.get('is_applicable')?.value"
+        (checkedChange)="controlMeassureForm.get('is_applicable')?.setValue($event)"></app-checkbox>
+    </div>
+
+    <!-- Reason -->
+    <app-form-textarea formControlName="reason" label="Reason for inclusion/exclusion:" [rows]="3"></app-form-textarea>
+
+    <div class="form-group mt-3">
+      <label class="form-label">Implementation State:</label>
+      <div class="d-flex align-items-start gap-2">
+        <div class="flex-grow-1">
+          <app-form-select [items]="implementationStateOptions" bindLabel="value" bindValue="public_id"
+            [multiple]="false" placeholder="Select an implementation state..."
+            formControlName="implementation_state"></app-form-select>
+        </div>
+        <div>
+          <!-- <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openImplementationStateManager()">
+            Manage Implementation States
+          </button> -->
+
+          <!-- Implementation State Manage Button -->
+          <app-button [bootstrapClass]="'btn-outline-secondary'" size="sm" label="Manage Implementation States"
+            (clicked)="openImplementationStateManager()" type="button">
+          </app-button>
+        </div>
+      </div>
+
+      <div class="invalid-feedback d-block mt-1" *ngIf="hasError('implementation_state','required')">
+        Implementation State is required
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="mt-4 d-flex justify-content-between">
+      <!-- Cancel Button -->
+      <!-- <button class="btn btn-secondary mr-2" type="button" (click)="onCancel()">
+        Cancel
+      </button> -->
+      <app-button [bootstrapClass]="'btn-secondary'" label="Cancel" type="button" (clicked)="onCancel()">
+      </app-button>
+      <!-- Submit Button -->
+      <!-- <button class="btn btn-success" type="submit" [disabled]="controlMeassureForm.invalid">
+        {{ isEditMode ? 'Save Changes' : 'Create Control/Measure' }}
+      </button> -->
+
+      <app-button [bootstrapClass]="'btn-success'" [disabled]="controlMeassureForm.invalid"
+        [label]="isEditMode ? 'Save Changes' : 'Create Control/Measure'" type="submit">
+      </app-button>
+    </div>
+  </form>
+</div>
+
+<!-- Manage Source Modal -->
+<app-extendable-option-manager *ngIf="showSourceManager" [options]="sourceOptions" [optionType]="'CONTROL_MEASSURE'"
+  [modalTitle]="'Manage Control Meassure Sources'" [itemLabel]="'Control Meassure Source'"
+  [itemLabelPlural]="'Control Meassure Sources'" (close)="closeSourceManager()"></app-extendable-option-manager>
+
+<!-- Manage Implementation State Modal -->
+<app-extendable-option-manager *ngIf="showImplementationStateManager" [options]="implementationStateOptions"
+  [optionType]="'IMPLEMENTATION_STATE'" [modalTitle]="'Manage Implementation States'"
+  [itemLabel]="'Implementation State'" [itemLabelPlural]="'Implementation States'"
+  (close)="closeImplementationStateManager()"></app-extendable-option-manager>
+
+<!-- Loading Spinner -->
+<app-loading-popup [isVisible]="isLoading$ | async" message="Saving...">
+</app-loading-popup>
