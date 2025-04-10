@@ -1,0 +1,40 @@
+<!-- src/app/toolbox/isms/control-meassures/control-meassures-list.component.html -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Control/Measures</h2>
+    <button class="btn btn-sm btn-success" (click)="onAddNew()">
+      <i class="fas fa-plus"></i> Add Control/Measure
+    </button>
+  </div>
+  <hr />
+  
+  <cmdb-table
+    [items]="controlMeassures"
+    [columns]="columns"
+    [page]="page"
+    [sort]="sort"
+    [id]="'control-meassures-table'"
+    [emptyMessage]="'No Control/Measures found.'"
+    [totalItems]="totalControlMeassures"
+    [selectEnabled]="false"
+    [loading]="loading"
+    [pageSize]="limit"
+    [toggleable]="true"
+    [initialVisibleColumns]="initialVisibleColumns"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+    (sortChange)="onSortChange($event)"
+    (searchChange)="onSearchChange($event)"
+  >
+  </cmdb-table>
+  
+  <!-- Action buttons template -->
+  <ng-template #actionTemplate let-item="item">
+    <i class="far fa-edit icon-margin icon-edit spacing-right"
+       (click)="onEdit(item)"
+       title="Edit Control/Measure"></i>
+    <i class="far fa-trash-alt icon-delete"
+       (click)="onDelete(item)"
+       title="Delete Control/Measure"></i>
+  </ng-template>
+  

@@ -49,7 +49,7 @@
     <!-- Threats (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY or THREAT -->
     <div class="form-group mt-3" *ngIf="showThreats()">
       <app-form-select label="Threats:" [items]="threatOptions" bindLabel="name" bindValue="public_id" [multiple]="true"
-        placeholder="Select one or more threats..." form ControlName="threats"></app-form-select>
+        placeholder="Select one or more threats..." formControlName="threats"></app-form-select>
     </div>
 
     <!-- Vulnerabilities (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY -->
