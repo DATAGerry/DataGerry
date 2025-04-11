@@ -11,16 +11,21 @@
                         <ng-container *ngIf="data.reference && data.reference?.object_id !== 0; else noRef;">
                             <ng-container *ngIf="!protect">
                                 <ng-container *ngIf="!data?.reference.line; else refLine">
-                                    <i class="{{data.reference?.icon}}"></i> {{data.reference?.type_label}} #{{data.reference?.object_id}}
-                                    <span *ngFor="let sum of data.reference?.summaries; let last = last; let first = first">
-                                        <span *ngIf="first"> - </span>{{sum.value ? (sum.value | dateFormatter) : 'None'}}
+                                    <i class="{{data.reference?.icon}}"></i> {{data.reference?.type_label}}
+                                    #{{data.reference?.object_id}}
+                                    <span
+                                        *ngFor="let sum of data.reference?.summaries; let last = last; let first = first">
+                                        <span *ngIf="first"> - </span>
+                                        {{sum.value ? (sum.type === 'date' ? (sum.value | dateFormatter) : sum.value) :
+                                        'None'}}
                                         <span *ngIf="!last"> | </span>
                                     </span>
                                 </ng-container>
 
                                 <ng-template #refLine>
                                     <ng-container *ngIf="data?.reference?.prefix">
-                                        <i class="{{data?.reference?.icon}}"></i> {{data?.reference?.type_label}} #{{data?.reference?.type_id}}
+                                        <i class="{{data?.reference?.icon}}"></i> {{data?.reference?.type_label}}
+                                        #{{data?.reference?.type_id}}
                                     </ng-container>
                                     <span>{{data?.reference?.line}}</span>
                                 </ng-template>
@@ -33,18 +38,13 @@
                         <ng-template #noRef> No reference set</ng-template>
                     </div>
                     <div class="input-group-append" *ngIf="data.reference && !protect">
-                        <span
-                            class="input-group-text"
-                            [class.ref-disabled]="!data.reference?.object_id"
-                            (click)="showReferencePreview()"
-                        >
+                        <span class="input-group-text" [class.ref-disabled]="!data.reference?.object_id"
+                            (click)="showReferencePreview()">
                             <fa-icon icon="file-powerpoint"></fa-icon>
                         </span>
                         <span class="input-group-text">
-                            <a
-                                [class.ref-disabled]="!data.reference?.object_id"
-                                [routerLink]="'/framework/object/view/'+ data.reference?.object_id"
-                            >
+                            <a [class.ref-disabled]="!data.reference?.object_id"
+                                [routerLink]="'/framework/object/view/'+ data.reference?.object_id">
                                 <fa-icon icon="arrow-right"></fa-icon>
                             </a>
                         </span>
@@ -53,31 +53,17 @@
             </ng-container>
 
             <ng-container *ngSwitchCase="mode == MODES.Create || mode == MODES.Edit || mode == MODES.Bulk">
-                <cmdb-object-bulk-input-appends
-                    *ngIf="mode == MODES.Bulk"
-                    [data]="data"
-                    [controller]="controller"
-                    [changeForm]="changeForm"
-                />
+                <cmdb-object-bulk-input-appends *ngIf="mode == MODES.Bulk" [data]="data" [controller]="controller"
+                    [changeForm]="changeForm" />
 
-                <cmdb-input-appends
-                    [data]="data"
-                    [mode]="mode"
-                    [parentFormGroup]="parentFormGroup"
-                >
+                <cmdb-input-appends [data]="data" [mode]="mode" [parentFormGroup]="parentFormGroup">
 
-                    <ng-select
-                        #selectElement
-                        [items]="objectList"
-                        class="ng-select-valid custom-select ref-simple-select"
-                        [groupBy]="groupByFn"
-                        [groupValue]="groupValueFn"
-                        bindValue="object_information.object_id"
-                        [searchFn]="searchRef"
+                    <ng-select #selectElement [items]="objectList"
+                        class="ng-select-valid custom-select ref-simple-select" [groupBy]="groupByFn"
+                        [groupValue]="groupValueFn" bindValue="object_information.object_id" [searchFn]="searchRef"
                         [ngClass]="{ 'is-valid': controller.valid && (controller.dirty || controller.touched),
                         'is-invalid': controller.invalid && (controller.dirty || controller.touched)}"
-                        [formControlName]="data.name"
-                    >
+                        [formControlName]="data.name">
                         <ng-template ng-optgroup-tmp let-item="item">
                             <span style="vertical-align: middle;">{{item.name}}</span>
                             <span class="ml-1 badge badge-secondary">{{item.total}}</span>
@@ -86,10 +72,13 @@
                         <ng-template ng-label-tmp let-item="item">
                             <ng-container *ngIf="item.object_information == null">
                                 <ng-container *ngIf="refObject != null">
-                                    <i class="{{refObject?.type_information?.icon}}"></i> {{refObject?.type_information?.type_label}}
+                                    <i class="{{refObject?.type_information?.icon}}"></i>
+                                    {{refObject?.type_information?.type_label}}
                                     #{{refObject?.object_information?.object_id}}
                                     <span *ngFor="let sum of refObject?.summaries; let last = last; let first = first">
-                                        <span *ngIf="first"> - </span>{{sum.value ? (sum.value | dateFormatter) : 'None'}}
+                                        <span *ngIf="first"> - </span>
+                                        {{sum.value ? (sum.type === 'date' ? (sum.value | dateFormatter) : sum.value) :
+                                        'None'}}
                                         <span *ngIf="!last"> | </span>
                                     </span>
                                 </ng-container>
@@ -98,23 +87,27 @@
                                     No reference set
                                 </ng-container>
                             </ng-container>
-    
+
                             <ng-container *ngIf="item.object_information != null">
                                 <i class="{{item?.type_information?.icon}}"></i> {{item?.type_information?.type_label}}
                                 #{{item?.object_information?.object_id}}
                                 <span *ngFor="let sum of item?.summaries; let last = last; let first = first">
-                                    <span *ngIf="first"> - </span>{{sum.value ? (sum.value | dateFormatter) : 'None'}}
-                                    <span *ngIf="!last"> | </span>
+                                    <span *ngIf="first"> - </span>
+                                    {{sum.value ? (sum.type === 'date' ? (sum.value | dateFormatter) : sum.value) :
+                                    'None'}} <span *ngIf="!last"> | </span>
                                 </span>
                             </ng-container>
                         </ng-template>
 
                         <ng-template ng-option-tmp let-item="item">
-                            <span [className]="controller.value === item?.object_information?.object_id ? 'font-weight-bold' : ''">
+                            <span
+                                [className]="controller.value === item?.object_information?.object_id ? 'font-weight-bold' : ''">
                                 <i class="{{item?.type_information?.icon}}"></i> {{item?.type_information?.type_label}}
                                 #{{item?.object_information?.object_id}}
                                 <span *ngFor="let sum of item?.summaries; let last = last; let first = first">
-                                    <span *ngIf="first"> - </span>{{sum.value ? (sum.value | dateFormatter) : 'None'}}
+                                    <span *ngIf="first"> - </span>
+                                    {{sum.value ? (sum.type === 'date' ? (sum.value | dateFormatter) : sum.value) :
+                                    'None'}}
                                     <span *ngIf="!last"> | </span>
                                 </span>
                             </span>
@@ -123,7 +116,7 @@
                 </cmdb-input-appends>
             </ng-container>
             <div *ngSwitchDefault>
-                <cmdb-mode-error/>
+                <cmdb-mode-error />
             </div>
         </ng-container>
 
