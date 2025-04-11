@@ -1,0 +1,103 @@
+<div class="container">
+  <!-- Heading logic -->
+  <h2 *ngIf="!isEdit">Add Person</h2>
+  <h2 *ngIf="isEdit && !isView">Edit Person</h2>
+  <h2 *ngIf="isView">View Person</h2>
+
+  <hr />
+
+  <form>
+    <!-- First Name -->
+    <div class="form-group mb-3">
+      <label>First Name *</label>
+      <input 
+        class="form-control"
+        type="text"
+        [value]="person.first_name"
+        (input)="onFirstNameChange($any($event.target).value)"
+        [readonly]="isView"
+      />
+    </div>
+
+    <!-- Last Name -->
+    <div class="form-group mb-3">
+      <label>Last Name *</label>
+      <input
+        class="form-control"
+        type="text"
+        [value]="person.last_name"
+        (input)="onLastNameChange($any($event.target).value)"
+        [readonly]="isView"
+      />
+    </div>
+
+    <!-- Display Name  -->
+    <div class="form-group mb-3">
+      <label>Display Name</label>
+      <input
+        class="form-control"
+        type="text"
+        [value]="person.display_name"
+        readonly
+      />
+    </div>
+
+    <!-- Phone Number -->
+    <div class="form-group mb-3">
+      <label>Phone Number</label>
+      <input
+        class="form-control"
+        type="text"
+        [value]="person.phone_number"
+        (input)="onPhoneNumberChange($any($event.target).value)"
+        [readonly]="isView"
+      />
+    </div>
+
+    <!-- Email -->
+    <div class="form-group mb-3">
+      <label>Email</label>
+      <input
+        class="form-control"
+        type="email"
+        [value]="person.email"
+        (input)="onEmailChange($any($event.target).value)"
+        [readonly]="isView"
+      />
+    </div>
+
+    <!-- Groups (Multi-Select) -->
+    <div class="form-group mb-3">
+      <label>Groups</label>
+  
+           <app-form-select [items]="allGroups" bindLabel="name" bindValue="public_id"
+             [multiple]="true" [disabled]="isView"
+             [ngModel]="person.groups" 
+             (ngModelChange)="onGroupsChange($event)">
+           </app-form-select>
+
+     
+      <!-- <select
+        multiple
+        class="form-control"
+        (change)="onGroupsChange($any($event.target).selectedOptions)"
+        [disabled]="isView"
+      >
+        <option
+          *ngFor="let g of allGroups"
+          [value]="g.public_id"
+          [selected]="person.groups?.includes(g.public_id!)"
+        >
+          {{ g.name }}
+        </option>
+      </select> -->
+    </div>
+
+    <button type="button" class="btn btn-primary" (click)="onSave()" [disabled]="loading">
+      {{ isView ? 'Close' : (isEdit ? 'Update' : 'Create') }}
+    </button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="onCancel()">
+      Cancel
+    </button>
+  </form>
+</div>
