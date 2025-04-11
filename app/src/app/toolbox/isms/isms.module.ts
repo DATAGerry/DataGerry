@@ -32,6 +32,10 @@ import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-
 import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { RisksListComponent } from './risks/risks-list/risks-list.component';
+import {ControlMeassuresListComponent } from './control-meassure/control-meassure-list/control-meassure-list.component';
+import { ControlMeassuresAddComponent } from './control-meassure/control-meassure-add/control-meassures-add.component';
+import { PersonListComponent } from './person/person-list/person-list.component';
+import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +58,11 @@ import { RisksListComponent } from './risks/risks-list/risks-list.component';
     VulnerabilitiesListComponent,
     VulnerabilitiesAddComponent,
     RiskAddComponent,
-    RisksListComponent
+    RisksListComponent,
+    ControlMeassuresListComponent,
+    ControlMeassuresAddComponent,
+    PersonListComponent,
+    PersonAddEditComponent
   ],
   imports: [
     CommonModule,

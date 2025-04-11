@@ -85,7 +85,16 @@ const routes: Routes = [
             breadcrumb: 'Object Groups',
         },
         loadChildren: () => import('./object_groups/object-groups.module').then(m => m.ObjectGroupsModule),
-    }
+    },
+    {
+        path: 'person-groups',
+        canActivateChild: [PermissionGuard],
+        data: {
+            breadcrumb: 'Persons',
+            right: 'base.framework.relation.view'
+        },
+        loadChildren: () => import('./person-group/person-group.module').then(m => m.PersonGroupModule),
+    },
 ];
 
 @NgModule({
