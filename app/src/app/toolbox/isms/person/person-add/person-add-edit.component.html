@@ -1,103 +1,98 @@
-<div class="container">
-  <!-- Heading logic -->
-  <h2 *ngIf="!isEdit">Add Person</h2>
-  <h2 *ngIf="isEdit && !isView">Edit Person</h2>
-  <h2 *ngIf="isView">View Person</h2>
+<div class="container" [formGroup]="personForm">
+  <h2 class="mb-3">
+    {{ isEditMode ? (isViewMode ? 'View Person' : 'Edit Person') : 'Add Person' }}
+  </h2>
 
-  <hr />
+  <form autocomplete="off" class="needs-validation" (ngSubmit)="onSave()" [formGroup]="personForm">
+    <!-- First Name (required) -->
+    <app-form-input
+      formControlName="first_name"
+      label="First Name"
+      [required]="true"
+      [errorMessage]="
+        hasError('first_name', 'required')
+          ? 'First Name is required'
+          : ''
+      "
+    >
+    </app-form-input>
 
-  <form>
-    <!-- First Name -->
-    <div class="form-group mb-3">
-      <label>First Name *</label>
-      <input 
-        class="form-control"
-        type="text"
-        [value]="person.first_name"
-        (input)="onFirstNameChange($any($event.target).value)"
-        [readonly]="isView"
-      />
-    </div>
+    <!-- Last Name (required) -->
+    <app-form-input
+      formControlName="last_name"
+      label="Last Name"
+      [required]="true"
+      [errorMessage]="
+        hasError('last_name', 'required')
+          ? 'Last Name is required'
+          : ''
+      "
+    >
+    </app-form-input>
 
-    <!-- Last Name -->
-    <div class="form-group mb-3">
-      <label>Last Name *</label>
-      <input
-        class="form-control"
-        type="text"
-        [value]="person.last_name"
-        (input)="onLastNameChange($any($event.target).value)"
-        [readonly]="isView"
-      />
-    </div>
+    <!-- Display Name (read-only) -->
+    <app-form-input
+      formControlName="display_name"
+      label="Display Name"
+      [required]="false"
+      [readonly]="true"
+    >
+    </app-form-input>
 
-    <!-- Display Name  -->
-    <div class="form-group mb-3">
-      <label>Display Name</label>
-      <input
-        class="form-control"
-        type="text"
-        [value]="person.display_name"
-        readonly
-      />
-    </div>
+    <!-- Phone Number (optional) -->
+    <app-form-input
+      formControlName="phone_number"
+      label="Phone Number"
+      [required]="false"
+    >
+    </app-form-input>
 
-    <!-- Phone Number -->
-    <div class="form-group mb-3">
-      <label>Phone Number</label>
-      <input
-        class="form-control"
-        type="text"
-        [value]="person.phone_number"
-        (input)="onPhoneNumberChange($any($event.target).value)"
-        [readonly]="isView"
-      />
-    </div>
+    <!-- Email (required + pattern) -->
+    <app-form-input
+      formControlName="email"
+      label="Email"
+      [required]="false"
+      [errorMessage]="
+        hasError('email', 'required')
+          ? 'Email is required'
+          : hasError('email', 'pattern')
+          ? 'Invalid email format'
+          : ''
+      "
+    >
+    </app-form-input>
 
-    <!-- Email -->
-    <div class="form-group mb-3">
-      <label>Email</label>
-      <input
-        class="form-control"
-        type="email"
-        [value]="person.email"
-        (input)="onEmailChange($any($event.target).value)"
-        [readonly]="isView"
-      />
-    </div>
+    <!-- Groups (multi-select) -->
+    <label class="mt-3">Groups</label>
+    <app-form-select
+      formControlName="groups"
+      [items]="allGroups"
+      bindLabel="name"
+      bindValue="public_id"
+      [multiple]="true"
+      placeholder="Select Group(s)"
+    >
+    </app-form-select>
 
-    <!-- Groups (Multi-Select) -->
-    <div class="form-group mb-3">
-      <label>Groups</label>
-  
-           <app-form-select [items]="allGroups" bindLabel="name" bindValue="public_id"
-             [multiple]="true" [disabled]="isView"
-             [ngModel]="person.groups" 
-             (ngModelChange)="onGroupsChange($event)">
-           </app-form-select>
-
-     
-      <!-- <select
-        multiple
-        class="form-control"
-        (change)="onGroupsChange($any($event.target).selectedOptions)"
-        [disabled]="isView"
+    <!-- Footer -->
+    <div class="mt-4 d-flex justify-content-between" >
+      <button class="btn btn-secondary" type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button
+        class="btn btn-success"
+        type="submit"
+        [disabled]="personForm.invalid || isViewMode"
       >
-        <option
-          *ngFor="let g of allGroups"
-          [value]="g.public_id"
-          [selected]="person.groups?.includes(g.public_id!)"
-        >
-          {{ g.name }}
-        </option>
-      </select> -->
+        {{ isEditMode ? 'Save Changes' : 'Create Person' }}
+      </button>
     </div>
-
-    <button type="button" class="btn btn-primary" (click)="onSave()" [disabled]="loading">
-      {{ isView ? 'Close' : (isEdit ? 'Update' : 'Create') }}
-    </button>
-    <button type="button" class="btn btn-secondary ml-2" (click)="onCancel()">
-      Cancel
-    </button>
   </form>
 </div>
+
+<!-- Loading Popup -->
+<app-loading-popup
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data..."
+>
+</app-loading-popup>

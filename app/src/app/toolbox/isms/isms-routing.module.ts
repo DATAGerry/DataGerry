@@ -12,8 +12,6 @@ import { RisksListComponent } from './risks/risks-list/risks-list.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { ControlMeassuresAddComponent } from './control-meassure/control-meassure-add/control-meassures-add.component';
 import { ControlMeassuresListComponent } from './control-meassure/control-meassure-list/control-meassure-list.component';
-import { PersonListComponent } from './person/person-list/person-list.component';
-import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
 
 
 const routes: Routes = [
@@ -50,14 +48,6 @@ const routes: Routes = [
     { path: 'control-meassures/edit', component: ControlMeassuresAddComponent },
 
 
-    {
-        path: 'persons',
-        children: [
-          { path: '', component: PersonListComponent },
-          { path: 'add', component: PersonAddEditComponent },
-          { path: 'edit', component: PersonAddEditComponent }
-        ]
-      },
 ];
 
 @NgModule({

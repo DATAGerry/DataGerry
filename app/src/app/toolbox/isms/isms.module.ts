@@ -36,6 +36,7 @@ import {ControlMeassuresListComponent } from './control-meassure/control-meassur
 import { ControlMeassuresAddComponent } from './control-meassure/control-meassure-add/control-meassures-add.component';
 import { PersonListComponent } from './person/person-list/person-list.component';
 import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
+import { PersonRoutingModule } from './person/person-routing.module';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { PersonAddEditComponent } from './person/person-add/person-add-edit.comp
     CommonModule,
     LayoutModule,
     IsmsRoutingModule,
+    PersonRoutingModule,
     ArchwizardModule,
     ReactiveFormsModule,
     NgSelectModule,
