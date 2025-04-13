@@ -20,6 +20,7 @@ export class FormInputComponent implements ControlValueAccessor {
   @Input() type: string = 'text';
   @Input() disabled: boolean = false;
   @Input() errorMessage: string = '';
+  @Input() readonly: boolean = false;
 
   private innerValue: any = '';
 

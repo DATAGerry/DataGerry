@@ -7,7 +7,7 @@ import { PersonGroupAddEditComponent } from './person-group-add/person-group-add
 import { TableModule } from 'src/app/layout/table/table.module';
 import { AuthModule } from 'src/app/modules/auth/auth.module';
 import { CoreModule } from 'src/app/core/core.module';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
     TableModule,
     AuthModule,
     CoreModule,
-    FormsModule
+    ReactiveFormsModule
   ]
 })
 export class PersonGroupModule { }

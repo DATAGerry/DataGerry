@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastService } from 'src/app/layout/toast/toast.service';
-import { LoaderService } from 'src/app/core/services/loader.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
+
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { ToastService } from 'src/app/layout/toast/toast.service';
 
 import { PersonService } from '../../services/person.service';
 import { PersonGroupService } from '../../services/person-group.service';
-import { CmdbPersonGroup } from '../../models/person-group.model';
+
 import { CmdbPerson } from '../../models/person.model';
+import { CmdbPersonGroup } from '../../models/person-group.model';
 
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { SortDirection } from 'src/app/layout/table/table.types';
@@ -18,82 +21,119 @@ import { SortDirection } from 'src/app/layout/table/table.types';
   styleUrls: ['./person-add-edit.component.scss']
 })
 export class PersonAddEditComponent implements OnInit {
-  public person: CmdbPerson;
+  public isEditMode = false;
+  public isViewMode = false;
+  public isLoading$ = this.loaderService.isLoading$;
+
+  // Reactive Form for Person
+  public personForm: FormGroup;
+
+  // Original person data (if editing)
+  public personData: CmdbPerson = {
+    first_name: '',
+    last_name: '',
+    display_name: '',
+    phone_number: '',
+    email: '',
+    groups: []
+  };
+
+  // Basic email regex
+  private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // All PersonGroups for the multi-select
   public allGroups: CmdbPersonGroup[] = [];
-  public isEdit = false;
-  public isView = false;
-  public loading = false;
 
   constructor(
     private router: Router,
-    private toast: ToastService,
+    private fb: FormBuilder,
     private loaderService: LoaderService,
+    private toast: ToastService,
     private personService: PersonService,
     private personGroupService: PersonGroupService
   ) {
-    this.person = {
-      first_name: '',
-      last_name: '',
-      phone_number: '',
-      email: '',
-      groups: []
-    };
+    const navState = this.router.getCurrentNavigation()?.extras?.state;
+    if (navState?.['person']) {
+      this.isEditMode = true;
+      this.personData = navState['person'];
+    }
+    if (navState?.['mode'] === 'view') {
+      this.isViewMode = true;
+    }
+
+    // Initialize the form
+    this.personForm = this.fb.group({
+      public_id: [this.personData.public_id || null],
+      first_name: [this.personData.first_name, [Validators.required]],
+      last_name: [this.personData.last_name, [Validators.required]],
+      display_name: [this.personData.display_name || ''],
+      phone_number: [
+        this.personData.phone_number || '',
+        [
+          Validators.pattern(
+            /^\+?[1-9]\d{1,14}$/
+          ) 
+        ]
+      ], email: [
+        this.personData.email,
+        [Validators.pattern(this.emailRegex)]
+      ],
+      groups: [this.personData.groups || []]
+    });
   }
 
   ngOnInit(): void {
-    // If there's a 'person' object in navigation state => edit or view
-    const navState = history.state;
-    if (navState && navState.person) {
-      this.person = { ...navState.person };
-      this.isEdit = true;
+    // If read-only, disable the form
+    if (this.isViewMode) {
+      this.personForm.disable();
     }
-    if (navState && navState.mode === 'view') {
-      this.isView = true;
-    }
-
+    // Load group references
     this.loadGroups();
+    // Update display_name in case first_name / last_name changed
+
+    this.personForm.get('first_name')?.valueChanges.subscribe(() => this.updateDisplayName());
+    this.personForm.get('last_name')?.valueChanges.subscribe(() => this.updateDisplayName());
   }
 
+
   /**
-   * Load Person Groups
-   * - If isView => load only groups that belong to this person (filter)
-   * - Otherwise => load all groups
+   * Load PersonGroup references
    * @returns void
    */
   private loadGroups(): void {
-    if (this.isView) {
-      if (this.person.groups && this.person.groups.length > 0) {
-        const filterObj = { public_id: { '$in': this.person.groups } };
-        const params: CollectionParameters = {
-          filter: JSON.stringify(filterObj),
-          limit: 9999,
-          page: 1,
-          sort: 'public_id',
-          order: SortDirection.ASCENDING
-        };
-        this.personGroupService.getPersonGroups(params)
-          .subscribe({
-            next: (resp) => {
-              this.allGroups = resp.results;
-            },
-            error: (err) => {
-              this.toast.error(err?.error?.message);
-            }
-          });
-      } else {
-        // no groups => do not call
-        this.allGroups = [];
-      }
-    } else {
-      // normal create/edit => fetch all
+    if (this.isViewMode && this.personData.groups?.length) {
+      // Only the groups that match
+      const filterObj = { public_id: { '$in': this.personData.groups } };
       const params: CollectionParameters = {
-        filter: '',
-        limit: 9999,
+        filter: JSON.stringify(filterObj),
         page: 1,
+        limit: 0,
         sort: 'public_id',
         order: SortDirection.ASCENDING
       };
+      this.loaderService.show();
       this.personGroupService.getPersonGroups(params)
+        .pipe(finalize(() => this.loaderService.hide()))
+        .subscribe({
+          next: (resp) => {
+            this.allGroups = resp.results;
+          },
+          error: (err) => {
+            this.toast.error(err?.error?.message);
+          }
+        });
+    } else {
+      // Normal create/edit => load all
+      const params: CollectionParameters = {
+        filter: '',
+        page: 1,
+        limit: 0,
+        sort: 'public_id',
+        order: SortDirection.ASCENDING
+      };
+      this.loaderService.show();
+      this.personGroupService.getPersonGroups(params)
+        .pipe(finalize(() => this.loaderService.hide()))
         .subscribe({
           next: (resp) => {
             this.allGroups = resp.results;
@@ -105,125 +145,109 @@ export class PersonAddEditComponent implements OnInit {
     }
   }
 
-  /* 
-  * Handlers for form fields 
-  * @param newVal - The new value of the field
-  * @returns void 
-  */
-  public onFirstNameChange(newVal: string): void {
-    this.person.first_name = newVal;
-    this.updateDisplayName();
-  }
-
-
-  /* 
-  * Handlers for form fields
-  * @param newVal - The new value of the field
-  * @returns void
-  */
-  public onLastNameChange(newVal: string): void {
-    this.person.last_name = newVal;
-    this.updateDisplayName();
-  }
-
-
-
   /**
-   * Update display name based on first and last name
+   * Update display_name based on first_name and last_name
    * @returns void
-   */
+ */
   private updateDisplayName(): void {
-    // display_name = first_name + ' ' + last_name
-    const fn = this.person.first_name || '';
-    const ln = this.person.last_name || '';
-    this.person.display_name = (fn + ' ' + ln).trim();
+    const fn = this.personForm.get('first_name')?.value || '';
+    const ln = this.personForm.get('last_name')?.value || '';
+    const combined = (fn + ' ' + ln).trim();
+    this.personForm.patchValue({ display_name: combined });
   }
 
-  /*
-  * Handlers for form fields
-  * @param newVal - The new value of the field
-  * @returns void
-  */
-  public onPhoneNumberChange(newVal: string): void {
-    this.person.phone_number = newVal;
-  }
-
-  /*
-  * Handlers for form fields
-  * @param newVal - The new value of the field
-  * @returns void
-  */
-  public onEmailChange(newVal: string): void {
-    this.person.email = newVal;
-  }
 
   /**
-   * Handle changes in selected groups
-   * @param selectedIds - Array of selected group IDs
-   * @returns void
-   */
-  public onGroupsChange(selectedIds: number[]): void {
-    this.person.groups = selectedIds;
-  }
-
-  /**
-   * Save
-   * @returns void
-   */
+    * Handles Save: create or update the Person
+    * @returns void
+    */
   public onSave(): void {
-    if (this.isView) {
-      this.toast.info('Currently in view mode; no changes allowed.');
+    if (this.isViewMode) {
+      // do nothing or just navigate
       return;
     }
 
-    if (!this.person.first_name || !this.person.last_name) {
-      this.toast.error('First Name and Last Name are required.');
+    if (this.personForm.invalid) {
+      this.personForm.markAllAsTouched();
       return;
     }
 
-    this.loaderService.show();
-    this.loading = true;
+    const formValue = this.personForm.value as CmdbPerson;
 
-    if (this.isEdit && this.person.public_id) {
-      // Update
-      this.personService.updatePerson(this.person.public_id, this.person)
-        .pipe(finalize(() => {
-          this.loading = false;
-          this.loaderService.hide();
-        }))
-        .subscribe({
-          next: () => {
-            this.toast.success('Person updated successfully.');
-            this.router.navigate(['/isms/persons']);
-          },
-          error: (err) => {
-            this.toast.error(err?.error?.message);
-          }
-        });
+    if (this.isEditMode && formValue.public_id) {
+      this.updatePerson(formValue.public_id, formValue);
     } else {
-      // Create
-      this.personService.createPerson(this.person)
-        .pipe(finalize(() => {
-          this.loading = false;
-          this.loaderService.hide();
-        }))
-        .subscribe({
-          next: () => {
-            this.toast.success('Person created successfully.');
-            this.router.navigate(['/isms/persons']);
-          },
-          error: (err) => {
-            this.toast.error(err?.error?.message);
-          }
-        });
+      delete formValue.public_id; // Remove public_id for creation
+      this.createPerson(formValue);
     }
   }
 
+
   /**
-   * Cancel
+   * Create a new person via service
+   * @param newData: new person data
+   * @returns void
+   */
+  private createPerson(newData: CmdbPerson): void {
+    this.loaderService.show();
+    this.personService.createPerson(newData)
+      .pipe(finalize(() => this.loaderService.hide()))
+      .subscribe({
+        next: () => {
+          this.toast.success('Person created successfully');
+          this.router.navigate(['/isms/persons']);
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message);
+        }
+      });
+  }
+
+
+  /**
+   * Update an existing person via service
+   * @param id: public_id of the person to update
+   * @param updated: updated person data
+   * @returns void
+   */
+  private updatePerson(id: number, updated: CmdbPerson): void {
+    this.loaderService.show();
+    this.personService.updatePerson(id, updated)
+      .pipe(finalize(() => this.loaderService.hide()))
+      .subscribe({
+        next: () => {
+          this.toast.success('Person updated successfully');
+          this.router.navigate(['/isms/persons']);
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message);
+        }
+      });
+  }
+
+
+  /**
+   * Cancel and go back to the list
    * @returns void
    */
   public onCancel(): void {
     this.router.navigate(['/isms/persons']);
   }
+
+
+  /**
+   * For error messages below fields
+   * @params controlName: name of the form control
+   * @params errorName: name of the error to check
+   * @returns true if the control has the error and is dirty or touched
+   */
+  public hasError(controlName: string, errorName: string): boolean {
+    const control = this.personForm.get(controlName);
+    return !!(
+      control &&
+      control.hasError(errorName) &&
+      (control.dirty || control.touched)
+    );
+  }
+
 }

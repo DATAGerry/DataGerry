@@ -6,38 +6,29 @@
 </div>
 <hr />
 
-<cmdb-table
-  [items]="personGroups"
-  [columns]="columns"
-  [page]="page"
-  [sort]="sort"
-  [id]="'person-groups-table'"
-  [emptyMessage]="'No Person Groups found.'"
-  [totalItems]="totalPersonGroups"
-  [selectEnabled]="false"
-  [loading]="loading"
-  [pageSize]="limit"
-  [toggleable]="true"
-  [initialVisibleColumns]="initialVisibleColumns"
-  (pageChange)="onPageChange($event)"
-  (pageSizeChange)="onPageSizeChange($event)"
-  (sortChange)="onSortChange($event)"
-  (searchChange)="onSearchChange($event)"
->
+<cmdb-table [items]="personGroups" [columns]="columns" [page]="page" [sort]="sort" [id]="'person-groups-table'"
+  [emptyMessage]="'No Person Groups found.'" [totalItems]="totalPersonGroups" [selectEnabled]="false"
+  [loading]="loading" [pageSize]="limit" [toggleable]="true" [initialVisibleColumns]="initialVisibleColumns"
+  (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
+  (searchChange)="onSearchChange($event)">
 </cmdb-table>
 
 <!-- Action buttons template -->
 <ng-template #actionTemplate let-item="item">
+
   <!-- View button -->
-  <i class="far fa-eye icon-margin spacing-right"
-     (click)="onView(item)"
-     title="View Person Group"></i>
+  <a (click)="onView(item)" title="View Person Group" *permissionLink="'base.user-management.personGroup.view'">
+    <i class="far fa-eye icon-margin spacing-right"></i>
+  </a>
+
   <!-- Edit button -->
-  <i class="far fa-edit icon-margin icon-edit spacing-right"
-     (click)="onEdit(item)"
-     title="Edit Person Group"></i>
+  <a (click)="onEdit(item)" title="Edit Person Group" *permissionLink="'base.user-management.personGroup.edit'">
+    <i class="far fa-edit icon-margin icon-edit spacing-right"></i>
+  </a>
+
   <!-- Delete button -->
-  <i class="far fa-trash-alt icon-delete"
-     (click)="onDelete(item)"
-     title="Delete Person Group"></i>
+  <a (click)="onDelete(item)" title="Delete Person Group" *permissionLink="'base.user-management.personGroup.delete'">
+    <i class="far fa-trash-alt icon-delete"></i>
+  </a>
+
 </ng-template>
