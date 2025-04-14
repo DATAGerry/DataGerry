@@ -28,6 +28,7 @@ from .vulnerability_routes import vulnerability_blueprint
 from .risk_routes import risk_blueprint
 from .control_meassure_routes import control_meassure_blueprint
 from .risk_assessment_routes import risk_assessment_blueprint
+from .meassure_control_assignment_routes import control_meassure_assignment_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -43,4 +44,5 @@ __all__ = [
     'risk_blueprint',
     'control_meassure_blueprint',
     'risk_assessment_blueprint',
+    'control_meassure_assignment_blueprint',
 ]

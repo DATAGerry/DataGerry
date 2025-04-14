@@ -57,6 +57,7 @@ from cmdb.manager.isms_manager.vulnerability_manager import VulnerabilityManager
 from cmdb.manager.isms_manager.risk_manager import RiskManager
 from cmdb.manager.isms_manager.control_meassure_manager import ControlMeassureManager
 from cmdb.manager.isms_manager.risk_assessment_manager import RiskAssessmentManager
+from cmdb.manager.isms_manager.control_meassure_assignment_manager import ControlMeassureAssignmentManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -97,4 +98,5 @@ __all__ = [
     'PersonsManager',
     'PersonGroupsManager',
     'RiskAssessmentManager',
+    'ControlMeassureAssignmentManager',
 ]

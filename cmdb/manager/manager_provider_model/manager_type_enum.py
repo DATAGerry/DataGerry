@@ -61,3 +61,4 @@ class ManagerType(Enum):
     RISK = 'RiskManager'
     CONTROL_MEASSURE = 'ControlMeassureManager'
     RISK_ASSESSMENT = 'RiskAssessmentManager'
+    CONTROL_MEASSURE_ASSIGNMENT = 'ControlMeassureAssignmentManager'

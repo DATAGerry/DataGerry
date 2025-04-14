@@ -19,6 +19,7 @@ Definition of all routes for CmdbSectionTemplates
 import json
 import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -41,7 +42,6 @@ from cmdb.errors.manager import (
     BaseManagerUpdateError,
     BaseManagerDeleteError,
 )
-from cmdb.errors.security import DisallowedActionError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -78,11 +78,11 @@ def create_section_template(params: dict, request_user: CmdbUser):
     except BaseManagerInsertError as err:
         # TODO: ERROR-FIX
         LOGGER.debug("[create_section_template] %s", err)
-        return abort(400, "Could not create the section template!")
+        abort(400, "Could not create the section template!")
         # TODO: ERROR-FIX
     except Exception as err:
         LOGGER.error("[create_section_template] Exception: %s. Type: %s", err, type(err))
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
     api_response = DefaultResponse(created_section_template_id)
 
@@ -120,10 +120,10 @@ def get_all_section_templates(params: CollectionParameters, request_user: CmdbUs
     except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_all_section_templates] %s", err)
-        return abort(400, "Could not retrieve SectionTemplates!")
+        abort(400, "Could not retrieve SectionTemplates!")
     except Exception as err:
         LOGGER.error("[get_all_section_templates] Exception: %s. Type: %s", err, type(err))
-        return abort(500, "Internal Server Error!")
+        abort(500, "Internal Server Error!")
 
     return api_response.make_response()
 
@@ -147,7 +147,7 @@ def get_section_template(public_id: int, request_user: CmdbUser):
         section_template_instance = template_manager.get_section_template(public_id)
     except BaseManagerGetError as err:
         LOGGER.debug("[get_section_template] %s", err)
-        return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
+        abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
 
     if not section_template_instance:
         section_template_instance = []
@@ -180,10 +180,10 @@ def get_global_section_template_count(public_id: int, request_user: CmdbUser):
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_section_template] %s", err)
-        return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
+        abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
     except Exception as err:
         LOGGER.debug("[get_section_template] Exception: %s", err)
-        return abort(400, "Could not retrive SectionTemplate!")
+        abort(400, "Could not retrive SectionTemplate!")
 
     api_response = DefaultResponse(counts)
 
@@ -228,16 +228,16 @@ def update_section_template(params: dict, request_user: CmdbUser):
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_section_template] %s", err)
-        return abort(404, f"Could not retrieve SectionTemplate with ID: {params['public_id']}!")
+        abort(404, f"Could not retrieve SectionTemplate with ID: {params['public_id']}!")
     except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[update_section_template] %s", err)
-        return abort(400, f"Could not update SectionTemplate with ID: {params['public_id']}!")
+        abort(400, f"Could not update SectionTemplate with ID: {params['public_id']}!")
     except NoDocumentFoundError:
-        return abort(404, "Section template not found!")
+        abort(404, "Section template not found!")
     except Exception as err:
         LOGGER.error("[update_section_template] Exception: %s, Type: %s", err, type(err))
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
     api_response = UpdateSingleResponse(result.acknowledged)
 
@@ -250,17 +250,28 @@ def update_section_template(params: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.delete')
 def delete_section_template(public_id: int, request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
-                                                                            request_user)
+    """
+    Delete a CmdbSectionTemplate by its public ID, with appropriate checks and permission handling.
 
+    This function attempts to delete a CmdbSectionTemplate based on the provided public ID. Before deleting, 
+    it checks whether the template is predefined (in which case it cannot be deleted) and whether it is 
+    a global template that requires additional cleanup.
+
+    Args:
+        public_id (int): The public ID of the CmdbSectionTemplate to be deleted.
+        request_user (CmdbUser): The user making the request, used for permission validation.
+
+    Returns:
+        DefaultResponse: A response indicating whether the deletion was successful
+    """
     try:
+        template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
+                                                                                request_user)
+
         template_instance: CmdbSectionTemplate = template_manager.get_section_template(public_id)
 
         if template_instance.predefined:
-            LOGGER.debug("ERROR: Trying to delete a predefined CmdbSectionTemplate")
-            raise DisallowedActionError(f"Trying to delete a predefined CmdbSectionTemplate with id: {public_id}")
+            abort(400, "A predefined SectionTemplate is not deletable!")
 
         if template_instance.is_global:
             template_manager.cleanup_global_section_templates(template_instance.name)
@@ -268,18 +279,15 @@ def delete_section_template(public_id: int, request_user: CmdbUser):
         #TODO: REFACTOR-FIX
         ack: bool = template_manager.delete({'public_id':public_id})
 
+        return DefaultResponse(ack).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except BaseManagerGetError as err:
         LOGGER.debug("[delete_section_template] %s", err)
-        return abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
-    except DisallowedActionError:
-        return abort(400, f"Disallowed action for section template with ID: {public_id}")
+        abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
     except BaseManagerDeleteError as err:
         LOGGER.debug("[delete_section_template] %s", err)
-        return abort(400, f"Could not delete SectionTemplate with public_id: {public_id}!")
+        abort(400, f"Could not delete SectionTemplate with public_id: {public_id}!")
     except Exception as err:
-        LOGGER.error("[delete_section_template] Exception: %s, Type: %s", err, type(err))
-        return abort(500, "Unexcepted error occured during the deletion of the SectionTemplate!")
-
-    api_response = DefaultResponse(ack)
-
-    return api_response.make_response()
+        LOGGER.error("[delete_section_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while deleting the SectionTemplate!")
