@@ -17,7 +17,7 @@
 Implementation of SearchResult
 """
 import logging
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Optional, Any
 from bson import Regex
 
 from cmdb.framework.search.search_result_map import SearchResultMap
@@ -32,8 +32,12 @@ R = TypeVar('R')
 # -------------------------------------------------------------------------------------------------------------------- #
 class SearchResult(Generic[R]):
     """
-    Generic search result base
+    Generic container for paginated search results.
+
+    This class wraps a list of search results, along with metadata
+    about the search such as pagination info, grouping, and regex matches.
     """
+    #pylint: disable=R0917
     def __init__(self,
                  results: list[R],
                  total_results: int,
@@ -43,15 +47,16 @@ class SearchResult(Generic[R]):
                  skip: int,
                  matches_regex: list[str] = None):
         """
-        Constructor for search result
+        Initialize a SearchResult
+
         Args:
-            results: list of generic search results
-            total_results: total number of results
-            groups: Type groups of objects
-            alive: flag if spliced search result has more data in database
-            limit: max number of results to return
-            skip: start of index value for the search
-            matches_regex: list of text regex values
+            results (list[R]): List of generic search result objects
+            total_results (int): Total number of results available in the database
+            groups (list[Any]): Groups of objects related to the search results
+            alive (bool): Flag indicating if there are more results available beyond the current limit
+            limit (int): Maximum number of results to return (page size)
+            skip (int): Number of results to skip (offset)
+            matches_regex (Optional[list[str]]): List of regex patterns to check matches within results
         """
         self.limit: int = limit
         self.skip: int = skip
@@ -63,41 +68,46 @@ class SearchResult(Generic[R]):
             results]
 
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
-        Call number of results
+        Get the number of search results
+
         Returns:
-            number of found objects
+            int: Number of search result objects in this page
         """
         return len(self.results)
 
 
     @staticmethod
-    def find_match_fields(result: R, possible_regex_list=None):
+    def find_match_fields(result: R, possible_regex_list: Optional[list[str]] = None) -> Optional[list[Any]]:
+
         """
-        Get list of matched fields inside the searchresult
+        Find fields inside a result object that match any given regex patterns
+
         Args:
-            result: Generic search result
-            possible_regex_list: list of text regex from the pipeline builder
+            result (R): A single search result object
+            possible_regex_list (Optional[list[str]]): List of regex patterns to match fields against
 
         Returns:
-            list of fields where the regex matched
+            Optional[list[Any]]: List of fields where a regex matched, or None if no matches
         """
         matched_fields = []
         fields = result.fields
+
         if not possible_regex_list:
             return None
 
 
-        def inner_match_fields(_fields, _matched_fields, _reference=None):
+        def inner_match_fields(_fields: list[dict[str, Any]], 
+                               _matched_fields: list[Any], 
+                               _reference: Optional[dict[str, Any]] = None) -> None:
             """
-            Get list of matched fields inside the reference fields
+            Recursively search fields and nested fields for regex matches
+
             Args:
-                _fields: list of referenced fields
-                _matched_fields: list of text regex from the pipeline builder
-                _reference: reference object to which the reference field refers
-            Returns:
-                list of fields where the regex matched
+                _fields (List[Dict[str, Any]]): List of field dictionaries to check
+                _matched_fields (List[Any]): List to store fields that matched
+                _reference (Optional[Dict[str, Any]]): Optional reference object for nested fields
             """
             for regex_ in possible_regex_list:
                 try:
@@ -123,12 +133,17 @@ class SearchResult(Generic[R]):
 
         if len(matched_fields) > 0:
             return matched_fields
+
         return None
 
 
     def to_json(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Serialize the search result to a JSON-serializable dictionary
+
+        Returns:
+            dict: Dictionary containing all relevant search result data
+        """
         return {
             'limit': self.limit,
             'skip': self.skip,
