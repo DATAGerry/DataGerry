@@ -1,6 +1,6 @@
 /*
 * DATAGERRY - OpenSource Enterprise CMDB
-* Copyright (C) 2024 becon GmbH
+* Copyright (C) 2025 becon GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -47,17 +47,14 @@ export class ConnectionService {
     /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
     public constructor(private backend: HttpBackend) {
-        localStorage.removeItem("connection");
         this.http = new HttpClient(backend);
-        const storedConnection = JSON.parse(localStorage.getItem("connection"));
         this.connectionSubject = new BehaviorSubject<string>(
-            this.validateUrl(storedConnection) ? storedConnection : null
+            JSON.parse(localStorage.getItem("connection"))
         );
         this.connection = this.connectionSubject.asObservable();
 
         if (this.currentConnection === null) {
             this.setDefaultConnection();
-
         }
 
         try {
@@ -87,8 +84,6 @@ export class ConnectionService {
     }
 
 
-
-
     /**
      * Tests the current connection by attempting to connect to the backend.
      * @returns A promise resolving to `true` if the connection is successful, otherwise `false`.
@@ -109,16 +104,14 @@ export class ConnectionService {
      * @returns A promise resolving to the backend's connection response.
      */
     private async connect() {
-        try {
-            const conn_result$ = this.http.get<any>(
-                `${this.currentConnection}/rest/`
-            );
-            return await lastValueFrom(conn_result$);
-        } catch (error) {
-            localStorage.removeItem("connection");
-            this.connectionSubject.next(null);
-            throw error;
-        }
+        // console.log(
+        //     `### CONNECTION TRY with URL: ${this.currentConnection}/rest/ ###`
+        // );
+        const conn_result$ = this.http.get<any>(
+            `${this.currentConnection}/rest/`
+        );
+
+        return await lastValueFrom(conn_result$);
     }
 
 
@@ -160,20 +153,5 @@ export class ConnectionService {
 
         localStorage.setItem("connection", JSON.stringify(href));
         this.connectionSubject.next(href);
-    }
-
-
-    /**
-     * URL validation function to check if the provided URL is valid.
-     * @param url - The URL to validate.
-     * @returns `true` if the URL is valid, otherwise `false`.
-     */
-    private validateUrl(url: string): boolean {
-        try {
-            new URL(url);
-            return true;
-        } catch {
-            return false;
-        }
     }
 }
