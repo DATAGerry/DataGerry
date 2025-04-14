@@ -14,20 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of all API routes for Settings
+This module provides all errors for IsmsRiskAssessments
 """
-import logging
-from flask import current_app
-
-from cmdb.interface.blueprints import RootBlueprint
+from .isms_control_meassure_assignment_errors import (
+    IsmsControlMeassureAssignmentError,
+    IsmsControlMeassureAssignmentInitError,
+    IsmsControlMeassureAssignmentInitFromDataError,
+    IsmsControlMeassureAssignmentToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-LOGGER = logging.getLogger(__name__)
-
-settings_blueprint = RootBlueprint('settings_rest', __name__, url_prefix='/settings')
-
-with current_app.app_context():
-    from cmdb.interface.rest_api.routes.settings_routes.system_routes import system_blueprint
-    settings_blueprint.register_nested_blueprint(system_blueprint)
-
-# -------------------------------------------------------------------------------------------------------------------- #
+__all__ = [
+    'IsmsControlMeassureAssignmentError',
+    'IsmsControlMeassureAssignmentInitError',
+    'IsmsControlMeassureAssignmentInitFromDataError',
+    'IsmsControlMeassureAssignmentToJsonError',
+]

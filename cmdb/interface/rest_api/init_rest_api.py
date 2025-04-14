@@ -173,6 +173,7 @@ def register_blueprints(app: BaseCmdbApp):
         risk_blueprint,
         control_meassure_blueprint,
         risk_assessment_blueprint,
+        control_meassure_assignment_blueprint,
     )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -224,11 +225,13 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(risk_blueprint, url_prefix='/isms/risks')
     app.register_blueprint(control_meassure_blueprint, url_prefix='/isms/control_meassures')
     app.register_blueprint(risk_assessment_blueprint, url_prefix='/isms/risk_assessments')
+    app.register_blueprint(control_meassure_assignment_blueprint, url_prefix='/isms/control_meassure_assignments')
 
     if cmdb.__MODE__ == 'DEBUG':
         from cmdb.interface.rest_api.routes.debug_routes import debug_blueprint
         app.register_blueprint(debug_blueprint)
 
+    # LOGGER.debug(f"routes: {app.url_map}")
 
 def register_error_pages(app: BaseCmdbApp):
     """

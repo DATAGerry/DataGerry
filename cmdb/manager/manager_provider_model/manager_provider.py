@@ -57,6 +57,7 @@ from cmdb.manager import (
     PersonsManager,
     PersonGroupsManager,
     RiskAssessmentManager,
+    ControlMeassureAssignmentManager,
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -142,6 +143,7 @@ class ManagerProvider:
             ManagerType.PERSON: PersonsManager,
             ManagerType.PERSON_GROUP: PersonGroupsManager,
             ManagerType.RISK_ASSESSMENT: RiskAssessmentManager,
+            ManagerType.CONTROL_MEASSURE_ASSIGNMENT: ControlMeassureAssignmentManager,
         }
 
         return manager_classes.get(manager_type)

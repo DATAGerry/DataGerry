@@ -20,24 +20,59 @@ from cmdb.manager.query_builder.pipeline_builder import PipelineBuilder
 from cmdb.security.acl.permission import AccessControlPermission
 # -------------------------------------------------------------------------------------------------------------------- #
 
+
 class LookedAccessControlQueryBuilder(PipelineBuilder):
-    """Query builder for looked objects in aggregation calls."""
+    """
+    Query builder for access control on *looked* (nested) objects in MongoDB aggregation pipelines.
+    
+    This builder is used when the type information is nested inside a sub-object (e.g., `object.type_id`).
+    """
 
     def __init__(self, pipeline: list[dict] = None):
+        """
+        Initialize the LookedAccessControlQueryBuilder
+
+        Args:
+            pipeline (list[dict], optional): An optional initial aggregation pipeline. Defaults to None
+        """
         super().__init__(pipeline=pipeline)
 
 
+    #TODO: REFACTOR-FIX (same method in AccessControlQueryBuilder)
     def build(self, group_id: int, permission: AccessControlPermission, *args, **kwargs) -> list[dict]:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Build the access control aggregation pipeline for nested objects
+
+        This builds a pipeline that:
+        1. Looks up type information for nested object documents
+        2. Unwinds the type field
+        3. Matches documents based on access control rules
+
+        Args:
+            group_id (int): The group ID for which to validate access
+            permission (AccessControlPermission): The required permission to filter by
+            *args: Additional positional arguments (currently unused)
+            **kwargs: Additional keyword arguments (currently unused)
+
+        Returns:
+            list[dict]: The complete aggregation pipeline as a list of stages
+        """
         self.clear()
         self.add_pipe(self._lookup_types())
         self.add_pipe(self._unwind_types())
         self.add_pipe(self._match_acl(group_id, permission))
         return self.pipeline
 
-
+    # REFACTOR-FIX (same method in AccessControlQueryBuilder)
     def _lookup_types(self) -> dict:
+        """
+        Create a `$lookup` aggregation stage to join the `framework.types` collection
+
+        Joins using the `object.type_id` field from the current collection
+
+        Returns:
+            dict: A `$lookup` stage for the aggregation pipeline
+        """
         return {
             '$lookup': {
                 'from': 'framework.types',
@@ -48,12 +83,36 @@ class LookedAccessControlQueryBuilder(PipelineBuilder):
         }
 
 
+    # REFACTOR-FIX (same method in AccessControlQueryBuilder)
     def _unwind_types(self) -> dict:
+        """
+        Create an `$unwind` aggregation stage for the `type` field
+
+        Returns:
+            dict: An `$unwind` stage for the aggregation pipeline
+        """
         unwind = self.unwind_(path='$type')
+
         return unwind
 
 
+    # REFACTOR-FIX (same method in AccessControlQueryBuilder)
     def _match_acl(self, group_id: int, permission: AccessControlPermission) -> dict:
+        """
+        Create a `$match` aggregation stage based on access control logic
+
+        The match criteria:
+        - Allow documents where `type.acl` does not exist
+        - Allow documents where `type.acl.activated` is False
+        - Allow documents where the group ID has all the required permissions
+
+        Args:
+            group_id (int): The group ID to filter access by
+            permission (AccessControlPermission): The permission required
+
+        Returns:
+            dict: A `$match` stage for the aggregation pipeline
+        """
         return self.match_(
             self.or_([
                 self.exists_('type.acl', False),
@@ -68,25 +127,59 @@ class LookedAccessControlQueryBuilder(PipelineBuilder):
 
 #TODO: CLASS-FIX (Move to manager query builder)
 class AccessControlQueryBuilder(PipelineBuilder):
-    """Query builder for restrict objects in aggregation calls."""
+    """
+    Query builder for applying access control restrictions in MongoDB aggregation pipelines.
+    
+    This builder ensures that objects in aggregation results are filtered based on the access control lists (ACLs)
+    associated with their types.
+    """
 
     def __init__(self, pipeline: list[dict] = None):
+        """
+        Initialize the AccessControlQueryBuilder
+
+        Args:
+            pipeline (list[dict], optional): An optional initial aggregation pipeline. Defaults to None
+        """
         super().__init__(pipeline=pipeline)
 
-
+    #TODO: REFACTOR-FIX (same method in LookedAccessControlQueryBuilder)
     def build(self, group_id: int, permission: AccessControlPermission, *args, **kwargs) -> list[dict]:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Build the access control aggregation pipeline
+
+        This builds a pipeline that:
+        1. Looks up type information for documents
+        2. Unwinds the type field
+        3. Matches documents based on access control rules
+
+        Args:
+            group_id (int): The group ID for which to validate access
+            permission (AccessControlPermission): The required permission to filter by
+            *args: Additional positional arguments (currently unused)
+            **kwargs: Additional keyword arguments (currently unused)
+
+        Returns:
+            list[dict]: The complete aggregation pipeline as a list of stages
+        """
         self.clear()
         self.add_pipe(self._lookup_types())
         self.add_pipe(self._unwind_types())
         self.add_pipe(self._match_acl(group_id, permission))
+
         return self.pipeline
 
 
+    #TODO: REFACTOR-FIX (same method in LookedAccessControlQueryBuilder)
     def _lookup_types(self) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Create a `$lookup` aggregation stage to join the `framework.types` collection
+
+        Joins the current collection with `framework.types` based on `type_id` and `public_id`
+
+        Returns:
+            dict: A `$lookup` stage for the aggregation pipeline
+        """
         return {
             '$lookup': {
                 'from': 'framework.types',
@@ -97,12 +190,36 @@ class AccessControlQueryBuilder(PipelineBuilder):
         }
 
 
+    #TODO: REFACTOR-FIX (same method in LookedAccessControlQueryBuilder)
     def _unwind_types(self) -> dict:
+        """
+        Create an `$unwind` aggregation stage for the `type` field
+
+        Returns:
+            dict: An `$unwind` stage for the aggregation pipeline
+        """
         unwind = self.unwind_(path='$type')
+
         return unwind
 
 
+    #TODO: REFACTOR-FIX (same method in LookedAccessControlQueryBuilder)
     def _match_acl(self, group_id: int, permission: AccessControlPermission) -> dict:
+        """
+        Create a `$match` aggregation stage based on access control logic
+
+        The match criteria:
+        - Allow documents where `type.acl` does not exist
+        - Allow documents where `type.acl.activated` is False
+        - Allow documents where the group ID has all the required permissions
+
+        Args:
+            group_id (int): The group ID to filter access by
+            permission (AccessControlPermission): The permission required
+
+        Returns:
+            dict: A `$match` stage for the aggregation pipeline
+        """
         return self.match_(
             self.or_([
                 self.exists_('type.acl', False),
