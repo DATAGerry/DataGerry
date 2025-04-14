@@ -53,6 +53,8 @@ class CmdbPersonGroup(CmdbDAO):
         },
         'email': {
             'type': 'string',
+            'required': True,
+            'empty': True,
             'regex': r'^(?!.*\.\.)[\w\.-]+@[a-zA-Z\d-]+(\.[a-zA-Z]{2,})+$',  # Email regex pattern
         },
         'group_members': {

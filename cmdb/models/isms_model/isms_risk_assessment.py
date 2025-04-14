@@ -52,7 +52,6 @@ class IsmsRiskAssessment(CmdbDAO):
 
     SCHEMA: dict = get_isms_risk_assessment_schema()
 
-
     #pylint: disable=R0913, R0914, R0917
     def __init__(
             self,

@@ -43,8 +43,26 @@ class RootBlueprint(Blueprint):
 
     @classmethod
     def parse_assistant_parameters(cls, **optional):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Decorator to parse and extract parameters from an HTTP request
+
+        This class method returns a decorator that:
+        - Extracts query parameters from the current request (via `request.args.to_dict()`)
+        - Passes the extracted parameters as a dictionary to the decorated function
+        - Aborts with a 400 Bad Request if the parameters cannot be parsed
+
+        Args:
+            **optional: 
+                Placeholder for optional keyword arguments (currently unused)
+
+        Raises:
+            400 Bad Request: 
+                If there is an error while accessing or parsing the request arguments
+
+        Returns:
+            Callable: 
+                A decorator that injects parsed request parameters into the decorated function
+        """
         def _parse(f):
             @wraps(f)
             def _decorate(*args, **kwargs):

@@ -25,26 +25,32 @@ LOGGER = logging.getLogger(__name__)
 #                                                  SearchParam - CLASS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SearchParam:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    A class representing a search parameter for database queries
+    """
+
     POSSIBLE_FORM_TYPES = [
         'text',
         'regex',
         'type',
         'category',
         'disjunction',
-        'publicID'
+        'publicID',
     ]
 
-    def __init__(self, search_text, search_form: str, settings: dict = None, disjunction: bool = False):
+    def __init__(self, search_text: str, search_form: str, settings: dict = None, disjunction: bool = False):
         """
-        Initialises a SearchParam class
+        Initialises the SearchParam
 
         Args:
-            search_text: searchable user input for database search
-            search_form: kind of search parameter
-            settings: optional settings based on the search form
-            disjunction: optional kind of search parameter
+            search_text (str): The user input used for searching in the database
+            search_form (str): The kind of search parameter, must be one of the POSSIBLE_FORM_TYPES
+            settings (dict, optional): Optional settings specific to the search form
+            disjunction (bool, optional): If True, indicates the search should be treated as a
+                                          disjunction (OR operation). Defaults to False.
+
+        Raises:
+            ValueError: If the provided search_form is not in POSSIBLE_FORM_TYPES.
         """
         self.search_text = search_text
 
@@ -57,13 +63,33 @@ class SearchParam:
 
 
     def __repr__(self):
+        """
+        Returns a string representation of the SearchParam instance
+
+        Returns:
+            str: String showing the search text and form type
+        """
         return f'[SearchParam] {self.search_text} - {self.search_form}'
 
 
     @classmethod
     def from_request(cls, request) -> list['SearchParam']:
-        """Build a SearchParam list from http request"""
-        param_list: list[cls] = []
+        """
+        Creates a list of SearchParam instances from an HTTP request
+
+        Args:
+            request (iterable): 
+                An iterable (such as a list of dictionaries) containing search parameters
+
+        Returns:
+            list[SearchParam]: 
+                A list of SearchParam instances built from the request
+
+        Notes:
+            If an error occurs while parsing a parameter, the error is logged and the parameter is skipped
+        """
+        param_list: list['SearchParam'] = []
+
         for param in request:
             try:
                 param_list.append(cls(

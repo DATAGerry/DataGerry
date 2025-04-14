@@ -79,9 +79,8 @@ def insert_cmdb_person(data: dict, request_user: CmdbUser):
         result_id = persons_manager.insert_item(data)
 
         # Add the person to the selected groups
-        # selected_group_ids = data.get('groups', [])
-        # person_groups_manager.add_person_to_groups(result_id, selected_group_ids)
-
+        selected_group_ids = data.get('groups', [])
+        person_groups_manager.add_person_to_groups(result_id, selected_group_ids)
 
         created_person = persons_manager.get_item(result_id, as_dict=True)
 
@@ -200,19 +199,20 @@ def update_cmdb_person(public_id: int, data: dict, request_user: CmdbUser):
         persons_manager: PersonsManager = ManagerProvider.get_manager(ManagerType.PERSON, request_user)
         person_groups_manager: PersonGroupsManager = ManagerProvider.get_manager(ManagerType.PERSON_GROUP,
                                                                                  request_user)
-        to_update_person = persons_manager.get_item(public_id)
+
+        to_update_person = persons_manager.get_item(public_id, as_dict=True)
 
         if not to_update_person:
             abort(404, f"The Person with ID:{public_id} was not found!")
 
         # Check for added or removed groups
-        # existing_groups = set(to_update_person.get('groups', []))  # old group public_ids
-        # updated_groups = set(data.get('groups', []))  # new group public_ids
+        existing_groups = set(to_update_person.get('groups', []))  # old group public_ids
+        updated_groups = set(data.get('groups', []))  # new group public_ids
 
-        # groups_to_add = updated_groups - existing_groups  # New groups
-        # groups_to_remove = existing_groups - updated_groups  # Removed groups
+        groups_to_add = updated_groups - existing_groups  # New groups
+        groups_to_remove = existing_groups - updated_groups  # Removed groups
 
-        # person_groups_manager.update_person_in_groups(public_id, groups_to_add, groups_to_remove)
+        person_groups_manager.update_person_in_groups(public_id, groups_to_add, groups_to_remove)
 
         persons_manager.update_item(public_id, CmdbPerson.from_data(data))
 
@@ -259,7 +259,7 @@ def delete_cmdb_person(public_id: int, request_user: CmdbUser):
         persons_manager.delete_item(public_id)
 
         # Delete the person from all groups
-        # person_groups_manager.delete_person_from_groups(public_id)
+        person_groups_manager.delete_person_from_groups(public_id)
 
         return DeleteSingleResponse(to_delete_person).make_response()
     except HTTPException as http_err:
