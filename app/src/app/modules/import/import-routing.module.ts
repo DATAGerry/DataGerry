@@ -23,6 +23,7 @@ import { PermissionGuard } from '../auth/guards/permission.guard';
 import { ImportComponent } from './import.component';
 import { ImportObjectsComponent } from './components/objects/import-objects/import-objects.component';
 import { ImportTypesComponent } from './components/types/import-types/import-types.component';
+import { ImportThreatComponent } from './components/threat-object/threat-import.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 const routes: Routes = [
@@ -52,6 +53,15 @@ const routes: Routes = [
             right: 'base.import.type.*'
         },
         component: ImportTypesComponent
+    },
+    {
+        path: 'threat',
+        canActivate: [PermissionGuard],
+        data: {
+            breadcrumb: 'Threat',
+           
+        },
+        component: ImportThreatComponent
     }
 ];
 

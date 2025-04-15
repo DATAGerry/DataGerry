@@ -53,6 +53,7 @@ import { ImportTypeCompleteComponent } from './components/types/import-type-comp
 import { ImportCompleteComponent } from './components/objects/import-complete/import-complete.component';
 import { FailedImportTableComponent } from './components/objects/failed-import-table/failed-import-table.component';
 import { CoreModule } from 'src/app/core/core.module';
+import { ImportThreatComponent } from './components/threat-object/threat-import.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -75,6 +76,7 @@ import { CoreModule } from 'src/app/core/core.module';
         ImportTypeCompleteComponent,
         ImportCompleteComponent,
         FailedImportTableComponent,
+        ImportThreatComponent
     ],
     imports: [
         CommonModule,
