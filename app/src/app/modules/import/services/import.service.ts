@@ -44,6 +44,9 @@ export class ImportService implements ApiServicePrefix {
     private objectPrefix: string = 'object';
     private typePrefix: string = 'type';
     private threatPrefix = 'isms/importer/threat';
+    private riskPrefix = 'isms/importer/risk';
+    private controlMeasurePrefix = 'isms/importer/control_measure';
+    private vulnerabilityPrefix = 'isms/importer/vulnerability';
 
 
     constructor(private api: ApiCallService) {
@@ -54,6 +57,30 @@ export class ImportService implements ApiServicePrefix {
         const formData = new FormData();
         formData.append('file', file, file.name);
         return this.api.callPost<any>(this.threatPrefix, formData, httpImportFileOptions).pipe(
+            map(response => response.body)
+        );
+    }
+
+    public importRiskFile(file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return this.api.callPost<any>(this.riskPrefix, formData, httpImportFileOptions).pipe(
+            map(response => response.body)
+        );
+    }
+
+    public importControlMeasureFile(file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return this.api.callPost<any>(this.controlMeasurePrefix, formData, httpImportFileOptions).pipe(
+            map(response => response.body)
+        );
+    }
+
+    public importVulnerabilityFile(file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return this.api.callPost<any>(this.vulnerabilityPrefix, formData, httpImportFileOptions).pipe(
             map(response => response.body)
         );
     }
