@@ -43,10 +43,19 @@ export class ImportService implements ApiServicePrefix {
     public servicePrefix: string = 'import';
     private objectPrefix: string = 'object';
     private typePrefix: string = 'type';
+    private threatPrefix = 'isms/importer/threat';
 
 
     constructor(private api: ApiCallService) {
 
+    }
+
+    public importThreatFile(file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return this.api.callPost<any>(this.threatPrefix, formData, httpImportFileOptions).pipe(
+            map(response => response.body)
+        );
     }
 
 
