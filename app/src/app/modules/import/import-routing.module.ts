@@ -23,7 +23,10 @@ import { PermissionGuard } from '../auth/guards/permission.guard';
 import { ImportComponent } from './import.component';
 import { ImportObjectsComponent } from './components/objects/import-objects/import-objects.component';
 import { ImportTypesComponent } from './components/types/import-types/import-types.component';
-import { ImportThreatComponent } from './components/threat-object/threat-import.component';
+import { ImportThreatComponent } from './components/threat/threat-import.component';
+import { ImportVulnerabilityComponent } from './components/vulnerability/vulnerability-import.component';
+import { ImportRiskComponent } from './components/risk/risk-import.component';
+import { ImportControlMeasureComponent } from './components/control-measure/control-measure-import.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 const routes: Routes = [
@@ -62,6 +65,33 @@ const routes: Routes = [
            
         },
         component: ImportThreatComponent
+    },
+    {
+        path: 'vulnerability',
+        canActivate: [PermissionGuard],
+        data: {
+            breadcrumb: 'Vulnerability',
+           
+        },
+        component: ImportVulnerabilityComponent
+    },
+    {
+        path: 'risk',
+        canActivate: [PermissionGuard],
+        data: {
+            breadcrumb: 'Risk',
+           
+        },
+        component: ImportRiskComponent
+    },
+    {
+        path: 'control-measure',
+        canActivate: [PermissionGuard],
+        data: {
+            breadcrumb: 'Control Measure',
+           
+        },
+        component: ImportControlMeasureComponent
     }
 ];
 

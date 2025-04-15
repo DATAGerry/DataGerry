@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        Quick Threat Import
+        Quick Control/Measure Import
     </div>
     <div class="card-body">
         <form [formGroup]="fileForm">
@@ -21,9 +21,9 @@
                 type="button"
                 class="btn btn-primary"
                 [disabled]="fileForm.invalid"
-                (click)="importThreat()"
+                (click)="importControlMeasures()"
             >
-                Import Threats
+                Import Control/Measures
             </button>
         </form>
     </div>

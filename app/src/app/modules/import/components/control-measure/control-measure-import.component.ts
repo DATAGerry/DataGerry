@@ -7,7 +7,7 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Component({
     selector: 'cmdb-control-measure-import',
-    templateUrl: './threat-import.component.html',
+    templateUrl: './control-measure-import.component.html',
 })
 export class ImportControlMeasureComponent {
     public fileForm: UntypedFormGroup;
@@ -36,7 +36,7 @@ export class ImportControlMeasureComponent {
         }
     }
 
-    importThreat(): void {
+    importControlMeasures(): void {
         if (this.fileForm.invalid) {
             this.toastService.error('Please select a CSV file.');
             return;

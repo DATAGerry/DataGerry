@@ -7,7 +7,7 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Component({
     selector: 'cmdb-risk-import',
-    templateUrl: './threat-import.component.html',
+    templateUrl: './risk-import.component.html',
 })
 export class ImportRiskComponent {
     public fileForm: UntypedFormGroup;
@@ -36,7 +36,7 @@ export class ImportRiskComponent {
         }
     }
 
-    importThreat(): void {
+    importRisk(): void {
         if (this.fileForm.invalid) {
             this.toastService.error('Please select a CSV file.');
             return;
