@@ -15,7 +15,7 @@ export class ImportThreatComponent {
     public isLoading$ = this.loaderService.isLoading$;
 
     constructor(
-        private threatImportService: ImportService,
+        private importService: ImportService,
         private loaderService: LoaderService,
         private toastService: ToastService
     ) {
@@ -44,7 +44,7 @@ export class ImportThreatComponent {
 
         const file = this.file.value;
         this.loaderService.show();
-        this.threatImportService
+        this.importService
             .importThreatFile(file)
             .pipe(finalize(() => this.loaderService.hide()))
             .subscribe({

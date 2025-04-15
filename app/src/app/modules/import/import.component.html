@@ -1,4 +1,4 @@
-
+<!-- 
 <div class="card-deck" *permissionLink="['base.import.type.*', 'base.import.object.*']">
     <div class="card">
         <a routerLink="/import/object/"
@@ -25,9 +25,108 @@
         <a routerLink="/import/threat/">
             <div class="dash-card primary">
                 <i class="far fa-object-group"></i>
-                <span class="import-text">Import Threats</span>
+                <span class="import-text">Import Threat</span>
+            </div>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a routerLink="/import/vulnerability/">
+            <div class="dash-card primary">
+                <i class="far fa-object-group"></i>
+                <span class="import-text">Import vulnerability</span>
+            </div>
+        </a>
+    </div>
+    <div class="card">
+        <a routerLink="/import/control-measure/">
+            <div class="dash-card primary">
+                <i class="far fa-object-group"></i>
+                <span class="import-text">Import Control Measure</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="card">
+        <a routerLink="/import/risk/">
+            <div class="dash-card primary">
+                <i class="far fa-object-group"></i>
+                <span class="import-text">Import Risk</span>
             </div>
         </a>
     </div>
 </div>
+ -->
 
+
+ <div class="container">
+    <div class="row" *permissionLink="['base.import.type.*', 'base.import.object.*']">
+      <div class="col-md-4">
+        <div class="card">
+          <a routerLink="/import/object/" [ngbTooltip]="getButtonTooltip(calculatePercentage())">
+            <div class="dash-card primary" [ngClass]="getButtonClass(calculatePercentage())">
+              <i class="far fa-object-ungroup"></i>
+              <span class="import-text">Import Objects</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <a routerLink="/import/type/">
+            <div class="dash-card primary">
+              <i class="far fa-object-group"></i>
+              <span class="import-text">Import Types</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <a routerLink="/import/threat/">
+            <div class="dash-card primary">
+              <i class="far fa-object-group"></i>
+              <span class="import-text">Import Threat</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <a routerLink="/import/vulnerability/">
+            <div class="dash-card primary">
+              <i class="far fa-object-group"></i>
+              <span class="import-text">Import Vulnerability</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <a routerLink="/import/control-measure/">
+            <div class="dash-card primary">
+              <i class="far fa-object-group"></i>
+              <span class="import-text">Import Control Measure</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <a routerLink="/import/risk/">
+            <div class="dash-card primary">
+              <i class="far fa-object-group"></i>
+              <span class="import-text">Import Risk</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
