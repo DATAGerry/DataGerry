@@ -1,0 +1,35 @@
+<div class="card">
+    <div class="card-header">
+        Quick Threat Import
+    </div>
+    <div class="card-body">
+        <form [formGroup]="fileForm">
+            <div class="form-group">
+                <label for="file">Select CSV File:</label>
+                <div class="custom-file">
+                    <input
+                        type="file"
+                        class="custom-file-input"
+                        id="file"
+                        (change)="selectFile($event.target.files)"
+                        accept=".csv"
+                    />
+                    <label class="custom-file-label" for="file">{{ fileName }}</label>
+                </div>
+            </div>
+            <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="fileForm.invalid"
+                (click)="importThreat()"
+            >
+                Import Threats
+            </button>
+        </form>
+    </div>
+</div>
+
+<app-loading-popup
+    [isVisible]="isLoading$ | async"
+    message="Importing threat objects..."
+></app-loading-popup>
