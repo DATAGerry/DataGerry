@@ -30,6 +30,7 @@ from .isms_vulnerability import IsmsVulnerability
 from .isms_control_meassure import IsmsControlMeassure
 from .isms_risk_assessment import IsmsRiskAssessment
 from .isms_control_meassure_assignment import IsmsControlMeassureAssignment
+from .isms_import_type_enum import IsmsImportType
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -47,4 +48,5 @@ __all__ = [
     'IsmsControlMeassure',
     'IsmsRiskAssessment',
     'IsmsControlMeassureAssignment',
+    'IsmsImportType',
 ]
