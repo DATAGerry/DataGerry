@@ -42,8 +42,16 @@ LOGGER = logging.getLogger(__name__)
 #                                               CsvObjectImporter - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CsvObjectImporter(ObjectImporter, CSVContent):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    CsvObjectImporter handles the import of CmdbObjects from CSV files
+
+    It parses CSV content according to a provided configuration and mapping,
+    generates objects compatible with the system's data structure,
+    and resolves references to other existing objects where necessary.
+
+    Extends: ObjectImporter, CSVContent
+    """
+    #pylint: disable=R0917
     def __init__(
             self,
             file=None,
@@ -51,19 +59,42 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
             parser: JsonObjectParser = None,
             objects_manager: ObjectsManager = None,
             request_user: CmdbUser = None):
+        """
+        Initialize the CsvObjectImporter
+
+        Args:
+            file: The CSV file to import
+            config (CsvObjectImporterConfig): Configuration defining the mapping and rules for import
+            parser (JsonObjectParser): Parser instance to handle object parsing logic
+            objects_manager (ObjectsManager): Manager instance to retrieve and handle existing objects
+            request_user (CmdbUser): The user who initiates the import request
+        """
         super().__init__(
-                    file=file,
-                    file_type=self.FILE_TYPE,
-                    config=config,
-                    parser=parser,
-                    objects_manager=objects_manager,
-                    request_user=request_user
-                )
+            file = file,
+            file_type = self.FILE_TYPE,
+            config = config,
+            parser = parser,
+            objects_manager = objects_manager,
+            request_user = request_user
+        )
 
 
+    #pylint: disable=R0914
     def generate_object(self, entry: dict, *args, **kwargs) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Generate an object dictionary from a CSV entry based on the import configuration
+
+        Args:
+            entry (dict): A single row from the CSV file represented as a dictionary
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments. Must include 'fields', a list of available fields for validation
+
+        Raises:
+            ImportRuntimeError: If required field information is missing or cannot be processed
+
+        Returns:
+            dict: A dictionary representing the generated object, ready to be imported into the system
+        """
         try:
             possible_fields: list[dict] = kwargs['fields']
         except (KeyError, IndexError, ValueError) as err:
@@ -100,7 +131,6 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
                      })
 
         for foreign_entry in foreign_entries:
-            LOGGER.debug('[CSV] search for object based on %s', foreign_entry.__dict__)
             try:
                 working_type_id = foreign_entry.get_options()['type_id']
             except (KeyError, IndexError):
@@ -118,9 +148,8 @@ class CsvObjectImporter(ObjectImporter, CSVContent):
                         }
                     }
                 }
-                LOGGER.debug('[CSV] Ref query: %s', query)
+
                 founded_objects: list[CmdbObject] = self.objects_manager.get_objects_by(**query)
-                LOGGER.debug(founded_objects)
 
                 if len(founded_objects) != 1:
                     continue

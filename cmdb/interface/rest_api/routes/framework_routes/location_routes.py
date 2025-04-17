@@ -93,7 +93,7 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
         object_type = types_manager.get_type(location_creation_params['type_id'])
 
         if not object_type:
-            return abort(404, "The Type of the linked Object was not found in the database!")
+            abort(404, "The Type of the linked Object was not found in the database!")
 
         object_type = CmdbType.from_data(object_type)
 
@@ -107,7 +107,7 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
             current_object = objects_manager.get_object(int(params['object_id']))
 
             if not current_object:
-                return abort(404, "The linked Object was not found in the database!")
+                abort(404, "The linked Object was not found in the database!")
 
             current_object = CmdbObject.from_data(current_object)
 
@@ -131,16 +131,16 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
         raise http_err
     except TypesManagerGetError as err:
         LOGGER.error("[insert_cmdb_location] TypesManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the Type of the linked Object from the database!")
+        abort(400, "Failed to retrieve the Type of the linked Object from the database!")
     except ObjectsManagerGetError as err:
         LOGGER.error("[insert_cmdb_location] ObjectsManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the linked Object from the database!")
+        abort(400, "Failed to retrieve the linked Object from the database!")
     except LocationsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_location] LocationsManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Failed to insert the new Location in the database!")
+        abort(400, "Failed to insert the new Location in the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_location] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -177,10 +177,10 @@ def get_cmdb_locations(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except LocationsManagerIterationError as err:
         LOGGER.error("[get_cmdb_locations] LocationsManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Locations from the database!")
+        abort(400, "Failed to retrieve Locations from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_locations] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/tree', methods=['GET', 'HEAD'])
@@ -237,10 +237,10 @@ def get_cmdb_locations_tree(params: CollectionParameters, request_user: CmdbUser
         return api_response.make_response()
     except LocationsManagerIterationError as err:
         LOGGER.error("[get_cmdb_locations] LocationsManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Locations from the database!")
+        abort(400, "Failed to retrieve Locations from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_locations_tree] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:public_id>', methods=['GET'])
@@ -264,17 +264,17 @@ def get_cmdb_location(public_id: int, request_user: CmdbUser):
         requested_location = locations_manager.get_location(public_id)
 
         if not requested_location:
-            return abort(404, f"The Location with ID:{public_id} was not found!")
+            abort(404, f"The Location with ID:{public_id} was not found!")
 
         return DefaultResponse(requested_location).make_response()
     except HTTPException as http_err:
         raise http_err
     except LocationsManagerGetError as err:
         LOGGER.error("[get_cmdb_location] LocationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Location with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Location with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_location] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:object_id>/object', methods=['GET'])
@@ -295,17 +295,17 @@ def get_cmdb_location_for_object(object_id: int, request_user: CmdbUser):
         requested_location = locations_manager.get_location_for_object(object_id)
 
         if not requested_location:
-            return abort(404, f"The Location for Object with ID:{object_id} was not found!")
+            abort(404, f"The Location for Object with ID:{object_id} was not found!")
 
         return DefaultResponse(requested_location).make_response()
     except HTTPException as http_err:
         raise http_err
     except LocationsManagerGetError as err:
         LOGGER.error("[get_cmdb_location_for_object] LocationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Location for Object with ID: {object_id} from the database!")
+        abort(400, f"Failed to retrieve the Location for Object with ID: {object_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:object_id>/parent', methods=['GET'])
@@ -332,15 +332,15 @@ def get_cmdb_location_parent(object_id: int, request_user: CmdbUser):
             parent = locations_manager.get_location(parent_id)
 
             if not parent:
-                return abort(404, f"The parent Location for Object with ID:{object_id} was not found!")
+                abort(404, f"The parent Location for Object with ID:{object_id} was not found!")
 
         return DefaultResponse(parent).make_response()
     except LocationsManagerGetError as err:
         LOGGER.error("[get_cmdb_location_parent] LocationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the parent Location for Object with ID: {object_id} from the database!")
+        abort(400, f"Failed to retrieve the parent Location for Object with ID: {object_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_location_parent] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @location_blueprint.route('/<int:object_id>/children', methods=['GET'])
@@ -372,10 +372,10 @@ def get_cmdb_children(object_id: int, request_user: CmdbUser):
         return DefaultResponse(children).make_response()
     except LocationsManagerGetError as err:
         LOGGER.error("[get_cmdb_location_parent] LocationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve Location for Object with ID: {object_id} from the database!")
+        abort(400, f"Failed to retrieve Location for Object with ID: {object_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_children] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -407,13 +407,13 @@ def update_cmdb_location_for_object(params: dict, request_user: CmdbUser):
         to_update_location = locations_manager.get_location_for_object(object_id)
 
         if not to_update_location:
-            return abort(404, f"The Location for Object with ID:{object_id} was not found!")
+            abort(404, f"The Location for Object with ID:{object_id} was not found!")
 
         if params['name'] == '' or params['name'] is None:
             current_object = objects_manager.get_object(object_id)
 
             if not current_object:
-                return abort(404, "The linked Object was not found in the database!")
+                abort(404, "The linked Object was not found in the database!")
 
             current_object = CmdbObject.from_data(current_object)
             if current_app.cloud_mode:
@@ -436,13 +436,13 @@ def update_cmdb_location_for_object(params: dict, request_user: CmdbUser):
         raise http_err
     except ObjectsManagerGetError as err:
         LOGGER.error("[update_cmdb_location_for_object] ObjectsManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the linked Object from the database!")
+        abort(400, "Failed to retrieve the linked Object from the database!")
     except LocationsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_location_for_object] ObjectsManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to update the Location in the database!")
+        abort(400, "Failed to update the Location in the database!")
     except Exception as err:
         LOGGER.error("[update_cmdb_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -466,7 +466,7 @@ def delete_cmdb_location_for_object(object_id: int, request_user: CmdbUser):
         to_delete_location = locations_manager.get_location_for_object(object_id)
 
         if not to_delete_location:
-            return abort(404, "The Location linked to Object with ID: {object_id} was not found in the database!")
+            abort(404, "The Location linked to Object with ID: {object_id} was not found in the database!")
 
         location_public_id = to_delete_location['public_id']
 
@@ -477,7 +477,7 @@ def delete_cmdb_location_for_object(object_id: int, request_user: CmdbUser):
         raise http_err
     except LocationsManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_location_for_object] LocationsManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Location linked to Object with ID: {object_id} from the database!")
+        abort(400, f"Failed to delete the Location linked to Object with ID: {object_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_location_for_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

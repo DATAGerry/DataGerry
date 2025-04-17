@@ -21,6 +21,7 @@ import logging
 from datetime import datetime, timezone
 from bson import json_util
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import TypesManager
@@ -35,7 +36,6 @@ from cmdb.interface.rest_api.responses import DefaultResponse
 
 from cmdb.errors.manager.types_manager import (
     TypesManagerInsertError,
-    TypesManagerGetError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -49,59 +49,84 @@ LOGGER = logging.getLogger(__name__)
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def add_type(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+    """
+    Adds new CmdbTypes based on uploaded JSON data. Generates new public IDs and creation timestamps for 
+    each imported type, and inserts them into the database
 
-    error_collection = {}
-    upload = request.form.get('uploadFile')
-    new_type_list = json.loads(upload, object_hook=json_util.object_hook)
+    Args:
+        request_user (CmdbUser): The user making the request, used for permission validation.
 
-    for new_type_data in new_type_list:
-        try:
-            new_type_data['public_id'] = types_manager.get_new_type_public_id()
-            new_type_data['creation_time'] = datetime.now(timezone.utc)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            LOGGER.error(err)
-            return abort(400)
+    Returns:
+        Response: A Flask Response object containing an error collection dictionary.
+                  The dictionary maps any type public_id to an error message if the insertion failed.
+    """
+    try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
-        try:
-            type_instance = CmdbType.from_data(new_type_data)
-            types_manager.insert_type(type_instance)
-        except (TypesManagerInsertError, Exception) as err:
-            #TODO: ERROR-FIX
-            error_collection.update({"public_id": new_type_data['public_id'], "message": err})
+        error_collection = {}
+        upload = request.form.get('uploadFile')
+        new_type_list = json.loads(upload, object_hook=json_util.object_hook)
 
-    api_response = DefaultResponse(error_collection)
+        for new_type_data in new_type_list:
+            try:
+                new_type_data['public_id'] = types_manager.get_new_type_public_id()
+                new_type_data['creation_time'] = datetime.now(timezone.utc)
+            except Exception as err:
+                LOGGER.error("[add_type] Exception: %s. Type: %s.", err, type(err), exc_info=True)
+                abort(400)
 
-    return api_response.make_response()
+            try:
+                type_instance = CmdbType.from_data(new_type_data)
+                types_manager.insert_type(type_instance)
+            except (TypesManagerInsertError, Exception) as err:
+                LOGGER.error("[add_type] Exception: %s. Type: %s.", err, type(err), exc_info=True)
+                error_collection.update({"public_id": new_type_data['public_id'], "message": err})
+
+        return DefaultResponse(error_collection).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[add_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while creating Types from imported data!")
 
 
 @importer_type_blueprint.route('/update/', methods=['POST'])
 @insert_request_user
 def update_type(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+    """
+    Updates existing CmdbTypes based on uploaded JSON data. Each type must already exist 
+    otherwise, an error will be recorded. Updates are applied by public ID.
 
-    error_collection = {}
-    upload = request.form.get('uploadFile')
-    data_dump = json.loads(upload, object_hook=json_util.object_hook)
+    Args:
+        request_user (CmdbUser): The user making the request, used for permission and context
 
-    for add_data_dump in data_dump:
-        try:
-            update_type_instance = CmdbType.from_data(add_data_dump)
-        except Exception:
-            #TODO: ERROR-FIX
-            return abort(400)
-        try:
-            types_manager.get_type(update_type_instance.public_id)
-            types_manager.update_type(update_type_instance.public_id, update_type_instance)
-        except (TypesManagerGetError, Exception) as err:
-            #TODO: ERROR-FIX
-            error_collection.update({"public_id": add_data_dump['public_id'], "message": err})
+    Returns:
+        Response: A Flask Response object containing an error collection dictionary.
+                  The dictionary maps public_ids to error messages if the update failed.
+    """
+    try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
-    api_response = DefaultResponse(error_collection)
+        error_collection = {}
+        upload = request.form.get('uploadFile')
+        data_dump = json.loads(upload, object_hook=json_util.object_hook)
 
-    return api_response.make_response()
+        for add_data_dump in data_dump:
+            try:
+                update_type_instance = CmdbType.from_data(add_data_dump)
+            except Exception as err:
+                LOGGER.error("[update_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+                abort(400, "Failed to create a Type instance from the provided data!")
+            try:
+                types_manager.get_type(update_type_instance.public_id)
+                types_manager.update_type(update_type_instance.public_id, update_type_instance)
+            except Exception as err:
+                LOGGER.error("[update_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+                error_collection.update({"public_id": add_data_dump['public_id'], "message": err})
+
+        return DefaultResponse(error_collection).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[update_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while updating Types from imported data!")

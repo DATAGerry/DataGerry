@@ -19,6 +19,7 @@ Implementation of DataGerry general system information API routes
 import sys
 import time
 import logging
+from flask import abort
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import SettingsManager
@@ -43,25 +44,37 @@ system_blueprint = NestedBlueprint(settings_blueprint, url_prefix='/system')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_datagerry_information(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
+    """
+    Gathers and returns basic information about the DataGerry system, including version,
+    database version, runtime, and startup parameters
 
+    Args:
+        request_user (CmdbUser): The user making the request (used for permissions)
+
+    Returns:
+        Response: A Flask Response object containing a dictionary of system information
+    """
     try:
-        db_version = settings_manager.get_all_values_from_section('updater').get('version')
+        settings_manager: SettingsManager = ManagerProvider.get_manager(ManagerType.SETTINGS, request_user)
+
+        try:
+            db_version = settings_manager.get_all_values_from_section('updater').get('version')
+        except Exception as err:
+            LOGGER.error("[get_datagerry_information] Exception: %s. Type: %s", err, type(err), exc_info=True)
+            db_version = 0
+
+        datagerry_infos = {
+            'title': __title__,
+            'version': __version__,
+            'db_version': db_version,
+            'runtime': (time.time() - __runtime__),
+            'starting_parameters': sys.argv
+        }
+
+        return DefaultResponse(datagerry_infos).make_response()
     except Exception as err:
-        LOGGER.warning(err)
-        db_version = 0
-
-    datagerry_infos = {
-        'title': __title__,
-        'version': __version__,
-        'db_version': db_version,
-        'runtime': (time.time() - __runtime__),
-        'starting_parameters': sys.argv
-    }
-
-    return DefaultResponse(datagerry_infos).make_response()
+        LOGGER.error("[get_datagerry_information] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while gathering DataGerry information!")
 
 
 @system_blueprint.route('/config/', methods=['GET'])
@@ -69,47 +82,38 @@ def get_datagerry_information(request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @right_required('base.system.view')
 def get_config_information(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    ssc = SystemConfigReader()
+    """
+    Retrieves and returns the configuration information, including path and properties,
+    of the system configuration file
 
-    config_dict = {
-        'path': ssc.config_file,
-        'properties': []
-    }
+    Args:
+        request_user (CmdbUser): The user making the request (used for permissions)
 
-    for section in ssc.get_sections():
-        section_values = []
+    Returns:
+        Response: A Flask Response object containing the configuration details
+    """
+    try:
+        ssc = SystemConfigReader()
 
-        for key, value in ssc.get_all_values_from_section(section).items():
-            section_values.append([key, value])
-
-        config_dict['properties'].append([section, section_values])
-
-    api_response = DefaultResponse(config_dict)
-
-    if len(config_dict) < 1:
-        return api_response.make_response(204)
-
-    return api_response.make_response()
-
-
-#TODO: ROUTE-FIX (Remove one route)
-@system_blueprint.route('/information/', methods=['GET'])
-@system_blueprint.route('/information', methods=['GET'])
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
-@right_required('base.system.view')
-def get_system_information():
-    """document"""
-    #TODO: DOCUMENT-FIX
-    system_infos = {
-        'platform': sys.platform,
-        'python_interpreter': {
-            'version': sys.version,
-            'path': sys.path
+        config_dict = {
+            'path': ssc.config_file,
+            'properties': []
         }
-    }
 
-    api_response = DefaultResponse(system_infos)
+        for section in ssc.get_sections():
+            section_values = []
 
-    return api_response.make_response()
+            for key, value in ssc.get_all_values_from_section(section).items():
+                section_values.append([key, value])
+
+            config_dict['properties'].append([section, section_values])
+
+        api_response = DefaultResponse(config_dict)
+
+        if len(config_dict) < 1:
+            return api_response.make_response(204)
+
+        return api_response.make_response()
+    except Exception as err:
+        LOGGER.error("[get_config_information] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while gathering DataGerry config information!")

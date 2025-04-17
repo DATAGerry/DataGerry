@@ -89,10 +89,10 @@ def get_cmdb_object_relation_logs(params: CollectionParameters, request_user: Cm
         return api_response.make_response()
     except ObjectRelationLogsManagerIterationError as err:
         LOGGER.error("[get_cmdb_object_relation_logs] %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve ObjectRelationLogs from database!")
+        abort(400, "Failed to retrieve ObjectRelationLogs from database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_relation_logs] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @object_relation_logs_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -122,15 +122,15 @@ def get_cmdb_object_relation_log(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The ObjectRelationLog with ID:{public_id} was not found!")
+        abort(404, f"The ObjectRelationLog with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationLogsManagerGetError as err:
         LOGGER.error("[get_cmdb_object_relation_log] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectRelationLog with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the ObjectRelationLog with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_relation_log] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -163,15 +163,15 @@ def delete_object_relation_log(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The ObjectRelationLog with ID:{public_id} was not found!")
+        abort(404, f"The ObjectRelationLog with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationLogsManagerDeleteError as err:
         LOGGER.error("[delete_object_relation_log] %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the ObjectRelationLog with ID:{public_id}!")
+        abort(400, f"Failed to delete the ObjectRelationLog with ID:{public_id}!")
     except ObjectRelationLogsManagerGetError as err:
         LOGGER.error("[delete_object_relation_log] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectRelationLog ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the ObjectRelationLog ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_object_relation_log] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

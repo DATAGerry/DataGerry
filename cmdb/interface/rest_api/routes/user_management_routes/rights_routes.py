@@ -13,9 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of all API routes for DataGerry Rights
+"""
+import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager import RightsManager
 
@@ -31,6 +34,8 @@ from cmdb.interface.rest_api.responses import GetMultiResponse, GetSingleRespons
 
 from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
+
+LOGGER = logging.getLogger(__name__)
 
 rights_blueprint = APIBlueprint('rights', __name__)
 
@@ -49,10 +54,10 @@ def get_rights(params: CollectionParameters):
     Returns:
         GetMultiResponse: Which includes a IterationResult of the BaseRight.
     """
-    rights_manager = RightsManager(right_tree)
-    body = request.method == 'HEAD'
-
     try:
+        rights_manager = RightsManager(right_tree)
+        body = request.method == 'HEAD'
+
         if params.optional['view'] == 'tree':
             api_response = GetMultiResponse(rights_manager.tree_to_json(right_tree),
                                             total=len(right_tree),
@@ -63,10 +68,11 @@ def get_rights(params: CollectionParameters):
             return api_response.make_response(pagination=False)
 
         iteration_result: IterationResult[BaseRight] = rights_manager.iterate_rights(
-                                                                            limit=params.limit,
-                                                                            skip=params.skip,
-                                                                            sort=params.sort,
-                                                                            order=params.order)
+                                                                        limit = params.limit,
+                                                                        skip = params.skip,
+                                                                        sort = params.sort,
+                                                                        order = params.order
+                                                                      )
 
         rights = [BaseRight.to_dict(type) for type in iteration_result.results]
 
@@ -77,55 +83,57 @@ def get_rights(params: CollectionParameters):
                                         body=request.method == 'HEAD')
 
         return api_response.make_response()
-    except BaseManagerIterationError:
-        #TODO: ERROR-FIX
-        return abort(400)
-    except BaseManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
+    except Exception as err:
+        LOGGER.error("[get_rights] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving DataGerry Rights!")
 
 
 @rights_blueprint.route('/<string:name>', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_right(name: str):
     """
-    HTTP `GET`/`HEAD` route for a single right resource.
+    HTTP `GET`/`HEAD` route for a single right resource
 
     Args:
-        name (str): Name of the right.
-
-    Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
+        name (str): Name of the right
 
     Returns:
-        GetSingleResponse: Which includes the json data of a BaseRight.
+        GetSingleResponse: Which includes the json data of a BaseRight
     """
-    rights_manager: RightsManager = RightsManager(right_tree)
-
     try:
+        rights_manager: RightsManager = RightsManager(right_tree)
+
         right = rights_manager.get_right(name)
-    except BaseManagerGetError:
-        #TODO: ERROR-FIX
-        return abort(404)
 
-    api_response = GetSingleResponse(BaseRight.to_dict(right), body=request.method == 'HEAD')
+        if not right:
+            abort(404, f"Right with name: {name} was not found in the database!")
 
-    return api_response.make_response()
+        return GetSingleResponse(BaseRight.to_dict(right), body=request.method == 'HEAD').make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except BaseManagerGetError as err:
+        # TODO: ERROR-FIX (RightsManager specific exception required)
+        LOGGER.error("[get_right] BaseManagerGetError: %s", err, exc_info=True)
+        abort(500, f"Failed to retrieve the Right with name: {name}!")
+    except Exception as err:
+        LOGGER.error("[get_right] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while retrieving Right with name: {name}!")
 
 
 @rights_blueprint.route('/levels', methods=['GET', 'HEAD'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 def get_levels():
     """
-    HTTP `GET`/`HEAD` route for a static collection of levels.
+    HTTP `GET`/`HEAD` route for a static collection of levels
 
     Returns:
-        GetSingleResponse: Which includes a levels as enum.
+        GetSingleResponse: Which includes a levels as enum
 
     Notes:
-        Calling the route over HTTP HEAD method will result in an empty body.
+        Calling the route over HTTP HEAD method will result in an empty body
     """
-
-    api_response = GetSingleResponse(NAME_TO_LEVEL, body=request.method == 'HEAD')
-
-    return api_response.make_response()
+    try:
+        return GetSingleResponse(NAME_TO_LEVEL, body=request.method == 'HEAD').make_response()
+    except Exception as err:
+        LOGGER.error("[get_levels] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while processing Right levels!")

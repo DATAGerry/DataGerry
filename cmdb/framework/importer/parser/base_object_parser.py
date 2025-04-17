@@ -44,7 +44,7 @@ class BaseObjectParser(BaseParser):
         super().__init__(parser_config)
 
 
-    #TODO: DOCUMENT-FIX (add type annotation for "file")
+    #TODO: ANNOTATION-FIX (add type annotation for "file")
     def parse(self, file) -> ObjectParserResponse:
         """
         Parses the given file

@@ -30,9 +30,14 @@ class LocationNode:
     """
     Represents a node in the location tree
     """
-    #TODO: DOCUMENT-FIX (Document whole class)
     #TODO: REFACTOR-FIX (Specific errors)
     def __init__(self, params: dict):
+        """
+        Initialize a LocationNode
+
+        Args:
+            params (dict): Dictionary containing location information
+        """
         self.public_id: int = params['public_id']
         self.name: str = params['name']
         self.parent: int = params['parent']
@@ -41,16 +46,16 @@ class LocationNode:
         self.children: list[LocationNode] = []
 
 
-    def get_children(self, public_id:int, locations_list: list[dict]):
+    def get_children(self, public_id:int, locations_list: list[dict]) -> list['LocationNode']:
         """
-        Gets recursively all children for a location
+        Recursively retrieve all children for a given location
 
         Args:
-            public_id (int): public:id of the location
-            locations_list (list): list of locations from database
+            public_id (int): The public ID of the parent location
+            locations_list (list[dict]): List of all location entries
 
         Returns:
-            list[LocationNode]: returns all children for the given public_id
+            list[LocationNode]: A list of child LocationNode instances
         """
         sorted_children: list["LocationNode"] = []
         filtered_list: list[dict] = []
@@ -65,17 +70,27 @@ class LocationNode:
             if len(filtered_list) > 0:
                 for child in sorted_children:
                     child.children = self.get_children(child.get_public_id(), filtered_list)
+
         return sorted_children
 
 
-    def get_public_id(self):
+    def get_public_id(self) -> int:
         """
-        Returns the public_id of this LocationNode
+        Retrieve the public ID of this LocationNode
+
+        Returns:
+            int: The public ID of the node
         """
         return self.public_id
 
 
     def __repr__(self) -> str:
+        """
+        Return a string representation of the LocationNode instance
+
+        Returns:
+            str: String representation of the node
+        """
         return f"[LocationNode => public_id: {self.public_id}, \
                                   name: {self.name}, \
                                   parent: {self.parent}, \
@@ -86,8 +101,15 @@ class LocationNode:
 
     @classmethod
     def to_json(cls, instance: "LocationNode") -> dict:
-        """Convert a LocationNode instance to json conform data"""
+        """
+        Convert a LocationNode instance into a JSON-serializable dictionary
 
+        Args:
+            instance (LocationNode): The LocationNode instance to convert
+
+        Returns:
+            dict: JSON-compatible dictionary representation of the node
+        """
         json_data = {
             'public_id': instance.public_id,
             'name': instance.name,

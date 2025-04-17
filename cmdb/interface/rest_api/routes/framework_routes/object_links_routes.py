@@ -69,7 +69,7 @@ def create_cmdb_object_link(request_user: CmdbUser):
             primary_id = object_link_creation_data['primary']
             secondary_id = object_link_creation_data['secondary']
         except KeyError:
-            return abort(400, "The 'primary' or 'secondary' key does not exist in the request data!")
+            abort(400, "The 'primary' or 'secondary' key does not exist in the request data!")
 
         object_links_manager: ObjectLinksManager = ManagerProvider.get_manager(ManagerType.OBJECT_LINKS,
                                                                                request_user)
@@ -78,7 +78,7 @@ def create_cmdb_object_link(request_user: CmdbUser):
         object_link_exists = object_links_manager.check_link_exists(object_link_creation_data)
 
         if object_link_exists:
-            return abort(400, f"The ObjectLink between {primary_id} and {secondary_id} already exists!")
+            abort(400, f"The ObjectLink between {primary_id} and {secondary_id} already exists!")
 
 
         result_id = object_links_manager.insert_object_link(object_link_creation_data)
@@ -90,21 +90,21 @@ def create_cmdb_object_link(request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, "Could not retrieve the created ObjectLink from the database!")
+        abort(404, "Could not retrieve the created ObjectLink from the database!")
     except HTTPException as http_err:
         raise http_err
     except ObjectLinksManagerInsertError as err:
         LOGGER.error("[create_cmdb_object_link] %s", err, exc_info=True)
-        return abort(400, "Could not create the ObjectLink in the database!")
+        abort(400, "Could not create the ObjectLink in the database!")
     except ObjectLinksManagerGetError as err:
         LOGGER.error("[delete_cmdb_object_link] %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created ObjectLink from the database!")
+        abort(400, "Failed to retrieve the created ObjectLink from the database!")
     except ObjectLinksManagerGetObjectError as err:
         LOGGER.error("[create_cmdb_object_link] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve an Object from the database which should be linked!")
+        abort(404, "Could not retrieve an Object from the database which should be linked!")
     except Exception as err:
         LOGGER.error("[create_cmdb_object_link] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -142,10 +142,10 @@ def get_cmdb_object_links(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except ObjectLinksManagerIterationError as err:
         LOGGER.error("[get_cmdb_object_links] %s", err, exc_info=True)
-        return abort(400, "Failed to iterate the ObjectLinks!")
+        abort(400, "Failed to iterate the ObjectLinks!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_links] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -178,15 +178,15 @@ def delete_cmdb_object_link(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"ObjectLink with ID:{public_id} not found!")
+        abort(404, f"ObjectLink with ID:{public_id} not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectLinksManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_object_link] %s", err, exc_info=True)
-        return abort(400, f"Could not delete the ObjectLink with ID:{public_id}!")
+        abort(400, f"Could not delete the ObjectLink with ID:{public_id}!")
     except ObjectLinksManagerGetError as err:
         LOGGER.error("[delete_cmdb_object_link] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectLink with ID:{public_id}  which should be deleted!")
+        abort(400, f"Failed to retrieve the ObjectLink with ID:{public_id}  which should be deleted!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_object_link] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

@@ -86,7 +86,7 @@ def get_file_list(params: CollectionParameters, request_user: CmdbUser):
         api_response = GetMultiResponse(output.result, total=output.total, params=params, url=request.url)
     except MediaFileManagerGetError:
         #TODO: ERROR-FIX
-        return abort(404, "Could not retrive file list!")
+        abort(404, "Could not retrive file list!")
 
     return api_response.make_response()
 
@@ -154,7 +154,7 @@ def add_new_file(request_user: CmdbUser):
         result = media_files_manager.insert_file(data=file, metadata=metadata)
     except (MediaFileManagerInsertError, MediaFileManagerGetError):
         #TODO: ERROR-FIX
-        return abort(500)
+        abort(500)
 
     api_response = InsertSingleResponse(raw=result, result_id=result['public_id'])
 
@@ -219,7 +219,7 @@ def update_file(request_user: CmdbUser):
         media_files_manager.update_file(data)
     except MediaFileManagerUpdateError:
         #TODO: ERROR-FIX
-        return abort(500)
+        abort(500)
 
     api_response = DefaultResponse(data)
 
@@ -257,7 +257,7 @@ def get_file(filename: str, request_user: CmdbUser):
             result = None
     except MediaFileManagerGetError:
         #TODO: ERROR-FIX
-        return abort(404, f"Could not retrieve file with filename: {filename}")
+        abort(404, f"Could not retrieve file with filename: {filename}")
 
     api_response = DefaultResponse(result)
 
@@ -290,7 +290,7 @@ def download_file(filename: str, request_user: CmdbUser):
         result = media_files_manager.get_file(metadata=filter_metadata, blob=True)
     except MediaFileManagerGetError:
         #TODO: ERROR-FIX
-        return abort(500)
+        abort(500)
 
     return Response(
         result,
@@ -333,7 +333,7 @@ def delete_file(public_id: int, request_user: CmdbUser):
     except MediaFileManagerDeleteError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[delete_file] MediaFileManagerDeleteError: %s", err)
-        return abort(404)
+        abort(404)
 
     api_response = DefaultResponse(file_to_delete)
 

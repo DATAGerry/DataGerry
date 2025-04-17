@@ -86,6 +86,7 @@ class CmdbWebhookEvent(CmdbDAO):
 
 # ---------------------------------------------------- CONSTRUCTOR --------------------------------------------------- #
 
+    #pylint: disable=R0913, R0917
     def __init__(
             self,
             event_time,

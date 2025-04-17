@@ -47,7 +47,7 @@ class CmdbObjectLog(CmdbMetaLog):
         'user_name': {
             'type': 'string',
             'required': True,
-            'regex': r'(\w+)-*(\w)([\w-]*)'  # kebab case validation,
+            'regex': r'(\w+)-*(\w)([\w-]*)'  # kebab case validation
         },
         'render_state': {
             'type': 'string'
@@ -75,8 +75,7 @@ class CmdbObjectLog(CmdbMetaLog):
         'action_name': {
             'type': 'string',
             'required': True
-        },
-
+        }
     }
 
     UNKNOWN_USER_STRING = 'Unknown'

@@ -19,6 +19,7 @@ Implementation of all API routes for Search requests
 import json
 import logging
 from flask import request, abort
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import QuickSearchPipelineBuilder
@@ -43,84 +44,109 @@ search_blueprint = APIBlueprint('search_rest', __name__, url_prefix='/search')
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-@search_blueprint.route('/quick/count', methods=['GET'])
 @search_blueprint.route('/quick/count/', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @search_blueprint.protect(auth=True)
 def quick_search_result_counter(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+    """
+    Aggregates and returns quick search result counts (active, inactive, total) for the given user
 
-    search_term = request.args.get('searchValue', SearcherFramework.DEFAULT_REGEX, str)
-    builder = QuickSearchPipelineBuilder()
-    only_active = _fetch_only_active_objs()
-    pipeline: list[dict] = builder.build(search_term=search_term,
-                                       user=request_user,
-                                       permission=AccessControlPermission.READ,
-                                       active_flag=only_active)
+    Args:
+        request_user (CmdbUser): The user making the request. Used for permission and access control
 
+    Returns:
+        Response: A Flask Response containing the quick search result counts
+    """
     try:
-        result = list(objects_manager.aggregate_objects(pipeline=pipeline))
-    except ObjectsManagerIterationError as err:
-        LOGGER.error('[Search count]: %s',err)
-        return abort(400)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
-    if len(result) > 0:
-        return DefaultResponse(result[0]).make_response()
+        search_term = request.args.get('searchValue', SearcherFramework.DEFAULT_REGEX, str)
+        builder = QuickSearchPipelineBuilder()
+        only_active = _fetch_only_active_objs()
+        pipeline: list[dict] = builder.build(search_term=search_term,
+                                        user=request_user,
+                                        permission=AccessControlPermission.READ,
+                                        active_flag=only_active)
 
-    return DefaultResponse({'active': 0, 'inactive': 0, 'total': 0}).make_response()
+        try:
+            result = list(objects_manager.aggregate_objects(pipeline=pipeline))
+        except ObjectsManagerIterationError as err:
+            LOGGER.error('[quick_search_result_counter] ObjectsManagerIterationError: %s',err, exc_info=True)
+            abort(400, "Failed to aggregate Objects for quick search result")
+
+        if len(result) > 0:
+            return DefaultResponse(result[0]).make_response()
+
+        return DefaultResponse({'active': 0, 'inactive': 0, 'total': 0}).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[export_cmdb_types_by_ids] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while processing quick search results!")
 
 
 @search_blueprint.route('/', methods=['GET', 'POST'])
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
 @insert_request_user
 def search_framework(request_user: CmdbUser):
-    """document"""
-    #TODO: DOCUMENT-FIX
-    objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+    """
+    Processes a search request (GET or POST) using the SearcherFramework, applying filters, pagination, and 
+    optional reference resolution
 
-    try:
-        limit = request.args.get('limit', SearcherFramework.DEFAULT_LIMIT, int)
-        skip = request.args.get('skip', 0, int)
-        only_active = _fetch_only_active_objs()
-        search_params: dict = request.args.get('query') or '{}'
-        resolve_object_references: bool = request.args.get('resolve', False)
-    except ValueError:
-        return abort(400, "Could not retrieve the parameters from the request!")
+    Args:
+        request_user (CmdbUser): The user making the request, used for permission checks and data access
 
+    Returns:
+        Response: A Flask Response object containing the search results (list of objects) or an empty list 
+                  with HTTP 204 if an error occurs during search aggregation
+    """
     try:
-        if request.method == 'GET':
-            search_parameters = json.loads(search_params)
-        elif request.method == 'POST':
-            search_params = json.loads(request.data)
-            search_parameters = SearchParam.from_request(search_params)
-        else:
-            return abort(405, f"Method: {request.method} not allowed!")
+        objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+
+        try:
+            limit = request.args.get('limit', SearcherFramework.DEFAULT_LIMIT, int)
+            skip = request.args.get('skip', 0, int)
+            only_active = _fetch_only_active_objs()
+            search_params: dict = request.args.get('query') or '{}'
+            resolve_object_references: bool = request.args.get('resolve', False)
+        except ValueError:
+            abort(400, "Could not retrieve the parameters from the request!")
+
+        try:
+            if request.method == 'GET':
+                search_parameters = json.loads(search_params)
+            elif request.method == 'POST':
+                search_params = json.loads(request.data)
+                search_parameters = SearchParam.from_request(search_params)
+            else:
+                abort(405, f"Method: {request.method} not allowed!")
+        except Exception as err:
+            LOGGER.error("[search_framework] Exception: %s. Type: %s", err, type(err), exc_info=True)
+            abort(400, "As unexpected error occured while processing the search request!")
+
+        try:
+            searcher = SearcherFramework(objects_manager)
+            builder = SearchPipelineBuilder()
+
+            query: list[dict] = builder.build(search_parameters,
+                                            objects_manager,
+                                            user=request_user,
+                                            permission=AccessControlPermission.READ,
+                                            active_flag=only_active)
+
+            result = searcher.aggregate(pipeline=query, request_user=request_user, limit=limit, skip=skip,
+                                        resolve=resolve_object_references, active=only_active)
+
+            return DefaultResponse(result).make_response()
+        except Exception as err:
+            LOGGER.error("[search_framework]: Exception: %s, Type: %s",err, type(err), exc_info=True)
+            return DefaultResponse([]).make_response(204)
+    except HTTPException as http_err:
+        raise http_err
     except Exception as err:
-        LOGGER.error('[search_framework]: %s', err)
-        return abort(400, err)
-
-    try:
-        searcher = SearcherFramework(objects_manager)
-        builder = SearchPipelineBuilder()
-
-        query: list[dict] = builder.build(search_parameters,
-                                        objects_manager,
-                                        user=request_user,
-                                        permission=AccessControlPermission.READ,
-                                        active_flag=only_active)
-
-        result = searcher.aggregate(pipeline=query, request_user=request_user, limit=limit, skip=skip,
-                                    resolve=resolve_object_references, active=only_active)
-    except Exception as err:
-        LOGGER.error("[search_framework]: Exception: %s, Type: %s",err, type(err))
-        return DefaultResponse([]).make_response(204)
-
-    api_response = DefaultResponse(result)
-
-    return api_response.make_response()
+        LOGGER.error("[search_framework] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while processing the search request!")
 
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 

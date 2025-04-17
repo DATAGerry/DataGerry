@@ -94,18 +94,18 @@ def insert_cmdb_user_group(data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, "Could not retrieve the created UserGroup from the database!")
+        abort(404, "Could not retrieve the created UserGroup from the database!")
     except HTTPException as http_err:
         raise http_err
     except GroupsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, "Failed to insert the new UserGroup in the database!")
+        abort(400, "Failed to insert the new UserGroup in the database!")
     except GroupsManagerGetError as err:
         LOGGER.error("[insert_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created UserGroup from the database!")
+        abort(400, "Failed to retrieve the created UserGroup from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -141,10 +141,10 @@ def get_cmdb_user_groups(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except GroupsManagerIterationError as err:
         LOGGER.error("[get_cmdb_user_groups] %s", err, exc_info=True)
-        return abort(400, "Failed to iterate the UserGroups!")
+        abort(400, "Failed to iterate the UserGroups!")
     except Exception as err:
         LOGGER.error("[get_cmdb_user_groups] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @groups_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -171,15 +171,15 @@ def get_cmdb_user_group(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The UserGroup with ID:{public_id} was not found!")
+        abort(404, f"The UserGroup with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except GroupsManagerGetError as err:
         LOGGER.error("[get_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the UserGroup with ID:{public_id}!")
+        abort(400, f"Failed to retrieve the UserGroup with ID:{public_id}!")
     except Exception as err:
         LOGGER.error("[get_cmdb_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
@@ -216,18 +216,18 @@ def update_cmdb_user_group(public_id: int, data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The UserGroup with ID:{public_id} was not found!")
+        abort(404, f"The UserGroup with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except GroupsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, f"User group with public_id:{public_id} could not be updated!")
+        abort(400, f"User group with public_id:{public_id} could not be updated!")
     except GroupsManagerGetError as err:
         LOGGER.error("[update_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the UserGroup with ID:{public_id}!")
+        abort(400, f"Failed to retrieve the UserGroup with ID:{public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -269,7 +269,7 @@ def delete_cmdb_user_group(public_id: int, params: GroupDeletionParameters, requ
                                     users_manager.update_user(user.public_id, user)
                                 except UsersManagerUpdateError as err:
                                     LOGGER.error("[delete_cmdb_user_group]  %s", err)
-                                    return abort(400, f"Could not move user: {user.public_id} to \
+                                    abort(400, f"Could not move user: {user.public_id} to \
                                                         group: {params.group_id}")
 
                     if params.action == GroupDeleteMode.DELETE.value:
@@ -278,7 +278,7 @@ def delete_cmdb_user_group(public_id: int, params: GroupDeletionParameters, requ
                                 users_manager.delete_user(user.public_id)
                             except UsersManagerDeleteError as err:
                                 LOGGER.error("[delete_user_group]  %s", err)
-                                return abort(400, f'Could not delete user with ID: {user.public_id} !')
+                                abort(400, f'Could not delete user with ID: {user.public_id} !')
 
             groups_manager.delete_group(public_id)
 
@@ -286,18 +286,18 @@ def delete_cmdb_user_group(public_id: int, params: GroupDeletionParameters, requ
 
             return api_response.make_response()
 
-        return abort(404, f"The UserGroup with ID:{public_id} was not found!")
+        abort(404, f"The UserGroup with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except UsersManagerGetError as err:
         LOGGER.error("[delete_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve users which are in the UserGroup with ID: {public_id}!")
+        abort(400, f"Failed to retrieve users which are in the UserGroup with ID: {public_id}!")
     except GroupsManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the UserGroup with ID: {public_id}!")
+        abort(400, f"Failed to delete the UserGroup with ID: {public_id}!")
     except GroupsManagerGetError as err:
         LOGGER.error("[update_cmdb_user_group] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the UserGroup with ID:{public_id}!")
+        abort(400, f"Failed to retrieve the UserGroup with ID:{public_id}!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_user_group] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
