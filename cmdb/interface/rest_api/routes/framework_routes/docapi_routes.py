@@ -91,10 +91,10 @@ def create_template(request_user: CmdbUser):
     #TODO: ERROR-FIX (Catch proper exceptions)
     except DocapiTemplatesManagerInsertError as err:
         LOGGER.error("[create_template] %s", err, exc_info=True)
-        return abort(400, "Could not insert the new template in the database!")
+        abort(400, "Could not insert the new template in the database!")
     except Exception as err:
         LOGGER.error("[create_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to insert the template!")
+        abort(500, "An error occured when trying to insert the template!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -133,10 +133,10 @@ def get_templates(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except DocapiTemplatesManagerIterationError as err:
         LOGGER.error("[get_templates] %s", err, exc_info=True)
-        return abort(400, "Could not retrieve templates from database!")
+        abort(400, "Could not retrieve templates from database!")
     except Exception as err:
         LOGGER.error("[get_templates] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to retrieve the templates!")
+        abort(500, "An error occured when trying to retrieve the templates!")
 
 
 #TODO: ROUTE-FIX (Remove one route)
@@ -168,10 +168,10 @@ def get_template_list_filtered(searchfilter: str, request_user: CmdbUser):
         return api_response.make_response()
     except DocapiTemplatesManagerGetError as err:
         LOGGER.error("[get_template_list_filtered] %s", err, exc_info=True)
-        return abort(404, f"Could not retrieve template list for filter: {searchfilter}")
+        abort(404, f"Could not retrieve template list for filter: {searchfilter}")
     except Exception as err:
         LOGGER.error("[get_template_list_filtered] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to retrieve the templates!")
+        abort(500, "An error occured when trying to retrieve the templates!")
 
 
 #TODO: ROUTE-FIX (Remove one route)
@@ -202,10 +202,10 @@ def get_template(public_id: int, request_user: CmdbUser):
         return api_response.make_response()
     except DocapiTemplatesManagerGetError as err:
         LOGGER.error("[get_template] %s", err, exc_info=True)
-        return abort(404, "Could not retrieve the  requested template!")
+        abort(404, "Could not retrieve the  requested template!")
     except Exception as err:
         LOGGER.error("[get_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to retrieve the template!")
+        abort(500, "An error occured when trying to retrieve the template!")
 
 
 #TODO: ROUTE-FIX (Remove one route)
@@ -236,10 +236,10 @@ def get_template_by_name(name: str, request_user: CmdbUser):
         return api_response.make_response()
     except DocapiTemplatesManagerGetError as err:
         LOGGER.error("[get_template_by_name] %s", err, exc_info=True)
-        return abort(404, f"Could not retrieve the template with name:{name}!")
+        abort(404, f"Could not retrieve the template with name:{name}!")
     except Exception as err:
         LOGGER.error("[get_template_by_name] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, f"An error occured when trying to retrieve the template with name:{name}!")
+        abort(500, f"An error occured when trying to retrieve the template with name:{name}!")
 
 
 #TODO: ROUTE-FIX (Remove one route)
@@ -278,7 +278,7 @@ def render_object_template(public_id: int, object_id: int, request_user: CmdbUse
         )
     except Exception as err:
         LOGGER.error("[render_object_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to render the template!")
+        abort(500, "An error occured when trying to render the template!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -315,10 +315,10 @@ def update_template(request_user: CmdbUser):
         return api_response.make_response()
     except DocapiTemplatesManagerUpdateError as err:
         LOGGER.error("[update_template] %s", err, exc_info=True)
-        return abort(400, "Could not update the template!")
+        abort(400, "Could not update the template!")
     except Exception as err:
         LOGGER.error("[update_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to update the template!")
+        abort(500, "An error occured when trying to update the template!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -350,7 +350,7 @@ def delete_template(public_id: int, request_user: CmdbUser):
         return api_response.make_response()
     except DocapiTemplatesManagerDeleteError as err:
         LOGGER.error("[delete_template] %s", err, exc_info=True)
-        return abort(400, "Could not delete the template!")
+        abort(400, "Could not delete the template!")
     except Exception as err:
         LOGGER.error("[delete_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "An error occured when trying to delete the template!")
+        abort(500, "An error occured when trying to delete the template!")

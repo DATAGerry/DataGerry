@@ -73,7 +73,7 @@ def create_webhook(params: dict, request_user: CmdbUser):
     except BaseManagerInsertError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[create_webhook] %s", err)
-        return abort(400, "Could not create the Webhook!")
+        abort(400, "Could not create the Webhook!")
     except Exception as err:
         LOGGER.debug("[create_webhook] Exception: %s, Type: %s", err, type(err))
 
@@ -101,7 +101,7 @@ def get_webhook(public_id: int, request_user: CmdbUser):
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_webhook] %s", err)
-        return abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
+        abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
 
     api_response = DefaultResponse(requested_webhook)
 
@@ -137,7 +137,7 @@ def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
     except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_webhooks] %s", err)
-        return abort(400, "Could not retrieve CmdbWebhooks!")
+        abort(400, "Could not retrieve CmdbWebhooks!")
 
     return api_response.make_response()
 
@@ -175,16 +175,16 @@ def update_webhook(params: dict, request_user: CmdbUser):
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[update_webhook] %s", err)
-        return abort(400, f"Could not retrieve CmdbWebhook with ID: {params['public_id']}!")
+        abort(400, f"Could not retrieve CmdbWebhook with ID: {params['public_id']}!")
     except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[update_webhook] %s", err)
-        return abort(400, f"Could not update CmdbWebhook with ID: {params['public_id']}!")
+        abort(400, f"Could not update CmdbWebhook with ID: {params['public_id']}!")
     except NoDocumentFoundError:
-        return abort(404, "Webhook not found!")
+        abort(404, "Webhook not found!")
     except Exception as err:
         LOGGER.debug("[update_webhook] Exception: %s, Type: %s", err, type(err))
-        return abort(400, "Something went wrong during updating the Webhook!")
+        abort(400, "Something went wrong during updating the Webhook!")
 
     api_response = UpdateSingleResponse(current_webhook.__dict__)
 
@@ -209,18 +209,18 @@ def delete_webhook(public_id: int, request_user: CmdbUser):
         webhook_instance: CmdbWebhook = webhooks_manager.get_webhook(public_id)
 
         if not webhook_instance:
-            return abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
+            abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
 
         #TODO: REFACTOR-FIX
         ack: bool = webhooks_manager.delete({'public_id':public_id})
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[delete_webhook] %s", err)
-        return abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
+        abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
     except BaseManagerDeleteError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[delete_webhook] %s", err)
-        return abort(400, f"Could not delete Webhook with ID: {public_id}!")
+        abort(400, f"Could not delete Webhook with ID: {public_id}!")
 
     api_response = DefaultResponse(ack)
 

@@ -40,27 +40,57 @@ LOGGER = logging.getLogger(__name__)
 #                                              ExcelObjectImporter - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ExcelObjectImporter(ObjectImporter, XLSXContent):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    ExcelObjectImporter handles the import of objects from Excel (.xlsx) files.
+
+    It reads the Excel content based on a given configuration and mapping,
+    generates objects compatible with the system's structure,
+    and prepares them for insertion.
+
+    Extends: ObjectImporter, XLSXContent
+    """
+    #pylint: disable=R0917
     def __init__(self,
                  file=None,
                  config: ExcelObjectImporterConfig = None,
                  parser: JsonObjectParser = None,
                  objects_manager: ObjectsManager = None,
                  request_user: CmdbUser = None):
+        """
+        Initialize the ExcelObjectImporter
+
+        Args:
+            file: The Excel file to import
+            config (ExcelObjectImporterConfig): Configuration defining mappings and rules for import
+            parser (JsonObjectParser): Parser instance to handle object parsing logic
+            objects_manager (ObjectsManager): Manager instance to retrieve and interact with existing objects
+            request_user (CmdbUser): The user initiating the import
+        """
         super().__init__(
-                    file=file,
-                    file_type=self.FILE_TYPE,
-                    config=config,
-                    parser=parser,
-                    objects_manager=objects_manager,
-                    request_user=request_user
-                )
+            file = file,
+            file_type = self.FILE_TYPE,
+            config = config,
+            parser = parser,
+            objects_manager = objects_manager,
+            request_user = request_user
+        )
 
 
     def generate_object(self, entry: dict, *args, **kwargs) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Generate an object dictionary from an Excel row entry based on the import configuration
+
+        Args:
+            entry (dict): A single row from the Excel file represented as a dictionary
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments. Must include 'fields', a list of available fields for validation
+
+        Raises:
+            ImportRuntimeError: If required fields are missing or processing fails
+
+        Returns:
+            dict: A dictionary representing the generated object ready for system import
+        """
         try:
             possible_fields: list[dict] = kwargs['fields']
         except (KeyError, IndexError, ValueError) as err:
@@ -84,7 +114,6 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
             working_object.update({property_entry.get_name(): entry.get(property_entry.get_value())})
 
         # Improve insert object
-        # @NaN added property_entries to this function, needs check
         improve_object = ImproveObject(entry, property_entries, field_entries, possible_fields)
         entry = improve_object.improve_entry()
 
@@ -101,8 +130,17 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
 
 
     def start_import(self) -> ImporterObjectResponse:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Start the import process by parsing the provided Excel file
+
+        Parses the file content into structured entries and prepares an import response
+
+        Raises:
+            ImportRuntimeError: If the parsing fails
+
+        Returns:
+            ImporterObjectResponse: Response indicating the result of the import preparation
+        """
         try:
             parsed_response: ExcelObjectParserResponse = self.parser.parse(self.file)
         except ParserRuntimeError as err:
@@ -110,4 +148,4 @@ class ExcelObjectImporter(ObjectImporter, XLSXContent):
 
         LOGGER.debug(parsed_response)
 
-        return ImporterObjectResponse('Nope')
+        return ImporterObjectResponse('Excel Object Import')

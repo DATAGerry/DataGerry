@@ -93,10 +93,10 @@ def create_report(params: dict, request_user: CmdbUser):
     except BaseManagerInsertError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[create_report] %s", err)
-        return abort(400, "Could not create the report!")
+        abort(400, "Could not create the report!")
     except Exception as err:
         LOGGER.debug("[create_report] Exception: %s, Type: %s", err, type(err))
-        return abort(400, "Could not create the report!")
+        abort(400, "Could not create the report!")
 
     api_response = DefaultResponse(new_report_id)
 
@@ -122,7 +122,7 @@ def get_report(public_id: int, request_user: CmdbUser):
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_report] %s", err)
-        return abort(400, f"Could not retrieve Report with ID: {public_id}!")
+        abort(400, f"Could not retrieve Report with ID: {public_id}!")
 
     api_response = DefaultResponse(requested_report)
 
@@ -158,7 +158,7 @@ def get_reports(params: CollectionParameters, request_user: CmdbUser):
     except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_reports] %s", err)
-        return abort(400, "Could not retrieve CmdbReports!")
+        abort(400, "Could not retrieve CmdbReports!")
 
     return api_response.make_response()
 
@@ -179,10 +179,10 @@ def count_reports_of_type(public_id: int, request_user: CmdbUser):
         api_response = DefaultResponse(reports_count)
     except BaseManagerGetError:
         #TODO: ERROR-FIX
-        return abort(404)
+        abort(404)
     except Exception:
         #TODO: ERROR-FIX
-        return abort(500)
+        abort(500)
 
     return api_response.make_response()
 
@@ -272,16 +272,16 @@ def update_report(params: dict, request_user: CmdbUser):
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[update_report] %s", err)
-        return abort(400, f"Could not retrieve CmdbReport with ID: {params['public_id']}!")
+        abort(400, f"Could not retrieve CmdbReport with ID: {params['public_id']}!")
     except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[update_report] %s", err)
-        return abort(400, f"Could not update CmdbReport with ID: {params['public_id']}!")
+        abort(400, f"Could not update CmdbReport with ID: {params['public_id']}!")
     except NoDocumentFoundError:
-        return abort(404, "Report not found!")
+        abort(404, "Report not found!")
     except Exception as err:
         LOGGER.debug("[update_report] Exception: %s, Type: %s", err, type(err))
-        return abort(400, "Something went wrong during updating the report!")
+        abort(400, "Something went wrong during updating the report!")
 
     api_response = UpdateSingleResponse(current_report.__dict__)
 
@@ -306,22 +306,22 @@ def delete_report(public_id: int, request_user: CmdbUser):
         report_instance: CmdbReport = reports_manager.get_report(public_id)
 
         if not report_instance:
-            return abort(400, f"Could not retrieve Report with ID: {public_id}!")
+            abort(400, f"Could not retrieve Report with ID: {public_id}!")
 
         #TODO: REFACTOR-FIX
         ack: bool = reports_manager.delete({'public_id':public_id})
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
         LOGGER.error("[delete_report] %s", err)
-        return abort(400, f"Could not retrieve Report with ID: {public_id}!")
+        abort(400, f"Could not retrieve Report with ID: {public_id}!")
     except BaseManagerDeleteError as err:
         #TODO: ERROR-FIX
         LOGGER.error("[delete_report] %s", err)
-        return abort(400, f"Could not delete Report with ID: {public_id}!")
+        abort(400, f"Could not delete Report with ID: {public_id}!")
     except Exception as err:
         #TODO: ERROR-FIX
         LOGGER.error("[delete_report] Exception: %s", err)
-        return abort(500, "An internal server error occured!")
+        abort(500, "An internal server error occured!")
 
     api_response = DefaultResponse(ack)
 

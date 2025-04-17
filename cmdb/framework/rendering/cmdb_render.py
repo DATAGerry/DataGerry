@@ -60,19 +60,29 @@ LOGGER = logging.getLogger(__name__)
 #                                                  CmdbRender - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbRender:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Responsible for rendering CMDB object and type data into a specified format
+    """
 
     AUTHOR_ANONYMOUS_NAME = 'unknown'
 
+    # pylint: disable=R0917
     def __init__(self,
                  object_instance: CmdbObject,
                  type_instance: CmdbType,
                  render_user: CmdbUser,
                  ref_render=False,
                  dbm: MongoDatabaseManager = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initializes CmdbRender
+
+        Args:
+            object_instance (CmdbObject): The CMDB object to render
+            type_instance (CmdbType): The CMDB type to render
+            render_user (CmdbUser): The user who is requesting the render
+            ref_render (bool, optional): Flag to enable reference rendering. Defaults to False
+            dbm (MongoDatabaseManager, optional): Database manager. Defaults to None
+        """
         self.dbm = dbm
         self.object_instance = object_instance
         self.type_instance = type_instance
@@ -89,9 +99,7 @@ class CmdbRender:
     @property
     def object_instance(self) -> CmdbObject:
         """
-        Object of the class CmdbObject that has already been instantiated.
-        The data should come from the database and already be validated.
-        This already happens when the object is instantiated.
+        CmdbObject instance representing the object to render
         """
         return self._object_instance
 
@@ -99,11 +107,16 @@ class CmdbRender:
     @object_instance.setter
     def object_instance(self, object_instance: CmdbObject):
         """
-        Property setter for object_instance. The render only checks whether the passed object
-        belongs to the correct class, not whether it is valid.
+        Set the object_instance property after validation
+
+        Args:
+            object_instance (CmdbObject): The object to assign to the property
+
+        Raises:
+            ObjectInstanceError: If the passed object is not a CmdbObject
         """
         if not isinstance(object_instance, CmdbObject):
-            raise ObjectInstanceError("The passed object is not an CmdbObject")
+            raise ObjectInstanceError("The passed object is not an CmdbObject!")
 
         self._object_instance = object_instance
 
@@ -111,9 +124,7 @@ class CmdbRender:
     @property
     def type_instance(self) -> CmdbType:
         """
-        Object of the class CmdbType that has already been instantiated.
-        The data should come from the database and already be validated.
-        This already happens when the object is instantiated.
+        CmdbType instance representing the CmdbType of the CmdbObject
         """
         return self._type_instance
 
@@ -121,33 +132,57 @@ class CmdbRender:
     @type_instance.setter
     def type_instance(self, type_instance: CmdbType):
         """
-        Property setter for type_instance. The render only checks whether the passed object
-        belongs to the correct class, not whether it is valid.
+        Set the type_instance property after validation
+
+        Args:
+            type_instance (CmdbType): The type to assign to the property
+
+        Raises:
+            TypeInstanceError: If the passed type is not a CmdbType
         """
         if not isinstance(type_instance, CmdbType):
-            raise TypeInstanceError("The passed type is not an CmdbType")
+            raise TypeInstanceError("The passed type is not a CmdbType!")
 
         self._type_instance = type_instance
 
 
     def result(self, level: int = 3) -> RenderResult:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Generate the rendered result for the object
+
+        Args:
+            level (int, optional): The depth of the rendering. Defaults to 3
+
+        Returns:
+            RenderResult: The rendered result
+        """
         return self._generate_result(level)
 
 
     def get_mds_reference(self, field_value: int) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Generate a reference for the MDS
+
+        Args:
+            field_value (int): The field value to generate the reference for
+
+        Returns:
+            dict: The generated reference as a dictionary
+        """
         return self.__merge_references({"value": field_value})
 
 
-    def is_ref_field(self, field_name):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        type_fields = self.type_instance.fields
+    def is_ref_field(self, field_name: str) -> bool:
+        """
+        Check if the given field is a reference field
 
-        for field in type_fields:
+        Args:
+            field_name (str): The field name to check
+
+        Returns:
+            bool: True if the field is a reference, False otherwise
+        """
+        for field in self.type_instance.fields:
             if field["type"] == "ref" and field["name"] == field_name:
                 return True
 
@@ -155,11 +190,18 @@ class CmdbRender:
 
 
     def _generate_result(self, level: int) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
-        render_result = RenderResult()
+        """
+        Generate a full render result based on the object's data
 
+        Args:
+            level (int): The depth of the rendering
+
+        Returns:
+            RenderResult: The rendered result
+        """
         try:
+            render_result = RenderResult()
+
             render_result = self.__generate_object_information(render_result)
             render_result = self.__generate_type_information(render_result)
             render_result = self.__set_fields(render_result, level)
@@ -167,35 +209,48 @@ class CmdbRender:
             render_result = self.__set_summaries(render_result)
             render_result = self.__set_external(render_result)
             render_result = self.__set_multi_data_sections(render_result)
+
+            return render_result
         except Exception as err:
             raise InstanceRenderError(f'Error while generating a RenderResult: {err}') from err
 
-        return render_result
-
 
     def __set_multi_data_sections(self, render_result: RenderResult) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
+        """
+        Set multi-data sections for the render result
+
+        Args:
+            render_result (RenderResult): The current render result to update
+
+        Returns:
+            RenderResult: The updated render result with multi-data sections
+        """
         render_result.multi_data_sections = self.object_instance.multi_data_sections
 
         return render_result
 
 
     def __generate_object_information(self, render_result: RenderResult) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
+        """
+        Generate object-specific information for rendering
+
+        Args:
+            render_result (RenderResult): The current render result to update
+
+        Returns:
+            RenderResult: The updated render result with object-specific information
+        """
         try:
             author_name = self.users_manager.get_user(self.object_instance.author_id).get_display_name()
-        except UsersManagerGetError:
+        except Exception:
             author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
 
+        editor_name = None
         if self.object_instance.editor_id:
             try:
                 editor_name = self.users_manager.get_user(self.object_instance.editor_id).get_display_name()
             except UsersManagerGetError:
                 editor_name = None
-        else:
-            editor_name = None
 
         render_result.object_information = {
             'object_id': self.object_instance.public_id,
@@ -208,12 +263,20 @@ class CmdbRender:
             'active': self.object_instance.active,
             'version': self.object_instance.version
         }
+
         return render_result
 
 
     def __generate_type_information(self, render_result: RenderResult) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
+        """
+        Generate type-specific information for rendering
+
+        Args:
+            render_result (RenderResult): The current render result to update
+
+        Returns:
+            RenderResult: The updated render result with type-specific information
+        """
         try:
             author_name = self.users_manager.get_user(self.type_instance.author_id).get_display_name()
         except UsersManagerGetError:
@@ -242,44 +305,77 @@ class CmdbRender:
 
 
     def __set_fields(self, render_result: RenderResult, level: int) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
+        """
+        Set the fields for the render result based on the level
+
+        Args:
+            render_result (RenderResult): The current render result to update
+            level (int): The level of field detail
+
+        Returns:
+            RenderResult: The updated render result with fields
+        """
         render_result.fields = self.__merge_fields_value(level-1)
+
         return render_result
 
 
     def __set_sections(self, render_result: RenderResult) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
+        """
+        Set sections for the render result
+
+        Args:
+            render_result (RenderResult): The current render result to update
+
+        Returns:
+            RenderResult: The updated render result with sections
+        """
         try:
-            render_result.sections = [section.to_json(section) for section in
-                                      self.type_instance.render_meta.sections]
-        except (IndexError, ValueError):
+            render_result.sections = [section.to_json(section) for section in self.type_instance.render_meta.sections]
+        except Exception as err:
+            LOGGER.error("[__set_sections] Exception: %s. Type: %s.", err, type(err), exc_info=True)
             render_result.sections = []
+
         return render_result
 
 
-    def __merge_field_content_section(self, field: dict, object_: CmdbObject):
-        """document"""
-        # TODO: DOCUMENT-FIX
+    def __merge_field_content_section(self, field: dict, object_: CmdbObject) -> dict:
+        """
+        Merge field content with the given CMDB object data
+
+        Args:
+            field (dict): The field to merge
+            object_ (CmdbObject): The object containing the data
+
+        Returns:
+            dict: The merged field content
+        """
         curr_field = [x for x in object_.fields if x['name'] == field['name']][0]
+
         if curr_field['name'] == field['name'] and field.get('value'):
             field['default'] = field['value']
+
         field['value'] = curr_field['value']
+
         # handle dates that are stored as strings
         if field['type'] == 'date' and isinstance(field['value'], str) and field['value']:
             field['value'] = parse(field['value'], fuzzy=True)
 
         if self.ref_render and (field['type'] == 'ref' or field['type'] == 'location') and field['value']:
             field['reference'] = self.__merge_references(field)
+
         return field
 
 
     def __merge_fields_value(self, level: int = 3) -> list[dict]:
         """
-        Checks all fields for references.
-        Fields with references are extended by the property 'references'.
-        All reference values are stored in the new property.
+        Merge all field values with references extended
+
+        Args:
+            level (int): The level of rendering detail
+
+        Returns:
+            list[dict]: A list of merged fields with reference data
         """
         field_map = []
         if level == 0:
@@ -400,9 +496,27 @@ class CmdbRender:
         return field_map
 
 
-    def __merge_reference_section_fields(self, ref_section_field, ref_type, ref_section_fields, level):
-        """document"""
-        # TODO: DOCUMENT-FIX
+    def __merge_reference_section_fields(
+            self,
+            ref_section_field: dict,
+            ref_type: CmdbType,
+            ref_section_fields: list,
+            level: int) -> list:
+        """
+        Recursively merges fields from a referenced section into the current section fields list.
+
+        This method handles fields of type 'ref-section-field' by retrieving the referenced object,
+        rendering its fields, and recursively merging their contents.
+
+        Args:
+            ref_section_field (dict): The reference section field to process
+            ref_type (CmdbType): The type information of the current referenced object
+            ref_section_fields (list): A list to accumulate merged fields
+            level (int): The depth level for rendering referenced objects
+
+        Returns:
+            list: The updated list of merged reference section fields
+        """
         if ref_section_field and ref_section_field.get('type', '') == 'ref-section-field':
             try:
                 instance = self.objects_manager.get_object(ref_section_field.get('value'))
@@ -424,12 +538,20 @@ class CmdbRender:
                             ref_section_fields.append(merged_field_content)
             except (Exception, TypeError, ObjectsManagerGetError) as err:
                 LOGGER.info(err)
+
         return ref_section_fields
 
 
-    def __merge_references(self, current_field):
-        """document"""
-        # TODO: DOCUMENT-FIX
+    def __merge_references(self, current_field: dict) -> dict:
+        """
+        Merges reference data for a given field if it exists
+
+        Args:
+            field (dict): The field to check and merge references for
+
+        Returns:
+            dict: The reference data if present
+        """
         reference = TypeReference(type_id=0, object_id=0, type_label='', line='')
 
         if current_field['value']:
@@ -495,15 +617,25 @@ class CmdbRender:
 
 
     def __set_summaries(self, render_result: RenderResult) -> RenderResult:
-        """document"""
-        # TODO: DOCUMENT-FIX
+        """
+        Sets the summaries and summary line for the render result
+
+        Args:
+            render_result (RenderResult): The current render result object to update
+
+        Returns:
+            RenderResult: Updated render result with summaries and summary line filled
+        """
         summary_list = []
         summary_line = ''
         default_line = f'{self.type_instance.label} #{self.object_instance.public_id}'
+
         if not self.type_instance.has_summaries():
             render_result.summaries = summary_list
             render_result.summary_line = default_line
+
             return render_result
+
         try:
             summary_list = self.type_instance.get_summary().fields
             render_result.summaries = summary_list
@@ -521,14 +653,22 @@ class CmdbRender:
             summary_line = default_line
         finally:
             render_result.summary_line = summary_line
+
         return render_result
 
 
     def __set_external(self, render_result: RenderResult) -> RenderResult:
         """
-        get filled external links
+        Sets the external links for the render result.
+
+        External links are populated based on the type's external link definitions.
+        If required fields are missing, the link will be skipped.
+
+        Args:
+            render_result (RenderResult): The current render result object to update
+
         Returns:
-            list of filled external links (TypeExternalLink)
+            RenderResult: Updated render result with populated external links
         """
         # global external list
         external_list = []

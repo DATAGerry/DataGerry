@@ -84,18 +84,18 @@ def insert_cmdb_relation(data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, "Could not retrieve the created Relation from the database!")
+        abort(404, "Could not retrieve the created Relation from the database!")
     except HTTPException as http_err:
         raise http_err
     except RelationsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_relation] RelationsManagerInsertError: %s", err, exc_info=True)
-        return abort(400, "Failed to insert the new Relation in the database!")
+        abort(400, "Failed to insert the new Relation in the database!")
     except RelationsManagerGetError as err:
         LOGGER.error("[insert_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created Relation from the database!")
+        abort(400, "Failed to retrieve the created Relation from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -135,10 +135,10 @@ def get_cmdb_relations(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except RelationsManagerIterationError as err:
         LOGGER.error("[get_cmdb_relations] RelationsManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve Relations from the database!")
+        abort(400, "Failed to retrieve Relations from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @relations_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -165,15 +165,15 @@ def get_cmdb_relation(public_id: int, request_user: CmdbUser):
         if requested_relation:
             return GetSingleResponse(requested_relation, body = request.method == 'HEAD').make_response()
 
-        return abort(404, f"The Relation with ID:{public_id} was not found!")
+        abort(404, f"The Relation with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except RelationsManagerGetError as err:
         LOGGER.error("[get_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Relation with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Relation with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -216,18 +216,18 @@ def update_cmdb_relation(public_id: int, data: dict, request_user: CmdbUser):
 
             return UpdateSingleResponse(data).make_response()
 
-        return abort(404, f"The Relation with ID:{public_id} was not found!")
+        abort(404, f"The Relation with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except RelationsManagerGetError as err:
         LOGGER.error("[update_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Relation with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Relation with ID: {public_id} from the database!")
     except RelationsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_relation] RelationsManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the Relation with ID: {public_id}!")
+        abort(400, f"Failed to update the Relation with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -253,11 +253,11 @@ def delete_cmdb_relation(public_id: int, request_user: CmdbUser):
         to_delete_relation = relations_manager.get_relation(public_id)
 
         if not to_delete_relation:
-            return abort(404, f"The Relation with ID:{public_id} was not found!")
+            abort(404, f"The Relation with ID:{public_id} was not found!")
 
         # Check if the CmdbRelation is currently used
         if relations_manager.get_one_by({"relation_id": public_id}, CmdbObjectRelation.COLLECTION):
-            return abort(403, f"The Relation with ID:{public_id} is currently in use and cannot be deleted!")
+            abort(403, f"The Relation with ID:{public_id} is currently in use and cannot be deleted!")
 
         relations_manager.delete_relation(public_id)
 
@@ -266,13 +266,13 @@ def delete_cmdb_relation(public_id: int, request_user: CmdbUser):
         raise http_err
     except RelationsManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_relation] RelationsManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Relation with ID:{public_id}!")
+        abort(400, f"Failed to delete the Relation with ID:{public_id}!")
     except RelationsManagerGetError as err:
         LOGGER.error("[delete_cmdb_relation] RelationsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Relation with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the Relation with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #

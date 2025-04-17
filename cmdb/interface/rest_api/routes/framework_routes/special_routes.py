@@ -71,10 +71,10 @@ def show_datagerry_assistant(request_user: CmdbUser):
         return DefaultResponse(show_assistant).make_response()
     except (CategoriesManagerGetError, TypesManagerGetError, ObjectsManagerGetError) as err:
         LOGGER.error("[show_datagerry_assistant] Error: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Failed to check prerequisites to display DataGerry Assistant!")
+        abort(500, "Failed to check prerequisites to display DataGerry Assistant!")
     except Exception as err:
         LOGGER.error("[show_datagerry_assistant] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @special_blueprint.route('/profiles', methods=['POST'])
@@ -105,7 +105,7 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
 
         # Only execute if there are no categories, types and objects in the database
         if categories_total > 0 or types_total > 0 or objects_total > 0:
-            return abort(400, "There are objects, types, or categories in the database which prevents this action!")
+            abort(400, "There are objects, types, or categories in the database which prevents this action!")
 
         profile_assistant = ProfileAssistant(categories_manager)
         created_ids = profile_assistant.create_profiles(profiles)
@@ -115,10 +115,10 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
         raise http_err
     except ProfileCreationError as err:
         LOGGER.error("[create_initial_profiles] Error: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Failed to create initial profiles!")
+        abort(500, "Failed to create initial profiles!")
     except (CategoriesManagerGetError, TypesManagerGetError, ObjectsManagerGetError) as err:
         LOGGER.error("[create_initial_profiles] Error: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Failed to check prerequisites if the DataGerry Assistant can be executed!")
+        abort(500, "Failed to check prerequisites if the DataGerry Assistant can be executed!")
     except Exception as err:
         LOGGER.error("[create_initial_profiles] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

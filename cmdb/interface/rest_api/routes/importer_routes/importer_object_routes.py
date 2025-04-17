@@ -109,7 +109,7 @@ def get_default_importer_config(importer_type):
     try:
         importer: ObjectImporterConfig = __OBJECT_IMPORTER_CONFIG__[importer_type]
     except IndexError:
-        return abort(404)
+        abort(404)
 
     api_response = DefaultResponse({'manually_mapping': importer.MANUALLY_MAPPING})
 
@@ -140,7 +140,7 @@ def get_default_parser_config(parser_type: str):
     try:
         parser: BaseObjectParser = __OBJECT_PARSER__[parser_type]
     except IndexError:
-        return abort(404)
+        abort(404)
 
     api_response = DefaultResponse(parser.DEFAULT_CONFIG)
 
@@ -161,26 +161,26 @@ def parse_objects():
         request_file: FileStorage = get_file_in_request('file', request.files)
     except Exception as err:
         LOGGER.debug("[parse_objects] Exception: %s, Type: %s", err, type(err))
-        return abort(500, "No file in request!")
+        abort(500, "No file in request!")
 
     # Load parser config
     try:
         parser_config: dict = get_element_from_data_request('parser_config', request) or {}
     except Exception as err:
         LOGGER.debug("[parse_objects] Exception: %s, Type: %s", err, type(err))
-        return abort(500, "No parser config!")
+        abort(500, "No parser config!")
     # Load file format
     file_format = request.form.get('file_format', None)
 
     if not file_format:
-        return abort(500, "No file format!")
+        abort(500, "No file format!")
 
     try:
         parsed_output = generate_parsed_output(request_file, file_format, parser_config).output()
     except (ParserRuntimeError, Exception) as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[parse_objects] Error: %s, Type: %s", err, type(err))
-        return abort(500, "Could not generate parsed output!")
+        abort(500, "Could not generate parsed output!")
 
     api_response = DefaultResponse(parsed_output)
 
@@ -198,7 +198,7 @@ def import_objects(request_user: CmdbUser):
         # Check if file exists
         if not request.files:
             LOGGER.error("[import_objects] No import file!")
-            return abort(400, 'No import file was provided')
+            abort(400, 'No import file was provided')
 
         request_file: FileStorage = get_file_in_request('file', request.files)
 
@@ -218,7 +218,7 @@ def import_objects(request_user: CmdbUser):
         importer_config_request: dict = get_element_from_data_request('importer_config', request) or None
         if not importer_config_request:
             LOGGER.error("[import_objects] No import config was provided!")
-            return abort(400, 'No import config was provided')
+            abort(400, 'No import config was provided')
 
         types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
@@ -236,11 +236,11 @@ def import_objects(request_user: CmdbUser):
                 verify_import_access(request_user, type_, types_manager)
         except AccessDeniedError:
             LOGGER.error("[import_objects] No import config was provided!")
-            return abort(403, "Access denied for importing objects !")
+            abort(403, "Access denied for importing objects !")
         except (TypesManagerGetError, Exception) as error:
             #TODO: ERROR-FIX
             LOGGER.error("[import_objects] Exception: %s. Type: %s", error, type(error), exc_info=True)
-            return abort(400, "Could not import objects !")
+            abort(400, "Could not import objects !")
 
         # Load parser
         try:
@@ -248,7 +248,7 @@ def import_objects(request_user: CmdbUser):
         except ParserLoadError as err:
             #TODO: ERROR-FIX
             LOGGER.error("[import_objects] ParserLoadError: %s", err, exc_info=True)
-            return abort(406)
+            abort(406)
 
         parser = parser_class(parser_config)
 
@@ -258,7 +258,7 @@ def import_objects(request_user: CmdbUser):
         except ImporterLoadError as err:
             #TODO: ERROR-FIX
             LOGGER.error("[import_objects] ImporterLoadError: %s", err, exc_info=True)
-            return abort(406)
+            abort(406)
         importer_config = importer_config_class(**importer_config_request)
 
         # Load importer
@@ -267,20 +267,20 @@ def import_objects(request_user: CmdbUser):
         except ImporterLoadError as err:
             #TODO: ERROR-FIX
             LOGGER.error("[import_objects] ImporterLoadError: %s", err, exc_info=True)
-            return abort(406)
+            abort(406)
         importer = importer_class(working_file, importer_config, parser, objects_manager, request_user)
 
         try:
             import_response: ImporterObjectResponse = importer.start_import()
         except ImportRuntimeError as err:
             LOGGER.error("[import_objects] ImportRuntimeError: %s", err, exc_info=True)
-            return abort(500)
+            abort(500)
         except AccessDeniedError as err:
             LOGGER.error("[import_objects] AccessDeniedError: %s", err)
-            return abort(403)
+            abort(403)
         except Exception as err:
             LOGGER.error("[import_objects-import_response] Exception: %s. Type: %s", err, type(err), exc_info=True)
-            return abort(500, "Internal server error!")
+            abort(500, "Internal server error!")
 
         # close request file
         request_file.close()
@@ -314,11 +314,11 @@ def import_objects(request_user: CmdbUser):
                 logs_manager.insert_log(action=LogAction.CREATE, log_type=CmdbObjectLog.__name__, **log_params)
             except ObjectsManagerGetError as err:
                 LOGGER.debug("[import_objects] %s", err)
-                return abort(404)
+                abort(404)
             except InstanceRenderError as err:
                 #TODO: ERROR-FIX
                 LOGGER.error("[import_objects] InstanceRenderError: %s. Type: %s", err, type(err), exc_info=True)
-                return abort(500)
+                abort(500)
             except BaseManagerInsertError as err:
                 #TODO: ERROR-FIX
                 LOGGER.debug("[import_objects] %s", err)
@@ -326,4 +326,4 @@ def import_objects(request_user: CmdbUser):
         return DefaultResponse(import_response).make_response()
     except Exception as err:
         LOGGER.error("[import_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

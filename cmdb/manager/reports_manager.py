@@ -125,16 +125,27 @@ class ReportsManager(BaseManager):
             raise BaseManagerIterationError(err) from err
 
 
-    def count_reports(self, criteria: dict = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def count_reports(self, criteria: dict = None) -> int:
+        """
+        Counts the number of reports in the collection based on the given criteria
+
+        Args:
+            criteria (dict, optional): A dictionary specifying filter conditions for counting reports
+                                    If not provided, counts all reports in the collection
+
+        Raises:
+            BaseManagerGetError: If an error occurs while counting documents in the collection
+
+        Returns:
+            int: The number of reports matching the given criteria
+        """
         try:
             if criteria:
                 report_count = self.count_documents(self.collection, criteria=criteria)
             else:
                 report_count = self.count_documents(self.collection)
+
+            return report_count
         except BaseManagerGetError as err:
             # TODO: ERROR-FIX (Report Specific Error)
             raise BaseManagerGetError(err) from err
-
-        return report_count

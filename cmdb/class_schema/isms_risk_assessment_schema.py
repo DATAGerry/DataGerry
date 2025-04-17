@@ -73,6 +73,9 @@ def get_isms_risk_assessment_schema() -> dict:
                     'type':'float',
                     'min': 0.0
                 },
+                'maximum_impact_id': { # public_id of the maximum IsmsImpact
+                    'type': 'integer',
+                },
                 'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
                     'type':'float',
                     'min': 0.0
@@ -171,6 +174,9 @@ def get_isms_risk_assessment_schema() -> dict:
                 'likelihood_value': { # calculation_basis of selected IsmsLikelihood
                     'type':'float',
                     'min': 0.0
+                },
+                'maximum_impact_id': { # public_id of the maximum IsmsImpact
+                    'type': 'integer',
                 },
                 'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
                     'type':'float',

@@ -94,7 +94,7 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
         target_relation = relations_manager.get_relation(relation_id)
 
         if not target_relation:
-            return abort(400, f"The Relation with ID:{relation_id} does not exist anymore!")
+            abort(400, f"The Relation with ID:{relation_id} does not exist anymore!")
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
 
@@ -102,9 +102,9 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
         child_id = data.get('relation_child_id')
 
         if not parent_id or not child_id:
-            return abort(400, "Both 'relation_parent_id' and 'relation_child_id' must be provided!")
+            abort(400, "Both 'relation_parent_id' and 'relation_child_id' must be provided!")
         if parent_id == child_id:
-            return abort(400, "Parent and child cannot be the same Object in an ObjectRelation!")
+            abort(400, "Parent and child cannot be the same Object in an ObjectRelation!")
 
         result_id: int = object_relations_manager.insert_object_relation(data)
 
@@ -127,18 +127,18 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, "Could not retrieve the created ObjectRelation from the database!")
+        abort(404, "Could not retrieve the created ObjectRelation from the database!")
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationsManagerInsertError as err:
         LOGGER.error("[insert_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, "Could not insert the new ObjectRelation in the database!")
+        abort(400, "Could not insert the new ObjectRelation in the database!")
     except ObjectRelationsManagerGetError as err:
         LOGGER.error("[insert_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created ObjectRelation from the database!")
+        abort(400, "Failed to retrieve the created ObjectRelation from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -182,10 +182,10 @@ def get_cmdb_object_relations(params: CollectionParameters, request_user: CmdbUs
         return api_response.make_response()
     except ObjectRelationsManagerIterationError as err:
         LOGGER.error("[get_cmdb_object_relations] %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the ObjectRelations from database!")
+        abort(400, "Failed to retrieve the ObjectRelations from database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @object_relations_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -216,15 +216,15 @@ def get_cmdb_object_relation(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The ObjectRelation with ID:{public_id} was not found!")
+        abort(404, f"The ObjectRelation with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationsManagerGetError as err:
         LOGGER.error("[get_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the requested ObjectRelation with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the requested ObjectRelation with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -261,7 +261,7 @@ def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUs
         target_relation = relations_manager.get_relation(relation_id)
 
         if not target_relation:
-            return abort(400, f"The Relation with ID:{relation_id} does not exist anymore!")
+            abort(400, f"The Relation with ID:{relation_id} does not exist anymore!")
 
         to_update_object_relation = object_relations_manager.get_object_relation(public_id)
 
@@ -307,18 +307,18 @@ def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUs
 
             return api_response.make_response()
 
-        return abort(404, f"The ObjectRelation with ID: {public_id} was not found!")
+        abort(404, f"The ObjectRelation with ID: {public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationsManagerGetError as err:
         LOGGER.error("[update_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectRelation with ID:{public_id} which should be updated!")
+        abort(400, f"Failed to retrieve the ObjectRelation with ID:{public_id} which should be updated!")
     except ObjectRelationsManagerUpdateError as err:
         LOGGER.error("[update_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, f"Failed to update the ObjectRelation with ID:{public_id}!")
+        abort(400, f"Failed to update the ObjectRelation with ID:{public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -366,15 +366,15 @@ def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The ObjectRelation with ID: {public_id} was not found!")
+        abort(404, f"The ObjectRelation with ID: {public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except ObjectRelationsManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, f"Could not delete the ObjectRelation with ID:{public_id}!")
+        abort(400, f"Could not delete the ObjectRelation with ID:{public_id}!")
     except ObjectRelationsManagerGetError as err:
         LOGGER.error("[delete_cmdb_object_relation] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the ObjectRelation with ID:{public_id} from the database!")
+        abort(400, f"Failed to retrieve the ObjectRelation with ID:{public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_object_relation] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

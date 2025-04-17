@@ -18,7 +18,7 @@ Implementation of MediaFile API Route utility methods
 """
 import json
 import logging
-from typing import Union, Optional
+from typing import Optional
 from flask import request, abort
 from werkzeug.datastructures import FileStorage
 from werkzeug.wrappers import Request
@@ -34,33 +34,64 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def get_file_in_request(file_name: str) -> FileStorage:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Retrieves a file from the Flask request based on the provided file name
+
+    Args:
+        file_name (str): The name of the file to retrieve from the request
+
+    Raises:
+        HTTPException: 400 if the file is not found in the request
+
+    Returns:
+        FileStorage: The file object retrieved from the request.
+    """
     try:
         return request.files.get(file_name)
-    except (KeyError, Exception):
-        LOGGER.error('File with name: %s was not provided', file_name)
-        return abort(400)
+    except Exception:
+        LOGGER.error("[get_file_in_request] File with name: %s was not provided!", file_name)
+        abort(400, f"File with name: {file_name} was not provided!")
 
 
 def get_element_from_data_request(element: str, _request: Request) -> Optional[dict]:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Retrieves and parses a specific element (field) from a form-data request into a dictionary
+
+    Args:
+        element (str): The field name to extract from the request form data
+        _request (Request): The Flask Request object
+
+    Returns:
+        Optional[dict]: Parsed dictionary if successful; otherwise, None
+    """
     try:
         metadata = json.loads(_request.form.to_dict()[element])
         return metadata
-    except (KeyError, Exception) as err:
-        LOGGER.error("[get_element_from_data_request] Exception:'%s'. Type: %s", err, type(err))
+    except Exception as err:
+        LOGGER.error("[get_element_from_data_request] Exception:'%s'. Type: %s", err, type(err), exc_info=True)
         return None
 
 
-def generate_metadata_filter(element, _request=None, params=None):
-    """document"""
-    #TODO: DOCUMENT-FIX
+def generate_metadata_filter(element, _request: Request = None, params:dict = None) -> dict:
+    """
+    Generates a MongoDB filter query based on provided metadata either from request or parameters
+
+    Args:
+        element (str): The metadata key in the request or parameters
+        _request (Optional[Request]): Flask request containing the metadata in query/form
+        params (Optional[dict]): Direct dictionary containing metadata
+
+    Raises:
+        HTTPException: 400 if metadata cannot be generated
+
+    Returns:
+        dict: A MongoDB filter dictionary ready for querying
+    """
     filter_metadata = {}
 
     try:
         data = params
+
         if _request:
             if _request.args.get(element):
                 data = json.loads(_request.args.get(element))
@@ -76,15 +107,22 @@ def generate_metadata_filter(element, _request=None, params=None):
             else:
                 filter_metadata.update({f"metadata.{key}": value})
 
-    except (IndexError, KeyError, TypeError, Exception) as ex:
-        LOGGER.error('Metadata was not provided - Exception: %s', ex)
-        return abort(400)
-    return filter_metadata
+        return filter_metadata
+    except Exception as err:
+        LOGGER.error("Metadata was not provided - Exception: %s", err)
+        abort(400, "Metadata was not provided!")
 
 
-def generate_collection_parameters(params: CollectionParameters):
-    """document"""
-    #TODO: DOCUMENT-FIX
+def generate_collection_parameters(params: CollectionParameters) -> dict:
+    """
+    Builds a MongoDB aggregation filter for file collections based on search and metadata parameters
+
+    Args:
+        params (CollectionParameters): The collection parameters including optional filters
+
+    Returns:
+        dict: A MongoDB query filter based on search term or metadata
+    """
     builder = Builder()
     search = params.optional.get('searchTerm')
     param = json.loads(params.optional['metadata'])
@@ -107,20 +145,19 @@ def generate_collection_parameters(params: CollectionParameters):
     return generate_metadata_filter('metadata', params=param)
 
 
-#TODO: ANNOTATION-FIX
-def create_attachment_name(name: str, index: int, metadata, media_files_manager: MediaFilesManager):
+def create_attachment_name(name: str, index: int, metadata: dict, media_files_manager: MediaFilesManager) -> str:
     """
-    This method checks whether the current file name already exists in the directory.
-    If this is the case, 'copy_(index)_' is appended as a prefix. method is executed recursively.
+    Recursively generates a unique attachment file name if a file with the same name already exists.
+    Adds a prefix like 'copy_(index)_' to the filename.
 
     Args:
-        name (str): filename of the File
-        index (int): counter
-        metadata (dict): Metadata for filtering Files from Database
-        media_file_manager (MediaFilesManager): Manager
+        name (str): Original file name
+        index (int): Copy index counter
+        metadata (dict): Metadata for querying existing files
+        media_files_manager (MediaFilesManager): Media file manager to check for existing files
 
     Returns:
-        New Filename with 'copy_(index)_' - prefix
+        str: A unique file name string
     """
     try:
         if media_files_manager.file_exists(metadata):
@@ -138,16 +175,17 @@ def create_attachment_name(name: str, index: int, metadata, media_files_manager:
 
 
 def recursive_delete_filter(public_id: int, media_files_manager: MediaFilesManager, _ids=None) -> list:
-    """ This method deletes a file in the specified section of the document for storing workflow data.
-        Any existing value that matches the file name and metadata is deleted. Before saving a value.
-        GridFS document under the specified key is deleted.
+    """
+    Recursively collects and returns the list of public IDs for files to be deleted,
+    including their child files in a parent-child file structure
 
-        Args:
-            public_id (int): Public ID of the File
-            media_files_manager (MediaFilesManager): Manager
-            _ids (list(int): List of IDs of the Files
-        Returns:
-         List of deleted public_id.
+    Args:
+        public_id (int): The public ID of the root file
+        media_files_manager (MediaFilesManager): Media file manager to fetch and manage files
+        _ids (Optional[list]): List of already collected IDs, used for recursion
+
+    Returns:
+        list: A list of public IDs of the files to delete
     """
     if not _ids:
         _ids = []

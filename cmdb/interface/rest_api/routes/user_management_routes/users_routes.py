@@ -87,7 +87,7 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
                 # Confirm database is available from the request
                 data['database'] = request_user.database
         except KeyError:
-            return abort(400, "The database of the user could not be retrieved!")
+            abort(400, "The database of the user could not be retrieved!")
 
         if current_app.cloud_mode:
             # Confirm an email was provided when creating the user
@@ -95,7 +95,7 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
 
             if not user_email:
                 LOGGER.error("[insert_user] No email was provided!")
-                return abort(400, "The email is mandatory to create a new user!")
+                abort(400, "The email is mandatory to create a new user!")
 
         # Check if email already exists
         try:
@@ -103,9 +103,9 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
                 user_with_given_email = users_manager.get_user_by({'email': user_email})
 
                 if user_with_given_email:
-                    return abort(400, "The email is already in use!")
+                    abort(400, "The email is already in use!")
         except UsersManagerGetError:
-            return abort(400, "Failed to retrieve User from database!")
+            abort(400, "Failed to retrieve User from database!")
 
         if current_app.cloud_mode and current_app.local_mode:
             # Open file and check if user exists
@@ -113,7 +113,7 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
                 users_data = json.load(users_file)
 
                 if user_email in users_data:
-                    return abort(400, "A user with this email already exists!")
+                    abort(400, "A user with this email already exists!")
 
             # Create the user in the dict
             users_data[user_email] = {
@@ -135,18 +135,18 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, "Could not retrieve the created User from the database!")
+        abort(404, "Could not retrieve the created User from the database!")
     except HTTPException as http_err:
         raise http_err
     except UsersManagerInsertError as err:
         LOGGER.error("[insert_cmdb_user] %s", err, exc_info=True)
-        return abort(400, "Failed to create the User in database!")
+        abort(400, "Failed to create the User in database!")
     except UsersManagerGetError as err:
         LOGGER.error("[insert_cmdb_user] %s", err, exc_info=True)
-        return abort(500, "Failed to retrieve the created User from the database!")
+        abort(500, "Failed to retrieve the created User from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -182,10 +182,10 @@ def get_cmdb_users(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except UsersManagerIterationError as err:
         LOGGER.error("[get_cmdb_users] %s", err, exc_info=True)
-        return abort(400, "Could not iterate the requested users!")
+        abort(400, "Could not iterate the requested users!")
     except Exception as err:
         LOGGER.error("[get_cmdb_users] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @users_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -212,15 +212,15 @@ def get_cmdb_user(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The User with ID:{public_id} was not found!")
+        abort(404, f"The User with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except UsersManagerGetError as err:
         LOGGER.error("[get_cmdb_user] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the User with ID: {public_id}!")
+        abort(400, f"Failed to retrieve the User with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[get_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -254,15 +254,15 @@ def update_cmdb_user(public_id: int, data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The User with ID:{public_id} was not found!")
+        abort(404, f"The User with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except UsersManagerUpdateError as err:
         LOGGER.error("[update_cmdb_user] %s", err, exc_info=True)
-        return abort(400, f"Failed to update the User with public_id: {public_id}!")
+        abort(400, f"Failed to update the User with public_id: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @users_blueprint.route('/<int:public_id>/password', methods=['PATCH'])
@@ -294,18 +294,18 @@ def change_cmdb_user_password(public_id: int, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The User with ID:{public_id} was not found!")
+        abort(404, f"The User with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except UsersManagerGetError as err:
         LOGGER.error("[change_cmdb_user_password] %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the User with ID: {public_id}")
+        abort(400, f"Failed to retrieve the User with ID: {public_id}")
     except UsersManagerUpdateError as err:
         LOGGER.error("[change_cmdb_user_password] %s", err, exc_info=True)
-        return abort(400, f"Failed to change the password for User with ID: {public_id}!")
+        abort(400, f"Failed to change the password for User with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[change_cmdb_user_password] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -334,15 +334,15 @@ def delete_cmdb_user(public_id: int, request_user: CmdbUser):
             api_response = DeleteSingleResponse(raw=CmdbUser.to_json(to_delete_user))
             return api_response.make_response()
 
-        return abort(404, f"The User with ID:{public_id} was not found!")
+        abort(404, f"The User with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except UsersManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_user] %s", err, exc_info=True)
-        return abort(400, f"Failed to delete User with ID: {public_id}!")
+        abort(400, f"Failed to delete User with ID: {public_id}!")
     except UsersManagerGetError as err:
         LOGGER.error("[delete_cmdb_user] %s", err, exc_info=True)
-        return abort(404, f"Failed to retrieve the User with ID: {public_id}!")
+        abort(404, f"Failed to retrieve the User with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

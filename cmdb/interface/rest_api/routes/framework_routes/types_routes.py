@@ -102,7 +102,7 @@ def insert_cmdb_type(data: dict, request_user: CmdbUser):
             possible_type = types_manager.get_type(possible_id)
 
             if possible_type:
-                return abort(400, f"Type with PublicID '{possible_id}' already exists!")
+                abort(400, f"Type with PublicID '{possible_id}' already exists!")
 
         result_id = types_manager.insert_type(data)
         created_type = types_manager.get_type(result_id)
@@ -111,15 +111,15 @@ def insert_cmdb_type(data: dict, request_user: CmdbUser):
             api_response = InsertSingleResponse(result_id=result_id, raw=created_type)
 
             return api_response.make_response()
-        return abort(404, "Could not retrieve the created Type from the database!")
+        abort(404, "Could not retrieve the created Type from the database!")
     except HTTPException as http_err:
         raise http_err
     except TypesManagerGetError as err:
         LOGGER.error("[insert_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve the created Type from the database!")
+        abort(400, "Failed to retrieve the created Type from the database!")
     except TypesManagerInsertError as err:
         LOGGER.error("[insert_cmdb_type] %s", err)
-        return abort(400, "Failed to insert the Type into the database!")
+        abort(400, "Failed to insert the Type into the database!")
 
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
@@ -169,10 +169,10 @@ def get_cmdb_types(params: TypeIterationParameters, request_user: CmdbUser):
         return api_response.make_response()
     except TypesManagerIterationError as err:
         LOGGER.error("[get_cmdb_types] TypesManagerIterationError: %s", err, exc_info=True)
-        return abort(400, "Failed to retrieve CmdbTypes from the database!")
+        abort(400, "Failed to retrieve CmdbTypes from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_types] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @types_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -199,15 +199,15 @@ def get_cmdb_type(public_id: int, request_user: CmdbUser):
             api_response = GetSingleResponse(requested_type, body=request.method == 'HEAD')
 
             return api_response.make_response()
-        return abort(404, f"The Type with ID:{public_id} was not found!")
+        abort(404, f"The Type with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except TypesManagerGetError as err:
         LOGGER.error("[get_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 @types_blueprint.route('/count_objects/<int:public_id>', methods=['GET'])
@@ -235,10 +235,10 @@ def count_objects_of_cmdb_type(public_id: int, request_user: CmdbUser):
         return api_response.make_response()
     except ObjectsManagerGetError as err:
         LOGGER.error("[count_objects_of_cmdb_type] ObjectsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to count Objects for Type with ID: {public_id}!")
+        abort(400, f"Failed to count Objects for Type with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[count_objects_of_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 
 
@@ -304,29 +304,29 @@ def update_cmdb_type(public_id: int, data: dict, request_user: CmdbUser):
 
             return api_response.make_response()
 
-        return abort(404, f"The Type with ID:{public_id} was not found!")
+        abort(404, f"The Type with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX (need to catch specific CmdbLocation exception)
         LOGGER.error("[update_cmdb_type] BaseManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Although the Type got updated, the update of Locations failed!")
+        abort(400, "Although the Type got updated, the update of Locations failed!")
     except BaseManagerUpdateError as err:
         #TODO: ERROR-FIX (need to catch specific CmdbObject exception)
         LOGGER.error("[update_cmdb_type] BaseManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, "Although the Type got updated, the update of Objects failed!")
+        abort(400, "Although the Type got updated, the update of Objects failed!")
     except TypesManagerGetError as err:
         LOGGER.error("[update_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
+        abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
     except TypesManagerUpdateError as err:
         LOGGER.error("[update_cmdb_type] TypesManagerUpdateError: %s", err, exc_info=True)
-        return abort(400, f"Failed to update the Type with ID: {public_id} from the database!")
+        abort(400, f"Failed to update the Type with ID: {public_id} from the database!")
     except TypesManagerUpdateMDSError as err:
         LOGGER.error("[update_cmdb_type] TypesManagerUpdateMDSError: %s", err, exc_info=True)
-        return abort(400, "Although the Type got updated, the Multi-Data-Section updates failed!")
+        abort(400, "Although the Type got updated, the Multi-Data-Section updates failed!")
     except Exception as err:
         LOGGER.error("[update_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -358,13 +358,13 @@ def delete_cmdb_type(public_id: int, request_user: CmdbUser):
 
             # Only possible to delete types when there are no objects
             if objects_count > 0:
-                return abort(403, "Delete not possible if Objects of this Type exist!")
+                abort(403, "Delete not possible if Objects of this Type exist!")
 
             # Only possible to delete types when there are no reports using it
             reports_count = reports_manager.count_reports({'type_id':public_id})
 
             if reports_count > 0:
-                return abort(403, "Delete not possible if Reports exist which are using this Type!")
+                abort(403, "Delete not possible if Reports exist which are using this Type!")
 
             types_manager.delete_type(public_id)
 
@@ -389,28 +389,28 @@ def delete_cmdb_type(public_id: int, request_user: CmdbUser):
                     relations_manager.update_relation(relation.public_id, CmdbRelation.to_json(relation))
             except Exception as error:
                 LOGGER.error("[delete_cmdb_type] Relation Exception: %s. Type: %s", error, type(error), exc_info=True)
-                return abort(400, "Although the Type got deleted, Relations could not be updated!")
+                abort(400, "Although the Type got deleted, Relations could not be updated!")
 
             api_response = DeleteSingleResponse(to_delete_type)
 
             return api_response.make_response()
 
-        return abort(404, f"The Type with ID:{public_id} was not found!")
+        abort(404, f"The Type with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err
     except TypesManagerGetError as err:
         LOGGER.error("[delete_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to retrieve the Type with ID: {public_id}!")
+        abort(400, f"Failed to retrieve the Type with ID: {public_id}!")
     except ObjectsManagerGetError as err:
         LOGGER.error("[delete_cmdb_type] ObjectsManagerGetError: %s", err, exc_info=True)
-        return abort(400, f"Failed to count Objects for Type with ID: {public_id}!")
+        abort(400, f"Failed to count Objects for Type with ID: {public_id}!")
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX (raise specific reports error)
         LOGGER.error("[delete_cmdb_type] BaseManagerGetError: %s", err, exc_info=True)
-        return abort(400, "Failed to count Reports with this Type!")
+        abort(400, "Failed to count Reports with this Type!")
     except TypesManagerDeleteError as err:
         LOGGER.error("[delete_cmdb_type] TypesManagerDeleteError: %s", err, exc_info=True)
-        return abort(400, f"Failed to delete the Type with ID: {public_id}!")
+        abort(400, f"Failed to delete the Type with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        return abort(500, "Internal server error!")
+        abort(500, "Internal server error!")

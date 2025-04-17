@@ -66,30 +66,43 @@ class SettingsManager(SystemReader):
 
 
     def get_section(self, section_name: str) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves a specific configuration section from the settings collection
+
+        Args:
+            section_name (str): The name of the configuration section to retrieve
+
+        Returns:
+            dict: The configuration section as a dictionary if found, otherwise None
+        """
         query_filter = {'_id': section_name}
+
         return self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter=query_filter)
 
 
-    def get_sections(self):
+    def get_sections(self) -> list:
         """
-        get all sections from config
+        Retrieves all section names from the settings collection.
+
         Returns:
-            list of sections inside a config
+            list: A list of section names (as dictionaries containing '_id' keys).
         """
         return self.dbm.find_all(collection=SettingsManager.COLLECTION, projection={'_id': 1})
 
 
     def get_all_values_from_section(self, section, default=None) -> dict:
         """
-        get all values from a section
+        Retrieve all key-value pairs from a specific configuration section
+
         Args:
-            section: section name
-            default: if no document was found
+            section (str): The name of the section to retrieve
+            default (dict, optional): The default dictionary to return if the section does not exist
+
+        Raises:
+            SectionError: If the section does not exist and no default is provided
 
         Returns:
-            key value dict of all elements inside section
+            dict: A dictionary containing all key-value pairs from the specified section
         """
 
         section_values = self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter={'_id': section})
@@ -105,13 +118,13 @@ class SettingsManager(SystemReader):
 
     def write(self, _id: str, data: dict) -> UpdateResult:
         """
-        Writes a new setting value in the database
+        Write or update a setting value in the database
 
         Args:
-            _id (str): Identifier of the setting
-            data (dict): The new data of the setting
+            _id (str): The unique identifier of the setting section
+            data (dict): The key-value pairs to store or update in the section
 
         Returns:
-            UpdateResult: The result of the update operation
+            UpdateResult: The result object of the database update operation
         """
         return self.dbm.update(collection=self.COLLECTION, criteria={'_id': _id}, data=data, upsert=True)
