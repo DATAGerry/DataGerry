@@ -29,13 +29,13 @@ from cmdb.manager import (
     ExtendableOptionsManager,
     VulnerabilityManager,
     RiskManager,
-    ControlMeassureManager,
+    ControlMeasureManager,
     ProtectionGoalManager,
 )
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.isms_model import IsmsImportType, ControlMeassureType, RiskType
+from cmdb.models.isms_model import IsmsImportType, ControlMeasureType, RiskType
 from cmdb.models.extendable_option_model import OptionType
 
 from cmdb.interface.blueprints import APIBlueprint
@@ -58,7 +58,7 @@ REQUEST_FILE = "file"
 @isms_importer_blueprint.protect(auth=True, right='base.isms.import.add')
 def import_isms_objects(target: str, request_user: CmdbUser):
     """
-    Import IsmsThreats, IsmsMeassureControls, IsmsVulnerabilities and IsmsRisks
+    Import IsmsThreats, IsmsMeasureControls, IsmsVulnerabilities and IsmsRisks
 
     Args:
         target (str): The ISMS object which should be imported (see IsmsImportType)
@@ -105,7 +105,7 @@ def handle_isms_import(csv_file: FileStorage, target: IsmsImportType, request_us
         IsmsImportType.THREAT: handle_threats_import,
         IsmsImportType.VULNERABILITY: handle_vulnerabilities_import,
         IsmsImportType.RISK: handle_risks_import,
-        IsmsImportType.CONTROL_MEASSURE: handle_control_meassures_import,
+        IsmsImportType.CONTROL_MEASURE: handle_control_measures_import,
     }
 
     handler = handlers.get(target)
@@ -350,12 +350,12 @@ def handle_risks_import(csv_file: FileStorage, request_user: CmdbUser) -> dict:
     }
 
 
-def handle_control_meassures_import(
+def handle_control_measures_import(
         csv_file: FileStorage,
         request_user: CmdbUser,
         extendable_options_manager: ExtendableOptionsManager) -> dict:
     """
-    Handles the import of IsmsControlMeassures
+    Handles the import of IsmsControlMeasures
 
     Args:
         csv_file (FileStorage): The file containing the data which should be imported
@@ -363,15 +363,15 @@ def handle_control_meassures_import(
         extendable_options_manager (ExtendableOptionsManager): Manager for CmdbExtendableOptions
 
     Returns:
-        dict: Results of IsmsControlMeassures imports
+        dict: Results of IsmsControlMeasures imports
     """
-    created_control_meassures = 0
-    existing_control_meassures = 0
-    invalid_control_meassures = []
+    created_control_measures = 0
+    existing_control_measures = 0
+    invalid_control_measures = []
 
-    expected_control_meassure_headers = {
+    expected_control_measure_headers = {
         "title",
-        "control_meassure_type",
+        "control_measure_type",
         "source",
         "implementation_state",
         "identifier",
@@ -381,14 +381,14 @@ def handle_control_meassures_import(
         "reason",
     }
 
-    reader = read_csv_file(csv_file, expected_control_meassure_headers)
+    reader = read_csv_file(csv_file, expected_control_measure_headers)
 
-    control_meassures = []
+    control_measures = []
     for row in reader:
         is_valid = True
 
-        control_meassure_type = row["control_meassure_type"].strip().upper()
-        source = handle_extendable_option(row.get("source"), extendable_options_manager, OptionType.CONTROL_MEASSURE)
+        control_measure_type = row["control_measure_type"].strip().upper()
+        source = handle_extendable_option(row.get("source"), extendable_options_manager, OptionType.CONTROL_MEASURE)
         implementation_state = handle_extendable_option(
                                     row.get("implementation_state"),
                                     extendable_options_manager,
@@ -396,12 +396,12 @@ def handle_control_meassures_import(
         )
         is_applicable = row["is_applicable"].strip() if row.get("is_applicable") else None
 
-        if not ControlMeassureType.is_valid(control_meassure_type):
+        if not ControlMeasureType.is_valid(control_measure_type):
             is_valid = False
 
-        control_meassure = {
+        control_measure = {
             "title": row["title"].strip() if row.get("title") else None,
-            "control_meassure_type": control_meassure_type if is_valid else row["control_meassure_type"].strip(),
+            "control_measure_type": control_measure_type if is_valid else row["control_measure_type"].strip(),
             "source": source,
             "implementation_state": implementation_state if is_valid else row.get("implementation_state"),
             "identifier": row["identifier"].strip() if row.get("identifier") else None,
@@ -412,31 +412,31 @@ def handle_control_meassures_import(
         }
 
         # Basic validation for 'name' (required field)
-        if not control_meassure["title"] or not control_meassure["control_meassure_type"] or not is_valid:
-            invalid_control_meassures.append(control_meassure)
+        if not control_measure["title"] or not control_measure["control_measure_type"] or not is_valid:
+            invalid_control_measures.append(control_measure)
             continue
 
-        control_meassures.append(control_meassure)
+        control_measures.append(control_measure)
 
-    control_meassure_manager: ControlMeassureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASSURE,
+    control_measure_manager: ControlMeasureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASURE,
                                                                                    request_user)
 
-    for a_control_meassure in control_meassures:
-        possible_control_meassure = control_meassure_manager.get_one_by(a_control_meassure)
+    for a_control_measure in control_measures:
+        possible_control_measure = control_measure_manager.get_one_by(a_control_measure)
 
-        # An IsmsControlMeassure already exists with the given values
-        if possible_control_meassure:
-            existing_control_meassures += 1
+        # An IsmsControlMeasure already exists with the given values
+        if possible_control_measure:
+            existing_control_measures += 1
             continue
 
-        control_meassure_manager.insert_item(a_control_meassure)
-        created_control_meassures += 1
+        control_measure_manager.insert_item(a_control_measure)
+        created_control_measures += 1
 
     return {
-        "imported_objects": len(control_meassures),
-        "created_objects": created_control_meassures,
-        "existing_objects": existing_control_meassures,
-        "invalid_objects": invalid_control_meassures,
+        "imported_objects": len(control_measures),
+        "created_objects": created_control_measures,
+        "existing_objects": existing_control_measures,
+        "invalid_objects": invalid_control_measures,
     }
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #

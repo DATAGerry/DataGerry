@@ -23,13 +23,13 @@ from .isms_impact_category import IsmsImpactCategory
 from .isms_protection_goal import IsmsProtectionGoal
 from .isms_risk_matrix import IsmsRiskMatrix
 from .risk_type_enum import RiskType
-from .control_meassure_type_enum import ControlMeassureType
+from .control_measure_type_enum import ControlMeasureType
 from .isms_risk import IsmsRisk
 from .isms_threat import IsmsThreat
 from .isms_vulnerability import IsmsVulnerability
-from .isms_control_meassure import IsmsControlMeassure
+from .isms_control_measure import IsmsControlMeasure
 from .isms_risk_assessment import IsmsRiskAssessment
-from .isms_control_meassure_assignment import IsmsControlMeassureAssignment
+from .isms_control_measure_assignment import IsmsControlMeasureAssignment
 from .isms_import_type_enum import IsmsImportType
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -41,12 +41,12 @@ __all__ = [
     'IsmsProtectionGoal',
     'IsmsRiskMatrix',
     'RiskType',
-    'ControlMeassureType',
+    'ControlMeasureType',
     'IsmsRisk',
     'IsmsThreat',
     'IsmsVulnerability',
-    'IsmsControlMeassure',
+    'IsmsControlMeasure',
     'IsmsRiskAssessment',
-    'IsmsControlMeassureAssignment',
+    'IsmsControlMeasureAssignment',
     'IsmsImportType',
 ]

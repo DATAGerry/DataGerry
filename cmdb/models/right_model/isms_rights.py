@@ -140,13 +140,13 @@ class RiskRight(IsmsRight):
         super().__init__(name, level, description=description)
 
 
-class ControlMeassureRight(IsmsRight):
+class ControlMeasureRight(IsmsRight):
     """
-    Base class for IsmsControlMeassure rights
+    Base class for IsmsControlMeasure rights
     """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
-    PREFIX = f'{IsmsRight.PREFIX}.controlMeassure'
+    PREFIX = f'{IsmsRight.PREFIX}.controlMeasure'
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
@@ -164,13 +164,13 @@ class RiskAssessmentRight(IsmsRight):
         super().__init__(name, level, description=description)
 
 
-class ControlMeassureAssignment(IsmsRight):
+class ControlMeasureAssignment(IsmsRight):
     """
-    Base class for IsmsControlMeassureAssignment rights
+    Base class for IsmsControlMeasureAssignment rights
     """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
-    PREFIX = f'{IsmsRight.PREFIX}.controlMeassureAssignment'
+    PREFIX = f'{IsmsRight.PREFIX}.controlMeasureAssignment'
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)

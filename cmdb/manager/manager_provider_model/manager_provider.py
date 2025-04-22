@@ -53,11 +53,11 @@ from cmdb.manager import (
     VulnerabilityManager,
     UserSettingsManager,
     RiskManager,
-    ControlMeassureManager,
+    ControlMeasureManager,
     PersonsManager,
     PersonGroupsManager,
     RiskAssessmentManager,
-    ControlMeassureAssignmentManager,
+    ControlMeasureAssignmentManager,
 )
 
 from cmdb.models.user_model import CmdbUser
@@ -139,11 +139,11 @@ class ManagerProvider:
             ManagerType.THREAT: ThreatManager,
             ManagerType.VULNERABILITY: VulnerabilityManager,
             ManagerType.RISK: RiskManager,
-            ManagerType.CONTROL_MEASSURE: ControlMeassureManager,
+            ManagerType.CONTROL_MEASURE: ControlMeasureManager,
             ManagerType.PERSON: PersonsManager,
             ManagerType.PERSON_GROUP: PersonGroupsManager,
             ManagerType.RISK_ASSESSMENT: RiskAssessmentManager,
-            ManagerType.CONTROL_MEASSURE_ASSIGNMENT: ControlMeassureAssignmentManager,
+            ManagerType.CONTROL_MEASURE_ASSIGNMENT: ControlMeasureAssignmentManager,
         }
 
         return manager_classes.get(manager_type)

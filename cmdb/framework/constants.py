@@ -48,10 +48,10 @@ from cmdb.models.isms_model import (
     IsmsRisk,
     IsmsThreat,
     IsmsVulnerability,
-    IsmsControlMeassure,
+    IsmsControlMeasure,
     IsmsRiskMatrix,
     IsmsRiskAssessment,
-    IsmsControlMeassureAssignment,
+    IsmsControlMeasureAssignment,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -78,7 +78,7 @@ __COLLECTIONS__ = [
     IsmsRisk,
     IsmsThreat,
     IsmsVulnerability,
-    IsmsControlMeassure,
+    IsmsControlMeasure,
     IsmsRiskClass,
     IsmsLikelihood,
     IsmsImpact,
@@ -86,5 +86,5 @@ __COLLECTIONS__ = [
     IsmsProtectionGoal,
     IsmsRiskMatrix,
     IsmsRiskAssessment,
-    IsmsControlMeassureAssignment,
+    IsmsControlMeasureAssignment,
 ]

@@ -1,8 +1,3 @@
-# DATAGERRY - OpenSource Enterprise CMDB
-# Copyright (C) 2025 becon GmbH
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 #
@@ -14,31 +9,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of OptionType
+Implementation of ControlMeasureType enumeration
 """
 from enum import Enum
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class OptionType(str, Enum):
+class ControlMeasureType(str, Enum):
     """
-    Available OptionTypes for CmdbExtendableOptions
+    Available ControlMeasureTypes for IsmsControlMeasures
     """
-    OBJECT_GROUP = 'OBJECT_GROUP'
-    THREAT = 'THREAT'
-    VULNERABILITY = 'VULNERABILITY'
-    IMPLEMENTATION_STATE = 'IMPLEMENTATION_STATE'
-    CONTROL_MEASURE = 'CONTROL_MEASURE'
+    CONTROL = 'CONTROL'
+    REQUIREMENT = 'REQUIREMENT'
+    MEASURE = 'MEASURE'
 
 
     @classmethod
     def is_valid(cls, value: str) -> bool:
         """
-        Checks if a given string is a valid OptionType
+        Checks if a given string is a valid ControlMeasureType
 
         Args:
             value (str): The string to check
 
         Returns:
-            bool: True if the string matches an existing OptionType, False otherwise
+            bool: True if the string matches an existing ControlMeasureType, False otherwise
         """
-        return value in OptionType.__members__
+        return value in ControlMeasureType.__members__

@@ -14,31 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of OptionType
+This module provides all errors for IsmsControlMeasures
 """
-from enum import Enum
+from .isms_control_measure_errors import (
+    IsmsControlMeasureError,
+    IsmsControlMeasureInitError,
+    IsmsControlMeasureInitFromDataError,
+    IsmsControlMeasureToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class OptionType(str, Enum):
-    """
-    Available OptionTypes for CmdbExtendableOptions
-    """
-    OBJECT_GROUP = 'OBJECT_GROUP'
-    THREAT = 'THREAT'
-    VULNERABILITY = 'VULNERABILITY'
-    IMPLEMENTATION_STATE = 'IMPLEMENTATION_STATE'
-    CONTROL_MEASURE = 'CONTROL_MEASURE'
-
-
-    @classmethod
-    def is_valid(cls, value: str) -> bool:
-        """
-        Checks if a given string is a valid OptionType
-
-        Args:
-            value (str): The string to check
-
-        Returns:
-            bool: True if the string matches an existing OptionType, False otherwise
-        """
-        return value in OptionType.__members__
+__all__ = [
+    'IsmsControlMeasureError',
+    'IsmsControlMeasureInitError',
+    'IsmsControlMeasureInitFromDataError',
+    'IsmsControlMeasureToJsonError',
+]

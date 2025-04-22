@@ -26,9 +26,9 @@ from .isms_config_routes import isms_config_blueprint
 from .threat_routes import threat_blueprint
 from .vulnerability_routes import vulnerability_blueprint
 from .risk_routes import risk_blueprint
-from .control_meassure_routes import control_meassure_blueprint
+from .control_measure_routes import control_measure_blueprint
 from .risk_assessment_routes import risk_assessment_blueprint
-from .meassure_control_assignment_routes import control_meassure_assignment_blueprint
+from .measure_control_assignment_routes import control_measure_assignment_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -42,7 +42,7 @@ __all__ = [
     'threat_blueprint',
     'vulnerability_blueprint',
     'risk_blueprint',
-    'control_meassure_blueprint',
+    'control_measure_blueprint',
     'risk_assessment_blueprint',
-    'control_meassure_assignment_blueprint',
+    'control_measure_assignment_blueprint',
 ]

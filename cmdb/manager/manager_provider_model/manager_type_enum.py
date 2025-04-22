@@ -59,6 +59,6 @@ class ManagerType(Enum):
     THREAT = 'ThreatManager'
     VULNERABILITY = 'VulnerabilityManager'
     RISK = 'RiskManager'
-    CONTROL_MEASSURE = 'ControlMeassureManager'
+    CONTROL_MEASURE = 'ControlMeasureManager'
     RISK_ASSESSMENT = 'RiskAssessmentManager'
-    CONTROL_MEASSURE_ASSIGNMENT = 'ControlMeassureAssignmentManager'
+    CONTROL_MEASURE_ASSIGNMENT = 'ControlMeasureAssignmentManager'
