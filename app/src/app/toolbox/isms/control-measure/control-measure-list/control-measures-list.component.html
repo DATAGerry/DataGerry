@@ -1,4 +1,3 @@
-<!-- src/app/toolbox/isms/control-meassures/control-meassures-list.component.html -->
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Control/Measures</h2>
@@ -9,13 +8,13 @@
   <hr />
   
   <cmdb-table
-    [items]="controlMeassures"
+    [items]="controlMeasures"
     [columns]="columns"
     [page]="page"
     [sort]="sort"
-    [id]="'control-meassures-table'"
+    [id]="'control-measures-table'"
     [emptyMessage]="'No Control/Measures found.'"
-    [totalItems]="totalControlMeassures"
+    [totalItems]="totalControlMeasures"
     [selectEnabled]="false"
     [loading]="loading"
     [pageSize]="limit"

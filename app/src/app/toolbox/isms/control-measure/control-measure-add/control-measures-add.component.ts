@@ -8,21 +8,21 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 // Service & model for ControlMeassure
 import { ControlMeassure } from '../../models/control-meassure.model';
-import { ControlMeassureService } from '../../services/control-meassure.service';
 
 // Extendable Option
 import { ExtendableOptionService } from 'src/app/toolbox/isms/services/extendable-option.service';
 import { ExtendableOption } from 'src/app/framework/models/object-group.model';
+import { ControlMeasureService } from '../../services/control-measure.service';
 
-export const CONTROL_MEASSURE = 'CONTROL_MEASSURE';
+export const CONTROL_MEASURE = 'CONTROL_MEASURE';
 export const IMPLEMENTATION_STATE = 'IMPLEMENTATION_STATE';
 
 @Component({
-  selector: 'app-control-meassures-add',
-  templateUrl: './control-meassures-add.component.html',
-  styleUrls: ['./control-meassures-add.component.scss']
+  selector: 'app-control-measures-add',
+  templateUrl: './control-measures-add.component.html',
+  styleUrls: ['./control-measures-add.component.scss']
 })
-export class ControlMeassuresAddComponent implements OnInit {
+export class ControlMeasuresAddComponent implements OnInit {
 
   public isEditMode = false;
   public isLoading$ = this.loaderService.isLoading$;
@@ -30,7 +30,7 @@ export class ControlMeassuresAddComponent implements OnInit {
   public controlMeassureForm: FormGroup;
   public controlMeassure: ControlMeassure = {
     title: '',
-    control_meassure_type: 'CONTROL',  // or 'REQUIREMENT' | 'MEASURE'
+    control_measure_type: 'CONTROL',  // or 'REQUIREMENT' | 'MEASURE'
     source: null,                      // store the public_id from the extendable option
     implementation_state: null,        // store the public_id from the extendable option
     identifier: '',
@@ -53,14 +53,14 @@ export class ControlMeassuresAddComponent implements OnInit {
     private router: Router,
     private loaderService: LoaderService,
     private toast: ToastService,
-    private controlMeassureService: ControlMeassureService,
+    private controlMeasureService: ControlMeasureService,
     private extendableOptionService: ExtendableOptionService
   ) {
     // Check if editing existing control/measure via router state
     const navState = this.router.getCurrentNavigation()?.extras?.state;
-    if (navState && navState['controlMeassure']) {
+    if (navState && navState['controlMeasure']) {
       this.isEditMode = true;
-      this.controlMeassure = navState['controlMeassure'] as ControlMeassure;
+      this.controlMeassure = navState['controlMeasure'] as ControlMeassure;
     }
   }
 
@@ -68,6 +68,7 @@ export class ControlMeassuresAddComponent implements OnInit {
     this.initForm();
 
     if (this.isEditMode && this.controlMeassure.public_id) {
+      console.log('editing control measure:', this.controlMeassure);
       this.patchForm(this.controlMeassure);
     }
 
@@ -82,7 +83,7 @@ export class ControlMeassuresAddComponent implements OnInit {
   private initForm(): void {
     this.controlMeassureForm = this.fb.group({
       title: ['', Validators.required],
-      control_meassure_type: ['CONTROL', Validators.required],
+      control_measure_type: ['CONTROL', Validators.required],
       source: [null, Validators.required],
       implementation_state: [null, Validators.required],
       identifier: [''],
@@ -101,7 +102,7 @@ export class ControlMeassuresAddComponent implements OnInit {
   private patchForm(cm: ControlMeassure): void {
     this.controlMeassureForm.patchValue({
       title: cm.title,
-      control_meassure_type: cm.control_meassure_type,
+      control_measure_type: cm.control_measure_type,
       source: cm.source,
       implementation_state: cm.implementation_state,
       identifier: cm.identifier,
@@ -121,7 +122,7 @@ export class ControlMeassuresAddComponent implements OnInit {
    */
   private loadSourceOptions(): void {
     this.loaderService.show();
-    this.extendableOptionService.getExtendableOptionsByType(CONTROL_MEASSURE)
+    this.extendableOptionService.getExtendableOptionsByType(CONTROL_MEASURE)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {
@@ -176,12 +177,12 @@ export class ControlMeassuresAddComponent implements OnInit {
    */
   private createControlMeassure(cm: ControlMeassure): void {
     this.loaderService.show();
-    this.controlMeassureService.createControlMeassure(cm)
+    this.controlMeasureService.createControlMeassure(cm)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
           this.toast.success('Control/Measure created successfully');
-          this.router.navigate(['/isms/control-meassures']);
+          this.router.navigate(['/isms/control-measures']);
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
@@ -199,12 +200,12 @@ export class ControlMeassuresAddComponent implements OnInit {
    */
   private updateControlMeassure(id: number, cm: ControlMeassure): void {
     this.loaderService.show();
-    this.controlMeassureService.updateControlMeassure(id, { ...cm, public_id: id })
+    this.controlMeasureService.updateControlMeassure(id, { ...cm, public_id: id })
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
           this.toast.success('Control/Measure updated successfully');
-          this.router.navigate(['/isms/control-meassures']);
+          this.router.navigate(['/isms/control-measures']);
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
@@ -218,7 +219,7 @@ export class ControlMeassuresAddComponent implements OnInit {
    * @returns void
    */
   public onCancel(): void {
-    this.router.navigate(['/isms/control-meassures']);
+    this.router.navigate(['/isms/control-measures']);
   }
 
   /* ------------------------------------------------------------------

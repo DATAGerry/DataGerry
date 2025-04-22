@@ -1,4 +1,4 @@
-// src/app/toolbox/isms/control-meassures/control-meassures-list.component.ts
+// src/app/toolbox/isms/control-measures/control-measures-list.component.ts
 
 import {
     Component,
@@ -19,18 +19,17 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { ControlMeassure } from '../../models/control-meassure.model';
-import { ControlMeassureService } from '../../services/control-meassure.service';
-
+import { ControlMeasureService } from '../../services/control-measure.service';
 @Component({
-    selector: 'app-control-meassures-list',
-    templateUrl: './control-meassures-list.component.html',
-    styleUrls: ['./control-meassures-list.component.scss']
+    selector: 'app-control-measures-list',
+    templateUrl: './control-measures-list.component.html',
+    styleUrls: ['./control-measures-list.component.scss']
 })
-export class ControlMeassuresListComponent implements OnInit {
+export class ControlmeasuresListComponent implements OnInit {
     @ViewChild('actionTemplate', { static: true }) actionTemplate: TemplateRef<any>;
 
-    public controlMeassures: ControlMeassure[] = [];
-    public totalControlMeassures = 0;
+    public controlMeasures: ControlMeassure[] = [];
+    public totalControlMeasures = 0;
 
     // Table config
     public page = 1;
@@ -47,12 +46,12 @@ export class ControlMeassuresListComponent implements OnInit {
         private loaderService: LoaderService,
         private modalService: NgbModal,
         private filterBuilderService: FilterBuilderService,
-        private controlMeassureService: ControlMeassureService
+        private controlmeasureservice: ControlMeasureService
     ) { }
 
     ngOnInit(): void {
         this.setupColumns();
-        this.loadControlMeassures();
+        this.loadControlMeasures();
     }
 
     /**
@@ -78,8 +77,8 @@ export class ControlMeassuresListComponent implements OnInit {
             },
             {
                 display: 'Type',
-                name: 'control_meassure_type',
-                data: 'control_meassure_type',
+                name: 'control_measure_type',
+                data: 'control_measure_type',
                 searchable: true,
                 sortable: true,
                 style: { width: '150px', 'text-align': 'center' }
@@ -109,7 +108,7 @@ export class ControlMeassuresListComponent implements OnInit {
     /**
      * Load data from backend
      */
-    private loadControlMeassures(): void {
+    private loadControlMeasures(): void {
         this.loading = true;
         this.loaderService.show();
 
@@ -117,7 +116,7 @@ export class ControlMeassuresListComponent implements OnInit {
             this.filter,
             [
                 { name: 'title' },
-                { name: 'control_meassure_type' }
+                { name: 'control_measure_type' }
             ]
         );
 
@@ -129,15 +128,15 @@ export class ControlMeassuresListComponent implements OnInit {
             order: this.sort.order
         };
 
-        this.controlMeassureService.getControlMeassures(params)
+        this.controlmeasureservice.getControlMeasures(params)
             .pipe(finalize(() => {
                 this.loading = false;
                 this.loaderService.hide();
             }))
             .subscribe({
                 next: (resp) => {
-                    this.controlMeassures = resp.results;
-                    this.totalControlMeassures = resp.total;
+                    this.controlMeasures = resp.results;
+                    this.totalControlMeasures = resp.total;
                 },
                 error: (err) => {
                     this.toast.error(err?.error?.message);
@@ -145,13 +144,15 @@ export class ControlMeassuresListComponent implements OnInit {
             });
     }
 
+
     /**
      * Navigate to add new control/meassure page
      * @returns {void}
      */
     public onAddNew(): void {
-        this.router.navigate(['/isms/control-meassures/add']);
+        this.router.navigate(['/isms/control-measures/add']);
     }
+
 
     /**
      * Navigate to edit control/meassure page
@@ -159,9 +160,10 @@ export class ControlMeassuresListComponent implements OnInit {
      * @returns {void}
      */
     public onEdit(item: ControlMeassure): void {
-        this.router.navigate(['/isms/control-meassures/edit'], { state: { controlMeassure: item } });
+        this.router.navigate(['/isms/control-measures/edit'], { state: { controlMeassure: item } });
     }
 
+    
     /**
      * Delete control/meassure
      * @param item - The control/meassure to delete
@@ -181,12 +183,12 @@ export class ControlMeassuresListComponent implements OnInit {
             (result) => {
                 if (result === 'confirmed') {
                     this.loaderService.show();
-                    this.controlMeassureService.deleteControlMeassure(item.public_id)
+                    this.controlmeasureservice.deleteControlMeassure(item.public_id)
                         .pipe(finalize(() => this.loaderService.hide()))
                         .subscribe({
                             next: () => {
                                 this.toast.success('Control/Measure deleted successfully.');
-                                this.loadControlMeassures();
+                                this.loadControlMeasures();
                             },
                             error: (err) => {
                                 this.toast.error(err?.error?.message);
@@ -204,23 +206,23 @@ export class ControlMeassuresListComponent implements OnInit {
     * ------------------------------------------------------------------ */
     public onPageChange(page: number): void {
         this.page = page;
-        this.loadControlMeassures();
+        this.loadControlMeasures();
     }
 
     public onPageSizeChange(limit: number): void {
         this.limit = limit;
         this.page = 1;
-        this.loadControlMeassures();
+        this.loadControlMeasures();
     }
 
     public onSortChange(sort: Sort): void {
         this.sort = sort;
-        this.loadControlMeassures();
+        this.loadControlMeasures();
     }
 
     public onSearchChange(search: string): void {
         this.filter = search;
         this.page = 1;
-        this.loadControlMeassures();
+        this.loadControlMeasures();
     }
 }

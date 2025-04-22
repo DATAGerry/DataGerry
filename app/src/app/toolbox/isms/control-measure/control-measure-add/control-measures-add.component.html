@@ -15,11 +15,11 @@
     <div class="form-group mt-3">
       <label>Type:<span class="required">*</span></label>
       <app-radio label="Control" [value]="'CONTROL'" name="cmTypeGroup" id="typeControl"
-        formControlName="control_meassure_type"></app-radio>
+        formControlName="control_measure_type"></app-radio>
       <app-radio label="Requirement" [value]="'REQUIREMENT'" name="cmTypeGroup" id="typeRequirement"
-        formControlName="control_meassure_type"></app-radio>
+        formControlName="control_measure_type"></app-radio>
       <app-radio label="Measure" [value]="'MEASURE'" name="cmTypeGroup" id="typeMeasure"
-        formControlName="control_meassure_type"></app-radio>
+        formControlName="control_measure_type"></app-radio>
     </div>
 
     <!-- Identifier -->
@@ -115,7 +115,7 @@
 </div>
 
 <!-- Manage Source Modal -->
-<app-extendable-option-manager *ngIf="showSourceManager" [options]="sourceOptions" [optionType]="'CONTROL_MEASSURE'"
+<app-extendable-option-manager *ngIf="showSourceManager" [options]="sourceOptions" [optionType]="'CONTROL_MEASURE'"
   [modalTitle]="'Manage Control Meassure Sources'" [itemLabel]="'Control Meassure Source'"
   [itemLabelPlural]="'Control Meassure Sources'" (close)="closeSourceManager()"></app-extendable-option-manager>
 

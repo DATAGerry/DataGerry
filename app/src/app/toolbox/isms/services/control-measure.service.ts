@@ -32,14 +32,14 @@ import { BaseApiService } from 'src/app/core/services/base-api.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ControlMeassureService extends BaseApiService<ControlMeassure> {
-  public servicePrefix = 'isms/control_meassures';
+export class ControlMeasureService extends BaseApiService<ControlMeassure> {
+  public servicePrefix = 'isms/control_measures';
 
   constructor(protected api: ApiCallService) {
     super(api);
   }
 
-  getControlMeassures(params: CollectionParameters): Observable<APIGetMultiResponse<ControlMeassure>> {
+  getControlMeasures(params: CollectionParameters): Observable<APIGetMultiResponse<ControlMeassure>> {
     const httpParams = this.buildHttpParams(params);
     return this.handleGetRequest<APIGetMultiResponse<ControlMeassure>>(`${this.servicePrefix}/`, httpParams);
   }
