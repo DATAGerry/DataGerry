@@ -1,9 +1,9 @@
-<div class="container" [formGroup]="controlMeassureForm">
+<div class="container" [formGroup]="controlMeasureForm">
   <h2 class="mb-3">
     {{ isEditMode ? 'Edit Control/Measure' : 'Add Control/Measure' }}
   </h2>
 
-  <form autocomplete="off" class="needs-validation" [formGroup]="controlMeassureForm" (ngSubmit)="onSave()">
+  <form autocomplete="off" class="needs-validation" [formGroup]="controlMeasureForm" (ngSubmit)="onSave()">
     <!-- Title (Required) -->
     <app-form-input formControlName="title" label="Name:" [required]="true" [errorMessage]="
         hasError('name','required')
@@ -15,11 +15,11 @@
     <div class="form-group mt-3">
       <label>Type:<span class="required">*</span></label>
       <app-radio label="Control" [value]="'CONTROL'" name="cmTypeGroup" id="typeControl"
-        formControlName="control_meassure_type"></app-radio>
+        formControlName="control_measure_type"></app-radio>
       <app-radio label="Requirement" [value]="'REQUIREMENT'" name="cmTypeGroup" id="typeRequirement"
-        formControlName="control_meassure_type"></app-radio>
+        formControlName="control_measure_type"></app-radio>
       <app-radio label="Measure" [value]="'MEASURE'" name="cmTypeGroup" id="typeMeasure"
-        formControlName="control_meassure_type"></app-radio>
+        formControlName="control_measure_type"></app-radio>
     </div>
 
     <!-- Identifier -->
@@ -62,8 +62,8 @@
     <div class="form-group mt-3">
       <label>Is Applicable?</label>
       <app-checkbox [id]="'is_applicable'" [label]="'Yes, it is applicable'"
-        [checked]="controlMeassureForm.get('is_applicable')?.value"
-        (checkedChange)="controlMeassureForm.get('is_applicable')?.setValue($event)"></app-checkbox>
+        [checked]="controlMeasureForm.get('is_applicable')?.value"
+        (checkedChange)="controlMeasureForm.get('is_applicable')?.setValue($event)"></app-checkbox>
     </div>
 
     <!-- Reason -->
@@ -103,11 +103,7 @@
       <app-button [bootstrapClass]="'btn-secondary'" label="Cancel" type="button" (clicked)="onCancel()">
       </app-button>
       <!-- Submit Button -->
-      <!-- <button class="btn btn-success" type="submit" [disabled]="controlMeassureForm.invalid">
-        {{ isEditMode ? 'Save Changes' : 'Create Control/Measure' }}
-      </button> -->
-
-      <app-button [bootstrapClass]="'btn-success'" [disabled]="controlMeassureForm.invalid"
+      <app-button [bootstrapClass]="'btn-success'" [disabled]="controlMeasureForm.invalid"
         [label]="isEditMode ? 'Save Changes' : 'Create Control/Measure'" type="submit">
       </app-button>
     </div>
@@ -115,9 +111,9 @@
 </div>
 
 <!-- Manage Source Modal -->
-<app-extendable-option-manager *ngIf="showSourceManager" [options]="sourceOptions" [optionType]="'CONTROL_MEASSURE'"
-  [modalTitle]="'Manage Control Meassure Sources'" [itemLabel]="'Control Meassure Source'"
-  [itemLabelPlural]="'Control Meassure Sources'" (close)="closeSourceManager()"></app-extendable-option-manager>
+<app-extendable-option-manager *ngIf="showSourceManager" [options]="sourceOptions" [optionType]="'CONTROL_MEASURE'"
+  [modalTitle]="'Manage Control Measure Sources'" [itemLabel]="'Control Measure Source'"
+  [itemLabelPlural]="'Control Measure Sources'" (close)="closeSourceManager()"></app-extendable-option-manager>
 
 <!-- Manage Implementation State Modal -->
 <app-extendable-option-manager *ngIf="showImplementationStateManager" [options]="implementationStateOptions"

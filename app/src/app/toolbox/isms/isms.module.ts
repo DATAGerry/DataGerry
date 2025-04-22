@@ -32,11 +32,13 @@ import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-
 import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { RisksListComponent } from './risks/risks-list/risks-list.component';
-import {ControlMeassuresListComponent } from './control-meassure/control-meassure-list/control-meassure-list.component';
-import { ControlMeassuresAddComponent } from './control-meassure/control-meassure-add/control-meassures-add.component';
 import { PersonListComponent } from './person/person-list/person-list.component';
 import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
 import { PersonRoutingModule } from './person/person-routing.module';
+import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
+import { ControlMeasuresAddComponent } from './control-measure/control-measure-add/control-measures-add.component';
 
 @NgModule({
   declarations: [
@@ -60,8 +62,8 @@ import { PersonRoutingModule } from './person/person-routing.module';
     VulnerabilitiesAddComponent,
     RiskAddComponent,
     RisksListComponent,
-    ControlMeassuresListComponent,
-    ControlMeassuresAddComponent,
+    ControlmeasuresListComponent,
+    ControlMeasuresAddComponent,
     PersonListComponent,
     PersonAddEditComponent
   ],
@@ -70,6 +72,7 @@ import { PersonRoutingModule } from './person/person-routing.module';
     LayoutModule,
     IsmsRoutingModule,
     PersonRoutingModule,
+    RiskAssessmentModule,
     ArchwizardModule,
     ReactiveFormsModule,
     NgSelectModule,
@@ -77,7 +80,8 @@ import { PersonRoutingModule } from './person/person-routing.module';
     AuthModule,
     CoreModule,
     TableModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ]
 })
 export class ISMSModule {}
