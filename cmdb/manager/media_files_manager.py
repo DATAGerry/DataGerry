@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""document"""
-#TODO: DOCUMENT-FIX
+"""
+Implementation of MediaFilesManager
+"""
 import logging
 from datetime import datetime, timezone
 from gridfs.grid_file import GridOutCursor, GridOut
@@ -41,9 +42,21 @@ LOGGER = logging.getLogger(__name__)
 #                                               MediaFilesManager - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class MediaFilesManager(BaseManager):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Manager class for handling MediaFile objects in a MongoDB GridFS.
+
+    Provides CRUD operations (Create, Read, Update, Delete) 
+    for managing media files and their metadata.
+    """
+
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
+        """
+        Initializes the MediaFilesManager with a database manager
+
+        Args:
+            dbm (MongoDatabaseManager): The database manager instance
+            database (str, optional): Specific database name to switch to
+        """
         if database:
             dbm.connector.set_database(database)
 
@@ -52,37 +65,55 @@ class MediaFilesManager(BaseManager):
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-    def insert_file(self, data, metadata):
+    def insert_file(self, data, metadata: dict) -> dict:
         """
-        Insert new MediaFile Object
+        Inserts a new media file into GridFS
+
         Args:
-            data: init media_file
-            metadata: a set of data that describes and gives information about other data.
+            data: The file-like object containing the media data
+            metadata (dict): Metadata describing the media file
+
         Returns:
-            New MediaFile in database
+            dict: The inserted MediaFile document
+        
+        Raises:
+            MediaFileManagerInsertError: If the file could not be inserted
         """
         try:
             with self.fs.new_file(filename=data.filename) as media_file:
                 media_file.write(data)
                 media_file.public_id = self.get_new_media_file_id()
                 media_file.metadata = FileMetadata(**metadata).__dict__
+
+            return media_file._file
         except Exception as err:
-            #TODO: ERROR-FIX
             raise MediaFileManagerInsertError(err) from err
 
-        return media_file._file
+
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def get_new_media_file_id(self) -> int:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Generates a new public ID for a MediaFile
+
+        Returns:
+            int: A new unique public_id
+        """
         return self.get_next_public_id()
 
 
     def get_file(self, metadata: dict, blob: bool = False) -> GridOut:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves a media file by its metadata
+
+        Args:
+            metadata (dict): Filter criteria for locating the file
+            blob (bool, optional): If True, returns the raw binary content instead of metadata
+
+        Returns:
+            dict or bytes or None: The file's metadata, raw content, or None if not found
+        """
         try:
             result = self.fs.get_last_version(**metadata)
         except NoFile:
@@ -94,8 +125,19 @@ class MediaFilesManager(BaseManager):
 
 
     def get_many_media_files(self, metadata, **params: dict):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Retrieves multiple media files matching the given metadata
+
+        Args:
+            metadata (dict): Filter criteria
+            **params (dict): Additional query parameters (e.g., sort, limit)
+
+        Returns:
+            GridFsResponse: Object containing list of MediaFiles and the total record count
+
+        Raises:
+            MediaFileManagerGetError: If retrieval fails
+        """
         try:
             results = []
             records_total = self.fs.find(filter=metadata).retrieved
@@ -103,51 +145,66 @@ class MediaFilesManager(BaseManager):
             iterator: GridOutCursor = self.fs.find(filter=metadata, **params)
             for grid in iterator:
                 results.append(MediaFile.to_json(MediaFile(**grid._file)))
-        except (Exception, MediaFileManagerGetError) as err:
-            #TODO: ERROR-FIX
+
+            return GridFsResponse(results, records_total)
+        except Exception as err:
             raise MediaFileManagerGetError(err) from err
 
-        return GridFsResponse(results, records_total)
 
-
-    def file_exists(self, filter_metadata) -> bool:
+    def file_exists(self, filter_metadata: dict) -> bool:
         """
-        Check is MediaFile Object exist
+        Checks whether a media file exists with the given metadata
+
         Args:
-            filter_metadata: Metadata as filter
+            filter_metadata (dict): Metadata to filter files
+
         Returns:
-            bool: If exist return true else false
+            bool: True if file exists, otherwise False
         """
         return self.fs.exists(**filter_metadata)
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
     def update_file(self, data):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Updates metadata for an existing media file
+
+        Args:
+            data (dict): Updated data dictionary, must include 'public_id'
+
+        Returns:
+            dict: The updated file data
+
+        Raises:
+            MediaFileManagerUpdateError: If the update fails
+        """
         try:
             data['uploadDate'] = datetime.now(timezone.utc)
             self.update(criteria={'public_id':data['public_id']}, data=data)
+
+            return data
         except Exception as err:
             raise MediaFileManagerUpdateError(f"Could not update file. Error: {err}") from err
-
-        return data
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
     def delete_file(self, public_id) -> bool:
         """
-        Delete MediaFile Object
+        Deletes a media file by its public ID
+
         Args:
-            public_id(int): init media_file
+            public_id (int): The public ID of the media file
+
+        Raises:
+            MediaFileManagerDeleteError: If deletion fails
+
         Returns:
-            bool: If deleted return true else false
+            bool: True if successfully deleted
         """
         try:
             file_id = self.fs.get_last_version(**{'public_id': public_id})._id
             self.fs.delete(file_id)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            raise MediaFileManagerDeleteError(f'Could not delete file with ID: {file_id}') from err
 
-        return True
+            return True
+        except Exception as err:
+            raise MediaFileManagerDeleteError(f'Could not delete file with ID: {file_id}') from err

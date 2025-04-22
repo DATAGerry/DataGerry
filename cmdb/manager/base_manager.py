@@ -482,7 +482,7 @@ class BaseManager:
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete(self, criteria: dict) -> bool:
+    def delete(self, criteria: dict, collection: str = None) -> bool:
         """
         Deletes a document from the collection that matches the given criteria
 
@@ -496,11 +496,18 @@ class BaseManager:
             bool: True if the deletion was acknowledged, otherwise False
         """
         try:
-            result = self.dbm.delete(self.collection, criteria)
+            target_collection = self.collection
+
+            if collection:
+                target_collection = collection
+
+            result = self.dbm.delete(target_collection, criteria)
 
             return result.acknowledged and result.deleted_count > 0
         except (DocumentDeleteError, Exception) as err:
             raise BaseManagerDeleteError(err) from err
+
+
 
 
     def delete_many(self, filter_query: dict) -> DeleteResult:

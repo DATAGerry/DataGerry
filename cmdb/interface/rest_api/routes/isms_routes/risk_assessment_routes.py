@@ -253,7 +253,7 @@ def delete_isms_risk_assessment(public_id: int, request_user: CmdbUser):
         if not to_delete_risk_assessment:
             abort(404, f"The RiskAssessment with ID:{public_id} was not found!")
 
-        risk_assessment_manager.delete_item(public_id)
+        risk_assessment_manager.delete_with_followup(public_id)
 
         return DeleteSingleResponse(to_delete_risk_assessment).make_response()
     except HTTPException as http_err:

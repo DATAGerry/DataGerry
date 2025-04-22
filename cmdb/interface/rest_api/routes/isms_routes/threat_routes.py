@@ -46,6 +46,7 @@ from cmdb.errors.manager.threat_manager import (
     ThreatManagerUpdateError,
     ThreatManagerDeleteError,
     ThreatManagerIterationError,
+    ThreatManagerRiskUsageError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -237,7 +238,7 @@ def delete_isms_threat(public_id: int, request_user: CmdbUser):
         if not to_delete_threat:
             abort(404, f"The Threat with ID:{public_id} was not found!")
 
-        threat_manager.delete_item(public_id)
+        threat_manager.delete_with_follow_up(public_id)
 
         return DeleteSingleResponse(to_delete_threat).make_response()
     except HTTPException as http_err:
@@ -245,6 +246,9 @@ def delete_isms_threat(public_id: int, request_user: CmdbUser):
     except ThreatManagerDeleteError as err:
         LOGGER.error("[delete_isms_threat] ThreatManagerDeleteError: %s", err, exc_info=True)
         abort(400, f"Failed to delete the Threat with ID:{public_id}!")
+    except ThreatManagerRiskUsageError as err:
+        LOGGER.error("[delete_isms_threat] ThreatManagerRiskUsageError: %s", err)
+        abort(400, f"Threat with ID:{public_id} can not be deleted because it is used by Risks!")
     except ThreatManagerGetError as err:
         LOGGER.error("[delete_isms_threat] ThreatManagerGetError: %s", err, exc_info=True)
         abort(400, f"Failed to retrieve the Threat with ID:{public_id} from the database!")

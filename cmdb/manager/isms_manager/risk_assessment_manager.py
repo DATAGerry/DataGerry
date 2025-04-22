@@ -22,9 +22,10 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.isms_model import IsmsRiskAssessment
+from cmdb.models.isms_model import IsmsRiskAssessment, IsmsControlMeasureAssignment
 
 from cmdb.errors.manager.risk_assessment_manager import RISK_ASSESMENT_MANAGER_ERRORS
+from cmdb.errors.manager.risk_assessment_manager import RiskAssessmentManagerDeleteError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -40,3 +41,35 @@ class RiskAssessmentManager(GenericManager):
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
         super().__init__(dbm, IsmsRiskAssessment, RISK_ASSESMENT_MANAGER_ERRORS, database)
+
+# --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
+
+    def delete_with_followup(self, public_id: int) -> bool:
+        """
+        Deletes an IsmsRiskAssessment from the database with followup logics
+
+        Args:
+            public_id (int): The public_id of the IsmsRiskAssessment to delete
+
+        Raises:
+            RiskAssessmentManagerDeleteError: If something went wrong
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # When an IsmsRiskAssessment is deleted, delete also all IsmsControlMeasureAssignments where it is linked
+            linked_control_measure_assignments = self.get_many_from_other_collection(
+                IsmsControlMeasureAssignment.COLLECTION,
+                risk_assessment_id=public_id
+            )
+
+            for control_measure_assignment in linked_control_measure_assignments:
+                self.delete(
+                    {'public_id':control_measure_assignment['public_id']},
+                    IsmsControlMeasureAssignment.COLLECTION
+                )
+
+            return self.delete_item(public_id)
+        except Exception as err:
+            raise RiskAssessmentManagerDeleteError(err) from err

@@ -64,3 +64,9 @@ class ThreatManagerIterationError(ThreatManagerError):
     """
     Raised when ThreatManager could not iterate over IsmsThreats
     """
+
+
+class ThreatManagerRiskUsageError(ThreatManagerError):
+    """
+    Raised when ThreatManager could not delete an IsmsThreat because an IsmsRisk is using it
+    """

@@ -64,3 +64,9 @@ class ProtectionGoalManagerIterationError(ProtectionGoalManagerError):
     """
     Raised when ProtectionGoalManager could not iterate over IsmsProtectionGoals
     """
+
+
+class ProtectionGoalManagerRiskUsageError(ProtectionGoalManagerError):
+    """
+    Raised when ThreatManager could not delete an IsmsProtectionGoal because an IsmsRisk is using it
+    """
