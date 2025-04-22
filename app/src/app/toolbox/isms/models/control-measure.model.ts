@@ -1,4 +1,4 @@
-export interface ControlMeassure {
+export interface ControlMeasure {
     public_id?: number;
     title: string;
     control_measure_type: 'CONTROL' | 'REQUIREMENT' | 'MEASURE';

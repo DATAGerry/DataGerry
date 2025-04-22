@@ -18,7 +18,7 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
-import { ControlMeassure } from '../../models/control-meassure.model';
+import { ControlMeasure } from '../../models/control-measure.model';
 import { ControlMeasureService } from '../../services/control-measure.service';
 @Component({
     selector: 'app-control-measures-list',
@@ -28,7 +28,7 @@ import { ControlMeasureService } from '../../services/control-measure.service';
 export class ControlmeasuresListComponent implements OnInit {
     @ViewChild('actionTemplate', { static: true }) actionTemplate: TemplateRef<any>;
 
-    public controlMeasures: ControlMeassure[] = [];
+    public controlMeasures: ControlMeasure[] = [];
     public totalControlMeasures = 0;
 
     // Table config
@@ -146,7 +146,7 @@ export class ControlmeasuresListComponent implements OnInit {
 
 
     /**
-     * Navigate to add new control/meassure page
+     * Navigate to add new control/measure page
      * @returns {void}
      */
     public onAddNew(): void {
@@ -155,21 +155,21 @@ export class ControlmeasuresListComponent implements OnInit {
 
 
     /**
-     * Navigate to edit control/meassure page
-     * @param item - The control/meassure to edit
+     * Navigate to edit control/measure page
+     * @param item - The control/measure to edit
      * @returns {void}
      */
-    public onEdit(item: ControlMeassure): void {
-        this.router.navigate(['/isms/control-measures/edit'], { state: { controlMeassure: item } });
+    public onEdit(item: ControlMeasure): void {
+        this.router.navigate(['/isms/control-measures/edit'], { state: { controlMeasure: item } });
     }
 
-    
+
     /**
-     * Delete control/meassure
-     * @param item - The control/meassure to delete
+     * Delete control/measure
+     * @param item - The control/measure to delete
      * @returns {void}
      */
-    public onDelete(item: ControlMeassure): void {
+    public onDelete(item: ControlMeasure): void {
         if (!item.public_id) {
             return;
         }
@@ -183,7 +183,7 @@ export class ControlmeasuresListComponent implements OnInit {
             (result) => {
                 if (result === 'confirmed') {
                     this.loaderService.show();
-                    this.controlmeasureservice.deleteControlMeassure(item.public_id)
+                    this.controlmeasureservice.deleteControlMeasure(item.public_id)
                         .pipe(finalize(() => this.loaderService.hide()))
                         .subscribe({
                             next: () => {

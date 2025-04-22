@@ -6,8 +6,8 @@ import { finalize } from 'rxjs/operators';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 
-// Service & model for ControlMeassure
-import { ControlMeassure } from '../../models/control-meassure.model';
+// Service & model for ControlMeasure
+import { ControlMeasure } from '../../models/control-measure.model';
 
 // Extendable Option
 import { ExtendableOptionService } from 'src/app/toolbox/isms/services/extendable-option.service';
@@ -27,8 +27,8 @@ export class ControlMeasuresAddComponent implements OnInit {
   public isEditMode = false;
   public isLoading$ = this.loaderService.isLoading$;
 
-  public controlMeassureForm: FormGroup;
-  public controlMeassure: ControlMeassure = {
+  public controlMeasureForm: FormGroup;
+  public controlMeasure: ControlMeasure = {
     title: '',
     control_measure_type: 'CONTROL',  // or 'REQUIREMENT' | 'MEASURE'
     source: null,                      // store the public_id from the extendable option
@@ -60,16 +60,16 @@ export class ControlMeasuresAddComponent implements OnInit {
     const navState = this.router.getCurrentNavigation()?.extras?.state;
     if (navState && navState['controlMeasure']) {
       this.isEditMode = true;
-      this.controlMeassure = navState['controlMeasure'] as ControlMeassure;
+      this.controlMeasure = navState['controlMeasure'] as ControlMeasure;
     }
   }
 
   ngOnInit(): void {
     this.initForm();
 
-    if (this.isEditMode && this.controlMeassure.public_id) {
-      console.log('editing control measure:', this.controlMeassure);
-      this.patchForm(this.controlMeassure);
+    if (this.isEditMode && this.controlMeasure.public_id) {
+      console.log('editing control measure:', this.controlMeasure);
+      this.patchForm(this.controlMeasure);
     }
 
     // Load dropdown data from ExtendableOptions
@@ -81,7 +81,7 @@ export class ControlMeasuresAddComponent implements OnInit {
    * Initializes the form with default values and validators.
    */
   private initForm(): void {
-    this.controlMeassureForm = this.fb.group({
+    this.controlMeasureForm = this.fb.group({
       title: ['', Validators.required],
       control_measure_type: ['CONTROL', Validators.required],
       source: [null, Validators.required],
@@ -97,10 +97,10 @@ export class ControlMeasuresAddComponent implements OnInit {
 
   /**
    * Patches the form with existing control/measure data.
-   * @param cm - The ControlMeassure object to patch the form with.
+   * @param cm - The ControlMeasure object to patch the form with.
    */
-  private patchForm(cm: ControlMeassure): void {
-    this.controlMeassureForm.patchValue({
+  private patchForm(cm: ControlMeasure): void {
+    this.controlMeasureForm.patchValue({
       title: cm.title,
       control_measure_type: cm.control_measure_type,
       source: cm.source,
@@ -156,28 +156,28 @@ export class ControlMeasuresAddComponent implements OnInit {
    * Handles the form submission for creating or updating a control/measure.
    */
   public onSave(): void {
-    if (this.controlMeassureForm.invalid) {
-      this.controlMeassureForm.markAllAsTouched();
+    if (this.controlMeasureForm.invalid) {
+      this.controlMeasureForm.markAllAsTouched();
       return;
     }
 
-    const formValue = this.controlMeassureForm.value as ControlMeassure;
+    const formValue = this.controlMeasureForm.value as ControlMeasure;
 
-    if (this.isEditMode && this.controlMeassure.public_id) {
-      this.updateControlMeassure(this.controlMeassure.public_id, formValue);
+    if (this.isEditMode && this.controlMeasure.public_id) {
+      this.updateControlMeasure(this.controlMeasure.public_id, formValue);
     } else {
-      this.createControlMeassure(formValue);
+      this.createControlMeasure(formValue);
     }
   }
 
 
   /**
    * Creates a new control/measure.
-   * @param cm - The ControlMeassure object to create.
+   * @param cm - The ControlMeasure object to create.
    */
-  private createControlMeassure(cm: ControlMeassure): void {
+  private createControlMeasure(cm: ControlMeasure): void {
     this.loaderService.show();
-    this.controlMeasureService.createControlMeassure(cm)
+    this.controlMeasureService.createControlMeasure(cm)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
@@ -194,13 +194,13 @@ export class ControlMeasuresAddComponent implements OnInit {
   /**
    * Updates an existing control/measure.
    * @param id - The public_id of the control/measure to update.
-   * @param cm - The ControlMeassure object with updated data.
+   * @param cm - The ControlMeasure object with updated data.
    * @returns void
    * @throws Error if the update fails.
    */
-  private updateControlMeassure(id: number, cm: ControlMeassure): void {
+  private updateControlMeasure(id: number, cm: ControlMeasure): void {
     this.loaderService.show();
-    this.controlMeasureService.updateControlMeassure(id, { ...cm, public_id: id })
+    this.controlMeasureService.updateControlMeasure(id, { ...cm, public_id: id })
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
@@ -250,7 +250,7 @@ export class ControlMeasuresAddComponent implements OnInit {
    * @param error - The error type to check for.
    */
   public hasError(controlName: string, error: string): boolean {
-    const ctrl = this.controlMeassureForm.get(controlName);
+    const ctrl = this.controlMeasureForm.get(controlName);
     return !!(ctrl && ctrl.hasError(error) && (ctrl.dirty || ctrl.touched));
   }
 }
