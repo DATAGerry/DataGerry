@@ -18,7 +18,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { ControlMeassure } from '../models/control-meassure.model';
+import { ControlMeasure } from '../models/control-measure.model';
 import {
   APIGetMultiResponse,
   APIInsertSingleResponse,
@@ -32,27 +32,27 @@ import { BaseApiService } from 'src/app/core/services/base-api.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ControlMeasureService extends BaseApiService<ControlMeassure> {
+export class ControlMeasureService extends BaseApiService<ControlMeasure> {
   public servicePrefix = 'isms/control_measures';
 
   constructor(protected api: ApiCallService) {
     super(api);
   }
 
-  getControlMeasures(params: CollectionParameters): Observable<APIGetMultiResponse<ControlMeassure>> {
+  getControlMeasures(params: CollectionParameters): Observable<APIGetMultiResponse<ControlMeasure>> {
     const httpParams = this.buildHttpParams(params);
-    return this.handleGetRequest<APIGetMultiResponse<ControlMeassure>>(`${this.servicePrefix}/`, httpParams);
+    return this.handleGetRequest<APIGetMultiResponse<ControlMeasure>>(`${this.servicePrefix}/`, httpParams);
   }
 
-  createControlMeassure(cm: ControlMeassure): Observable<APIInsertSingleResponse<ControlMeassure>> {
-    return this.handlePostRequest<APIInsertSingleResponse<ControlMeassure>>(`${this.servicePrefix}/`, cm);
+  createControlMeasure(cm: ControlMeasure): Observable<APIInsertSingleResponse<ControlMeasure>> {
+    return this.handlePostRequest<APIInsertSingleResponse<ControlMeasure>>(`${this.servicePrefix}/`, cm);
   }
 
-  updateControlMeassure(id: number, cm: ControlMeassure): Observable<APIUpdateSingleResponse<ControlMeassure>> {
-    return this.handlePutRequest<APIUpdateSingleResponse<ControlMeassure>>(`${this.servicePrefix}/${id}`, cm);
+  updateControlMeasure(id: number, cm: ControlMeasure): Observable<APIUpdateSingleResponse<ControlMeasure>> {
+    return this.handlePutRequest<APIUpdateSingleResponse<ControlMeasure>>(`${this.servicePrefix}/${id}`, cm);
   }
 
-  deleteControlMeassure(id: number): Observable<APIDeleteSingleResponse<ControlMeassure>> {
-    return this.handleDeleteRequest<APIDeleteSingleResponse<ControlMeassure>>(`${this.servicePrefix}/${id}`);
+  deleteControlMeasure(id: number): Observable<APIDeleteSingleResponse<ControlMeasure>> {
+    return this.handleDeleteRequest<APIDeleteSingleResponse<ControlMeasure>>(`${this.servicePrefix}/${id}`);
   }
 }
