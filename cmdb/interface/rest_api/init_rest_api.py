@@ -114,8 +114,7 @@ def register_converters(app: BaseCmdbApp):
     app.url_map.converters['regex'] = RegexConverter
 
 
-#pylint: disable=too-many-locals
-#pylint: disable=too-many-statements
+#pylint: disable=R0914, R0915
 def register_blueprints(app: BaseCmdbApp):
     """
     Registers API routes for the app
@@ -172,9 +171,9 @@ def register_blueprints(app: BaseCmdbApp):
         threat_blueprint,
         vulnerability_blueprint,
         risk_blueprint,
-        control_meassure_blueprint,
+        control_measure_blueprint,
         risk_assessment_blueprint,
-        control_meassure_assignment_blueprint,
+        control_measure_assignment_blueprint,
     )
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -224,9 +223,9 @@ def register_blueprints(app: BaseCmdbApp):
     app.register_blueprint(threat_blueprint, url_prefix='/isms/threats')
     app.register_blueprint(vulnerability_blueprint, url_prefix='/isms/vulnerabilities')
     app.register_blueprint(risk_blueprint, url_prefix='/isms/risks')
-    app.register_blueprint(control_meassure_blueprint, url_prefix='/isms/control_meassures')
+    app.register_blueprint(control_measure_blueprint, url_prefix='/isms/control_measures')
     app.register_blueprint(risk_assessment_blueprint, url_prefix='/isms/risk_assessments')
-    app.register_blueprint(control_meassure_assignment_blueprint, url_prefix='/isms/control_meassure_assignments')
+    app.register_blueprint(control_measure_assignment_blueprint, url_prefix='/isms/control_measure_assignments')
     app.register_blueprint(isms_importer_blueprint, url_prefix='/isms/importer')
 
     if cmdb.__MODE__ == 'DEBUG':
@@ -234,6 +233,7 @@ def register_blueprints(app: BaseCmdbApp):
         app.register_blueprint(debug_blueprint)
 
     # LOGGER.debug(f"routes: {app.url_map}")
+
 
 def register_error_pages(app: BaseCmdbApp):
     """

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of IsmsControlMeassureAssignment in DataGerry - ISMS
+Implementation of IsmsControlMeasureAssignment in DataGerry - ISMS
 """
 import logging
 from datetime import datetime
@@ -24,33 +24,33 @@ from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.isms_model.priority_enum import Priority
 from cmdb.models.person_group_model.person_reference_type_enum import PersonReferenceType
 
-from cmdb.errors.models.isms_control_meassure_assignment import (
-    IsmsControlMeassureAssignmentInitError,
-    IsmsControlMeassureAssignmentInitFromDataError,
-    IsmsControlMeassureAssignmentToJsonError,
+from cmdb.errors.models.isms_control_measure_assignment import (
+    IsmsControlMeasureAssignmentInitError,
+    IsmsControlMeasureAssignmentInitFromDataError,
+    IsmsControlMeasureAssignmentToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                         IsmsControlMeassureAssignment - CLASS                                        #
+#                                         IsmsControlMeasureAssignment - CLASS                                         #
 # -------------------------------------------------------------------------------------------------------------------- #
-class IsmsControlMeassureAssignment(CmdbDAO):
+class IsmsControlMeasureAssignment(CmdbDAO):
     """
-    Implementation of IsmsControlMeassureAssignment
+    Implementation of IsmsControlMeasureAssignment
 
     Extends: CmdbDAO
     """
-    COLLECTION = "isms.controlMeassureAssignment"
-    MODEL = 'ControlMeassureAssignment'
+    COLLECTION = "isms.controlMeasureAssignment"
+    MODEL = 'ControlMeasureAssignment'
 
     SCHEMA: dict = {
-        'public_id': { # public_id of the IsmsControlMeassureAssignment
+        'public_id': { # public_id of the IsmsControlMeasureAssignment
             'type': 'integer',
             'min': 1,
         },
-        'control_meassure_id': { # public_id of IsmsControlMeassure
+        'control_measure_id': { # public_id of IsmsControlMeasure
             'type': 'integer',
             'required': True,
             'empty': False
@@ -88,7 +88,7 @@ class IsmsControlMeassureAssignment(CmdbDAO):
     def __init__(
             self,
             public_id: int,
-            control_meassure_id: int,
+            control_measure_id: int,
             risk_assessment_id:int,
             planned_implementation_date: datetime,
             implementation_status: int,
@@ -97,11 +97,11 @@ class IsmsControlMeassureAssignment(CmdbDAO):
             responsible_for_implementation_id_ref_type: PersonReferenceType,
             responsible_for_implementation_id: int):
         """
-        Initialises an IsmsControlMeassureAssignment
+        Initialises an IsmsControlMeasureAssignment
 
         Args:
-            public_id (int): public_id of the IsmsControlMeassureAssignment
-            control_meassure_id (int): public_id of IsmsControlMeassure
+            public_id (int): public_id of the IsmsControlMeasureAssignment
+            control_measure_id (int): public_id of IsmsControlMeasure
             risk_assessment_id (int): public_id of IsmsRiskAssessment
             planned_implementation_date (datetime): # Date of planned implementation
             implementation_status (int): public_id of CmdbExtendableOption 'IMPLEMENTATION_STATE'
@@ -111,10 +111,10 @@ class IsmsControlMeassureAssignment(CmdbDAO):
             responsible_for_implementation_id (int): # public_id of CmdbPerson or CmdbPersonGroup
 
         Raises:
-            IsmsControlMeassureAssignmentInitError: When the IsmsControlMeassureAssignment could not be initialised
+            IsmsControlMeasureAssignmentInitError: When the IsmsControlMeasureAssignment could not be initialised
         """
         try:
-            self.control_meassure_id = control_meassure_id
+            self.control_measure_id = control_measure_id
             self.risk_assessment_id = risk_assessment_id
             self.planned_implementation_date = planned_implementation_date
             self.implementation_status = implementation_status
@@ -125,23 +125,23 @@ class IsmsControlMeassureAssignment(CmdbDAO):
 
             super().__init__(public_id=public_id)
         except Exception as err:
-            raise IsmsControlMeassureAssignmentInitError(err) from err
+            raise IsmsControlMeasureAssignmentInitError(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
     @classmethod
-    def from_data(cls, data: dict) -> "IsmsControlMeassureAssignment":
+    def from_data(cls, data: dict) -> "IsmsControlMeasureAssignment":
         """
-        Initialises a IsmsControlMeassureAssignment from a dict
+        Initialises a IsmsControlMeasureAssignment from a dict
 
         Args:
-            data (dict): Data with which the IsmsControlMeassureAssignment should be initialised
+            data (dict): Data with which the IsmsControlMeasureAssignment should be initialised
 
         Raises:
-            IsmsControlMeassureAssignmentInitFromDataError: If the initialisation with the given data fails
+            IsmsControlMeasureAssignmentInitFromDataError: If the initialisation with the given data fails
 
         Returns:
-            IsmsControlMeassureAssignment: IsmsControlMeassureAssignment with the given data
+            IsmsControlMeasureAssignment: IsmsControlMeasureAssignment with the given data
         """
         try:
             planned_implementation_date = data.get('planned_implementation_date', None)
@@ -155,7 +155,7 @@ class IsmsControlMeassureAssignment(CmdbDAO):
 
             return cls(
                 public_id = data.get('public_id'),
-                control_meassure_id = data.get('control_meassure_id'),
+                control_measure_id = data.get('control_measure_id'),
                 risk_assessment_id = data.get('risk_assessment_id'),
                 planned_implementation_date = planned_implementation_date,
                 implementation_status = data.get('implementation_status'),
@@ -165,28 +165,28 @@ class IsmsControlMeassureAssignment(CmdbDAO):
                 responsible_for_implementation_id = data.get('responsible_for_implementation_id'),
             )
         except Exception as err:
-            raise IsmsControlMeassureAssignmentInitFromDataError(err) from err
+            raise IsmsControlMeasureAssignmentInitFromDataError(err) from err
 
 
     @classmethod
-    def to_json(cls, instance: "IsmsControlMeassureAssignment") -> dict:
+    def to_json(cls, instance: "IsmsControlMeasureAssignment") -> dict:
         """
-        Converts a IsmsControlMeassureAssignment into a json compatible dict
+        Converts a IsmsControlMeasureAssignment into a json compatible dict
 
         Args:
-            instance (IsmsControlMeassureAssignment): The IsmsControlMeassureAssignment which should be converted
+            instance (IsmsControlMeasureAssignment): The IsmsControlMeasureAssignment which should be converted
 
         Raises:
-            IsmsControlMeassureAssignmentToJsonError: If the IsmsControlMeassureAssignment could not be converted
+            IsmsControlMeasureAssignmentToJsonError: If the IsmsControlMeasureAssignment could not be converted
                                                       to a json compatible dict
 
         Returns:
-            dict: Json compatible dict of the IsmsControlMeassureAssignment values
+            dict: Json compatible dict of the IsmsControlMeasureAssignment values
         """
         try:
             return {
                 'public_id': instance.get_public_id(),
-                'control_meassure_id': instance.control_meassure_id,
+                'control_measure_id': instance.control_measure_id,
                 'risk_assessment_id': instance.risk_assessment_id,
                 'planned_implementation_date': instance.planned_implementation_date,
                 'implementation_status': instance.implementation_status,
@@ -196,4 +196,4 @@ class IsmsControlMeassureAssignment(CmdbDAO):
                 'responsible_for_implementation_id': instance.responsible_for_implementation_id,
             }
         except Exception as err:
-            raise IsmsControlMeassureAssignmentToJsonError(err) from err
+            raise IsmsControlMeasureAssignmentToJsonError(err) from err

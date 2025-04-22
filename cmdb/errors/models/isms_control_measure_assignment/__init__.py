@@ -14,19 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for IsmsControlMeassures
+This module provides all errors for IsmsRiskAssessments
 """
-from .isms_control_meassure_errors import (
-    IsmsControlMeassureError,
-    IsmsControlMeassureInitError,
-    IsmsControlMeassureInitFromDataError,
-    IsmsControlMeassureToJsonError,
+from .isms_control_measure_assignment_errors import (
+    IsmsControlMeasureAssignmentError,
+    IsmsControlMeasureAssignmentInitError,
+    IsmsControlMeasureAssignmentInitFromDataError,
+    IsmsControlMeasureAssignmentToJsonError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'IsmsControlMeassureError',
-    'IsmsControlMeassureInitError',
-    'IsmsControlMeassureInitFromDataError',
-    'IsmsControlMeassureToJsonError',
+    'IsmsControlMeasureAssignmentError',
+    'IsmsControlMeasureAssignmentInitError',
+    'IsmsControlMeasureAssignmentInitFromDataError',
+    'IsmsControlMeasureAssignmentToJsonError',
 ]

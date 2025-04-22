@@ -55,9 +55,9 @@ from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 from cmdb.manager.isms_manager.threat_manager import ThreatManager
 from cmdb.manager.isms_manager.vulnerability_manager import VulnerabilityManager
 from cmdb.manager.isms_manager.risk_manager import RiskManager
-from cmdb.manager.isms_manager.control_meassure_manager import ControlMeassureManager
+from cmdb.manager.isms_manager.control_measure_manager import ControlMeasureManager
 from cmdb.manager.isms_manager.risk_assessment_manager import RiskAssessmentManager
-from cmdb.manager.isms_manager.control_meassure_assignment_manager import ControlMeassureAssignmentManager
+from cmdb.manager.isms_manager.control_measure_assignment_manager import ControlMeasureAssignmentManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -94,9 +94,9 @@ __all__ = [
     'VulnerabilityManager',
     'UserSettingsManager',
     'RiskManager',
-    'ControlMeassureManager',
+    'ControlMeasureManager',
     'PersonsManager',
     'PersonGroupsManager',
     'RiskAssessmentManager',
-    'ControlMeassureAssignmentManager',
+    'ControlMeasureAssignmentManager',
 ]

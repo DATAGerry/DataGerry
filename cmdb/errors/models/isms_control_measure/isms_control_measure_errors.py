@@ -14,35 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all IsmsControlMeassure errors
+This module contains the classes of all IsmsControlMeasure errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class IsmsControlMeassureError(Exception):
+class IsmsControlMeasureError(Exception):
     """
-    Raised to catch all IsmsControlMeassure related errors
+    Raised to catch all IsmsControlMeasure related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all IsmsControlMeassure related errors
+        Raised to catch all IsmsControlMeasure related errors
         """
         super().__init__(err)
 
-# ------------------------------------------- IsmsControlMeassure - ERRORS ------------------------------------------- #
+# ------------------------------------------- IsmsControlMeasure - ERRORS -------------------------------------------- #
 
-class IsmsControlMeassureInitError(IsmsControlMeassureError):
+class IsmsControlMeasureInitError(IsmsControlMeasureError):
     """
-    Raised when a IsmsControlMeassure could not be initialised
-    """
-
-
-class IsmsControlMeassureInitFromDataError(IsmsControlMeassureError):
-    """
-    Raised when a IsmsControlMeassure could not be initialised from a dict
+    Raised when a IsmsControlMeasure could not be initialised
     """
 
 
-class IsmsControlMeassureToJsonError(IsmsControlMeassureError):
+class IsmsControlMeasureInitFromDataError(IsmsControlMeasureError):
     """
-    Raised when a IsmsControlMeassure could not be transformed into a json compatible dict
+    Raised when a IsmsControlMeasure could not be initialised from a dict
+    """
+
+
+class IsmsControlMeasureToJsonError(IsmsControlMeasureError):
+    """
+    Raised when a IsmsControlMeasure could not be transformed into a json compatible dict
     """

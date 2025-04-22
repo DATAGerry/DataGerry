@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of the ControlMeassureManager
+This module contains the implementation of the ControlMeasureManager
 """
 import logging
 
@@ -22,21 +22,21 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.isms_model import IsmsControlMeassure
+from cmdb.models.isms_model import IsmsControlMeasure
 
-from cmdb.errors.manager.control_meassure_manager import CONTROL_MEASSURE_MANAGER_ERRORS
+from cmdb.errors.manager.control_measure_manager import CONTROL_MEASURE_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                            ControlMeassureManager - CLASS                                            #
+#                                            ControlMeasureManager - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
-class ControlMeassureManager(GenericManager):
+class ControlMeasureManager(GenericManager):
     """
-    The ControlMeassureManager manages the interaction between IsmsControlMeassures and the database
+    The ControlMeasureManager manages the interaction between IsmsControlMeasures and the database
 
     Extends: GenericManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
-        super().__init__(dbm, IsmsControlMeassure, CONTROL_MEASSURE_MANAGER_ERRORS, database)
+        super().__init__(dbm, IsmsControlMeasure, CONTROL_MEASURE_MANAGER_ERRORS, database)

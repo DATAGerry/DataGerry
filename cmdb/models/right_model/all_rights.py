@@ -53,9 +53,9 @@ from cmdb.models.right_model.isms_rights import (
     ThreatRight,
     VulnerabilityRight,
     RiskRight,
-    ControlMeassureRight,
+    ControlMeasureRight,
     RiskAssessmentRight,
-    ControlMeassureAssignment,
+    ControlMeasureAssignment,
 )
 from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight, ExportTypeRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
@@ -235,12 +235,12 @@ ISMS_RIGHTS = (
             RiskRight('edit', Levels.PROTECTED, description='Edit ISMS Risks'),
             RiskRight('delete', Levels.SECURE, description='Delete ISMS Risks'),
         ),
-        ControlMeassureRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage ControlMeassures of ISMS'),
+        ControlMeasureRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage ControlMeasures of ISMS'),
         (
-            ControlMeassureRight('view', description='View ISMS ControlMeassures'),
-            ControlMeassureRight('add', description='Add ISMS ControlMeassures'),
-            ControlMeassureRight('edit', Levels.PROTECTED, description='Edit ISMS ControlMeassures'),
-            ControlMeassureRight('delete', Levels.SECURE, description='Delete ISMS ControlMeassures'),
+            ControlMeasureRight('view', description='View ISMS ControlMeasures'),
+            ControlMeasureRight('add', description='Add ISMS ControlMeasures'),
+            ControlMeasureRight('edit', Levels.PROTECTED, description='Edit ISMS ControlMeasures'),
+            ControlMeasureRight('delete', Levels.SECURE, description='Delete ISMS ControlMeasures'),
         ),
         RiskAssessmentRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage RiskAssessments of ISMS'),
         (
@@ -249,12 +249,12 @@ ISMS_RIGHTS = (
             RiskAssessmentRight('edit', Levels.PROTECTED, description='Edit ISMS RiskAssessments'),
             RiskAssessmentRight('delete', Levels.SECURE, description='Delete ISMS RiskAssessments'),
         ),
-        ControlMeassureAssignment(GLOBAL_RIGHT_IDENTIFIER, description='Manage ControlMeassure Assignments of ISMS'),
+        ControlMeasureAssignment(GLOBAL_RIGHT_IDENTIFIER, description='Manage ControlMeasure Assignments of ISMS'),
         (
-            ControlMeassureAssignment('view', description='View ISMS ControlMeassure Assignments'),
-            ControlMeassureAssignment('add', description='Add ISMS ControlMeassure Assignments'),
-            ControlMeassureAssignment('edit', Levels.PROTECTED, description='Edit ISMS ControlMeassure Assignments'),
-            ControlMeassureAssignment('delete', Levels.SECURE, description='Delete ISMS ControlMeassure Assignments'),
+            ControlMeasureAssignment('view', description='View ISMS ControlMeasure Assignments'),
+            ControlMeasureAssignment('add', description='Add ISMS ControlMeasure Assignments'),
+            ControlMeasureAssignment('edit', Levels.PROTECTED, description='Edit ISMS ControlMeasure Assignments'),
+            ControlMeasureAssignment('delete', Levels.SECURE, description='Delete ISMS ControlMeasure Assignments'),
         ),
     ),
 )

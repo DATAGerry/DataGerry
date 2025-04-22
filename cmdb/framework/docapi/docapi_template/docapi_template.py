@@ -101,13 +101,13 @@ class DocapiTemplate(TemplateManagementBase):
     @classmethod
     def to_json(cls, instance: "DocapiTemplate") -> dict:
         """
-        Converts a IsmsControlMeassure into a json compatible dict
+        Converts a DocapiTemplate into a json compatible dict
 
         Args:
-            instance (IsmsControlMeassure): The IsmsControlMeassure which should be converted
+            instance (DocapiTemplate): The DocapiTemplate which should be converted
 
         Returns:
-            dict: Json compatible dict of the IsmsControlMeassure values
+            dict: Json compatible dict of the DocapiTemplate values
         """
         return {
             'public_id': instance.public_id,

@@ -19,7 +19,7 @@ class IsmsImportType(str, Enum):
     Available IsmsImportTypes
     """
     RISK = 'risk'
-    CONTROL_MEASSURE = 'control_meassure'
+    CONTROL_MEASURE = 'control_measure'
     THREAT = 'threat'
     VULNERABILITY = 'vulnerability'
 

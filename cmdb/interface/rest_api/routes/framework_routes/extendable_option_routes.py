@@ -25,7 +25,7 @@ from cmdb.manager import (
     ThreatManager,
     VulnerabilityManager,
     ObjectGroupsManager,
-    ControlMeassureManager,
+    ControlMeasureManager,
 )
 
 from cmdb.manager.query_builder import BuilderParameters
@@ -333,7 +333,7 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
     threat_manager: ThreatManager = ManagerProvider.get_manager(ManagerType.THREAT, request_user)
     vulnerability_manager: VulnerabilityManager = ManagerProvider.get_manager(ManagerType.VULNERABILITY, request_user)
     object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(ManagerType.OBJECT_GROUP, request_user)
-    control_meassure_manager: ControlMeassureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASSURE,
+    control_measure_manager: ControlMeasureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASURE,
                                                                                    request_user)
 
     if extendable_option.get('option_type') == OptionType.THREAT:
@@ -345,11 +345,11 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
     if extendable_option.get('option_type') == OptionType.OBJECT_GROUP:
         return object_groups_manager.count_items({"categories": extendable_option.get('public_id')}) > 0
 
-    if extendable_option.get('option_type') == OptionType.CONTROL_MEASSURE:
-        return control_meassure_manager.count_items({"source": extendable_option.get('public_id')}) > 0
+    if extendable_option.get('option_type') == OptionType.CONTROL_MEASURE:
+        return control_measure_manager.count_items({"source": extendable_option.get('public_id')}) > 0
 
     if extendable_option.get('option_type') == OptionType.IMPLEMENTATION_STATE:
-        return control_meassure_manager.count_items({"implementation_state": extendable_option.get('public_id')}) > 0
+        return control_measure_manager.count_items({"implementation_state": extendable_option.get('public_id')}) > 0
 
     # If option_type is not recognized
     return False

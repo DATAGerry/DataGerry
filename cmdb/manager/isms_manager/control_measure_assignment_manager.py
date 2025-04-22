@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the implementation of the ControlMeassureAssignmentManager
+This module contains the implementation of the ControlMeasureAssignmentManager
 """
 import logging
 
@@ -22,21 +22,21 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.isms_model import IsmsControlMeassureAssignment
+from cmdb.models.isms_model import IsmsControlMeasureAssignment
 
-from cmdb.errors.manager.control_meassure_assignment_manager import CONTROL_MEASSURE_ASSIGNMENT_MANAGER_ERRORS
+from cmdb.errors.manager.control_measure_assignment_manager import CONTROL_MEASURE_ASSIGNMENT_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                       ControlMeassureAssignmentManager - CLASS                                       #
+#                                       ControlMeasureAssignmentManager - CLASS                                        #
 # -------------------------------------------------------------------------------------------------------------------- #
-class ControlMeassureAssignmentManager(GenericManager):
+class ControlMeasureAssignmentManager(GenericManager):
     """
     The ThreatManager manages the interaction between IsmsRiskAssessments and the database
 
     Extends: GenericManager
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
-        super().__init__(dbm, IsmsControlMeassureAssignment, CONTROL_MEASSURE_ASSIGNMENT_MANAGER_ERRORS, database)
+        super().__init__(dbm, IsmsControlMeasureAssignment, CONTROL_MEASURE_ASSIGNMENT_MANAGER_ERRORS, database)

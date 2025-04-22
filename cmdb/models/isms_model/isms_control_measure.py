@@ -14,17 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of IsmsControlMeassure in DataGerry - ISMS
+Implementation of IsmsControlMeasure in DataGerry - ISMS
 """
 import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
 
-from cmdb.models.isms_model.control_meassure_type_enum import ControlMeassureType
-from cmdb.errors.models.isms_control_meassure import (
-    IsmsControlMeassureInitError,
-    IsmsControlMeassureInitFromDataError,
-    IsmsControlMeassureToJsonError,
+from cmdb.models.isms_model.control_measure_type_enum import ControlMeasureType
+from cmdb.errors.models.isms_control_measure import (
+    IsmsControlMeasureInitError,
+    IsmsControlMeasureInitFromDataError,
+    IsmsControlMeasureToJsonError,
 )
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -32,16 +32,16 @@ from cmdb.errors.models.isms_control_meassure import (
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                              IsmsControlMeassure - CLASS                                             #
+#                                              IsmsControlMeasure - CLASS                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
-class IsmsControlMeassure(CmdbDAO):
+class IsmsControlMeasure(CmdbDAO):
     """
-    Implementation of IsmsControlMeassure which represents a threat in ISMS
+    Implementation of IsmsControlMeasure which represents a threat in ISMS
 
     Extends: CmdbDAO
     """
-    COLLECTION = "isms.controlMeassure"
-    MODEL = 'ControlMeassure'
+    COLLECTION = "isms.controlMeasure"
+    MODEL = 'ControlMeasure'
     # pylint: disable=R0801
     SCHEMA: dict = {
         'public_id': {
@@ -53,7 +53,7 @@ class IsmsControlMeassure(CmdbDAO):
             'required': True,
             'empty': False
         },
-        'control_meassure_type': {
+        'control_measure_type': {
             'type': 'string',
             'required': True,
             'empty': False
@@ -86,7 +86,7 @@ class IsmsControlMeassure(CmdbDAO):
             self,
             public_id: int,
             title: str,
-            control_meassure_type: ControlMeassureType,
+            control_measure_type: ControlMeasureType,
             source: int,
             implementation_state: int,
             identifier: str = None,
@@ -96,25 +96,25 @@ class IsmsControlMeassure(CmdbDAO):
             reason: str = None,
         ):
         """
-        Initialises an IsmsControlMeassure
+        Initialises an IsmsControlMeasure
 
         Args:
-            title (str): The title of the IsmsControlMeassure
-            control_meassure_type (ControlMeassureType): A ControlMeassureType of the IsmsControlMeassure
-            source: (int): public_id of CmdbExtendableOption('CONTROL_MEASSURE') of the IsmsControlMeassure
+            title (str): The title of the IsmsControlMeasure
+            control_measure_type (ControlMeasureType): A ControlMeasureType of the IsmsControlMeasure
+            source: (int): public_id of CmdbExtendableOption('CONTROL_MEASURE') of the IsmsControlMeasure
             implementation_state: (int): public_id of CmdbExtendableOption('IMPLEMENTATION_STATE')
-                                         of the IsmsControlMeassure
-            identifier (str, optional): The identifier of the IsmsControlMeassure
-            chapter (str, optional): The chapter of the IsmsControlMeassure
-            description (str, optional): The description of the IsmsControlMeassure
-            is_applicable (bool): = If True then the IsmsControlMeassure is applicable. Defaults to False
-            reason (str, optional): The reason of the IsmsControlMeassure
+                                         of the IsmsControlMeasure
+            identifier (str, optional): The identifier of the IsmsControlMeasure
+            chapter (str, optional): The chapter of the IsmsControlMeasure
+            description (str, optional): The description of the IsmsControlMeasure
+            is_applicable (bool): = If True then the IsmsControlMeasure is applicable. Defaults to False
+            reason (str, optional): The reason of the IsmsControlMeasure
         Raises:
-            IsmsControlMeassureInitError: If the IsmsControlMeassure could not be initialised
+            IsmsControlMeasureInitError: If the IsmsControlMeasure could not be initialised
         """
         try:
             self.title = title
-            self.control_meassure_type = control_meassure_type
+            self.control_measure_type = control_measure_type
             self.source = source
             self.implementation_state = implementation_state
             self.identifier = identifier
@@ -125,29 +125,29 @@ class IsmsControlMeassure(CmdbDAO):
 
             super().__init__(public_id = public_id)
         except Exception as err:
-            raise IsmsControlMeassureInitError(err) from err
+            raise IsmsControlMeasureInitError(err) from err
 
 # -------------------------------------------------- CLASS FUNCTIONS ------------------------------------------------- #
 
     @classmethod
-    def from_data(cls, data: dict) -> "IsmsControlMeassure":
+    def from_data(cls, data: dict) -> "IsmsControlMeasure":
         """
-        Initialises a IsmsControlMeassure from a dict
+        Initialises a IsmsControlMeasure from a dict
 
         Args:
-            data (dict): Data with which the IsmsControlMeassure should be initialised
+            data (dict): Data with which the IsmsControlMeasure should be initialised
 
         Raises:
-            IsmsControlMeassureInitFromDataError: If the initialisation with the given data fails
+            IsmsControlMeasureInitFromDataError: If the initialisation with the given data fails
 
         Returns:
-            IsmsControlMeassure: IsmsControlMeassure with the given data
+            IsmsControlMeasure: IsmsControlMeasure with the given data
         """
         try:
             return cls(
                 public_id = data.get('public_id'),
                 title = data.get('title'),
-                control_meassure_type = data.get('control_meassure_type'),
+                control_measure_type = data.get('control_measure_type'),
                 source = data.get('source'),
                 implementation_state = data.get('implementation_state'),
                 identifier = data.get('identifier'),
@@ -157,28 +157,28 @@ class IsmsControlMeassure(CmdbDAO):
                 reason = data.get('reason'),
             )
         except Exception as err:
-            raise IsmsControlMeassureInitFromDataError(err) from err
+            raise IsmsControlMeasureInitFromDataError(err) from err
 
 
     @classmethod
-    def to_json(cls, instance: "IsmsControlMeassure") -> dict:
+    def to_json(cls, instance: "IsmsControlMeasure") -> dict:
         """
-        Converts a IsmsControlMeassure into a json compatible dict
+        Converts a IsmsControlMeasure into a json compatible dict
 
         Args:
-            instance (IsmsControlMeassure): The IsmsControlMeassure which should be converted
+            instance (IsmsControlMeasure): The IsmsControlMeasure which should be converted
 
         Raises:
-            IsmsControlMeassureToJsonError: If the IsmsControlMeassure could not be converted to a json compatible dict
+            IsmsControlMeasureToJsonError: If the IsmsControlMeasure could not be converted to a json compatible dict
 
         Returns:
-            dict: Json compatible dict of the IsmsControlMeassure values
+            dict: Json compatible dict of the IsmsControlMeasure values
         """
         try:
             return {
                 'public_id': instance.get_public_id(),
                 'title': instance.title,
-                'control_meassure_type': instance.control_meassure_type,
+                'control_measure_type': instance.control_measure_type,
                 'source': instance.source,
                 'implementation_state': instance.implementation_state,
                 'identifier': instance.identifier,
@@ -188,4 +188,4 @@ class IsmsControlMeassure(CmdbDAO):
                 'reason': instance.reason,
             }
         except Exception as err:
-            raise IsmsControlMeassureToJsonError(err) from err
+            raise IsmsControlMeasureToJsonError(err) from err

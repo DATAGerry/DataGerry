@@ -79,10 +79,6 @@ def get_isms_risk_assessment_schema() -> dict:
                 'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
                     'type':'float',
                     'min': 0.0
-                },
-                'risk_level_value': { # The calculated risk value
-                    'type':'float',
-                    'min': 0.0
                 }
             }
         },
@@ -179,10 +175,6 @@ def get_isms_risk_assessment_schema() -> dict:
                     'type': 'integer',
                 },
                 'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
-                    'type':'float',
-                    'min': 0.0
-                },
-                'risk_level_value': { # The calculated risk value
                     'type':'float',
                     'min': 0.0
                 }

@@ -14,35 +14,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all IsmsControlMeassureAssignment errors
+This module contains the classes of all IsmsControlMeasureAssignment errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class IsmsControlMeassureAssignmentError(Exception):
+class IsmsControlMeasureAssignmentError(Exception):
     """
-    Raised to catch all IsmsControlMeassureAssignment related errors
+    Raised to catch all IsmsControlMeasureAssignment related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all IsmsControlMeassureAssignment related errors
+        Raised to catch all IsmsControlMeasureAssignment related errors
         """
         super().__init__(err)
 
-# -------------------------------------- IsmsControlMeassureAssignment - ERRORS -------------------------------------- #
+# --------------------------------------- IsmsControlMeasureAssignment - ERRORS -------------------------------------- #
 
-class IsmsControlMeassureAssignmentInitError(IsmsControlMeassureAssignmentError):
+class IsmsControlMeasureAssignmentInitError(IsmsControlMeasureAssignmentError):
     """
-    Raised when a IsmsControlMeassureAssignment could not be initialised
-    """
-
-
-class IsmsControlMeassureAssignmentInitFromDataError(IsmsControlMeassureAssignmentError):
-    """
-    Raised when a IsmsControlMeassureAssignment could not be initialised from a dict
+    Raised when a IsmsControlMeasureAssignment could not be initialised
     """
 
 
-class IsmsControlMeassureAssignmentToJsonError(IsmsControlMeassureAssignmentError):
+class IsmsControlMeasureAssignmentInitFromDataError(IsmsControlMeasureAssignmentError):
     """
-    Raised when a IsmsControlMeassureAssignment could not be transformed into a json compatible dict
+    Raised when a IsmsControlMeasureAssignment could not be initialised from a dict
+    """
+
+
+class IsmsControlMeasureAssignmentToJsonError(IsmsControlMeasureAssignmentError):
+    """
+    Raised when a IsmsControlMeasureAssignment could not be transformed into a json compatible dict
     """
