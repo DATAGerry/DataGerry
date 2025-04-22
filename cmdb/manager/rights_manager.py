@@ -31,9 +31,20 @@ LOGGER = logging.getLogger(__name__)
 #                                                 RightsManager - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class RightsManager(BaseManager):
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Manages a collection of rights organized in a tree structure.
+    Provides functionalities to flatten the tree, retrieve rights,
+    and iterate over them with pagination and sorting.
+    """
+
+    #TODO: ANNOTATION-FIX (get type of right_tree)
     def __init__(self, right_tree):
+        """
+        Initializes the RightsManager with a flattened version of the provided rights tree
+
+        Args:
+            right_tree : A nested structure of rights
+        """
         self.rights = RightsManager.flat_tree(right_tree)
 
         super().__init__()
@@ -41,8 +52,21 @@ class RightsManager(BaseManager):
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
     def iterate_rights(self, limit: int, skip: int, sort: str, order: int) -> IterationResult[BaseRight]:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Iterates over the rights with optional pagination and sorting.
+
+        Args:
+            limit (int): Maximum number of rights to return in one page. If <= 0, returns all
+            skip (int): Number of rights to skip before starting the page
+            sort (str): Attribute name to sort by
+            order (int): Sorting order, 1 for ascending, -1 for descending
+
+        Returns:
+            IterationResult[BaseRight]: Paginated and sorted result of rights
+
+        Raises:
+                BaseManagerIterationError: If sorting or pagination fails due to bad attributes or indices
+        """
         try:
             sorted_rights = sorted(self.rights, key=lambda right: right[sort], reverse=order == -1)
 
@@ -51,41 +75,47 @@ class RightsManager(BaseManager):
                                   limit)][int(skip / limit)]
             else:
                 spliced_rights = sorted_rights
-        except (AttributeError, ValueError, IndexError) as err:
+
+            result: IterationResult[BaseRight] = IterationResult(spliced_rights, len(self.rights))
+
+            return result
+        except Exception as err:
+            #TODO: ERROR-FIX (RightsManager specific error)
             raise BaseManagerIterationError(err) from err
-
-        result: IterationResult[BaseRight] = IterationResult(spliced_rights, len(self.rights))
-
-        return result
 
 
     def get_right(self, name: str) -> BaseRight:
         """
-        Get a right by its name
+        Retrieves a right by its name
 
         Args:
-            name: Name of the right
+            name (str): Name of the right to retrieve
 
         Returns:
-            BaseRight: Right instance
+            BaseRight: The right object matching the given name
+
+        Raises:
+            BaseManagerGetError: If no matching right is found or retrieval fails
         """
         try:
             return next(right for right in self.rights if right.name == name)
         except Exception as err:
+            #TODO: ERROR-FIX (RightsManager specific error)
             raise BaseManagerGetError(err) from err
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
+    #TODO: ANNOTATION-FIX (get type of right_tree)
     @staticmethod
     def flat_tree(right_tree) -> list[BaseRight]:
         """
-        Flat the right tree to list
+        Flattens a nested right tree into a flat list of rights
 
         Args:
-            right_tree: Tuple tree of rights
+            right_tree: A nested structure containing rights
 
         Returns:
-            list[BaseRight]: Flatted right tree
+            list[BaseRight]: A flat list containing all rights
         """
         rights: list[BaseRight] = []
 
@@ -98,10 +128,17 @@ class RightsManager(BaseManager):
         return rights
 
 
+    #TODO: ANNOTATION-FIX (get type of right_tree)
     @staticmethod
     def tree_to_json(right_tree) -> list:
         """
-        Converts to right tree to json
+        Converts a nested rights tree into a JSON-serializable structure
+
+        Args:
+            right_tree: A nested structure containing rights
+
+        Returns:
+            list[dict]: A JSON-serializable list representing the rights tree
         """
         raw_tree = []
 

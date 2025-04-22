@@ -27,41 +27,90 @@ LOGGER = logging.getLogger(__name__)
 #                                                    CmdbLog - CLASS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 class CmdbLog:
-    """document"""
-    #TODO: DOCUMENT-FIX
+    """
+    Factory and registry class for CMDB (Configuration Management Database) logs
+    
+    Dynamically instantiates log objects based on their type, 
+    allows registration of custom log types, and provides 
+    serialization methods for log instances.
+    """
     REGISTERED_LOG_TYPE = {}
     DEFAULT_LOG_TYPE = CmdbObjectLog
 
     def __new__(cls, *args, **kwargs):
+        """
+        Dynamically creates an instance of the appropriate log class 
+        based on provided arguments
+
+        Args:
+            *args: Positional arguments for the log class constructor
+            **kwargs: Keyword arguments, must include 'log_type' if a specific type is desired
+
+        Returns:
+            Instance of a log class derived from CmdbLog
+        """
         return cls.__get_log_class(*args, **kwargs)(*args, **kwargs)
 
 
     @classmethod
-    def __get_log_class(cls, **kwargs):
+    def __get_log_class(cls, **kwargs) -> type:
+        """
+        Retrieves the registered log class for the given 'log_type'. 
+        Defaults to DEFAULT_LOG_TYPE if no matching type is found.
+
+        Args:
+            **kwargs: Should contain a 'log_type' key
+
+        Returns:
+            type: The log class associated with 'log_type'
+        """
         try:
             log_class = cls.REGISTERED_LOG_TYPE[kwargs['log_type']]
         except (KeyError, ValueError):
             log_class = cls.DEFAULT_LOG_TYPE
+
         return log_class
 
 
     @classmethod
-    def register_log_type(cls, log_name, log_class):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def register_log_type(cls, log_name, log_class) -> None:
+        """
+        Registers a new log type to the log factory
+
+        Args:
+            log_name (str): The name identifier for the new log type
+            log_class (type): The log class corresponding to the log_name
+        """
         cls.REGISTERED_LOG_TYPE[log_name] = log_class
 
 
     @classmethod
-    def from_data(cls, data: dict, *args, **kwargs):
-        """document"""
-        #TODO: DOCUMENT-FIX
+    def from_data(cls, data: dict, *args, **kwargs) -> "CmdbLog":
+        """
+        Instantiates a log object from a given data dictionary
+
+        Args:
+            data (dict): Data representing the log attributes. Should include 'log_type'
+            *args: Additional positional arguments for the log class constructor
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            CmdbLog: An instance of the appropriate log class populated with data
+        """
         return cls.__get_log_class(**data).from_data(data, *args, **kwargs)
 
 
     @classmethod
     def to_json(cls, instance: "CmdbLog") -> dict:
-        """Convert a type instance to json conform data"""
+        """
+        Serializes a log instance into a JSON-compatible dictionary
+
+        Args:
+            instance (CmdbLog): The log instance to serialize
+
+        Returns:
+            dict: Dictionary containing the log's serializable data
+        """
         return {
             'public_id': instance.public_id,
             'log_time': instance.log_time,

@@ -24,6 +24,7 @@ from .protection_goal_manager_errors import (
     ProtectionGoalManagerUpdateError,
     ProtectionGoalManagerDeleteError,
     ProtectionGoalManagerIterationError,
+    ProtectionGoalManagerRiskUsageError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -35,6 +36,7 @@ __all__ = [
     'ProtectionGoalManagerUpdateError',
     'ProtectionGoalManagerDeleteError',
     'ProtectionGoalManagerIterationError',
+    'ProtectionGoalManagerRiskUsageError',
 ]
 
 

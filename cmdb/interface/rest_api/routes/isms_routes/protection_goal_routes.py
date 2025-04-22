@@ -46,6 +46,7 @@ from cmdb.errors.manager.protection_goal_manager import (
     ProtectionGoalManagerUpdateError,
     ProtectionGoalManagerDeleteError,
     ProtectionGoalManagerIterationError,
+    ProtectionGoalManagerRiskUsageError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -274,10 +275,10 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
         if not to_delete_protection_goal:
             abort(404, f"The ProtectionGoal with ID:{public_id} was not found!")
 
-        if to_delete_protection_goal.predefined is True:
+        if to_delete_protection_goal.predefined:
             abort(400, "The predefined ProtectionGoals cannot be deleted!")
 
-        protection_goal_manager.delete_item(public_id)
+        protection_goal_manager.delete_with_follow_up(public_id)
 
         return DeleteSingleResponse(to_delete_protection_goal).make_response()
     except HTTPException as http_err:
@@ -285,6 +286,9 @@ def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
     except ProtectionGoalManagerDeleteError as err:
         LOGGER.error("[delete_isms_protection_goal] ProtectionGoalManagerDeleteError: %s", err, exc_info=True)
         abort(400, f"Failed to delete the ProtectionGoal with ID:{public_id}!")
+    except ProtectionGoalManagerRiskUsageError as err:
+        LOGGER.error("[delete_isms_protection_goal] ProtectionGoalManagerRiskUsageError: %s", err)
+        abort(400, f"ProtectionGoal with ID:{public_id} can not be deleted because it is used by Risks!")
     except ProtectionGoalManagerGetError as err:
         LOGGER.error("[delete_isms_protection_goal] ProtectionGoalManagerGetError: %s", err, exc_info=True)
         abort(400, f"Failed to retrieve the ProtectionGoal with ID:{public_id} from the database!")

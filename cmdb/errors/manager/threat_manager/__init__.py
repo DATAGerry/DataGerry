@@ -24,6 +24,7 @@ from .threat_manager_errors import (
     ThreatManagerUpdateError,
     ThreatManagerDeleteError,
     ThreatManagerIterationError,
+    ThreatManagerRiskUsageError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -35,6 +36,7 @@ __all__ = [
     'ThreatManagerUpdateError',
     'ThreatManagerDeleteError',
     'ThreatManagerIterationError',
+    'ThreatManagerRiskUsageError',
 ]
 
 
