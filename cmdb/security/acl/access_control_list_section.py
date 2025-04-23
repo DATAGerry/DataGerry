@@ -152,8 +152,16 @@ class AccessControlListSection(ABC, Generic[T]):
 
 
     def verify_access(self, key: T, permission: AccessControlPermission) -> bool:
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Checks whether a given key has a specific permission
+
+        Args:
+            key (T): Identifier for the entity (e.g., user ID, role ID) to check access for
+            permission (AccessControlPermission): Permission to verify against the key's allowed actions
+
+        Returns:
+            bool: True if the key has the specified permission, False otherwise
+        """
         try:
             return permission.value in self.includes[key]
         except KeyError:

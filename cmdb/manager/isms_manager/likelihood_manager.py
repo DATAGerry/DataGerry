@@ -22,7 +22,7 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.isms_model import IsmsLikelihood
+from cmdb.models.isms_model import IsmsLikelihood, IsmsRiskAssessment
 
 from cmdb.errors.manager.likelihood_manager import LIKELIHOOD_MANAGER_ERRORS, LikelihoodManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -41,7 +41,67 @@ class LikelihoodManager(GenericManager):
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
         super().__init__(dbm, IsmsLikelihood, LIKELIHOOD_MANAGER_ERRORS, database)
 
+# --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
+
+    def update_with_follow_up(self, public_id: int, new_data: dict) -> None:
+        """
+        Updates an IsmsLikelihood and updates the calc basis where it is used
+
+        Args:
+            public_id (int): public_id of IsmsLikelihood which is changed
+            new_data (dict): new data for the Likelihood
+        """
+        criteria = {
+            '$or': [
+                {'risk_calculation_before.likelihood_id': public_id},
+                {'risk_calculation_after.likelihood_id': public_id}
+            ]
+        }
+
+        update_data = [
+            {'$set': {
+                'risk_calculation_before.likelihood_value': {
+                    '$cond': [
+                        {'$eq': ['$risk_calculation_before.likelihood_id', public_id]},
+                        new_data['calculation_basis'],
+                        '$risk_calculation_before.likelihood_value'
+                    ]
+                },
+                'risk_calculation_after.likelihood_value': {
+                    '$cond': [
+                        {'$eq': ['$risk_calculation_after.likelihood_id', public_id]},
+                        new_data['calculation_basis'],
+                        '$risk_calculation_after.likelihood_value'
+                    ]
+                }
+            }}
+        ]
+
+        self.dbm.update_many(IsmsRiskAssessment.COLLECTION, criteria, update_data, plain=True)
+
+        self.update_item(public_id, IsmsLikelihood.from_data(new_data))
+
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def is_likelihood_used(self, public_id: int) -> bool:
+        """
+        Checks if the IsmsLikelihood is used by any IsmsRiskAssessment
+
+        Args:
+            public_id (int): public_id of the IsmsLikelihood
+
+        Returns:
+            bool: True if it is used, else False
+        """
+        query = {
+            '$or': [
+                {'risk_calculation_before.likelihood_id': public_id},
+                {'risk_calculation_after.likelihood_id': public_id}
+            ]
+        }
+
+        return self.get_one_by(query, IsmsRiskAssessment.COLLECTION) is not None
+
 
     def likelihood_calculation_basis_exists(self, calculation_basis: float) -> bool:
         """

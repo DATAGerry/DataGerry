@@ -98,8 +98,22 @@ class CmdbWebhookEvent(CmdbDAO):
             response_code: int,
             status: bool,
             **kwargs):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initializes a new instance of the CmdbWebhookEvent class, representing the result of a webhook event operation
+
+        Args:
+            event_time: Timestamp when the event occurred (type can be datetime or str depending on usage)
+            operation (WebhookEventType): Type of operation that triggered the webhook (e.g., create, update, delete)
+            webhook_id (int): ID of the webhook configuration associated with this event
+            object_before (dict): Object state before the operation occurred
+            object_after (dict): Object state after the operation occurred
+            changes (dict): Dictionary summarizing the changes made to the object
+            response_code (int): HTTP response status code returned by the webhook endpoint
+            status (bool): Whether the webhook request was successful (True if response code was 200)
+
+        Optional Args:
+            **kwargs: Additional fields to pass to the superclass initializer
+        """
         self.event_time = event_time
         self.operation = operation
         self.webhook_id = webhook_id
@@ -116,7 +130,13 @@ class CmdbWebhookEvent(CmdbDAO):
     @classmethod
     def from_data(cls, data: dict) -> "CmdbWebhookEvent":
         """
-        Convert data to instance of CmdbWebhookEvent
+        Creates a CmdbWebhookEvent instance from a dictionary
+
+        Args:
+            data (dict): Dictionary containing the event data fields
+
+        Returns:
+            CmdbWebhookEvent: A new instance populated with the provided data
         """
         return cls(
             public_id = data.get('public_id'),
@@ -133,7 +153,15 @@ class CmdbWebhookEvent(CmdbDAO):
 
     @classmethod
     def to_json(cls, instance: "CmdbWebhookEvent") -> dict:
-        """Convert a CmdbWebhookEvent instance to json conform data"""
+        """
+        Serializes a CmdbWebhookEvent instance into a JSON-compatible dictionary
+
+        Args:
+            instance (CmdbWebhookEvent): The event instance to serialize
+
+        Returns:
+            dict: A dictionary representation of the event suitable for JSON output
+        """
         return {
             'public_id': instance.get_public_id(),
             'event_time': instance.event_time,

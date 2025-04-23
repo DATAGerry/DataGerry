@@ -123,7 +123,15 @@ class AccessControlList:
             raise ValueError(f'No ACL section with name: {section}')
 
 
-        def verify_access(self, key: T, permission: AccessControlPermission) -> bool:
-            """document"""
-            #TODO: DOCUMENT-FIX
-            return self.groups.verify_access(key, permission)
+    def verify_access(self, key: T, permission: AccessControlPermission) -> bool:
+        """
+        Verifies if the specified key has the required permission in the access control groups
+
+        Args:
+            key (T): Identifier for the entity (e.g., user ID, role ID) to check access for
+            permission (AccessControlPermission): The permission to check for the specified key
+
+        Returns:
+            bool: True if the key has the specified permission in the access control groups, False otherwise
+        """
+        return self.groups.verify_access(key, permission)

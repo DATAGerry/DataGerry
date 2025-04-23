@@ -136,57 +136,80 @@ class WebhooksManager(BaseManager):
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 
     #TODO: REFACTOR-FIX (move method to WebhookEventManager)
-    def send_webhook_event(self,
-                           operation: WebhookEventType = None,
-                           object_before: dict = None,
-                           object_after: dict = None,
-                           changes: dict = None):
-        """document"""
-        #TODO: DOCUMENT-FIX
-        builder_params = BuilderParameters({})
-        webhooks: IterationResult[CmdbWebhook] = self.iterate(builder_params).results
+    def send_webhook_event(
+            self,
+            operation: WebhookEventType = None,
+            object_before: dict = None,
+            object_after: dict = None,
+            changes: dict = None) -> None:
+        """
+        Sends a webhook event to all configured webhook endpoints that are subscribed 
+        to the specified operation type.
 
+        Args:
+            operation (WebhookEventType, optional): The type of event operation (e.g., create, update, delete)
+                                                    triggering the webhook
+            object_before (dict, optional): The state of the object before the change (for update/delete operations)
+            object_after (dict, optional): The state of the object after the change (for create/update operations)
+            changes (dict, optional): Dictionary detailing the specific changes between object_before and object_after
+        """
         try:
-            if len(webhooks) > 0:
-                # Check all webhooks
-                webhook: CmdbWebhook
-                for webhook in webhooks:
-                    # Check if operation is registered in the webhook
-                    if operation in webhook.event_types:
-                        webhook_url = webhook.url
+            builder_params = BuilderParameters({})
+            webhooks: IterationResult[CmdbWebhook] = self.iterate(builder_params).results
 
-                        payload = self.build_payload(operation, object_before, object_after, changes)
+            if not webhooks:
+                return
 
-                        response: requests.Response = requests.post(
-                            webhook_url,
-                            data=json.dumps(payload, default=default, ensure_ascii=False, indent=2),
-                            headers={'Content-Type': 'application/json'},
-                            timeout=3,
-                        )
+            # Check all webhooks
+            webhook: CmdbWebhook
+            for webhook in webhooks:
+                # Check if operation is registered in the webhook
+                if operation not in webhook.event_types:
+                    continue
 
-                        payload['public_id'] = self.webhooks_event_manager.get_next_public_id()
-                        payload['webhook_id'] = webhook.public_id
-                        payload['response_code'] = response.status_code
-                        payload['status'] = response.status_code == 200
+                payload = self.build_payload(operation, object_before, object_after, changes)
 
-                        self.webhooks_event_manager.insert_webhook_event(payload)
+                response: requests.Response = requests.post(
+                    webhook.url,
+                    data=json.dumps(payload, default=default, ensure_ascii=False, indent=2),
+                    headers={'Content-Type': 'application/json'},
+                    timeout=3,
+                )
+
+                payload.update({
+                    'public_id': self.webhooks_event_manager.get_next_public_id(),
+                    'webhook_id': webhook.public_id,
+                    'response_code': response.status_code,
+                    'status': response.status_code == 200
+                })
+
+                self.webhooks_event_manager.insert_webhook_event(payload)
         except Exception as err:
             LOGGER.debug("[send_webhook_event] Exception: %s, Type: %s", err, type(err))
 
 
-    def build_payload(self,
-                      operation: WebhookEventType,
-                      object_before: dict,
-                      object_after:dict,
-                      changes: dict = None) -> dict:
-        """document"""
-        #TODO: DOCUMENT-FIX
-        payload = {}
+    def build_payload(
+            self,
+            operation: WebhookEventType,
+            object_before: dict,
+            object_after:dict,
+            changes: dict = None) -> dict:
+        """
+        Constructs the payload dictionary for a webhook event
 
-        payload['event_time'] = datetime.now(timezone.utc)
-        payload['operation'] = operation
-        payload['object_before'] = object_before
-        payload['object_after'] = object_after
-        payload['changes'] = changes
+        Args:
+            operation (WebhookEventType): The type of operation that triggered the webhook event
+            object_before (dict): The object's state before the event occurred
+            object_after (dict): The object's state after the event occurred
+            changes (dict, optional): A dictionary summarizing the changes made to the object
 
-        return payload
+        Returns:
+            dict: A dictionary containing event metadata and object data to be sent to webhook endpoints
+        """
+        return {
+            'event_time': datetime.now(timezone.utc),
+            'operation': operation,
+            'object_before': object_before,
+            'object_after': object_after,
+            'changes': changes,
+        }

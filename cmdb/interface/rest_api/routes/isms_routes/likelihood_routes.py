@@ -94,7 +94,6 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
         created_likelihood: dict = likelihood_manager.get_item(result_id, as_dict=True)
 
         if created_likelihood:
-            # Calculate the RiskMatrix
             calculate_risk_matrix(request_user)
 
             return InsertSingleResponse(created_likelihood, result_id).make_response()
@@ -210,12 +209,21 @@ def update_isms_likelihood(public_id: int, data: dict, request_user: CmdbUser):
     try:
         likelihood_manager: LikelihoodManager = ManagerProvider.get_manager(ManagerType.LIKELIHOOD, request_user)
 
-        to_update_likelihood = likelihood_manager.get_item(public_id)
+        to_update_likelihood: IsmsLikelihood = likelihood_manager.get_item(public_id)
 
         if not to_update_likelihood:
             abort(404, f"The Likelihood with ID:{public_id} was not found!")
 
-        likelihood_manager.update_item(public_id, IsmsLikelihood.from_data(data))
+        try:
+            data['calculation_basis'] = float(f"{float(data['calculation_basis']):.2f}")
+        except Exception:
+            abort(400, "The calculation basis is either not provided or could not be converted to a float!")
+
+        # If the calculation_basis changed, also update IsmsRiskAssessments
+        if round(data['calculation_basis'], 2) != round(to_update_likelihood.calculation_basis, 2):
+            likelihood_manager.update_with_follow_up(public_id, data)
+        else:
+            likelihood_manager.update_item(public_id, IsmsLikelihood.from_data(data))
 
         # Calculate the RiskMatrix
         calculate_risk_matrix(request_user)
@@ -257,6 +265,9 @@ def delete_isms_likelihood(public_id: int, request_user: CmdbUser):
 
         if not to_delete_likelihood:
             abort(404, f"The Likelihood with ID:{public_id} was not found!")
+
+        if likelihood_manager.is_likelihood_used(public_id):
+            abort(400, "The Likelihood is used by a RiskAssessment and is therefore not deletable!")
 
         likelihood_manager.delete_item(public_id)
 
