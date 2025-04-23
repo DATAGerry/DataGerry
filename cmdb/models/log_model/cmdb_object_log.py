@@ -93,8 +93,25 @@ class CmdbObjectLog(CmdbMetaLog):
                  changes: list = None,
                  comment: str = None,
                  render_state=None):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initializes a new instance of the CmdbObjectLog class,
+        representing a log entry for changes made to a CMDB object.
+
+        Args:
+            public_id (int): Unique identifier for the log entry
+            log_type: Type or category of the log (custom type expected)
+            log_time (datetime): Timestamp when the log entry was created
+            action (LogAction): Enum representing the type of action performed (e.g., create, update, delete)
+            action_name (str): Human-readable name of the action
+            object_id (int): ID of the CMDB object the log entry is associated with
+            version: Version identifier of the object (exact type depends on implementation)
+            user_id (int): ID of the user who performed the action
+            user_name (str, optional): Name of the user who performed the action. Defaults to an "unknown"
+                                       string if not provided
+            changes (list, optional): List detailing the specific changes made to the object
+            comment (str, optional): Additional comments or notes regarding the log entry
+            render_state (optional): Optional rendering state or snapshot of the object at the time of the log
+        """
         self.object_id = object_id
         self.version = version
         self.user_id = user_id
@@ -102,8 +119,14 @@ class CmdbObjectLog(CmdbMetaLog):
         self.comment = comment
         self.changes = changes or []
         self.render_state = render_state
-        super().__init__(public_id=public_id, log_type=log_type, log_time=log_time, action=action,
-                                            action_name=action_name)
+
+        super().__init__(
+            public_id=public_id,
+            log_type=log_type,
+            log_time=log_time,
+            action=action,
+            action_name=action_name
+        )
 
 
     @classmethod

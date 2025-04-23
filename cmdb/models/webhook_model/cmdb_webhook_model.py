@@ -74,8 +74,18 @@ class CmdbWebhook(CmdbDAO):
             event_types: list,
             active: bool,
             **kwargs):
-        """document"""
-        #TODO: DOCUMENT-FIX
+        """
+        Initializes a new instance of the CmdbWebhook class, representing a webhook configuration
+
+        Args:
+            name (str): Human-readable name of the webhook
+            url (str): URL endpoint where the webhook will send events
+            event_types (list): List of WebhookEventType values that the webhook listens for
+            active (bool): Whether the webhook is currently active and should receive events
+
+        Optional Args:
+            **kwargs: Additional fields to pass to the superclass initializer
+        """
         self.name = name
         self.url = url
         self.event_types = event_types

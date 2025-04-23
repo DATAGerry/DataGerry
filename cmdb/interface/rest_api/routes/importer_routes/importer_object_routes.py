@@ -94,9 +94,7 @@ def get_importer():
             'icon': __OBJECT_IMPORTER__.get(importer).ICON
         })
 
-    api_response = DefaultResponse(importer_response)
-
-    return api_response.make_response()
+    return DefaultResponse(importer_response).make_response()
 
 
 #TODO: ROUTE-FIX (Remove one route)
@@ -125,9 +123,7 @@ def get_parser():
     #TODO: DOCUMENT-FIX
     parser = list(__OBJECT_PARSER__)
 
-    api_response = DefaultResponse(parser)
-
-    return api_response.make_response()
+    return DefaultResponse(parser).make_response()
 
 
 #TODO: ROUTE-FIX (Remove one route)

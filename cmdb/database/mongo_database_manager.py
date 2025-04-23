@@ -397,14 +397,19 @@ class MongoDatabaseManager:
             raise DocumentUpdateError(f"Failed to unset field '{field}' in '{collection}': {err}") from err
 
 
-    def update_many(self, collection: str, criteria: dict, update: dict, add_to_set:bool = False) -> UpdateResult:
+    def update_many(self,
+                    collection: str,
+                    criteria: dict,
+                    update: Union[dict, list],
+                    add_to_set: bool = False,
+                    plain: bool = False) -> UpdateResult:
         """
         Updates multiple documents that match the filter in a collection
 
         Args:
             collection (str): Name of database collection
             criteria (dict): The filter used to match the documents for updating
-            update (dict): The modifications to apply
+            update (Union[dict, list]): The modifications to apply
             add_to_set(bool): If True, uses '$addToSet' to add values to an array without duplicates.
                               If False, uses '$set' to update fields. Defaults to False.
 
@@ -415,15 +420,17 @@ class MongoDatabaseManager:
             UpdateResult: The result of the update operation
         """
         try:
-            update_operator = "$addToSet" if add_to_set else "$set"
-            formatted_data = {update_operator: update}
+            if not plain:
+                update_operator = "$addToSet" if add_to_set else "$set"
+                formatted_data = {update_operator: update}
+            else:
+                formatted_data = update
 
             return self.get_collection(collection).update_many(criteria, formatted_data)
         except Exception as err:
             raise DocumentUpdateError(f"Failed to update documents in '{collection}': {err}") from err
 
 
-    #TODO: REFACTOR-FIX (merge with update many and allow different operators)
     def update_many_pull(self, collection: str, criteria: dict, update: dict) -> UpdateResult:
         """
         Updates multiple documents that match the filter in a collection
