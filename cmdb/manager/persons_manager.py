@@ -23,6 +23,8 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.generic_manager import GenericManager
 
 from cmdb.models.person_model import CmdbPerson
+from cmdb.models.isms_model import IsmsRiskAssessment, IsmsControlMeasureAssignment
+from cmdb.models.person_group_model.person_reference_type_enum import PersonReferenceType
 
 from cmdb.errors.manager.persons_manager import PERSONS_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -40,6 +42,23 @@ class PersonsManager(GenericManager):
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
         super().__init__(dbm, CmdbPerson, PERSONS_MANAGER_ERRORS, database)
+
+# --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
+
+    def delete_with_follow_up(self, public_id: int) -> bool:
+        """
+        Deletes a CmdbPerson and cleans all affected collections from it
+
+        Args:
+            public_id (int): public_id of CmdbPerson which should be deleted
+
+        Returns:
+            bool: True if deletion was a success, else False
+        """
+        self.remove_person_from_risk_assessments(public_id)
+        self.remove_person_from_control_measure_assignments(public_id)
+
+        return self.delete_item(public_id)
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
@@ -102,3 +121,108 @@ class PersonsManager(GenericManager):
                 current_groups.remove(group_id)
                 person['groups'] = current_groups
                 self.update_item(person_id, person)
+
+
+    def remove_person_from_risk_assessments(self, person_id: int) -> None:
+        """
+        Removes a CmdbPerson from all RiskAssessments that reference this person.
+        
+        This function will go through all RiskAssessments and update the relevant fields 
+        where the person is referenced. If the person is in the `interviewed_persons` list, 
+        they will be removed from the list. Otherwise, the person's reference in other fields 
+        will be set to None, but only if the field is referencing a CmdbPerson.
+
+        Args:
+            person_id (int): The public_id of the CmdbPerson to remove from RiskAssessments
+        """
+        # Query to find RiskAssessments where the person is referenced
+        query = {
+            '$or': [
+                {'risk_assessor_id': person_id},
+                {'interviewed_persons': person_id},
+                {'risk_owner_id': person_id},
+                {'responsible_persons_id': person_id},
+                {'auditor_id': person_id}
+            ]
+        }
+
+        # Find all RiskAssessments where the person_id is referenced and then update them properly
+        risk_assessments = self.dbm.find(collection=IsmsRiskAssessment.COLLECTION, filter=query)
+
+        risk_assessment: dict
+        for risk_assessment in risk_assessments:
+            update_fields = {}
+
+            # Handle the 'risk_assessor_id' field (since it can only be a Person)
+            if risk_assessment.get('risk_assessor_id') == person_id:
+                update_fields['risk_assessor_id'] = None
+
+            # Handle the 'risk_owner_id' field (only if it's a Person)
+            if risk_assessment.get('risk_owner_id') == person_id:
+                ref_type = risk_assessment.get('risk_owner_id_ref_type', '')
+                if ref_type == PersonReferenceType.PERSON:
+                    update_fields['risk_owner_id'] = None
+
+            # Handle the 'responsible_persons_id' field (only if it's a Person)
+            if risk_assessment.get('responsible_persons_id') == person_id:
+                ref_type = risk_assessment.get('responsible_persons_id_ref_type', '')
+                if ref_type == PersonReferenceType.PERSON:
+                    update_fields['responsible_persons_id'] = None
+
+            # Handle the 'auditor_id' field (only if it's a Person)
+            if risk_assessment.get('auditor_id') == person_id:
+                ref_type = risk_assessment.get('auditor_id_ref_type', '')
+                if ref_type == PersonReferenceType.PERSON:
+                    update_fields['auditor_id'] = None
+
+            # Handle the 'interviewed_persons' field (Remove from list, not set to None)
+            if person_id in risk_assessment.get('interviewed_persons', []):
+                pull_update = {
+                    'interviewed_persons': person_id
+                }
+                # Perform the update with $pull for 'interviewed_persons'
+                self.dbm.update(
+                    IsmsRiskAssessment.COLLECTION,
+                    {"public_id": risk_assessment["public_id"]},
+                    {"$pull": pull_update},
+                    plain=True
+                )
+
+            # If there are any updates to make, update this RiskAssessment
+            if update_fields:
+                self.dbm.update(
+                    IsmsRiskAssessment.COLLECTION,
+                    {"public_id": risk_assessment["public_id"]},
+                    {"$set": update_fields},
+                    plain=True
+                )
+
+
+    def remove_person_from_control_measure_assignments(self, deleted_person_id: int) -> None:
+        """
+        Deletes a CmdbPerson from all ControlMeasureAssignments by replacing the 
+        'responsible_for_implementation_id' field based on the person's reference type.
+        
+        If 'responsible_for_implementation_id_ref_type' is 'PERSON' and the 
+        'responsible_for_implementation_id' matches the deleted person's ID,
+        it sets the 'responsible_for_implementation_id' to None.
+        
+        Args:
+            deleted_person_id (int): The public_id of the deleted CmdbPerson
+        """
+        # Query to find all ControlMeasureAssignments where the responsible_for_implementation_id
+        # matches the deleted person's ID, only if the ref_type is PERSON.
+        query = {
+            '$and': [
+                {'responsible_for_implementation_id_ref_type': PersonReferenceType.PERSON},
+                {'responsible_for_implementation_id': deleted_person_id}
+            ]
+        }
+
+        # Perform the update using the update_many function
+        self.dbm.update_many(
+            IsmsControlMeasureAssignment.COLLECTION,
+            query,
+            {"$set": {'responsible_for_implementation_id': None}},
+            plain=True
+        )

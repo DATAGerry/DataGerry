@@ -221,9 +221,7 @@ def update_file(request_user: CmdbUser):
         #TODO: ERROR-FIX
         abort(500)
 
-    api_response = DefaultResponse(data)
-
-    return api_response.make_response()
+    return DefaultResponse(data).make_response()
 
 
 @media_file_blueprint.route('/<string:filename>/', methods=['GET'])
@@ -335,6 +333,4 @@ def delete_file(public_id: int, request_user: CmdbUser):
         LOGGER.debug("[delete_file] MediaFileManagerDeleteError: %s", err)
         abort(404)
 
-    api_response = DefaultResponse(file_to_delete)
-
-    return api_response.make_response()
+    return DefaultResponse(file_to_delete).make_response()

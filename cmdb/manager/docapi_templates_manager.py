@@ -96,9 +96,8 @@ class DocapiTemplatesManager(BaseManager):
         Gets the next couter for the public_id from database and increases it
 
         Returns:
-            `int`: The next public_id for DocapiTemplate
+            int: The next public_id for DocapiTemplate
         """
-        #TODO: ERROR-FIX (try-catch-block)
         return self.get_next_public_id()
 
 

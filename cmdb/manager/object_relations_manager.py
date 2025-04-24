@@ -221,10 +221,8 @@ class ObjectRelationsManager(BaseManager):
 
         invalid_object_relations = self.find_all(criteria=query)
 
-        invalid_object_relation: CmdbObjectRelation
         for invalid_object_relation in invalid_object_relations:
-            #TODO: URGENT-FIX (invalid_object_relation should be a dict, so no method call)
-            self.delete({"public_id": invalid_object_relation.get_public_id()})
+            self.delete({"public_id": invalid_object_relation['public_id']})
 
 
     def update_changed_fields(self, relation_id: int, changed_fields: dict) -> None:

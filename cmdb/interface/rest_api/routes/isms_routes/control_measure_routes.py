@@ -243,6 +243,9 @@ def delete_isms_control_measure(public_id: int, request_user: CmdbUser):
         if not to_delete_control_measure:
             abort(404, f"The ControlMeasure with ID:{public_id} was not found!")
 
+        if control_measure_manager.is_control_measure_used(public_id):
+            abort(400, f"ControlMeasure with ID:{public_id} is not deletable while used by ControlMeasureAssignments!")
+
         control_measure_manager.delete_item(public_id)
 
         return DeleteSingleResponse(to_delete_control_measure).make_response()

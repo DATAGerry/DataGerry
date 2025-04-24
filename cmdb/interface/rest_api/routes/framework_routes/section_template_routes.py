@@ -64,10 +64,10 @@ def create_section_template(params: dict, request_user: CmdbUser):
     Returns:
         int: public_id of the created CmdbSectionTemplate
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
+    try:
+        template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
-    try:
         params['public_id'] = template_manager.get_next_public_id()
         params['is_global'] = params['is_global'] in ['true', 'True', True]
         params['predefined'] = params['predefined'] in ['true', 'True', True]
@@ -75,18 +75,15 @@ def create_section_template(params: dict, request_user: CmdbUser):
         params['type'] = 'section'
 
         created_section_template_id = template_manager.insert_section_template(params)
+
+        return DefaultResponse(created_section_template_id).make_response()
     except BaseManagerInsertError as err:
         # TODO: ERROR-FIX
         LOGGER.debug("[create_section_template] %s", err)
-        abort(400, "Could not create the section template!")
-        # TODO: ERROR-FIX
+        abort(400, "Failed to create the section template!")
     except Exception as err:
         LOGGER.error("[create_section_template] Exception: %s. Type: %s", err, type(err))
-        abort(500, "Internal server error!")
-
-    api_response = DefaultResponse(created_section_template_id)
-
-    return api_response.make_response()
+        abort(500, "An internal server error occured while creating the SectionTemplate!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -103,10 +100,10 @@ def get_all_section_templates(params: CollectionParameters, request_user: CmdbUs
     Returns:
         (GetMultiResponse): All CmdbSectionTemplates considering the params
     """
-    template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
+    try:
+        template_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
                                                                             request_user)
 
-    try:
         builder_params: BuilderParameters = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
         iteration_result: IterationResult[CmdbSectionTemplate] = template_manager.iterate(builder_params)
@@ -117,15 +114,15 @@ def get_all_section_templates(params: CollectionParameters, request_user: CmdbUs
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
+
+        return api_response.make_response()
     except BaseManagerIterationError as err:
         #TODO: ERROR-FIX
         LOGGER.debug("[get_all_section_templates] %s", err)
         abort(400, "Could not retrieve SectionTemplates!")
     except Exception as err:
-        LOGGER.error("[get_all_section_templates] Exception: %s. Type: %s", err, type(err))
-        abort(500, "Internal Server Error!")
-
-    return api_response.make_response()
+        LOGGER.error("[get_all_section_templates] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal Server Error occured while retrieving SectionTemplates!")
 
 
 @section_template_blueprint.route('/<int:public_id>', methods=['GET'])

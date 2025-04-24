@@ -351,6 +351,7 @@ class MongoDatabaseManager:
             data: dict,
             *args,
             add_to_set: bool = True,
+            plain: bool = False,
             **kwargs) -> UpdateResult:
         """
         Updates a document inside the specified collection
@@ -372,7 +373,10 @@ class MongoDatabaseManager:
         """
         try:
             # Apply '$set' only if no update operators are present
-            update_data = {'$set': data} if add_to_set and not any(k.startswith('$') for k in data) else data
+            if not plain:
+                update_data = {'$set': data} if add_to_set and not any(k.startswith('$') for k in data) else data
+            else:
+                update_data = data
 
             result = self.get_collection(collection).update_one(criteria, update_data, *args, **kwargs)
 

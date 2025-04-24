@@ -753,7 +753,7 @@ class ObjectsManager(BaseManager):
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
 
-    #pylint: disable=too-many-arguments
+    #pylint: disable=R0917
     def __merge_mds_references(self,
                                 mds_result: list,
                                 obj_result: IterationResult,

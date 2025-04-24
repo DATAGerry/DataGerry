@@ -191,8 +191,8 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                     raise AuthenticationError(err) from err
         except Exception as err:
             #TODO: ERROR-FIX
-            LOGGER.warning('[LdapAuthenticationProvider] CmdbUser exists on LDAP but not in database: %s', err)
-            LOGGER.debug('[LdapAuthenticationProvider] Try creating user: %s', user_name)
+            LOGGER.warning('[authenticate] CmdbUser exists on LDAP but not in database: %s', err)
+            LOGGER.debug('[authenticate] Try creating user: %s', user_name)
             try:
                 new_user_data = {}
                 new_user_data['user_name'] = user_name
@@ -202,15 +202,14 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                 new_user_data['authenticator'] = LdapAuthenticationProvider.get_name()
             except Exception as error:
                 #TODO: ERROR-FIX
-                LOGGER.debug('[LdapAuthenticationProvider] %s',error)
+                LOGGER.error("[authenticate] Exception: %s. Type: %s",error, type(err), exc_info=True)
                 raise AuthenticationError(error) from error
-            LOGGER.debug('[LdapAuthenticationProvider] New user was init')
+            LOGGER.debug('[authenticate] New user was init')
 
             try:
                 user_id = self.users_manager.insert_user(new_user_data)
             except UsersManagerInsertError as error:
-                #TODO: ERROR-FIX
-                LOGGER.debug('[authenticate] UsersManagerInsertError: %s', error)
+                LOGGER.error('[authenticate] UsersManagerInsertError: %s', error)
                 raise AuthenticationError(error) from error
 
             try:
@@ -219,8 +218,7 @@ class LdapAuthenticationProvider(BaseAuthenticationProvider):
                 if not user_instance:
                     raise AuthenticationError("Invalid user!") from err
             except UsersManagerGetError as error:
-                #TODO: ERROR-FIX
-                LOGGER.debug('[authenticate] %s', error)
+                LOGGER.error("[authenticate] UsersManagerGetError: %s",error)
                 raise AuthenticationError(error) from error
 
         return user_instance

@@ -55,7 +55,7 @@ docs_blueprint = APIBlueprint('docs', __name__)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-#TODO: ROUTE-FIX(remove one route)
+#TODO: ROUTE-FIX (remove one route)
 @docapi_blueprint.route('/template', methods=['POST'])
 @docapi_blueprint.route('/template/', methods=['POST'])
 @insert_request_user
@@ -85,10 +85,7 @@ def create_template(request_user: CmdbUser):
 
         ack = docapi_manager.insert_template(template_instance)
 
-        api_response = DefaultResponse(ack)
-
-        return api_response.make_response()
-    #TODO: ERROR-FIX (Catch proper exceptions)
+        return DefaultResponse(ack).make_response()
     except DocapiTemplatesManagerInsertError as err:
         LOGGER.error("[create_template] %s", err, exc_info=True)
         abort(400, "Could not insert the new template in the database!")
