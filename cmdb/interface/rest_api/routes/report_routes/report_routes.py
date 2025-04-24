@@ -98,9 +98,7 @@ def create_report(params: dict, request_user: CmdbUser):
         LOGGER.debug("[create_report] Exception: %s, Type: %s", err, type(err))
         abort(400, "Could not create the report!")
 
-    api_response = DefaultResponse(new_report_id)
-
-    return api_response.make_response()
+    return DefaultResponse(new_report_id).make_response()
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -124,9 +122,7 @@ def get_report(public_id: int, request_user: CmdbUser):
         LOGGER.debug("[get_report] %s", err)
         abort(400, f"Could not retrieve Report with ID: {public_id}!")
 
-    api_response = DefaultResponse(requested_report)
-
-    return api_response.make_response()
+    return DefaultResponse(requested_report).make_response()
 
 
 @reports_blueprint.route('/', methods=['GET', 'HEAD'])

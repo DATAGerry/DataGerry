@@ -22,7 +22,7 @@ from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager.generic_manager import GenericManager
 
-from cmdb.models.isms_model import IsmsControlMeasure
+from cmdb.models.isms_model import IsmsControlMeasure, IsmsControlMeasureAssignment
 
 from cmdb.errors.manager.control_measure_manager import CONTROL_MEASURE_MANAGER_ERRORS
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -40,3 +40,17 @@ class ControlMeasureManager(GenericManager):
     """
     def __init__(self, dbm: MongoDatabaseManager, database: str = None):
         super().__init__(dbm, IsmsControlMeasure, CONTROL_MEASURE_MANAGER_ERRORS, database)
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+    def is_control_measure_used(self, public_id: int) -> bool:
+        """
+        Checks if an IsmsControlMeasure is used in any IsmsControlMeasureAssignment
+
+        Args:
+            public_id (int): The public_id of the IsmsControlMeasure
+
+        Returns:
+            bool: True if the IsmsControlMeasure is used, False otherwise
+        """
+        return self.get_one_by({'control_measure_id': public_id}, IsmsControlMeasureAssignment.COLLECTION) is not None

@@ -22,7 +22,7 @@ import functools
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Union, Optional
+from typing import Optional
 import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
@@ -59,9 +59,9 @@ from cmdb.errors.manager.groups_manager import GroupsManagerGetError
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_MIME_TYPE = 'application/json'
-SERVICE_PORTAL_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth"
-SERVICE_PORTAL_API_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth/subscription"
-SERVICE_PORTAL_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-item/update"
+SP_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth"
+SP_API_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth/subscription"
+SP_CI_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-item/update"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -125,11 +125,10 @@ def insert_request_user(func):
             with current_app.app_context():
                 decrypted_token = TokenValidator(current_app.database_manager).decode_token(token)
         except TokenValidationError:
-            #TODO: ERROR-FIX
-            abort(401)
+            abort(401, "Invalid Token!")
         except Exception as err:
-            LOGGER.debug("[insert_request_user] Token Exception: %s, Type: %s", err, type(err))
-            abort(401)
+            LOGGER.debug("[insert_request_user] Exception: %s, Type: %s", err, type(err), exc_info=True)
+            abort(401, "Token could not be validated!")
 
         try:
             user_id = decrypted_token['DATAGERRY']['value']['user']['public_id']
@@ -660,7 +659,7 @@ def validate_subscrption_user(email: str, password: str, x_api_key: str = None) 
         "x-access-token": x_access_token
     }
 
-    target = SERVICE_PORTAL_AUTH_URL
+    target = os.getenv('SP_AUTH_URL')
 
     payload = {
         "email": email,
@@ -670,7 +669,7 @@ def validate_subscrption_user(email: str, password: str, x_api_key: str = None) 
     if x_api_key:
         payload['x-api-key'] = x_api_key
 
-        target = SERVICE_PORTAL_API_AUTH_URL
+        target = os.getenv('SP_API_AUTH_URL')
 
     try:
         response = requests.post(target, headers=headers, json=payload, timeout=3)
@@ -725,8 +724,10 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
         "config_item_count": config_item_count
     }
 
+    target = os.getenv('SP_CI_SYNC_URL')
+
     try:
-        response = requests.post(SERVICE_PORTAL_SYNC_URL, headers=headers, json=payload, timeout=3)
+        response = requests.post(target, headers=headers, json=payload, timeout=3)
 
         if response.status_code == 200:
             return True

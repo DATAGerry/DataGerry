@@ -46,5 +46,4 @@ def verify_access(target_type: CmdbType, user: CmdbUser = None, permission: Acce
     verify = has_access_control(target_type, user, permission)
 
     if not verify:
-        #TODO: ERROR-FIX
         raise AccessDeniedError('Protected by ACL permission!')

@@ -56,9 +56,8 @@ from cmdb.interface.rest_api.responses import (
 
 from cmdb.errors.manager import (
     BaseManagerGetError,
-    BaseManagerUpdateError,
 )
-from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
+from cmdb.errors.manager.objects_manager import ObjectsManagerGetError, ObjectsManagerUpdateError
 from cmdb.errors.manager.types_manager import (
     TypesManagerGetError,
     TypesManagerInsertError,
@@ -66,6 +65,10 @@ from cmdb.errors.manager.types_manager import (
     TypesManagerIterationError,
     TypesManagerUpdateError,
     TypesManagerUpdateMDSError,
+)
+from cmdb.errors.manager.locations_manager import (
+    LocationsManagerGetError,
+    LocationsManagerUpdateError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -268,53 +271,52 @@ def update_cmdb_type(public_id: int, data: dict, request_user: CmdbUser):
 
         unchanged_type = types_manager.get_type(public_id)
 
-        if unchanged_type:
-            data['last_edit_time'] = datetime.now(timezone.utc)
+        if not unchanged_type:
+            abort(404, f"The Type with ID:{public_id} was not found!")
 
-            new_type_data = CmdbType.from_data(data)
+        data['last_edit_time'] = datetime.now(timezone.utc)
 
-            types_manager.update_type(public_id, CmdbType.to_json(new_type_data))
+        new_type_data = CmdbType.from_data(data)
 
-            updated_type = types_manager.get_type(public_id)
-            updated_type = CmdbType.from_data(updated_type)
+        types_manager.update_type(public_id, CmdbType.to_json(new_type_data))
 
-            # when type are updated, update all locations with relevant data from this type
-            locations_with_type = locations_manager.get_locations_by(type_id=public_id)
+        updated_type = types_manager.get_type(public_id)
+        updated_type = CmdbType.from_data(updated_type)
 
-            loc_data = {
-                'type_label': updated_type.label,
-                'type_icon': updated_type.render_meta.icon,
-                'type_selectable': updated_type.selectable_as_parent
-            }
+        # when type are updated, update all locations with relevant data from this type
+        locations_with_type = locations_manager.get_locations_by(type_id=public_id)
 
-            location: CmdbLocation
-            for location in locations_with_type:
-                locations_manager.update_location(location.public_id, loc_data, False)
+        loc_data = {
+            'type_label': updated_type.label,
+            'type_icon': updated_type.render_meta.icon,
+            'type_selectable': updated_type.selectable_as_parent
+        }
 
-            # check and update all multi data sections for the type if required
-            updated_objects = types_manager.handle_mutli_data_sections(CmdbType.from_data(unchanged_type),
-                                                                       data)
+        location: CmdbLocation
+        for location in locations_with_type:
+            locations_manager.update_location(location.public_id, loc_data, False)
 
-            # Update Objects
-            an_object: CmdbObject
-            for an_object in updated_objects:
-                objects_manager.update_object(an_object.public_id, CmdbObject.to_json(an_object))
+        # check and update all multi data sections for the type if required
+        updated_objects = types_manager.handle_mutli_data_sections(CmdbType.from_data(unchanged_type),
+                                                                   data)
 
-            api_response = UpdateSingleResponse(result=data)
+        # Update Objects
+        an_object: CmdbObject
+        for an_object in updated_objects:
+            objects_manager.update_object(an_object.public_id, CmdbObject.to_json(an_object))
 
-            return api_response.make_response()
-
-        abort(404, f"The Type with ID:{public_id} was not found!")
+        return UpdateSingleResponse(data).make_response()
     except HTTPException as http_err:
         raise http_err
-    except BaseManagerGetError as err:
-        #TODO: ERROR-FIX (need to catch specific CmdbLocation exception)
-        LOGGER.error("[update_cmdb_type] BaseManagerGetError: %s", err, exc_info=True)
+    except LocationsManagerGetError as err:
+        LOGGER.error("[update_cmdb_type] LocationsManagerGetError: %s", err, exc_info=True)
+        abort(400, "Although the Type got updated, retrieving the corresponding Locations failed!")
+    except LocationsManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_type] LocationsManagerUpdateError: %s", err, exc_info=True)
         abort(400, "Although the Type got updated, the update of Locations failed!")
-    except BaseManagerUpdateError as err:
-        #TODO: ERROR-FIX (need to catch specific CmdbObject exception)
-        LOGGER.error("[update_cmdb_type] BaseManagerUpdateError: %s", err, exc_info=True)
-        abort(400, "Although the Type got updated, the update of Objects failed!")
+    except ObjectsManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_type] ObjectsManagerUpdateError: %s", err, exc_info=True)
+        abort(400, "Although the Type got updated, the update of correspondings Objects failed!")
     except TypesManagerGetError as err:
         LOGGER.error("[update_cmdb_type] TypesManagerGetError: %s", err, exc_info=True)
         abort(400, f"Failed to retrieve the Type with ID: {public_id} from the database!")
@@ -326,7 +328,7 @@ def update_cmdb_type(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, "Although the Type got updated, the Multi-Data-Section updates failed!")
     except Exception as err:
         LOGGER.error("[update_cmdb_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured when trying to update the Type with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 

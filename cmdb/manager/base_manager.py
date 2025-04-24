@@ -412,7 +412,13 @@ class BaseManager:
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
-    def update(self, criteria: dict, data: dict, *args, add_to_set: bool = True, **kwargs) -> UpdateResult:
+    def update(self,
+               criteria: dict,
+               data: dict,
+               *args,
+               add_to_set: bool = True,
+               plain: bool = False,
+               **kwargs) -> UpdateResult:
         """
         Updates a document in the database with the specified criteria and new data
 
@@ -422,7 +428,9 @@ class BaseManager:
             *args: Additional positional arguments passed to the update operation
             add_to_set (bool, optional): If True, wraps `data` in `$set` unless the `data` already contains update
                                          operators. Defaults to True
+            plain (bool, optional): If true, then no modification of data
             **kwargs: Additional keyword arguments passed to the update operation
+
 
         Raises:
             BaseManagerUpdateError: If an error occurs during the update operation
@@ -432,7 +440,7 @@ class BaseManager:
                           matched and modified
         """
         try:
-            return self.dbm.update(self.collection, criteria, data, *args, add_to_set, **kwargs)
+            return self.dbm.update(self.collection, criteria, data, *args, add_to_set, plain, **kwargs)
         except DocumentUpdateError as err:
             raise BaseManagerUpdateError(err) from err
 

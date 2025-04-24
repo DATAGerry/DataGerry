@@ -256,7 +256,7 @@ def delete_cmdb_person(public_id: int, request_user: CmdbUser):
         if not to_delete_person:
             abort(404, f"The Person with ID:{public_id} was not found!")
 
-        persons_manager.delete_item(public_id)
+        persons_manager.delete_with_follow_up(public_id)
 
         # Delete the person from all groups
         person_groups_manager.delete_person_from_groups(public_id)

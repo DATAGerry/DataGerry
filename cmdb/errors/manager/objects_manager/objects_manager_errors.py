@@ -54,6 +54,12 @@ class ObjectsManagerGetError(ObjectsManagerError):
     """
 
 
+class ObjectsManagerGetTypeError(ObjectsManagerError):
+    """
+    Raised when ObjectsManager could not retrieve the CmdbType of the CmdbObject
+    """
+
+
 class ObjectsManagerInitError(ObjectsManagerError):
     """
     Raised when ObjectsManager could not initialise a CmdbObject

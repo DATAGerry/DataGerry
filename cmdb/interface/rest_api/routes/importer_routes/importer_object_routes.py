@@ -330,17 +330,15 @@ def import_objects(request_user: CmdbUser):
                 verify_import_access(request_user, type_, types_manager)
         except AccessDeniedError:
             LOGGER.error("[import_objects] No import config was provided!")
-            abort(403, "Access denied for importing objects !")
+            abort(403, "Access denied for importing objects!")
         except Exception as error:
-            #TODO: ERROR-FIX
             LOGGER.error("[import_objects] Exception: %s. Type: %s", error, type(error), exc_info=True)
-            abort(400, "Could not import objects !")
+            abort(400, "Could not import objects!")
 
         # Load parser
         try:
             parser_class = load_parser_class('object', file_format)
         except ParserLoadError as err:
-            #TODO: ERROR-FIX
             LOGGER.error("[import_objects] ParserLoadError: %s", err, exc_info=True)
             abort(500, "Failed to load ObjectParser class!")
 
@@ -350,7 +348,6 @@ def import_objects(request_user: CmdbUser):
         try:
             importer_config_class = load_importer_config_class('object', file_format)
         except ImporterLoadError as err:
-            #TODO: ERROR-FIX
             LOGGER.error("[import_objects] ImporterLoadError: %s", err, exc_info=True)
             abort(500, "Failed to load ObjectImprter config!")
 
@@ -360,7 +357,6 @@ def import_objects(request_user: CmdbUser):
         try:
             importer_class = load_importer_class('object', file_format)
         except ImporterLoadError as err:
-            #TODO: ERROR-FIX
             LOGGER.error("[import_objects] ImporterLoadError: %s", err, exc_info=True)
             abort(500, f"Failed to load ObjectImporter for file format: {file_format}!")
 

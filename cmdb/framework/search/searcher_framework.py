@@ -99,8 +99,7 @@ class SearcherFramework:
         try:
             matches_regex = plb.get_regex_pipes_values()
         except Exception as err:
-            #TODO: ERROR-FIX
-            LOGGER.error('Extract regex pipes: %s',err)
+            LOGGER.error("[aggregate] Exception: %s. Type: %s", err, type(err), exc_info=True)
             matches_regex = []
 
         if len(raw_search_result_list[0]['data']) > 0:
