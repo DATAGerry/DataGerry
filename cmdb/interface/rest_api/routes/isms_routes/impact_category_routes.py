@@ -76,7 +76,7 @@ def insert_isms_impact_category(data: dict, request_user: CmdbUser):
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
 
-        result_id: int = impact_category_manager.insert_item(data)
+        result_id: int = impact_category_manager.create_with_follow_up(data)
 
         created_impact: dict = impact_category_manager.get_item(result_id, as_dict=True)
 
@@ -323,7 +323,7 @@ def delete_isms_impact_category(public_id: int, request_user: CmdbUser):
         if not to_delete_impact:
             abort(404, f"The ImpactCategory with ID:{public_id} was not found!")
 
-        impact_category_manager.delete_item(public_id)
+        impact_category_manager.delete_with_follow_up(public_id)
 
         return DeleteSingleResponse(to_delete_impact).make_response()
     except HTTPException as http_err:
