@@ -251,7 +251,7 @@ def delete_isms_risk(public_id: int, request_user: CmdbUser):
         if not to_delete_risk:
             abort(404, f"The Risk with ID:{public_id} was not found!")
 
-        risk_manager.delete_item(public_id)
+        risk_manager.delete_with_follow_up(public_id)
 
         return DeleteSingleResponse(to_delete_risk).make_response()
     except HTTPException as http_err:

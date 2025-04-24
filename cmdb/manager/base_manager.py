@@ -437,7 +437,12 @@ class BaseManager:
             raise BaseManagerUpdateError(err) from err
 
 
-    def update_many(self, criteria: dict, update: dict, add_to_set: bool = False) -> UpdateResult:
+    def update_many(
+            self,
+            criteria: dict,
+            update: dict,
+            add_to_set: bool = False,
+            plain: bool = False) -> UpdateResult:
         """
         Updates multiple documents in the collection that match the given filter
 
@@ -446,6 +451,8 @@ class BaseManager:
             update (dict): A dictionary containing the update operations to be applied
             add_to_set (bool, optional): If True, wraps `update` in '$set' unless it already contains update
                                          operators. Defaults to False
+            plain (bool, optional): If True, sends the update dict as-is without wrapping it in an operator.
+                                    Defaults to False
 
         Raises:
             BaseManagerUpdateError: If the update operation fails
@@ -454,7 +461,7 @@ class BaseManager:
             UpdateResult: The result of the update operation, containing metadata about the operation's success
         """
         try:
-            return self.dbm.update_many(self.collection, criteria, update, add_to_set)
+            return self.dbm.update_many(self.collection, criteria, update, add_to_set, plain)
         except DocumentUpdateError as err:
             raise BaseManagerUpdateError(err) from err
 

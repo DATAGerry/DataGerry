@@ -299,6 +299,23 @@ class MongoDatabaseManager:
             raise DocumentInsertError(f"Failed to insert document into collection '{collection}': {err}") from err
 
 
+    def bulk_write(self, collection: str, operations: list) -> None:
+        """
+        Performs a bulk write operation on the specified collection.
+
+        Args:
+            collection (str): Name of the database collection.
+            operations (list): List of pymongo operations (e.g., UpdateOne, DeleteOne, etc.)
+
+        Raises:
+            DocumentInsertError: If bulk write fails.
+        """
+        try:
+            self.get_collection(collection).bulk_write(operations)
+        except Exception as err:
+            raise DocumentInsertError(f"Failed bulk write in collection '{collection}': {err}") from err
+
+
     def init_public_id_counter(self, collection: str) -> int:
         """
         Initializes a public ID counter for the given collection
