@@ -59,14 +59,12 @@ from cmdb.errors.manager.groups_manager import GroupsManagerGetError
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_MIME_TYPE = 'application/json'
-SP_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth"
-SP_API_AUTH_URL = "https://service.datagerry.com/api/datagerry/auth/subscription"
-SP_CI_SYNC_URL = "https://service.datagerry.com/api/datagerry/config-item/update"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
-    """Check if a user has a specific right"""
+    """document"""
+    # TODO: DOCUMENT-FIX
     # Check right for cloud api routes
     if request_user:
         return validate_right_cloud_api(required_right, request_user)
@@ -105,14 +103,11 @@ def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
         return False
 
 
-#@deprecated
 def insert_request_user(func):
-    """
-    Helper function which auto injects the user from the token request
-    """
+    """document"""
+    # TODO: DOCUMENT-FIX
     @functools.wraps(func)
     def get_request_user(*args, **kwargs):
-        # LOGGER.debug("insert_request_user() called")
         with current_app.app_context():
             users_manager = UsersManager(current_app.database_manager)
         try:

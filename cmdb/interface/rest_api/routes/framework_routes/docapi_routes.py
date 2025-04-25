@@ -171,8 +171,6 @@ def get_template_list_filtered(searchfilter: str, request_user: CmdbUser):
         abort(500, "An error occured when trying to retrieve the templates!")
 
 
-#TODO: ROUTE-FIX (Remove one route)
-@docapi_blueprint.route('/template/<int:public_id>/', methods=['GET'])
 @docapi_blueprint.route('/template/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -205,8 +203,6 @@ def get_template(public_id: int, request_user: CmdbUser):
         abort(500, "An error occured when trying to retrieve the template!")
 
 
-#TODO: ROUTE-FIX (Remove one route)
-@docapi_blueprint.route('/template/name/<string:name>/', methods=['GET'])
 @docapi_blueprint.route('/template/name/<string:name>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -228,9 +224,7 @@ def get_template_by_name(name: str, request_user: CmdbUser):
 
         tpl = docapi_manager.get_template_by_name(name=name)
 
-        api_response = DefaultResponse(tpl)
-
-        return api_response.make_response()
+        return DefaultResponse(tpl).make_response()
     except DocapiTemplatesManagerGetError as err:
         LOGGER.error("[get_template_by_name] %s", err, exc_info=True)
         abort(404, f"Could not retrieve the template with name:{name}!")
@@ -239,8 +233,6 @@ def get_template_by_name(name: str, request_user: CmdbUser):
         abort(500, f"An error occured when trying to retrieve the template with name:{name}!")
 
 
-#TODO: ROUTE-FIX (Remove one route)
-@docapi_blueprint.route('/template/<int:public_id>/render/<int:object_id>/', methods=['GET'])
 @docapi_blueprint.route('/template/<int:public_id>/render/<int:object_id>', methods=['GET'])
 @insert_request_user
 @right_required('base.framework.object.view')
@@ -249,12 +241,12 @@ def render_object_template(public_id: int, object_id: int, request_user: CmdbUse
     HTTP `GET` route for retrieving a single rendered DocapiTemplate
 
     Args:
-        `public_id (int)`: public_id of DocapiTemplate which should be used
-        `object_id (int)`: public_id of CmdbObject should be rendered
-        `request_user` (CmdbUser): User requesting this data
+        public_id (int): public_id of DocapiTemplate which should be used
+        object_id (int): public_id of CmdbObject should be rendered
+        request_user (CmdbUser): User requesting this data
 
     Returns:
-        `Response`: The rendered DocapiTemplate with the CmdbObject as a PDF-file
+        Response: The rendered DocapiTemplate with the CmdbObject as a PDF-file
     """
     try:
         docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,

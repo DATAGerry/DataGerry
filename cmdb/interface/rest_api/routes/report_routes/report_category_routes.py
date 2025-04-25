@@ -74,7 +74,7 @@ def create_cmdb_report_category(params: dict, request_user: CmdbUser):
         params['public_id'] = report_categories_manager.get_next_public_id()
         params['predefined'] = False
 
-        new_report_category_id = report_categories_manager.insert_report_category(params)
+        new_report_category_id = report_categories_manager.insert_item(params)
 
         return DefaultResponse(new_report_category_id).make_response()
     except ReportCategoriesManagerInsertError as err:
@@ -82,7 +82,7 @@ def create_cmdb_report_category(params: dict, request_user: CmdbUser):
         abort(400, "Failed to insert the new ReportCategory into the database!")
     except Exception as err:
         LOGGER.error("[create_cmdb_report_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the ReportCategory!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -105,7 +105,7 @@ def get_cmdb_report_category(public_id: int, request_user: CmdbUser):
                                                                             ManagerType.REPORT_CATEGORIES,
                                                                             request_user)
 
-        report_category = report_categories_manager.get_report_category(public_id)
+        report_category = report_categories_manager.get_item(public_id, as_dict=True)
 
         if report_category:
             return DefaultResponse(report_category).make_response()
@@ -118,7 +118,7 @@ def get_cmdb_report_category(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the ReportCategory with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_report_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the ReportCategory with ID: {public_id}!")
 
 
 @report_categories_blueprint.route('/', methods=['GET', 'HEAD'])
@@ -136,14 +136,14 @@ def get_cmdb_report_categories(params: CollectionParameters, request_user: CmdbU
     Returns:
         GetMultiResponse: All the CmdbReportCategories matching the CollectionParameters
     """
-    report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
-                                                                            ManagerType.REPORT_CATEGORIES,
-                                                                            request_user)
-
     try:
+        report_categories_manager: ReportCategoriesManager = ManagerProvider.get_manager(
+                                                                                ManagerType.REPORT_CATEGORIES,
+                                                                                request_user)
+
         builder_params: BuilderParameters = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[CmdbReportCategory] = report_categories_manager.iterate(builder_params)
+        iteration_result: IterationResult[CmdbReportCategory] = report_categories_manager.iterate_items(builder_params)
         report_category_list: list[dict] = [CmdbReportCategory.to_json(report_category) for report_category
                                             in iteration_result.results]
 
@@ -159,7 +159,7 @@ def get_cmdb_report_categories(params: CollectionParameters, request_user: CmdbU
         abort(400, "Failed to retrieve ReportCategories from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_report_categories] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving ReportCategories!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -186,10 +186,10 @@ def update_cmdb_report_category(public_id: int, params: dict, request_user: Cmdb
         params['public_id'] = int(params['public_id'])
         params['predefined'] = params['predefined'] in ["True", "true"]
 
-        current_category = report_categories_manager.get_report_category(public_id)
+        current_category = report_categories_manager.get_item(public_id)
 
         if current_category:
-            report_categories_manager.update_report_category(public_id, params)
+            report_categories_manager.update_item(public_id, params)
 
             return UpdateSingleResponse(params).make_response()
 
@@ -204,7 +204,7 @@ def update_cmdb_report_category(public_id: int, params: dict, request_user: Cmdb
         abort(400, f"Failed to update the ReportCategory with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[update_cmdb_report_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the ReportCategory with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -225,7 +225,7 @@ def delete_cmdb_report_category(public_id: int, request_user: CmdbUser):
                                                                             request_user)
 
 
-        to_delete_report_category: CmdbReportCategory = report_categories_manager.get_report_category(public_id)
+        to_delete_report_category: CmdbReportCategory = report_categories_manager.get_item(public_id)
 
         if not to_delete_report_category:
             abort(404, f"The ReportCategory with ID:{public_id} was not found!")
@@ -240,7 +240,7 @@ def delete_cmdb_report_category(public_id: int, request_user: CmdbUser):
         if len(reports_wtih_category) > 0:
             abort(403, f"ReportCategory with ID: {public_id} can not be deleted because it is used by Reports!")
 
-        ack = report_categories_manager.delete_report_category(public_id)
+        ack = report_categories_manager.delete_item(public_id)
 
         return DefaultResponse(ack).make_response()
     except ReportCategoriesManagerGetError as err:
@@ -251,4 +251,4 @@ def delete_cmdb_report_category(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to delete the ReportCategory with ID: {public_id} from the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_report_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the ReportCategory with ID: {public_id}!")

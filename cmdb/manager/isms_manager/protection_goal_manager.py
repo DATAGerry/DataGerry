@@ -38,7 +38,7 @@ LOGGER = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------------------------- #
 class ProtectionGoalManager(GenericManager):
     """
-    The ThreatManager manages the interaction between IsmsProtectionGoals and the database
+    The ProtectionGoalManager manages the interaction between IsmsProtectionGoals and the database
 
     Extends: GenericManager
     """
@@ -52,7 +52,7 @@ class ProtectionGoalManager(GenericManager):
         Deletes an IsmsProtectionGoal from the database with followup logics
 
         Args:
-            public_id (int): public_id of IsmsThreat which should be deleted
+            public_id (int): public_id of IsmsProtectionGoal which should be deleted
 
         Raises:
             ProtectionGoalManagerDeleteError: If the delete operation fails
