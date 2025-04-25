@@ -24,7 +24,6 @@ import { RelationAddComponent } from './relation-add/relation-add.component';
 import { RelationComponent } from './relation.component';
 import { RelationResolver } from '../resolvers/relation-resolver.service';
 import { RelationEditComponent } from './relation-edit/relation-edit.component';
-import { preCloudGuard } from 'src/app/modules/auth/guards/pre-cloud.guard';
 
 const routes: Routes = [
   {
@@ -36,9 +35,7 @@ const routes: Routes = [
     },
     resolve: {
       userSetting: UserSettingsResolver
-    },
-    canActivate: [preCloudGuard],
-    component: RelationComponent
+    },    component: RelationComponent
   },
   {
     path: 'add',
@@ -46,7 +43,6 @@ const routes: Routes = [
       breadcrumb: 'Add',
       right: 'base.framework.relation.add'
     },
-    canActivate: [preCloudGuard],
     component: RelationAddComponent
   },
   {
@@ -58,7 +54,6 @@ const routes: Routes = [
     resolve: {
       type: RelationResolver
     },
-    canActivate: [preCloudGuard],
     component: RelationEditComponent
   }
   ,
@@ -68,7 +63,6 @@ const routes: Routes = [
       breadcrumb: 'Delete',
       right: 'base.framework.relation.delete'
     },
-    canActivate: [preCloudGuard],
     component: RelationDeleteComponent
   }
 ];
