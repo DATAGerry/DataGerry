@@ -36,3 +36,13 @@ __all__ = [
     'ReportCategoriesManagerGetError',
     'ReportCategoriesManagerIterationError',
 ]
+
+
+REPORT_CATEGORIES_MANAGER_ERRORS = {
+    "init": ReportCategoriesManagerInitError,
+    "insert": ReportCategoriesManagerInsertError,
+    "get": ReportCategoriesManagerGetError,
+    "update": ReportCategoriesManagerUpdateError,
+    "delete": ReportCategoriesManagerDeleteError,
+    "iterate": ReportCategoriesManagerIterationError,
+}

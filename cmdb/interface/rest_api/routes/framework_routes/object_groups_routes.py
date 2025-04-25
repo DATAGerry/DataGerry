@@ -253,7 +253,7 @@ def delete_cmdb_object_group(public_id: int, request_user: CmdbUser):
         if not to_delete_object_group:
             abort(404, f"The ObjectGroup with ID:{public_id} was not found!")
 
-        object_groups_manager.delete_item(public_id)
+        object_groups_manager.delete_with_follow_up(public_id)
 
         return DeleteSingleResponse(to_delete_object_group).make_response()
     except HTTPException as http_err:

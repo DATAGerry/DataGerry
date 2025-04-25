@@ -20,6 +20,12 @@ import logging
 
 from cmdb.models.cmdb_dao import CmdbDAO
 from cmdb.models.reports_model.mds_mode_enum import MdsMode
+
+from cmdb.errors.models.cmdb_report import (
+    CmdbReportInitError,
+    CmdbReportInitFromDataError,
+    CmdbReportToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -64,6 +70,7 @@ class CmdbReport(CmdbDAO):
         'type_id': {
             'type': 'integer',
             'required': True,
+            'empty': False,
         },
         'selected_fields': {
             'type': 'list',
@@ -110,18 +117,23 @@ class CmdbReport(CmdbDAO):
             predefined (bool): Whether the report is predefined. Default is False
             mds_mode (str): MDS mode, typically 'ROWS' or another display mode
             **kwargs: Additional keyword arguments for the parent class
+
+        Raises:
+            CmdbReportInitError: If the CmdbReport could not be initialised
         """
-        self.report_category_id = report_category_id
-        self.name = name
-        self.type_id = type_id
-        self.selected_fields = selected_fields
-        self.conditions = conditions
-        self.report_query = report_query
-        self.predefined = predefined
-        self.mds_mode = mds_mode
+        try:
+            self.report_category_id = report_category_id
+            self.name = name
+            self.type_id = type_id
+            self.selected_fields = selected_fields
+            self.conditions = conditions
+            self.report_query = report_query
+            self.predefined = predefined
+            self.mds_mode = mds_mode
 
-        super().__init__(**kwargs)
-
+            super().__init__(**kwargs)
+        except Exception as err:
+            raise CmdbReportInitError(err) from err
 
 
     def get_selected_fields(self) -> list:
@@ -141,16 +153,12 @@ class CmdbReport(CmdbDAO):
         Args:
             field_name (str): The name of the field to remove
         """
-        try:
-            # Remove field from selected fields
-            if field_name in self.selected_fields:
-                self.selected_fields.remove(field_name)
+        # Remove field from selected fields
+        if field_name in self.selected_fields:
+            self.selected_fields.remove(field_name)
 
-            # Remove field from conditions
-            self.conditions = self.clear_rules_of_field(self.conditions, field_name)
-        except Exception as err:
-            LOGGER.debug("[remove_field_occurences] Exception: %s, Type: %s", err, type(err))
-            raise Exception(err) from err
+        # Remove field from conditions
+        self.conditions = self.clear_rules_of_field(self.conditions, field_name)
 
 
     def clear_rules_of_field(self, conditions: dict, field_name: str):
