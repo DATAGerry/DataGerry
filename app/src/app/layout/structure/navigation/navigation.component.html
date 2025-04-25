@@ -85,20 +85,41 @@
                     [routerLink]="['/framework/relation']">
                     <i class="fas fa-exchange-alt"></i> Relations
                   </a>
-                  <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
-                    [routerLink]="['/framework/object_groups']">
+                  <!-- <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
+                    [routerLink]="['/framework/object_groups']" *ngIf="isPreCloudMode">
                     <i class="fas fa-layer-group"></i> Object Groups
                   </a>
 
                   <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
-                    [routerLink]="['/isms/persons']">
+                    [routerLink]="['/isms/persons']" *ngIf="isPreCloudMode">
                     <i class="fas fa-user-friends"></i> Persons
                   </a>
 
                   <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
-                    [routerLink]="['/framework/person-groups']">
+                    [routerLink]="['/framework/person-groups']" *ngIf="isPreCloudMode">
                     <i class="fas fa-users"></i> Person Groups
-                  </a>
+                  </a> -->
+
+                  <ng-container *ngIf="isPreCloudMode">
+                    <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
+                       [routerLink]="['/framework/object_groups']">
+                      <i class="fas fa-layer-group"></i> Object Groups
+                    </a>
+                  </ng-container>
+                  
+                  <ng-container *ngIf="isPreCloudMode">
+                    <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
+                       [routerLink]="['/isms/persons']">
+                      <i class="fas fa-user-friends"></i> Persons
+                    </a>
+                  </ng-container>
+                  
+                  <ng-container *ngIf="isPreCloudMode">
+                    <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
+                       [routerLink]="['/framework/person-groups']">
+                      <i class="fas fa-users"></i> Person Groups
+                    </a>
+                  </ng-container>
                 </div>
 
               </li>
@@ -150,7 +171,7 @@
                           <span>Webhooks</span>
                         </a>
                       </div>
-                      <div class="col">
+                      <div class="col" *ngIf="isPreCloudMode">
                         <a [routerLink]="['/isms']" class="dropdown-icon-item">
                           <fa-icon class="fas fa-shield-alt"></fa-icon>
                           <span>ISMS</span>
