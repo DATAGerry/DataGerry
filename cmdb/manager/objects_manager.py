@@ -29,8 +29,10 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.object_model import CmdbObject
+from cmdb.models.object_group_model import ObjectReferenceType
 from cmdb.models.type_model import CmdbType
 from cmdb.models.user_model import CmdbUser
+from cmdb.models.isms_model import IsmsControlMeasureAssignment, IsmsRiskAssessment
 from cmdb.security.acl.helpers import verify_access
 from cmdb.security.acl.permission import AccessControlPermission
 from cmdb.framework.results import IterationResult
@@ -708,6 +710,31 @@ class ObjectsManager(BaseManager):
             raise ObjectsManagerDeleteError(err) from err
 
 
+    def delete_with_follow_up(
+            self, public_id: int,
+            user: CmdbUser = None,
+            permission: AccessControlPermission = None) -> None:
+        """
+        Deletes a CmdbObject by its public_id after verifying access and type status and also deletes
+        RiskAssessments using this Object!
+
+        Args:
+            public_id (int): public_id of the CmdbObject which should be deleted
+            user (CmdbUser, optional): The CmdbUser requesting deletion
+            permission (AccessControlPermission, optional): The required permission for deletion
+
+        Raises:
+            AccessDeniedError: If the object's type is deactivated or the user lacks permission
+            ObjectsManagerDeleteError: If any issue occurs during retrieval or deletion
+
+        Returns:
+            bool: True if the CmdbObject was successfully deleted, False otherwise
+        """
+        self.delete_object_from_risk_assessment_cascade(public_id)
+
+        return self.delete_object(public_id, user, permission)
+
+
     def delete_all_object_references(self, public_id: int) -> None:
         """
         Removes all references to the specified object by clearing its reference fields
@@ -752,6 +779,54 @@ class ObjectsManager(BaseManager):
             raise ObjectsManagerDeleteError(err) from err
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
+
+    def delete_object_from_risk_assessment_cascade(self, deleted_object_id: int) -> None:
+        """
+        Deletes all RiskAssessments and their associated ControlMeasureAssignments that reference 
+        the given CmdbObjectGroup.
+
+        This function performs the following steps:
+        1. Finds all RiskAssessments where 'object_id_ref_type' is 'OBJECT_GROUP' and 
+        'object_id' matches the deleted group ID
+        2. Deletes these RiskAssessments
+        3. Deletes all ControlMeasureAssignments referencing the deleted RiskAssessments
+
+        Args:
+            deleted_group_id (int): The public_id of the deleted CmdbObjectGroup
+        """
+        # Find all RiskAssessments referencing this Object
+        risk_assessment_query = {
+            'object_id_ref_type': ObjectReferenceType.OBJECT,
+            'object_id': deleted_object_id
+        }
+
+        matching_risk_assessments = list(self.dbm.find(
+            IsmsRiskAssessment.COLLECTION,
+            risk_assessment_query,
+            projection={'public_id': 1}
+        ))
+
+        if not matching_risk_assessments:
+            return  # Nothing to delete
+
+        # Collect all RiskAssessment public_ids
+        risk_assessment_ids = [ra['public_id'] for ra in matching_risk_assessments]
+
+        if risk_assessment_ids:
+            # Delete the RiskAssessments
+            self.dbm.delete_many(
+                IsmsRiskAssessment.COLLECTION,
+                {'public_id': {'$in': risk_assessment_ids}},
+                plain=True
+            )
+
+            # Delete all ControlMeasureAssignments referencing those RiskAssessments
+            self.dbm.delete_many(
+                IsmsControlMeasureAssignment.COLLECTION,
+                {'risk_assessment_id': {'$in': risk_assessment_ids}},
+                plain=True
+            )
+
 
     #pylint: disable=R0917
     def __merge_mds_references(self,

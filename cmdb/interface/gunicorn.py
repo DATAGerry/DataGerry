@@ -19,6 +19,8 @@ Server module for web-based services
 import logging
 import multiprocessing
 
+import cmdb
+
 from cmdb.database import MongoDatabaseManager
 
 from cmdb.process_management.service import AbstractCmdbService
@@ -47,9 +49,10 @@ class WebCmdbService(AbstractCmdbService):
 
 
     def _run(self):
-        # get queue for sending events
+        mode = 'cloud' if cmdb.__CLOUD_MODE__ and not cmdb.__LOCAL_MODE__ else 'local'
         dbm = MongoDatabaseManager(
-            **SystemConfigReader().get_all_values_from_section('Database')
+            **SystemConfigReader().get_all_values_from_section('Database'),
+            mode=mode
         )
 
 

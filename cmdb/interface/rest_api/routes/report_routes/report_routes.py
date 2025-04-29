@@ -22,6 +22,7 @@ import json
 from datetime import datetime
 from ast import literal_eval
 from flask import abort, request
+from werkzeug.exceptions import HTTPException
 
 from cmdb.database import MongoDBQueryBuilder
 from cmdb.manager.query_builder import BuilderParameters
@@ -42,14 +43,13 @@ from cmdb.interface.rest_api.responses.response_parameters import CollectionPara
 from cmdb.interface.rest_api.responses import DefaultResponse, GetMultiResponse, UpdateSingleResponse
 from cmdb.framework.results import IterationResult
 
-from cmdb.errors.manager import (
-    BaseManagerInsertError,
-    BaseManagerGetError,
-    BaseManagerIterationError,
-    BaseManagerUpdateError,
-    BaseManagerDeleteError,
+from cmdb.errors.manager.reports_manager import (
+    ReportsManagerInsertError,
+    ReportsManagerGetError,
+    ReportsManagerIterationError,
+    ReportsManagerUpdateError,
+    ReportsManagerDeleteError,
 )
-from cmdb.errors.database import NoDocumentFoundError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -64,19 +64,19 @@ DATETIME_PATTERN = r"datetime\.datetime\((.*?)\)"
 @reports_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def create_report(params: dict, request_user: CmdbUser):
+def create_cmdb_report(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbReport in the database
 
     Args:
         params (dict): CmdbReport parameters
-    Returns:
-        int: public_id of the created CmdbReport
-    """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
+    Returns:
+        DefaultResponse: public_id of the created CmdbReport
+    """
     try:
-        params['public_id'] = reports_manager.get_next_public_id()
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+
         params['report_category_id'] = int(params['report_category_id'])
         params['type_id'] = int(params['type_id'])
         params['predefined'] = params['predefined'] in ["True", "true"]
@@ -89,23 +89,22 @@ def create_report(params: dict, request_user: CmdbUser):
         params['report_query'] = {'data': str(MongoDBQueryBuilder(params['conditions'],
                                                                   CmdbType.from_data(report_type)).build())}
 
-        new_report_id = reports_manager.insert_report(params)
-    except BaseManagerInsertError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[create_report] %s", err)
-        abort(400, "Could not create the report!")
-    except Exception as err:
-        LOGGER.debug("[create_report] Exception: %s, Type: %s", err, type(err))
-        abort(400, "Could not create the report!")
+        new_report_id = reports_manager.insert_item(params)
 
-    return DefaultResponse(new_report_id).make_response()
+        return DefaultResponse(new_report_id).make_response()
+    except ReportsManagerInsertError as err:
+        LOGGER.error("[create_cmdb_report] ReportsManagerInsertError: %s", err, exc_info=True)
+        abort(400, "Failed to insert the new Report in the database!")
+    except Exception as err:
+        LOGGER.error("[create_cmdb_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while creating the Report!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
 @reports_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_report(public_id: int, request_user: CmdbUser):
+def get_cmdb_report(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbReport with the given public_id
     
@@ -113,37 +112,46 @@ def get_report(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbReport which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbReport
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
-
     try:
-        requested_report = reports_manager.get_report(public_id)
-    except BaseManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[get_report] %s", err)
-        abort(400, f"Could not retrieve Report with ID: {public_id}!")
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
-    return DefaultResponse(requested_report).make_response()
+        requested_report = reports_manager.get_item(public_id, as_dict=True)
+
+        if not requested_report:
+            abort(404, f"The Report with ID:{public_id} was not found!")
+
+        return DefaultResponse(requested_report).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except ReportsManagerGetError as err:
+        LOGGER.error("[get_cmdb_report] ReportsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Report with ID: {public_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while retrieving the Report with ID: {public_id}!")
 
 
 @reports_blueprint.route('/', methods=['GET', 'HEAD'])
 @reports_blueprint.parse_collection_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def get_reports(params: CollectionParameters, request_user: CmdbUser):
+def get_cmdb_reports(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbReports based on the params
 
     Args:
         params (CollectionParameters): Parameters to identify documents in database
-    Returns:
-        (GetMultiResponse): All CmdbReports considering the params
-    """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+        request_user (CmdbUser): User which is requesting the CmdbReports
 
+    Returns:
+        GetMultiResponse: All CmdbReports considering the params
+    """
     try:
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+
         builder_params: BuilderParameters = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        iteration_result: IterationResult[CmdbReport] = reports_manager.iterate(builder_params)
+        iteration_result: IterationResult[CmdbReport] = reports_manager.iterate_items(builder_params)
         report_list: list[dict] = [report_.__dict__ for report_ in iteration_result.results]
 
         api_response = GetMultiResponse(report_list,
@@ -151,57 +159,70 @@ def get_reports(params: CollectionParameters, request_user: CmdbUser):
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except BaseManagerIterationError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[get_reports] %s", err)
-        abort(400, "Could not retrieve CmdbReports!")
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except ReportsManagerIterationError as err:
+        LOGGER.error("[get_cmdb_reports] ImpactManagerIterationError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve Reports from the database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_reports] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving Reports!")
 
 
 @reports_blueprint.route('/<int:public_id>/count_reports_of_type', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
-def count_reports_of_type(public_id: int, request_user: CmdbUser):
+def count_cmdb_reports_of_type(public_id: int, request_user: CmdbUser):
     """
-    Return the number of reports in der database with the given public_id of Type
+    Return the number of reports in der database with the given public_id of a CmdbType
+
     Args:
-        public_id (int): public_id of the type
+        public_id (int): public_id of the CmdbType
+        request_user (CmdbUser): CmdbUser which is requesting this data
+
+    Returns:
+        DefaultResponse: Number of CmdbReports for CmdbType
     """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
-
     try:
-        reports_count = reports_manager.count_reports({'type_id':public_id})
-        api_response = DefaultResponse(reports_count)
-    except BaseManagerGetError:
-        #TODO: ERROR-FIX
-        abort(404)
-    except Exception:
-        #TODO: ERROR-FIX
-        abort(500)
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
 
-    return api_response.make_response()
+        reports_count = reports_manager.count_items({'type_id':public_id})
+
+        return DefaultResponse(reports_count).make_response()
+    except ReportsManagerGetError as err:
+        LOGGER.error("[count_cmdb_reports_of_type] ReportsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the number of Reports for Type with ID: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[count_cmdb_reports_of_type] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500,
+              f"An internal server error occured while retrieving the number of Reports for Type with ID: {public_id}!"
+             )
 
 
-@reports_blueprint.route('/<int:public_id>/run', methods=['GET'])
+@reports_blueprint.route('/run/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def run_report_query(public_id: int, request_user: CmdbUser):
+def run_cmdb_report_query(public_id: int, request_user: CmdbUser):
     """
-    Returns the result of the query of the report
+    Returns the result of the query of the CmdbReport
 
     Args:
         params (int): public_id of the CmdbReport
+        request_user (CmdbUser): CmdbUser which is requesting this data
+
     Returns:
-        (DefaultResponse): Dict of the query result
+        DefaultResponse: Dict of the query result
     """
     try:
         reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
-        requested_report = reports_manager.get_report(public_id)
+        requested_report: dict = reports_manager.get_item(public_id, as_dict=True)
 
-        query_str: str = requested_report.report_query['data']
+        if not requested_report:
+            abort(404, f"The Report with ID:{public_id} was not found!")
+
+        query_str: str = requested_report['report_query']['data']
 
         processed_query_string = re.sub(DATETIME_PATTERN,
                                         replace_datetime,
@@ -219,12 +240,15 @@ def run_report_query(public_id: int, request_user: CmdbUser):
 
             result = objects_manager.iterate(builder_params).results
 
-        api_response = DefaultResponse(result)
+        return DefaultResponse(result).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except ReportsManagerGetError as err:
+        LOGGER.error("[run_cmdb_report_query] ReportsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Report with ID: {public_id} from the database!")
     except Exception as err:
-        LOGGER.debug("[run_report_query] Exception: %s, Type: %s", err, type(err))
-        return abort (400, "Could not run the requested report!")
-
-    return api_response.make_response()
+        LOGGER.error("[run_cmdb_report_query] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while running the Report with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -232,19 +256,22 @@ def run_report_query(public_id: int, request_user: CmdbUser):
 @reports_blueprint.parse_request_parameters()
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def update_report(params: dict, request_user: CmdbUser):
+def update_cmdb_report(public_id: int, params: dict, request_user: CmdbUser):
     """
     Updates a CmdbReport
 
     Args:
+        public_id (int): public_id of CmdbReport which should be updated
         params (dict): updated CmdbReport parameters
-    Returns:
-        UpdateSingleResponse: Response with UpdateResult
-    """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+        request_user (CmdbUser): CmdbUser which is requesting this update
 
+    Returns:
+        UpdateSingleResponse: The updated CmdbReport as a dict
+    """
     try:
-        params['public_id'] = int(params['public_id'])
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+
+        params['public_id'] = int(public_id)
         params['report_category_id'] = int(params['report_category_id'])
         params['type_id'] = int(params['type_id'])
         params['predefined'] = params['predefined'] in ["True", "true"]
@@ -253,81 +280,76 @@ def update_report(params: dict, request_user: CmdbUser):
         params['mds_mode'] = params['mds_mode'] if params['mds_mode'] in [MdsMode.ROWS,
                                                                           MdsMode.COLUMNS] else MdsMode.ROWS
 
-        current_report = reports_manager.get_report(params['public_id'])
+        current_report = reports_manager.get_item(public_id, as_dict=True)
 
-        if current_report:
-            report_type = reports_manager.get_one_from_other_collection(CmdbType.COLLECTION, params['type_id'])
-            params['report_query'] = {'data': str(MongoDBQueryBuilder(params['conditions'],
-                                                                      CmdbType.from_data(report_type)).build())}
-            #TODO: REFACTOR-FIX
-            reports_manager.update({'public_id': params['public_id']}, params)
-            current_report = reports_manager.get_report(params['public_id'])
-        else:
-            raise NoDocumentFoundError(reports_manager.collection)
+        if not current_report:
+            abort(404, f"The Report with ID:{public_id} was not found!")
 
-    except BaseManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[update_report] %s", err)
-        abort(400, f"Could not retrieve CmdbReport with ID: {params['public_id']}!")
-    except BaseManagerUpdateError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[update_report] %s", err)
-        abort(400, f"Could not update CmdbReport with ID: {params['public_id']}!")
-    except NoDocumentFoundError:
-        abort(404, "Report not found!")
+        report_type = reports_manager.get_one_from_other_collection(CmdbType.COLLECTION, params['type_id'])
+        params['report_query'] = {'data': str(MongoDBQueryBuilder(params['conditions'],
+                                                                    CmdbType.from_data(report_type)).build())}
+
+        reports_manager.update_item(public_id, params)
+        current_report = reports_manager.get_item(public_id, as_dict=True)
+
+        if not current_report:
+            abort(404, f"The updated Report with ID:{public_id} was not found!")
+
+        return UpdateSingleResponse(current_report).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except ReportsManagerGetError as err:
+        LOGGER.error("[update_cmdb_report] ReportsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Report with ID: {public_id} from the database!")
+    except ReportsManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_report] ReportsManagerUpdateError: %s", err, exc_info=True)
+        abort(400, f"Failed to update the Report with ID: {public_id}!")
     except Exception as err:
-        LOGGER.debug("[update_report] Exception: %s, Type: %s", err, type(err))
-        abort(400, "Something went wrong during updating the report!")
-
-    api_response = UpdateSingleResponse(current_report.__dict__)
-
-    return api_response.make_response()
+        LOGGER.error("[update_cmdb_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while updating the Report with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
 @reports_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def delete_report(public_id: int, request_user: CmdbUser):
+def delete_cmdb_report(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbReport with the given public_id
     
     Args:
         public_id (int): public_id of CmdbReport which should be retrieved
-        request_user (CmdbUser): User which is requesting the CmdbReport
-    """
-    reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+        request_user (CmdbUser): User which is requesting the deletion
 
+    Returns:
+        DefaultResponse: True if deletion was successful, else False
+    """
     try:
-        report_instance: CmdbReport = reports_manager.get_report(public_id)
+        reports_manager: ReportsManager = ManagerProvider.get_manager(ManagerType.REPORTS, request_user)
+
+        report_instance = reports_manager.get_item(public_id)
 
         if not report_instance:
-            abort(400, f"Could not retrieve Report with ID: {public_id}!")
+            abort(404, f"The Report with ID:{public_id} was not found!")
 
-        #TODO: REFACTOR-FIX
-        ack: bool = reports_manager.delete({'public_id':public_id})
-    except BaseManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.error("[delete_report] %s", err)
-        abort(400, f"Could not retrieve Report with ID: {public_id}!")
-    except BaseManagerDeleteError as err:
-        #TODO: ERROR-FIX
-        LOGGER.error("[delete_report] %s", err)
-        abort(400, f"Could not delete Report with ID: {public_id}!")
+        ack = reports_manager.delete_item(public_id)
+
+        return DefaultResponse(ack).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except ReportsManagerGetError as err:
+        LOGGER.error("[delete_cmdb_report] ReportsManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the Report with ID: {public_id} from the database!")
+    except ReportsManagerDeleteError as err:
+        LOGGER.error("[delete_cmdb_report] ReportsManagerDeleteError: %s", err, exc_info=True)
+        abort(400, f"Failed to delete the Report with ID: {public_id}!")
     except Exception as err:
-        #TODO: ERROR-FIX
-        LOGGER.error("[delete_report] Exception: %s", err)
-        abort(500, "An internal server error occured!")
-
-    api_response = DefaultResponse(ack)
-
-    return api_response.make_response()
+        LOGGER.error("[delete_cmdb_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while deleting the Report with ID: {public_id}!")
 
 # ------------------------------------------------------ HELPERS ----------------------------------------------------- #
 
-
-
-def replace_datetime(match):
+def replace_datetime(match: re.Match) -> str:
     """
     Replaces a regex match containing datetime arguments with a Python datetime object
 

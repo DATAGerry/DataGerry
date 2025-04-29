@@ -363,7 +363,7 @@ def delete_cmdb_type(public_id: int, request_user: CmdbUser):
                 abort(403, "Delete not possible if Objects of this Type exist!")
 
             # Only possible to delete types when there are no reports using it
-            reports_count = reports_manager.count_reports({'type_id':public_id})
+            reports_count = reports_manager.count_items({'type_id':public_id})
 
             if reports_count > 0:
                 abort(403, "Delete not possible if Reports exist which are using this Type!")

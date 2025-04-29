@@ -107,6 +107,7 @@ class CollectionValidator:
             CollectionValidationError: If validation of collections fails
         """
         try:
+            LOGGER.info("Valdating Collections for Database: %s!", self.db_name)
             self.init_database()
             self.init_framework_collections()
             self.init_management_collections()
@@ -172,7 +173,7 @@ class CollectionValidator:
 
                     # Create the default IsmsRiskMatrix
                     if framework_class == IsmsRiskMatrix:
-                        self.dbm.insert(IsmsRiskMatrix.COLLECTION, get_default_risk_matrix())
+                        self.dbm.upsert_set(IsmsRiskMatrix.COLLECTION, get_default_risk_matrix())
 
                     # Create predefined CmdbExtendableOptions
                     if framework_class == CmdbExtendableOption:
@@ -261,11 +262,13 @@ class CollectionValidator:
                     self.dbm.init_public_id_counter(collection)
 
                 # Insert root location data
-                status = self.dbm.insert(collection, get_root_location_data())
+                LOGGER.info("Creating ROOT location!")
+                status = self.dbm.upsert_set(collection, get_root_location_data())
 
             else:
                 # Update the root location data
-                status = self.dbm.update(collection, {'public_id': 1}, get_root_location_data())
+                LOGGER.info("Updating ROOT location!")
+                status = self.dbm.upsert_set(collection, get_root_location_data())
 
             return status
         except Exception as err:
