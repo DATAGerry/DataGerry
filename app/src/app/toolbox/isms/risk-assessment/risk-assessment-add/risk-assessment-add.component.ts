@@ -129,7 +129,7 @@ export class RiskAssessmentAddComponent implements OnInit {
    *  Public UI actions
    * ═════════════════════════════════════════════════════════════════════════ */
 
-  
+
   /*
   * Toggles the visibility of a section.
   * @returns {void}
@@ -146,10 +146,10 @@ export class RiskAssessmentAddComponent implements OnInit {
     const payload1 = this.form.getRawValue() as RiskAssessment;
     console.log('Form value:', payload1);
 
-    if (this.form.invalid) {
-      this.toast.error('Form invalid. Please check required fields.');
-      return;
-    }
+    // if (this.form.invalid) {
+    //   this.toast.error('Form invalid. Please check required fields.');
+    //   return;
+    // }
 
     const payload = this.form.getRawValue() as RiskAssessment;
 
