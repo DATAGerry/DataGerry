@@ -250,6 +250,7 @@ export class CreateReportComponent implements OnInit, OnDestroy {
                 });
 
             } else {
+                delete reportData.public_id;
                 this.reportService.createReport(reportData).pipe(finalize(() => this.loaderService.hide())).subscribe({
                     next: (response) => {
                         this.toast.success('Report created successfully');

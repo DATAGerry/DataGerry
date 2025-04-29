@@ -142,7 +142,7 @@ export class ReportService<T = any> implements ApiServicePrefix {
         let httpParams = new HttpParams();
         this.options.params = httpParams;
 
-        return this.api.callGet<T>(`${this.servicePrefix}/${publicID}/run`, this.options).pipe(
+        return this.api.callGet<T>(`${this.servicePrefix}/run/${publicID}`, this.options).pipe(
             map((apiResponse: HttpResponse<APIGetSingleResponse<T>>) => apiResponse.body as T)
         );
     }
