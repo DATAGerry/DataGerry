@@ -157,7 +157,7 @@ class ObjectImporter(BaseImporter):
                     success_imports.append(ImportSuccessMessage(public_id=current_public_id, obj=current_import_object))
             else:
                 try:
-                    self.objects_manager.delete_object(current_public_id, self.request_user)
+                    self.objects_manager.delete_with_follow_up(current_public_id, self.request_user)
                 except ObjectsManagerDeleteError as err:
                     LOGGER.error("[_import] ObjectsManagerDeleteError: %s", err, exc_info=True)
                     failed_imports.append(ImportFailedMessage(error_message=err, obj=current_import_object))

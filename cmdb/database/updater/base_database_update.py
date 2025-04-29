@@ -19,6 +19,7 @@ Implementation of BaseUpdate
 import logging
 from abc import abstractmethod
 
+import cmdb
 from cmdb.database import MongoDatabaseManager
 
 from cmdb.manager import (
@@ -42,7 +43,9 @@ class BaseDatabaseUpdate:
     """
     def __init__(self, dbm:MongoDatabaseManager= None):
         scr = SystemConfigReader()
-        self.dbm = dbm if dbm else MongoDatabaseManager(**scr.get_all_values_from_section('Database'))
+        mode = 'cloud' if cmdb.__CLOUD_MODE__ and not cmdb.__LOCAL_MODE__ else 'local'
+        LOGGER.debug("Manager MODE: %s", mode)
+        self.dbm = dbm if dbm else MongoDatabaseManager(**scr.get_all_values_from_section('Database'), mode=mode)
         self.categories_manager = CategoriesManager(self.dbm)
         self.objects_manager = ObjectsManager(self.dbm)
         self.types_manager = TypesManager(self.dbm)

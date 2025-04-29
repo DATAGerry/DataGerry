@@ -445,6 +445,38 @@ class BaseManager:
             raise BaseManagerUpdateError(err) from err
 
 
+    def upsert_set(self, data: dict, collection:str = None) -> UpdateResult:
+        """
+        Performs an upsert operation on a specified MongoDB collection.
+
+        This method attempts to update a document in the specified collection (or a default
+        collection if none is provided) by matching the `public_id` field. If the document
+        does not exist, it will insert the document with the provided data.
+
+        Args:
+            data (dict): A dictionary containing the data to be inserted or updated.
+                        The dictionary should contain at least the 'public_id' field
+                        to identify the document.
+            collection (str, optional): The name of the MongoDB collection where the upsert
+                                        operation will be performed. If not provided, the
+                                        method will use the default collection.
+
+        Returns:
+            UpdateResult: The result of the update operation, providing information
+                        about the modified or inserted document.
+
+        Raises:
+            BaseManagerUpdateError: If an error occurs during the upsert operation,
+                                    a custom exception is raised with details about the failure.
+        """
+        try:
+            target_collection = collection if collection else self.collection
+
+            return self.dbm.upsert_set(target_collection, data)
+        except DocumentUpdateError as err:
+            raise BaseManagerUpdateError(err) from err
+
+
     def update_many(
             self,
             criteria: dict,

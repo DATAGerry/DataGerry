@@ -23,9 +23,12 @@ import json
 import logging
 from datetime import datetime, timezone
 from typing import Optional
+import time
 import requests
 from flask import request, abort, current_app
 from werkzeug._internal import _wsgi_decoding_dance
+
+from pymongo.errors import NetworkTimeout, AutoReconnect
 
 from cmdb.database.database_services import CollectionValidator, DatabaseUpdater
 from cmdb.manager import (
@@ -731,3 +734,27 @@ def sync_config_items(email: str, database: str, config_item_count: int) -> bool
     except (requests.exceptions.Timeout, requests.exceptions.RequestException) as err:
         LOGGER.error("[sync_config_items] Request Error: %s. Type: %s", err, type(err))
         return False
+
+
+def mongo_retry(retries=3, delay=2):
+    """
+    Decorator to retry MongoDB operations in case of transient errors.
+    
+    Args:
+        retries (int): Number of retries
+        delay (int): Seconds between retries
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for _ in range(retries):
+                try:
+                    return func(*args, **kwargs)
+                except (NetworkTimeout, AutoReconnect) as e:
+                    last_exception = e
+                    time.sleep(delay)
+            # After retries exhausted
+            raise last_exception
+        return wrapper
+    return decorator

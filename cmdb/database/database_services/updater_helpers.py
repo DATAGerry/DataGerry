@@ -21,7 +21,6 @@ import os
 import requests
 
 from cmdb.errors.security import (
-    InvalidCloudUserError,
     NoAccessTokenError,
     RequestTimeoutError,
     RequestError,
@@ -43,7 +42,7 @@ def get_db_names_from_service_portal(local_mode: bool = False) -> list[str]:
         list[str]: Names of all databases
     """
     if local_mode:
-        return []
+        return ["testdb1", "testdb2", "testdb3"]
 
     x_access_token = os.getenv("X-ACCESS-TOKEN")
 
@@ -57,13 +56,20 @@ def get_db_names_from_service_portal(local_mode: bool = False) -> list[str]:
     target = os.getenv("SP_ALL_DB_NAMES_URL")
 
     try:
-        response = requests.post(target, headers=headers, timeout=3)
+        response = requests.get(target, headers=headers, timeout=3)
 
         if response.status_code == 200:
             return response.json()
 
-        raise InvalidCloudUserError(response.json()['message'])
+        LOGGER.error("[get_db_names_from_service_portal] StatusCode: %s. Error: %s",
+                     response.status_code,
+                     response.json()['message'])
+
+        raise RequestError(response.json()['message'])
     except requests.exceptions.Timeout as err:
         raise RequestTimeoutError(err) from err
     except requests.exceptions.RequestException as err:
+        raise RequestError(err) from err
+    except Exception as err:
+        LOGGER.error("[] Exception: %s. Type: %s", err, type(err))
         raise RequestError(err) from err

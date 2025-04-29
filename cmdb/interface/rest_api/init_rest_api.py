@@ -59,10 +59,6 @@ def create_rest_api(database_maanger: MongoDatabaseManager) -> BaseCmdbApp:
     Returns:
         BaseCmdbApp: The Flask App
     """
-    # dbm = MongoDatabaseManager(
-    #     **SystemConfigReader().get_all_values_from_section('Database')
-    # )
-
     app = BaseCmdbApp(__name__, database_manager=database_maanger)
     app.url_map.strict_slashes = True
 
@@ -94,7 +90,8 @@ def create_rest_api(database_maanger: MongoDatabaseManager) -> BaseCmdbApp:
                     # Check for updates in __CLOUD_MODE__
                     execute_update_checks(database_maanger)
                 else:
-                    pass # LOCAL_MODE does not need to run updates
+                    # LOCAL_MODE
+                    execute_update_checks(database_maanger, local_mode=True)
             except Exception as err:
                 LOGGER.error(
                     "Initialisation of DataGerry failed. Exception: %s. Type: %s", err, type(err), exc_info=True
@@ -271,7 +268,7 @@ def start_datagerry_setup(dbm: MongoDatabaseManager) -> None:
         database_updater.run_updates()
 
 
-def execute_update_checks(dbm: MongoDatabaseManager) -> None:
+def execute_update_checks(dbm: MongoDatabaseManager, local_mode: bool = False) -> None:
     """
     Setup of DataGerry and runs database updates
 
@@ -279,7 +276,7 @@ def execute_update_checks(dbm: MongoDatabaseManager) -> None:
         dbm (MongoDatabaseManager): Manager for interaction with database
     """
     # First retrieve all database names
-    db_names = get_db_names_from_service_portal()
+    db_names = get_db_names_from_service_portal(local_mode)
 
     # # Check each database if it is up to date
     for db_name in db_names:

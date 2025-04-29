@@ -56,6 +56,9 @@ from cmdb.errors.security.security_errors import (
     RequestTimeoutError,
     RequestError,
 )
+from cmdb.errors.database import (
+    DatabaseConnectionError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -100,7 +103,7 @@ def post_login():
 
                 if not user_data:
                     LOGGER.error("[post_login] Could not retrieve User from ServicePortal!")
-                    abort(401, 'Could not login')
+                    abort(401, 'Invalid user data. Failed to login!')
 
                 user_database = None
 
@@ -134,7 +137,7 @@ def post_login():
                 # User does not exist
                 if not user:
                     LOGGER.error("[post_login] Could not retrieve User from database!")
-                    abort(401, 'Could not login!')
+                    abort(401, "Invalid user or password. Could not login!")
 
                 current_app.database_manager.connector.set_database(user_database)
                 token, token_issued_at, token_expire = generate_token_with_params(user,
@@ -156,6 +159,9 @@ def post_login():
         except RequestTimeoutError as err:
             LOGGER.error("[post_login] RequestTimeoutError: %s", err)
             abort(500, "Login request timed out!")
+        except DatabaseConnectionError as err:
+            LOGGER.error("[post_login] DatabaseConnectionError: %s", err, exc_info=True)
+            abort(500, "Failed to establish a connection to the database!")
         except RequestError as err:
             LOGGER.error("[post_login] RequestError: %s", err)
             abort(500, "Login failed due a malformed request!")
@@ -165,9 +171,9 @@ def post_login():
         except UsersManagerInsertError as err:
             LOGGER.error("[post_login] UsersManagerInsertError: %s", err, exc_info=True)
             abort(500, "Could not login because user can't be inserted in database!")
-        except Exception as err: #pylint: disable=broad-exception-caught
+        except Exception as err:
             LOGGER.error("[post_login] Exception: %s, Type: %s", err, type(err), exc_info=True)
-            abort(500, "Could not login")
+            abort(500, "An internal server error occured while trying to login!")
 
         # PATH when its not cloud mode
         settings_manager = SettingsManager(current_app.database_manager)

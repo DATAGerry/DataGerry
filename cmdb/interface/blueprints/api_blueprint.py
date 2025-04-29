@@ -148,25 +148,7 @@ class APIBlueprint(Blueprint):
                     abort(400, f"Schema '{schema}' validation failed")
 
                 if not validation_result:
-                    LOGGER.debug("[VALIDATION] Error: %s", validator.errors or "No validation errors found!")
-                    #TODO: proper error message
-                    # {
-                    #     "description": "The browser (or proxy) sent a request that this server could not understand.",
-                    #     "joke": "... cause the access was nuts!",
-                    #     "message": {
-                    #         "validation_error": {
-                    #         "assigned_ids": [
-                    #             "empty values not allowed"
-                    #         ],
-                    #         "name": [
-                    #             "empty values not allowed"
-                    #         ]
-                    #         }
-                    #     },
-                    #     "response": "Bad Request: http://192.168.64.2:4000/rest/object_groups/",
-                    #     "status": 400
-                    # }
-                    # abort(400, {'validation_error': validator.errors})
+                    LOGGER.error("[VALIDATION] Error: %s", validator.errors or "No validation errors found!")
                     abort(400, "Invalid data provided!")
 
                 return f(data=validator.document, *args, **kwargs)

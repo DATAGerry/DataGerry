@@ -56,17 +56,48 @@ class MongoDatabaseManager:
     """
     PyMongo (MongoDB) implementation of the Database Manager
     """
-    def __init__(self, host: str, port: int, database_name: str, **kwargs):
+    def __init__(self, host: str, port: int, database_name: str, mode: str = 'local'):
         self.host = host
-        self.port = port
+        self.port = int(port)
         self.database_name = database_name
-        self.kwargs = kwargs
-        self.connector = MongoConnector(host, port, database_name, kwargs)
+        self.mode = mode  # Define the mode ('local' or 'cloud')
+
+        # Internal client options (e.g., SSL, retry, timeout, etc.)
+        self.client_options = {
+            # 'ssl': True,  # Enable SSL connection by default (for Azure Cosmos DB, for example)
+            # 'connectTimeoutMS': 30000,  # Timeout after 30 seconds if no connection is made
+            # 'socketTimeoutMS': 30000,  # Socket timeout (set to 30 seconds)
+            # 'retryWrites': True,  # Enable retryable writes (helpful for fault tolerance)
+            'retryReads': True,  # Enable retryable reads (helpful for fault tolerance)
+            'maxPoolSize': 100,  # Maximum number of connections in the connection pool
+            'w': 'majority',  # Ensure write operations are acknowledged by a majority of replica set members
+            'wtimeoutMS': 2500,  # Timeout for waiting for write acknowledgment
+            'readPreference': 'primaryPreferred',  # Read from the primary node by default
+            'readConcernLevel': 'local',  # Level of consistency required for reads
+        }
+
+        # Only enable SSL if in cloud mode
+        if self.mode == 'cloud':
+            self.client_options['ssl'] = True  # Enable SSL for cloud mode
+        else:
+            self.client_options['ssl'] = False  # Disable SSL for local mode
+
+        self.connector = MongoConnector(self.host, self.port, self.database_name, self.client_options)
 
 
     def reset_connection(self):
-        """Reset the MongoConnector to create a fresh MongoDB connection."""
-        self.connector = MongoConnector(self.host, self.port, self.database_name, self.kwargs)
+        """
+        Reset the MongoConnector to create a fresh MongoDB connection
+        """
+        self.connector.disconnect()
+        self.connector = MongoConnector(self.host, self.port, self.database_name, self.client_options)
+
+
+    def __enter__(self):
+        """
+        Support with-statement for connection management
+        """
+        return self
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -384,6 +415,40 @@ class MongoDatabaseManager:
         except Exception as err:
             LOGGER.error("[update] Exception: %s. Type: %s", err, type(err))
             raise DocumentUpdateError(f"Failed to update document in '{collection}': {err}") from err
+
+
+    def upsert_set(self, collection:str, data: dict) -> UpdateResult:
+        """
+        Performs an upsert operation on a specified MongoDB collection.
+        
+        This function attempts to update a document in the given collection by matching the 
+        `public_id` field. If the document does not exist, it will insert the document 
+        with the provided data.
+
+        Args:
+            collection (str): The name of the MongoDB collection where the upsert operation 
+                            will be performed.
+            data (dict): A dictionary containing the data to be inserted or updated. 
+                        The dictionary should contain at least the 'public_id' field 
+                        to identify the document.
+
+        Returns:
+            UpdateResult: The result of the update operation, providing information 
+                        about the modified or inserted document.
+
+        Raises:
+            DocumentUpdateError: If an error occurs during the upsert operation, 
+                                an exception is raised with details about the failure.
+        """
+        try:
+            self.get_collection(collection).update_one(
+                {"public_id": data['public_id']},
+                {"$set": data},  # Update the fields of the document
+                upsert=True  # Insert if document does not exist)
+            )
+        except Exception as err:
+            LOGGER.error("[upsert_set] Exception: %s. Type: %s", err, type(err))
+            raise DocumentUpdateError(f"Failed to update/create document in '{collection}': {err}") from err
 
 
     def unset_update_many(self, collection: str, criteria: dict, field: str, *args, **kwargs) -> UpdateResult:

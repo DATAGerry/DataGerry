@@ -54,12 +54,12 @@ class ObjectGroupsManager(GenericManager):
         Returns:
             bool: True if deletion was a success, else False
         """
-        self.delete_object_group_from_risk_assessment_cacade(public_id)
+        self.delete_object_group_from_risk_assessment_cascade(public_id)
 
         return self.delete_item(public_id)
 
 
-    def delete_object_group_from_risk_assessment_cacade(self, deleted_group_id: int) -> None:
+    def delete_object_group_from_risk_assessment_cascade(self, deleted_group_id: int) -> None:
         """
         Deletes all RiskAssessments and their associated ControlMeasureAssignments that reference 
         the given CmdbObjectGroup.

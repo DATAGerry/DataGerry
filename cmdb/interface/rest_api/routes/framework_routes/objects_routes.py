@@ -1027,7 +1027,7 @@ def update_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
                         a_report.report_query = {'data': str(MongoDBQueryBuilder(a_report.conditions,
                                                             update_type_instance).build())}
 
-                        reports_manager.update({'public_id': a_report.public_id}, a_report.__dict__)
+                        reports_manager.update_item(a_report.public_id, a_report.__dict__)
                 except Exception as error:
                     LOGGER.debug(
                         "[update_unstructured_cmdb_objects] Clean Reports Exception: %s, Type: %s", error, type(error)
@@ -1149,7 +1149,7 @@ def delete_cmdb_object(public_id: int, request_user: CmdbUser):
             )
             abort(500, "Failed to handle potential Locations of this Object!")
 
-        is_deleted = objects_manager.delete_object(public_id, request_user, AccessControlPermission.DELETE)
+        is_deleted = objects_manager.delete_with_follow_up(public_id, request_user, AccessControlPermission.DELETE)
 
         try:
             #EVENT: DELETE-EVENT
@@ -1276,7 +1276,9 @@ def delete_cmdb_object_with_child_locations(public_id: int, request_user: CmdbUs
             # delete the current object and its location
             locations_manager.delete_location(current_location['public_id'])
 
-            deleted = objects_manager.delete_object(public_id, request_user, permission=AccessControlPermission.DELETE)
+            deleted = objects_manager.delete_with_follow_up(public_id,
+                                                            request_user,
+                                                            permission=AccessControlPermission.DELETE)
 
             try:
                 if current_app.cloud_mode:
@@ -1380,7 +1382,9 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
 
             # # delete the objects of child locations
             for child_object_id in children_object_ids:
-                objects_manager.delete_object(child_object_id, request_user, AccessControlPermission.DELETE)
+                objects_manager.delete_with_follow_up(child_object_id,
+                                                      request_user,
+                                                      AccessControlPermission.DELETE)
 
                 # Handle corresponding CmdbObjectRelations
                 delete_invalid_object_relations(child_object_id,
@@ -1390,7 +1394,9 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
 
             # # delete the current object and its location
             locations_manager.delete_location(current_location['public_id'])
-            deleted = objects_manager.delete_object(public_id, request_user, AccessControlPermission.DELETE)
+            deleted = objects_manager.delete_with_follow_up(public_id,
+                                                            request_user,
+                                                            AccessControlPermission.DELETE)
 
             # Handle corresponding CmdbObjectRelations
             delete_invalid_object_relations(public_id,
@@ -1512,9 +1518,9 @@ def delete_many_cmdb_objects(public_ids, request_user: CmdbUser):
                                                         objects_manager).result()
 
 
-            objects_manager.delete_object(current_object_instance.get_public_id(),
-                                            request_user,
-                                            AccessControlPermission.DELETE)
+            objects_manager.delete_with_follow_up(current_object_instance.get_public_id(),
+                                                  request_user,
+                                                  AccessControlPermission.DELETE)
 
             # Handle corresponding CmdbObjectRelations
             delete_invalid_object_relations(current_object_instance.get_public_id(),
@@ -1616,6 +1622,7 @@ def check_config_item_limit_reached(request_user: CmdbUser, objects_count: int) 
     return objects_count >= request_user.config_items_limit
 
 
+#TODO: REFACTOR-FIX (move the functionality of ObjectRelationsManager to a method in it)
 def delete_invalid_object_relations(public_id: int,
                             request_user: CmdbUser,
                             object_relations_manager: ObjectRelationsManager,

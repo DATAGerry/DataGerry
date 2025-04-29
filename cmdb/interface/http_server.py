@@ -73,13 +73,6 @@ class HTTPServer(BaseApplication):
         return self.application
 
 
-    # def post_fork(self, worker):
-    #     """
-    #     Ensures MongoDB connections are properly reinitialized after forking
-    #     """
-    #     post_fork(self, worker)  # Call post_fork with the worker
-
-
     def init(self, parser, opts, args):
         raise NotImplementedError()
 

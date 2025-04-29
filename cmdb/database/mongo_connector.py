@@ -49,23 +49,6 @@ class MongoConnector:
         Raises:
             `DatabaseConnectionError`: When the connection initialisation failed
         """
-        # try:
-        #     connection_string = os.getenv('CONNECTION_STRING')
-
-        #     if connection_string:
-        #         self.client = MongoClient(connection_string)
-        #     else:
-        #         # Use the provided host and port to create the client
-        #         if client_options:
-        #             self.client = MongoClient(host=host, port=int(port), connect=False, **client_options)
-        #         else:
-        #             self.client = MongoClient(host=host, port=int(port), connect=False)
-
-        #     self.database: Database = self.client.get_database(database_name)
-        #     self.host = host
-        #     self.port = port
-        # except Exception as err:
-        #     raise DatabaseConnectionError(err) from err
         self.connection_string = os.getenv('CONNECTION_STRING')
         self.host = host
         self.port = int(port)
@@ -77,19 +60,28 @@ class MongoConnector:
 
     @property
     def client(self):
-        """Lazy-loads MongoClient to prevent pre-fork initialization issues."""
+        """
+        Lazy-loads MongoClient to prevent pre-fork initialization issues
+        """
         if self._client is None:
-            if self.connection_string:
-                self._client = MongoClient(self.connection_string)
-            else:
-                self._client = MongoClient(host=self.host, port=self.port, connect=False, **self.client_options)
+            try:
+                if self.connection_string:
+                    self._client = MongoClient(self.connection_string, **self.client_options)
+                else:
+                    self._client = MongoClient(host=self.host, port=self.port, connect=False, **self.client_options)
+            except Exception as err:
+                LOGGER.error("Failed to initialize MongoClient. Exception: %s. Type: %s", err, type(err), exc_info=True)
+                raise DatabaseConnectionError("Failed to initialize MongoDB connection.") from err
         return self._client
 
     @property
     def database(self) -> Database:
-        """Lazy-loads the database reference."""
+        """
+        Lazy-loads the database reference
+        """
         if self._database is None:
             self._database = self.client.get_database(self.database_name)
+
         return self._database
 
 
