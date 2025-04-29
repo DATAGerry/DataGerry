@@ -1,0 +1,54 @@
+<!-- 
+
+   <div class="generic-slider">
+    <input type="range"
+           [min]="0"
+           [max]="sliderOptions.length - 1"
+           [value]="sliderValue"
+           (input)="onSliderChange($event.target.value)" />
+  
+    <div class="mt-1" *ngIf="showChosenText">
+      Chosen:&nbsp;{{ sliderOptions[sliderValue]?.label }}
+    </div>
+  </div>
+   -->
+
+
+   <div class="slider-container">
+    <!-- Labels positioned above slider steps -->
+    <div class="slider-labels">
+      <ng-container *ngFor="let option of sliderOptions; let i = index">
+        <span class="slider-label" 
+              [class.active]="sliderValue === i"
+              [style.left]="i === 0 ? '0%' : i === sliderOptions.length - 1 ? '100%' : (i / (sliderOptions.length - 1) * 100) + '%'">
+          {{ option.label }}
+        </span>
+      </ng-container>
+    </div>
+    
+    <div class="slider-track-container">
+      <div class="slider-track">
+        <div class="slider-track-fill" [style.width]="getTrackFillWidth()"></div>
+      </div>
+      
+      <input type="range" 
+             class="custom-range" 
+             [min]="0" 
+             [max]="sliderOptions.length - 1" 
+             [value]="sliderValue" 
+             (input)="onSliderChange($event.target.value)">
+      
+      <!-- Dot indicators for each step -->
+      <div class="slider-dots">
+        <ng-container *ngFor="let step of sliderSteps; let i = index">
+          <span class="slider-dot"
+                [class.active]="i <= sliderValue">
+          </span>
+        </ng-container>
+      </div>
+    </div>
+    
+    <div class="chosen-text" *ngIf="showChosenText">
+      Selected: {{ sliderOptions[sliderValue]?.label }}
+    </div>
+  </div>

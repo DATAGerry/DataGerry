@@ -12,6 +12,8 @@ import { ButtonComponent } from './components/base/button/app-button.component';
 import { CheckboxComponent } from './components/base/checkbox/checkbox.component';
 import { RadioComponent } from './components/base/radio/radio.component';
 import { SelectComponent } from './components/base/select/select.component';
+import { SliderComponent } from './components/base/slider/slider.component';
+import { FormDateComponent } from './components/base/date/form-date.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { SelectComponent } from './components/base/select/select.component';
     ButtonComponent,
     CheckboxComponent,
     RadioComponent,
-    SelectComponent
+    SelectComponent,
+    SliderComponent,
+    FormDateComponent
   ],
   imports: [
     CommonModule,
@@ -41,7 +45,9 @@ import { SelectComponent } from './components/base/select/select.component';
     ButtonComponent,
     CheckboxComponent,
     RadioComponent,
-    SelectComponent
+    SelectComponent,
+    SliderComponent,
+    FormDateComponent
   ]
 })
 export class CoreModule { }

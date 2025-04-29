@@ -35,7 +35,7 @@ import { RisksListComponent } from './risks/risks-list/risks-list.component';
 import { PersonListComponent } from './person/person-list/person-list.component';
 import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
 import { PersonRoutingModule } from './person/person-routing.module';
-// import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
+import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
 import { ControlMeasuresAddComponent } from './control-measure/control-measure-add/control-measures-add.component';
@@ -72,7 +72,7 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
     LayoutModule,
     IsmsRoutingModule,
     PersonRoutingModule,
-    // RiskAssessmentModule,
+    RiskAssessmentModule,
     ArchwizardModule,
     ReactiveFormsModule,
     NgSelectModule,
