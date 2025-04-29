@@ -66,6 +66,9 @@ import {
   
     /** The internal data model */
     value: any = null;
+
+    @Input() dropdownDirection?: 'bottom' | 'top' = 'bottom';
+
   
     /**
      * These are callbacks for ControlValueAccessor

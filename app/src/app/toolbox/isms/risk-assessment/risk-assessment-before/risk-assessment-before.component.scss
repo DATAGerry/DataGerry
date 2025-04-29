@@ -1,0 +1,28 @@
+/* width of the category-name column ---------------------------*/
+$left-col: 220px;
+
+/* header with evenly-spaced labels ---------------------------*/
+.scale-header {
+  margin-left: $left-col;          /* ← add this line */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  font-size: .75rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: .25rem;
+  .scale-item { white-space: nowrap; }
+}
+
+/* slider row --------------------------------------------------*/
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  .cat-name {
+    flex: 0 0 $left-col;
+    font-weight: 600;
+  }
+  app-form-slider { flex: 1 1 auto; }
+}

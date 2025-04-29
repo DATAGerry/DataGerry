@@ -2,6 +2,15 @@
   <div class="row">
     <div class="col-md-12">
 
+      <button
+      *ngIf="currentObjectID"
+      class="btn btn-primary"
+      [routerLink]="['/isms/objects', 13, 'risk-assessments', 'add']"
+    >
+      Add Assessment
+    </button>
+    
+
       <!-- Navbar -->
       <div class="object-view-navbar">
         <div class="row align-items-center">

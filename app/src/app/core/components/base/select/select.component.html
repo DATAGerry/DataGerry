@@ -16,6 +16,7 @@
       [disabled]="disabled"
       [clearable]="true"
       [(ngModel)]="value"
+      [dropdownPosition]="dropdownDirection"
       (change)="onValueChange($event)"
       (blur)="onTouched()"
     >
