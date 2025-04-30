@@ -29,6 +29,7 @@ from .risk_routes import risk_blueprint
 from .control_measure_routes import control_measure_blueprint
 from .risk_assessment_routes import risk_assessment_blueprint
 from .measure_control_assignment_routes import control_measure_assignment_blueprint
+from .isms_report_routes import isms_report_blueprint
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
@@ -45,4 +46,5 @@ __all__ = [
     'control_measure_blueprint',
     'risk_assessment_blueprint',
     'control_measure_assignment_blueprint',
+    'isms_report_blueprint',
 ]

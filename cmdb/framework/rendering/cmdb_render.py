@@ -45,7 +45,7 @@ from cmdb.errors.manager.users_manager import UsersManagerGetError
 from cmdb.errors.manager.types_manager import (
     TypesManagerGetError,
 )
-from cmdb.errors.models.cmdb_object import CmdbObjectInitFromDataError
+
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.render import ObjectInstanceError, TypeInstanceError, InstanceRenderError
 from cmdb.errors.models.cmdb_type import (
@@ -429,8 +429,7 @@ class CmdbRender:
                                     'summaries': []
                                 }
 
-                    except (ValueError, IndexError, FileNotFoundError, CmdbObjectInitFromDataError,
-                            ObjectsManagerGetError, CmdbTypeFieldNotFoundError):
+                    except Exception:
                         field['value'] = None
 
                     field_map.append(field)
@@ -448,7 +447,7 @@ class CmdbRender:
                     ref_field['value'] = reference_id
                     reference_object: dict = self.objects_manager.get_object(reference_id)
                     reference_object = CmdbObject.from_data(reference_object)
-                except (ObjectsManagerGetError, ValueError, KeyError):
+                except Exception:
                     reference_object = None
 
                 try:
