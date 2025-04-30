@@ -95,7 +95,6 @@ def insert_cmdb_type(data: dict, request_user: CmdbUser):
         InsertSingleResponse: The new CmdbType and its public_id
     """
     try:
-        LOGGER.debug(f"Create Dict:{data}")
         types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
 
         data.setdefault('creation_time', datetime.now(timezone.utc))
