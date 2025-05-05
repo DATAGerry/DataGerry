@@ -484,8 +484,6 @@ class ObjectsManager(BaseManager):
 
             query_pipeline.append({'$project': {"_id": 0}})
 
-            # query.append({'$sort': {sort: order}})
-
             results = list(self.aggregate_from_other_collection(CmdbType.COLLECTION, query_pipeline))
 
             matching_results = []

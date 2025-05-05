@@ -28,14 +28,14 @@ from bson.objectid import ObjectId
 from bson.timestamp import Timestamp
 from bson.tz_util import utc
 
-from cmdb.framework.docapi.docapi_template.docapi_template_base import TemplateManagementBase
-from cmdb.framework.rendering.render_result import RenderResult
-from cmdb.framework.media_library.base_media_file import BaseMediaFile
-from cmdb.models.cmdb_dao import CmdbDAO
-from cmdb.models.right_model.base_right import BaseRight
-from cmdb.security.auth.auth_settings import AuthSettingsDAO
-from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
-from cmdb.settings.date_settings import DateSettingsDAO
+# from cmdb.framework.docapi.docapi_template.docapi_template_base import TemplateManagementBase
+# from cmdb.framework.rendering.render_result import RenderResult
+# from cmdb.framework.media_library.base_media_file import BaseMediaFile
+# from cmdb.models.cmdb_dao import CmdbDAO
+# from cmdb.models.right_model.base_right import BaseRight
+# from cmdb.models.security_models.auth_settings import CmdbAuthSettings
+# from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
+# from cmdb.settings.date_settings import DateSettingsDAO
 from cmdb.framework.search.search_result import SearchResult
 from cmdb.framework.search.search_result_map import SearchResultMap
 
@@ -99,15 +99,17 @@ def default(obj):
     Returns:
         json format
     """
-    if isinstance(obj, (CmdbDAO,
-                        RenderResult,
-                        TemplateManagementBase,
-                        AuthSettingsDAO,
-                        BaseMediaFile,
-                        BaseAuthProviderConfig,
-                        BaseRight,
-                        DateSettingsDAO)):
-        return obj.__dict__
+    # if isinstance(obj,
+    #               (CmdbDAO,
+    #                 RenderResult,
+    #                 TemplateManagementBase,
+    #                 # CmdbAuthSettings,
+    #                 BaseMediaFile,
+    #                 BaseAuthProviderConfig,
+    #                 # BaseRight,
+    #                 DateSettingsDAO)
+    #             ):
+    #     return obj.__dict__
 
     if isinstance(obj, (SearchResult,SearchResultMap)):
         return obj.to_json()

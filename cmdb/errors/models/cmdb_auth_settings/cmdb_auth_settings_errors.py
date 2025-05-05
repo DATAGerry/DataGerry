@@ -14,41 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module contains the classes of all system config file errors
+This module contains the classes of all CmdbAuthSettings errors
 """
 # -------------------------------------------------------------------------------------------------------------------- #
 
-class ConfigFileError(Exception):
+class AuthSettingsError(Exception):
     """
-    Raised to catch all system config file related errors
+    Raised to catch all CmdbAuthSettings related errors
     """
     def __init__(self, err: str):
         """
-        Raised to catch all system config file related errors
+        Raised to catch all CmdbAuthSettings related errors
         """
         super().__init__(err)
 
-# ------------------------------------------------ CONFIG FILE ERRORS ------------------------------------------------ #
+# --------------------------------------------- CmdbAuthSettings - ERRORS -------------------------------------------- #
 
-class ConfigFileModificationError(ConfigFileError):
+class AuthSettingsInitError(AuthSettingsError):
     """
-    Raises if values of loaded config file should be edited
-    """
-
-
-class ConfigFileNotFound(ConfigFileError):
-    """
-    Error if local config file could not be loaded
-    """
-
-
-class ConfigNotLoaded(ConfigFileError):
-    """
-    Error if config file was not loaded correctly is not loaded
-    """
-
-
-class SectionError(ConfigFileError):
-    """
-    Error if section does not exist
+    Raised when a CmdbAuthSettings could not be initialised
     """

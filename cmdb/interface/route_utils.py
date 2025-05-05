@@ -66,8 +66,27 @@ DEFAULT_MIME_TYPE = 'application/json'
 # -------------------------------------------------------------------------------------------------------------------- #
 
 def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
-    """document"""
-    # TODO: DOCUMENT-FIX
+    """
+    Determine whether a user has the specified access right
+
+    This function checks whether the user has the given `required_right` either via:
+    - A provided `CmdbUser` object (typically used in cloud API contexts), or
+    - A token extracted from the request's Authorization header in non-cloud or Open Source mode
+
+    The function supports both basic and extended rights and includes handling for token validation
+    and user/group resolution based on application mode (cloud or local).
+
+    Args:
+        required_right (str): The permission/right to verify
+        request_user (CmdbUser, optional): The user object (if already available). If not provided,
+                                           the user will be determined via the Authorization token
+
+    Returns:
+        bool: True if the user has the required right (or extended right), False otherwise
+
+    Raises:
+        Exception: If the token is missing or invalid (401 Unauthorized)
+    """
     # Check right for cloud api routes
     if request_user:
         return validate_right_cloud_api(required_right, request_user)
@@ -107,14 +126,32 @@ def user_has_right(required_right: str, request_user: CmdbUser = None) -> bool:
 
 
 def insert_request_user(func):
-    """document"""
-    # TODO: DOCUMENT-FIX
+    """
+    Decorator that injects the authenticated user into a route handler as `request_user`
+
+    This decorator handles token extraction and validation from the `Authorization` header,
+    retrieves the user based on the token contents, and adds the `request_user` keyword argument
+    to the wrapped function. It supports both cloud and non-cloud modes
+
+    In cloud mode, requests with an `x-api-key` header are assumed to have already been authenticated
+    via a different mechanism and are passed through without further token validation
+
+    Args:
+        func (Callable): The route function to decorate
+
+    Returns:
+        Callable: The wrapped function with `request_user` injected, if authentication succeeds
+
+    Raises:
+        werkzeug.exceptions.HTTPException: Returns a 401 Unauthorized error if token validation fails
+                                           or the user cannot be resolved.
+    """
     @functools.wraps(func)
     def get_request_user(*args, **kwargs):
         with current_app.app_context():
             users_manager = UsersManager(current_app.database_manager)
         try:
-            # If the request comes from API then the request user will be set in verify_api_access - method
+            # If the request comes from API then the request_user will be set in verify_api_access - method
             if current_app.cloud_mode and "x-api-key" in request.headers:
                 return func(*args, **kwargs)
 

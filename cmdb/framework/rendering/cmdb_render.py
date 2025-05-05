@@ -461,13 +461,13 @@ class CmdbRender:
                         'type_icon': ref_type.get_icon(),
                         'fields': []
                     }
-                except (BaseManagerGetError, TypesManagerGetError, Exception) as err:
-                    #TODO: ERROR-FIX
+                except Exception as err:
                     LOGGER.debug("%s",err)
                     continue
 
                 if not ref_section:
                     continue
+
                 if not section.reference.selected_fields or len(section.reference.selected_fields) == 0:
                     selected_ref_fields = ref_section.fields
                     section.reference.selected_fields = selected_ref_fields
@@ -575,7 +575,6 @@ class CmdbRender:
                 try:
                     _nested_summary_fields = ref_type.get_nested_summary_fields(_nested_summaries)
                 except CmdbTypeFieldNotFoundError as error:
-                    #TODO: ERROR-FIX
                     LOGGER.warning('Summary setting refers to non-existent field(s), Error %s',error)
 
                 reference.type_id = ref_type.get_public_id()

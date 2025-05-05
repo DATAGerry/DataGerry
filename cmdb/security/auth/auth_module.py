@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Basic Authentication Module"""
+"""
+Implementation of AuthModule
+"""
 import logging
 from typing import Type
 from flask import current_app
@@ -25,7 +27,7 @@ from cmdb.manager import (
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.security.auth.base_authentication_provider import BaseAuthenticationProvider
-from cmdb.security.auth.auth_settings import AuthSettingsDAO
+from cmdb.models.security_models.auth_settings import CmdbAuthSettings
 from cmdb.security.auth.providers.ldap_auth_provider import LdapAuthenticationProvider
 from cmdb.security.auth.providers.local_auth_provider import LocalAuthenticationProvider
 from cmdb.security.auth.base_provider_config import BaseAuthProviderConfig
@@ -44,7 +46,9 @@ LOGGER = logging.getLogger(__name__)
 #                                                  AuthModule - CLASS                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
 class AuthModule:
-    """Authentication module class"""
+    """
+    Implementation of AuthModule
+    """
 
     __pre_installed_providers: list[BaseAuthenticationProvider] = [
         LocalAuthenticationProvider,
@@ -69,14 +73,16 @@ class AuthModule:
     def __init__(self, settings: dict,
                  security_manager: SecurityManager = None,
                  users_manager: UsersManager = None):
-        self.__settings: AuthSettingsDAO = self.__init_settings(settings)
+        self.__settings: CmdbAuthSettings = self.__init_settings(settings)
         self.users_manager = users_manager
         self.__security_manager = security_manager
 
 
     @staticmethod
-    def __init_settings(auth_settings_values: dict) -> AuthSettingsDAO:
-        """Merge default values with database entries"""
+    def __init_settings(auth_settings_values: dict) -> CmdbAuthSettings:
+        """
+        Merge default values with database entries
+        """
         provider_config_list: list[dict] = auth_settings_values.get('providers')
         installed_providers = AuthModule.get_installed_providers()
 
@@ -90,7 +96,6 @@ class AuthModule:
                     auth_settings_values['providers'][provider_index]['config'] = provider.PROVIDER_CONFIG_CLASS(
                         **auth_settings_values['providers'][provider_index]['config']).__dict__
                 except Exception as err:
-                    #TODO: ERROR-FIX
                     LOGGER.error(
                         'Error while parsing auth provider settings for: %s: %s\n Fallback to default values!',
                         provider.get_name(),err)
@@ -98,12 +103,14 @@ class AuthModule:
                     default_config_values = provider.PROVIDER_CONFIG_CLASS.DEFAULT_CONFIG_VALUES
                     auth_settings_values['providers'][provider_index]['config'] = default_config_values
 
-        return AuthSettingsDAO(**auth_settings_values)
+        return CmdbAuthSettings(**auth_settings_values)
 
 
     @classmethod
     def register_provider(cls, provider: BaseAuthenticationProvider) -> BaseAuthenticationProvider:
-        """Install a provider
+        """
+        Install a provider
+
         Notes:
             This only means that a provider is installed, not that the provider is used or activated!
         """
@@ -113,7 +120,9 @@ class AuthModule:
 
     @classmethod
     def unregister_provider(cls, provider: BaseAuthenticationProvider) -> bool:
-        """Uninstall a provider"""
+        """
+        Uninstall a provider
+        """
         try:
             AuthModule.__installed_providers.remove(provider)
             return True
@@ -123,13 +132,17 @@ class AuthModule:
 
     @staticmethod
     def get_provider_class(provider_name: str) -> 'BaseAuthenticationProvider':
-        """Get a specific provider class by class name"""
+        """
+        Get a specific provider class by class name
+        """
         return next(_ for _ in AuthModule.__installed_providers if _.__qualname__ == provider_name)
 
 
     @staticmethod
     def provider_exists(provider_name: str) -> bool:
-        """Check if provider exists
+        """
+        Check if provider exists
+
         Notes:
             Checks for installation not activation!
         """
@@ -142,36 +155,48 @@ class AuthModule:
 
     @classmethod
     def get_installed_providers(cls) -> list['BaseAuthenticationProvider']:
-        """Get all installed providers as static list"""
+        """
+        Get all installed providers as static list
+        """
         return cls.__installed_providers
 
 
     @classmethod
     def get_installed_internals(cls) -> list['BaseAuthenticationProvider']:
-        """Get all installed providers as static list"""
+        """
+        Get all installed providers as static list
+        """
         return cls.__installed_providers
 
 
     @classmethod
     def get_installed_external(cls) -> list['BaseAuthenticationProvider']:
-        """Get all installed providers as static list"""
+        """
+        Get all installed providers as static list
+        """
         return cls.__installed_providers
 
 
     @property
     def providers(self) -> list['BaseAuthenticationProvider']:
-        """Get all installed providers as property list"""
+        """
+        Get all installed providers as property list
+        """
         return AuthModule.__installed_providers
 
 
     @property
-    def settings(self) -> AuthSettingsDAO:
-        """Get the current auth settings"""
+    def settings(self) -> CmdbAuthSettings:
+        """
+        Get the current auth settings
+        """
         return self.__settings
 
 
     def get_provider(self, provider_name: str) -> BaseAuthenticationProvider:
-        """Get a initialized provider instance"""
+        """
+        Get a initialized provider instance
+        """
         try:
             _provider_class_name: Type[str] = provider_name
             if not AuthModule.provider_exists(provider_name=_provider_class_name):
@@ -231,7 +256,6 @@ class AuthModule:
                 raise AuthenticationProviderNotActivated('External providers are deactivated')
 
             return provider_instance.authenticate(user_name, password)
-        #TODO: ERROR-FIX
         except Exception as err:
             # get installed providers
             provider_list = self.providers

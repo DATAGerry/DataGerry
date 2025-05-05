@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of AuthSettingsDAO
+Implementation of CmdbAuthSettings
 """
 import logging
 
-from cmdb.errors.security.security_errors import AuthSettingsInitError
+from cmdb.errors.models.cmdb_auth_settings import AuthSettingsInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -26,22 +26,23 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_TOKEN_LIFETIME = 1400
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                AuthSettingsDAO - CLASS                                               #
+#                                               CmdbAuthSettings - CLASS                                               #
 # -------------------------------------------------------------------------------------------------------------------- #
-class AuthSettingsDAO:
+class CmdbAuthSettings:
     """
     This class stores all required data for an authentification
     """
     #TODO: REFACTOR-FIX
-    #TODO: RENAME-FIX
 
-    def __init__(self,
-                 _id : str = None,
-                 providers: list[dict] = None,
-                 enable_external: bool = False,
-                 token_lifetime: int = DEFAULT_TOKEN_LIFETIME):
+    def __init__(
+            self,
+            _id : str = None,
+            providers: list[dict] = None,
+            enable_external: bool = False,
+            token_lifetime: int = DEFAULT_TOKEN_LIFETIME
+        ):
         """
-        Creates an instance of AuthSettingsDAO
+        Creates an instance of CmdbAuthSettings
         
         Args:
             _id (str, optional): _description_. Defaults to None.
@@ -50,7 +51,7 @@ class AuthSettingsDAO:
             token_lifetime (int, optional): _description_. Defaults to None.
 
         Raises:
-            AuthSettingsInitError: When the AuthSettingsDAO could not be initialised
+            AuthSettingsInitError: When the CmdbAuthSettings could not be initialised
         """
         try:
             self._id = _id or 'auth'
@@ -76,7 +77,7 @@ class AuthSettingsDAO:
         Returns the value of the token_lifetime property
 
         Returns:
-            int: The token_lifetime of this AuthSettingsDAO 
+            int: The token_lifetime of this CmdbAuthSettings 
         """
         return self.token_lifetime
 

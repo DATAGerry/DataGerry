@@ -81,19 +81,14 @@ class SectionTemplatesManager(BaseManager):
         """
         try:
             new_section_template = CmdbSectionTemplate(**data)
-        except Exception as err:
-            #TODO: ERROR-FIX
-            LOGGER.debug('[insert_section_template] Error while creating object - error: %s', err)
-            raise BaseManagerInsertError(err) from err
 
-        try:
             ack = self.insert(new_section_template.__dict__)
             #TODO: ERROR-FIX
+
+            return ack
         except Exception as err:
             LOGGER.debug('[insert_section_template] Error while inserting section template - error: %s', err)
             raise BaseManagerInsertError(err) from err
-
-        return ack
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 

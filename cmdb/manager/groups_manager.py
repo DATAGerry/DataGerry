@@ -23,7 +23,7 @@ from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.base_manager import BaseManager
 
-from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights
+from cmdb.models.right_model.all_rights import flat_rights_tree, ALL_RIGHTS
 from cmdb.models.group_model import CmdbUserGroup
 from cmdb.framework.results import IterationResult
 
@@ -71,7 +71,7 @@ class GroupsManager(BaseManager):
             GroupsManagerInitError: If the GroupsManager could not be initialised
         """
         try:
-            self.rights = flat_rights_tree(rights)
+            self.rights = flat_rights_tree(ALL_RIGHTS)
 
             if database:
                 dbm.connector.set_database(database)

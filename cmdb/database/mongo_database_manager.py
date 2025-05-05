@@ -62,18 +62,19 @@ class MongoDatabaseManager:
         self.database_name = database_name
         self.mode = mode  # Define the mode ('local' or 'cloud')
 
-        # Internal client options (e.g., SSL, retry, timeout, etc.)
         self.client_options = {
             # 'ssl': True,  # Enable SSL connection by default (for Azure Cosmos DB, for example)
             # 'connectTimeoutMS': 30000,  # Timeout after 30 seconds if no connection is made
             # 'socketTimeoutMS': 30000,  # Socket timeout (set to 30 seconds)
             # 'retryWrites': True,  # Enable retryable writes (helpful for fault tolerance)
             'retryReads': True,  # Enable retryable reads (helpful for fault tolerance)
+            'retryWrites': True,
+            'minPoolSize': 10,
             'maxPoolSize': 100,  # Maximum number of connections in the connection pool
-            'w': 'majority',  # Ensure write operations are acknowledged by a majority of replica set members
+            # 'w': 'majority',  # Ensure write operations are acknowledged by a majority of replica set members
             'wtimeoutMS': 2500,  # Timeout for waiting for write acknowledgment
             'readPreference': 'primaryPreferred',  # Read from the primary node by default
-            'readConcernLevel': 'local',  # Level of consistency required for reads
+            # 'readConcernLevel': 'local',  # Level of consistency required for reads
         }
 
         # Only enable SSL if in cloud mode

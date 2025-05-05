@@ -62,6 +62,12 @@ from cmdb.models.right_model.export_rights import ExportRight, ExportObjectRight
 from cmdb.models.right_model.docapi_rights import DocapiRight, DocapiTemplateRight
 # -------------------------------------------------------------------------------------------------------------------- #
 
+BASE_RIGHT = (
+    BaseRight(
+        Levels.NOTSET, GLOBAL_RIGHT_IDENTIFIER, description='Base application right'
+    ),
+)
+
 SYSTEM_RIGHTS = (
     SystemRight(GLOBAL_RIGHT_IDENTIFIER, description='System and settings'),
     (
@@ -339,11 +345,8 @@ DOCAPI_RIGHTS = (
     )
 )
 
-#TODO: fix this
-__all__ = (
-    BaseRight(
-        Levels.NOTSET, GLOBAL_RIGHT_IDENTIFIER, description='Base application right'
-    ),
+ALL_RIGHTS = (
+    BASE_RIGHT,
     SYSTEM_RIGHTS,
     FRAMEWORK_RIGHTS,
     EXPORT_RIGHTS,

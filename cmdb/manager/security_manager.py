@@ -29,7 +29,7 @@ from bson.json_util import dumps
 from flask import current_app
 
 from cmdb.database import MongoDatabaseManager
-from cmdb.manager.system_manager.settings_manager import SettingsManager #TODO: IMPORT-FIX(circular)
+from cmdb.manager.system_manager.settings_manager import SettingsManager
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)

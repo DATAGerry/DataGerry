@@ -167,7 +167,6 @@ def get_cmdb_types(params: TypeIterationParameters, request_user: CmdbUser):
                                         params=params,
                                         url=request.url,
                                         body=request.method == 'HEAD')
-
         return api_response.make_response()
     except TypesManagerIterationError as err:
         LOGGER.error("[get_cmdb_types] TypesManagerIterationError: %s", err, exc_info=True)
