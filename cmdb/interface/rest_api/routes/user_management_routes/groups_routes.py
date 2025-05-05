@@ -30,7 +30,7 @@ from cmdb.manager import (
 from cmdb.framework.results import IterationResult
 from cmdb.models.group_model import CmdbUserGroup, GroupDeleteMode
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.right_model.all_rights import flat_rights_tree, __all__ as rights
+from cmdb.models.right_model.all_rights import flat_rights_tree, ALL_RIGHTS
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses.response_parameters import (
     GroupDeletionParameters,
@@ -206,7 +206,7 @@ def update_cmdb_user_group(public_id: int, data: dict, request_user: CmdbUser):
         to_update_group = groups_manager.get_group(public_id)
 
         if to_update_group:
-            group = CmdbUserGroup.from_data(data=data, rights=flat_rights_tree(rights))
+            group = CmdbUserGroup.from_data(data=data, rights=flat_rights_tree(ALL_RIGHTS))
             group_dict = CmdbUserGroup.to_json(group)
             group_dict['rights'] = [right.get('name') for right in group_dict.get('rights', [])]
 
@@ -282,10 +282,7 @@ def delete_cmdb_user_group(public_id: int, params: GroupDeletionParameters, requ
 
             groups_manager.delete_group(public_id)
 
-            api_response = DeleteSingleResponse(raw=CmdbUserGroup.to_json(to_delete_group))
-
-            return api_response.make_response()
-
+            return DeleteSingleResponse(raw=CmdbUserGroup.to_json(to_delete_group)).make_response()
         abort(404, f"The UserGroup with ID:{public_id} was not found!")
     except HTTPException as http_err:
         raise http_err

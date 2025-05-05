@@ -57,7 +57,7 @@ class BaseParser:
         return self.parser_config
 
 
-    #TODO: ANNOTATIOn-FIX (add type annotation for "file")
+    #TODO: ANNOTATION-FIX (add type annotation for "file")
     def parse(self, file) -> BaseParserResponse:
         """
         Parses the given file

@@ -60,13 +60,6 @@ class MaxLevelRightError(SecurityError):
     """
 
 
-#TODO: REFACTOR-FIX (Move to own set of errors)
-class AuthSettingsInitError(SecurityError):
-    """
-    Raised when AuthSettingsDAO could not be initialised
-    """
-
-
 class NoAccessTokenError(SecurityError):
     """
     Raised when AccessToken is not available

@@ -26,7 +26,7 @@ from cmdb.manager.system_manager.system_env_reader import SystemEnvironmentReade
 from cmdb.manager.system_manager.system_reader import SystemReader
 
 from cmdb.errors.system_config import (
-    ConfigFileSetError,
+    ConfigFileModificationError,
     ConfigFileNotFound,
     ConfigNotLoaded,
     SectionError,
@@ -91,10 +91,10 @@ class ConfigFileReader(SystemReader):
             section (str): The name of the section to be added
 
         Raises:
-            ConfigFileSetError: If a configuration file is loaded, manual changes are restricted
+            ConfigFileModificationError: If a configuration file is loaded, manual changes are restricted
         """
         if not self.config_file_less:
-            raise ConfigFileSetError(f"Config file '{self.config_file}' is loaded. "
+            raise ConfigFileModificationError(f"Config file '{self.config_file}' is loaded. "
                                      "Manual modifications are not allowed!")
 
         self.config.add_section(section)
@@ -113,10 +113,10 @@ class ConfigFileReader(SystemReader):
             value (str): The configuration value
 
         Raises:
-            ConfigFileSetError: If a configuration file is loaded, manual changes are restricted
+            ConfigFileModificationError: If a configuration file is loaded, manual changes are restricted
         """
         if not self.config_file_less:
-            raise ConfigFileSetError(f"Config file '{self.config_file}' is loaded. "
+            raise ConfigFileModificationError(f"Config file '{self.config_file}' is loaded. "
                                      "Manual modifications are not allowed!")
 
         self.config.set(section, option, value)

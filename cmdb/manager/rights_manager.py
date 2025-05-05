@@ -22,6 +22,8 @@ from multiprocessing.managers import BaseManager
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.framework.results import IterationResult
 
+from cmdb.models.right_model.all_rights import ALL_RIGHTS
+
 from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -37,15 +39,14 @@ class RightsManager(BaseManager):
     and iterate over them with pagination and sorting.
     """
 
-    #TODO: ANNOTATION-FIX (get type of right_tree)
-    def __init__(self, right_tree):
+    def __init__(self):
         """
         Initializes the RightsManager with a flattened version of the provided rights tree
 
         Args:
             right_tree : A nested structure of rights
         """
-        self.rights = RightsManager.flat_tree(right_tree)
+        self.rights = RightsManager.flat_tree(ALL_RIGHTS)
 
         super().__init__()
 

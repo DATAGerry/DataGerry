@@ -223,7 +223,6 @@ class DocapiTemplatesManager(BaseManager):
             elif isinstance(data, DocapiTemplate):
                 update_object = data
             else:
-                #TODO: ERROR-FIX (catch proper exception)
                 raise DocapiTemplatesManagerUpdateError("Could not initialise DocapiTemplate with given data!")
 
             ack = self.update(

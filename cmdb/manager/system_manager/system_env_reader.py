@@ -35,7 +35,7 @@ class SystemEnvironmentReader(SystemReader):
         that match the DATAGERRY_<SECTION>_<NAME> pattern
         """
         self.__config = {}
-        pattern = re.compile("DATAGERRY_(.*)_(.*)")
+        pattern = re.compile("DATAGERRY_([a-zA-Z]*)_(.*)")
 
         for key, value in os.environ.items():
             match = pattern.fullmatch(key)

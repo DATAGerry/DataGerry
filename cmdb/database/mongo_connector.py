@@ -36,6 +36,37 @@ class MongoConnector:
     """
     MongoConnector is managing the connection to a MongoDB database using PyMongo
     """
+    _instance = None # Singleton instance
+
+
+    def __new__(cls, host: str, port: int, database_name: str, client_options: dict = None):
+        """
+        This method ensures that only one instance of MongoConnector is created.
+        It will return the same instance every time.
+
+        Args:
+            host (str): MongoDB host.
+            port (int): MongoDB port.
+            database_name (str): Database name.
+            client_options (dict): MongoClient options.
+
+        Returns:
+            MongoConnector: A singleton instance of MongoConnector.
+        """
+        if not cls._instance:
+            cls._instance = super(MongoConnector, cls).__new__(cls)
+
+            # Initialize the instance with the provided arguments
+            cls._instance.host = host
+            cls._instance.port = int(port)
+            cls._instance.database_name = database_name
+            cls._instance.client_options = client_options or {}
+            cls._instance._client = None  # Lazy-loaded MongoClient
+            cls._instance._database = None  # Lazy-loaded Database reference
+
+        return cls._instance
+
+
     def __init__(self, host: str, port: int, database_name: str, client_options: dict = None):
         """
         Initialises the connection to MongoDB and the attributes of the `MongoConnector`
@@ -74,6 +105,7 @@ class MongoConnector:
                 raise DatabaseConnectionError("Failed to initialize MongoDB connection.") from err
         return self._client
 
+
     @property
     def database(self) -> Database:
         """
@@ -84,12 +116,11 @@ class MongoConnector:
 
         return self._database
 
-
-    def __exit__(self, *err):
-        """
-        Automatically disconnects the `MongoConnector` when exiting the context manager
-        """
-        self.disconnect()
+    # def __exit__(self, *err):
+    #     """
+    #     Automatically disconnects the `MongoConnector` when exiting the context manager
+    #     """
+    #     self.disconnect()
 
 # -------------------------------------------------------------------------------------------------------------------- #
 

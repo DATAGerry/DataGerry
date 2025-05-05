@@ -54,14 +54,17 @@ def get_isms_risk_assessment_schema() -> dict:
             'schema': {
                 'impacts': { # All impact category sliders
                     'type': 'list',
+                    'required': True,
                     'schema': {
                         'type': 'dict',
                         'schema': {
                             'impact_category_id': { # public_id of IsmsImpactCategory
                                 'type': 'integer',
+                                'required': True,
                             },
                             'impact_id':{ # public_id of IsmsImpact (empty = unrated)
                                 'type': 'integer',
+                                'required': True,
                                 'nullable': True,
                             }
                         }
@@ -69,20 +72,24 @@ def get_isms_risk_assessment_schema() -> dict:
                 },
                 'likelihood_id': { # public_id of IsmsLikelihood (empty = unrated)
                     'type': 'integer',
+                    'required': True,
                     'nullable': True,
                 },
                 'likelihood_value': { # calculation_basis of selected IsmsLikelihood
                     'type':'float',
                     'min': 0.0,
+                    'required': True,
                     'nullable': True,
                 },
                 'maximum_impact_id': { # public_id of the maximum IsmsImpact
                     'type': 'integer',
+                    'required': True,
                     'nullable': True,
                 },
                 'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
                     'type':'float',
                     'min': 0.0,
+                    'required': True,
                     'nullable': True,
                 }
             }
@@ -90,18 +97,22 @@ def get_isms_risk_assessment_schema() -> dict:
         'risk_assessor_id': { # public_id of CmdbPerson
             'type': 'integer',
             'min': 1,
+            'required': True,
             'nullable': True,
         },
         'risk_owner_id_ref_type': { # PersonReferenceType Enum
             'type': 'string',
+            'required': True,
         },
         'risk_owner_id': { # public_id of CmdbPerson or CmdbPersonGroup
             'type': 'integer',
             'min': 1,
+            'required': True,
             'nullable': True,
         },
         'interviewed_persons': { # Multiselect of CmdbPersons
             'type': 'list',
+            'required': True,
             'nullable': True
         },
         'risk_assessment_date': { # Date of risk calculation before treatment
@@ -111,27 +122,33 @@ def get_isms_risk_assessment_schema() -> dict:
         },
         'additional_info': { # Additional information field value
             'type': 'string',
+            'required': True,
             'nullable': True,
         },
         ### Risk treatment ###
         'risk_treatment_option': { # TreatmentOption Enum
             'type': 'string',
+            'required': True,
             'nullable': True,
         },
         'responsible_persons_id_ref_type': { # PersonReferenceType Enum
             'type': 'string',
+            'required': True,
         },
         'responsible_persons_id': { # public_id of CmdbPerson or CmdbPersonGroup
             'type': 'integer',
             'min': 1,
+            'required': True,
             'nullable': True,
         },
         'risk_treatment_description': { # Additional information text area field
             'type': 'string',
+            'required': True,
             'nullable': True,
         },
         'planned_implementation_date': { # Date of planned implementation
             'type': 'dict',
+            'required': True,
             'nullable': True
         },
         'implementation_status': { # public_id of CmdbExtendableOption 'IMPLEMENTATION_STATE'
@@ -141,22 +158,28 @@ def get_isms_risk_assessment_schema() -> dict:
         },
         'finished_implementation_date': { # Date of finished implementation
             'type': 'dict',
+            'required': True,
             'nullable': True
         },
         'required_resources': { # Required resources text area field
             'type': 'string',
+            'required': True,
             'nullable': True,
         },
         'costs_for_implementation': { # Costs for implementation
             'type': 'float',
+            'required': True,
             'nullable': True,
         },
         'costs_for_implementation_currency': { # Costs for implementation currency
             'type': 'string',
+            'required': True,
             'nullable': True,
         },
         'priority': { # Priority enum (1 = Low, 2 = Medium, 3 = High, 4 = Very high)
-            'type': 'integer'
+            'type': 'integer',
+            'required': True,
+            'nullable': True,
         },
         ### Risk calculation after treatment
         'risk_calculation_after': {
@@ -171,9 +194,11 @@ def get_isms_risk_assessment_schema() -> dict:
                         'schema': {
                             'impact_category_id': { # public_id of IsmsImpactCategory
                                 'type': 'integer',
+                                'required': True,
                             },
                             'impact_id':{ # public_id of IsmsImpact (empty = unrated)
                                 'type': 'integer',
+                                'required': True,
                                 'nullable': True,
                             }
                         }
@@ -181,20 +206,24 @@ def get_isms_risk_assessment_schema() -> dict:
                 },
                 'likelihood_id': { # public_id of IsmsLikelihood (empty = unrated)
                     'type': 'integer',
+                    'required': True,
                     'nullable': True,
                 },
                 'likelihood_value': { # calculation_basis of selected IsmsLikelihood
                     'type':'float',
                     'min': 0.0,
+                    'required': True,
                     'nullable': True,
                 },
                 'maximum_impact_id': { # public_id of the maximum IsmsImpact
                     'type': 'integer',
+                    'required': True,
                     'nullable': True,
                 },
                 'maximum_impact_value': { # Maximum calculation_basis of the impact sliders
                     'type':'float',
                     'min': 0.0,
+                    'required': True,
                     'nullable': True,
                 }
             }
@@ -202,18 +231,22 @@ def get_isms_risk_assessment_schema() -> dict:
         ### Checking the effectiveness of the measures ###
         'audit_done_date': { # Audit done date
             'type': 'dict',
+            'required': True,
             'nullable': True
         },
         'auditor_id_ref_type': { # PersonReferenceType Enum
             'type': 'string',
+            'required': True,
         },
         'auditor_id': { # public_id of CmdbPerson or CmdbPersonGroup
             'type': 'integer',
             'min': 1,
+            'required': True,
             'nullable': True,
         },
         'audit_result': { # Audit result text area field
             'type': 'string',
+            'required': True,
             'nullable': True,
         }
     }

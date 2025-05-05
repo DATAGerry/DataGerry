@@ -25,14 +25,14 @@ from cmdb.manager import RightsManager
 from cmdb.framework.results import IterationResult
 from cmdb.models.right_model.base_right import BaseRight
 from cmdb.models.right_model.constants import NAME_TO_LEVEL
-from cmdb.models.right_model.all_rights import __all__ as right_tree
+from cmdb.models.right_model.all_rights import ALL_RIGHTS
 from cmdb.interface.route_utils import verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import GetMultiResponse, GetSingleResponse
 
-from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError
+from cmdb.errors.manager import BaseManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -55,12 +55,12 @@ def get_rights(params: CollectionParameters):
         GetMultiResponse: Which includes a IterationResult of the BaseRight.
     """
     try:
-        rights_manager = RightsManager(right_tree)
+        rights_manager = RightsManager()
         body = request.method == 'HEAD'
 
         if params.optional['view'] == 'tree':
-            api_response = GetMultiResponse(rights_manager.tree_to_json(right_tree),
-                                            total=len(right_tree),
+            api_response = GetMultiResponse(rights_manager.tree_to_json(ALL_RIGHTS),
+                                            total=len(ALL_RIGHTS),
                                             params=params,
                                             url=request.url,
                                             body=body)
@@ -101,7 +101,7 @@ def get_right(name: str):
         GetSingleResponse: Which includes the json data of a BaseRight
     """
     try:
-        rights_manager: RightsManager = RightsManager(right_tree)
+        rights_manager = RightsManager()
 
         right = rights_manager.get_right(name)
 

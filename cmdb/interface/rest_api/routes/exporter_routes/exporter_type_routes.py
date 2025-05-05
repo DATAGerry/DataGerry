@@ -105,6 +105,7 @@ def export_cmdb_types_by_ids(public_ids, request_user: CmdbUser):
                 except (ValueError, TypeError) as err:
                     LOGGER.error("[export_cmdb_types_by_ids] (ValueError, TypeError): %s", err, exc_info=True)
                     abort(400, "IDs provided in an invalid format. They need to be a comma seperated string!")
+
         type_list_data = json.dumps([CmdbType.to_json(type_) for type_ in
                                     types_manager.get_types_by(sort="public_id", **{'$or': query_list})],
                                     default=default, indent=2)

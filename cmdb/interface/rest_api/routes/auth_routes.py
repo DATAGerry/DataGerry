@@ -31,7 +31,7 @@ from cmdb.manager import (
 )
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.security.auth.auth_settings import AuthSettingsDAO
+from cmdb.models.security_models.auth_settings import CmdbAuthSettings
 from cmdb.security.auth.auth_module import AuthModule
 from cmdb.security.token.generator import TokenGenerator
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
@@ -50,15 +50,13 @@ from cmdb.interface.rest_api.responses import DefaultResponse, LoginResponse
 from cmdb.errors.manager.users_manager import UsersManagerInsertError, UsersManagerGetError
 from cmdb.errors.provider import AuthenticationProviderNotActivated, AuthenticationProviderNotFoundError
 from cmdb.errors.security.security_errors import (
-    AuthSettingsInitError,
     InvalidCloudUserError,
     NoAccessTokenError,
     RequestTimeoutError,
     RequestError,
 )
-from cmdb.errors.database import (
-    DatabaseConnectionError,
-)
+from cmdb.errors.database import DatabaseConnectionError
+from cmdb.errors.models.cmdb_auth_settings import AuthSettingsInitError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -342,7 +340,7 @@ def update_auth_settings(request_user: CmdbUser):
             abort(400, 'No new data was provided')
 
         try:
-            new_auth_setting_instance = AuthSettingsDAO(**new_auth_settings_values)
+            new_auth_setting_instance = CmdbAuthSettings(**new_auth_settings_values)
         except AuthSettingsInitError as err:
             LOGGER.error("[update_auth_settings] Error: %s", err)
             abort(500, "Could not initialise auth settings!")

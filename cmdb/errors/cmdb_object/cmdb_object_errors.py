@@ -17,7 +17,7 @@
 Contains CmdbDAO object error classes
 """
 # -------------------------------------------------------------------------------------------------------------------- #
-#TODO: REFACTOR-FIX (refactor this, there wont be cmdbdao errors)
+
 class CmdbDAOError(Exception):
     """
     Raised to catch all CmdbDAO related errors

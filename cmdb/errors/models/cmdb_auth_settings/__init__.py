@@ -14,33 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provides all errors for Security
+This module provides all errors for CmdbAuthSettings
 """
-from .security_errors import (
-    SecurityError,
-    TokenValidationError,
-    AccessDeniedError,
-    InvalidLevelRightError,
-    MinLevelRightError,
-    MaxLevelRightError,
-    NoAccessTokenError,
-    InvalidCloudUserError,
-    RequestTimeoutError,
-    RequestError,
-    DisallowedActionError,
+from .cmdb_auth_settings_errors import (
+    AuthSettingsError,
+    AuthSettingsInitError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'SecurityError',
-    'TokenValidationError',
-    'AccessDeniedError',
-    'InvalidLevelRightError',
-    'MinLevelRightError',
-    'MaxLevelRightError',
-    'NoAccessTokenError',
-    'InvalidCloudUserError',
-    'RequestTimeoutError',
-    'RequestError',
-    'DisallowedActionError',
+    'AuthSettingsError',
+    'AuthSettingsInitError',
 ]

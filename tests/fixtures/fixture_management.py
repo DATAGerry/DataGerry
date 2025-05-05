@@ -24,7 +24,6 @@ from cmdb.manager import RightsManager
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.group_model import CmdbUserGroup
-from cmdb.models.right_model.all_rights import __all__ as rights
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -38,7 +37,7 @@ def fixture_rights_manager():
     Returns:
         RightsManager: An instance managing all rights.
     """
-    return RightsManager(rights)
+    return RightsManager()
 
 
 @pytest.fixture(scope="session", name="full_access_group")
