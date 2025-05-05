@@ -1,0 +1,335 @@
+import {
+    Component, OnInit, OnChanges, SimpleChanges, Input,
+    TemplateRef, ViewChild, DestroyRef
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { finalize, map } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { ToastService } from 'src/app/layout/toast/toast.service';
+
+import { RiskAssessmentService } from '../../services/risk-assessment.service';
+import { RiskService } from 'src/app/toolbox/isms/services/risk.service';
+import { PersonService } from '../../services/person.service';
+import { PersonGroupService } from '../../services/person-group.service';
+import { ExtendableOptionService } from 'src/app/toolbox/isms/services/extendable-option.service';
+import { RiskMatrixService } from '../../services/risk-matrix.service';
+import { RiskClassService } from '../../services/risk-class.service';
+
+import { RiskAssessment } from '../../models/risk-assessment.model';
+import { RiskClass } from '../../models/risk-class.model';
+
+import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
+import { CollectionParameters } from 'src/app/services/models/api-parameter';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
+
+const GREY = '#f5f5f5';
+
+@Component({
+    selector: 'app-risk-assessment-list',
+    templateUrl: './risk-assessment-list.component.html',
+    styleUrls: ['./risk-assessment-list.component.scss']
+})
+export class RiskAssessmentListComponent implements OnInit, OnChanges {
+
+    /* ────────── incoming filters (embedding) ────────── */
+    @Input() riskId?: number;
+    @Input() objectId?: number;
+    @Input() groupId?: number;
+
+    /* ────────── column templates ────────── */
+    @ViewChild('actionTpl', { static: true }) actionTpl!: TemplateRef<any>;
+    @ViewChild('riskTpl', { static: true }) riskTpl!: TemplateRef<any>;
+    @ViewChild('beforeTpl', { static: true }) beforeTpl!: TemplateRef<any>;
+    @ViewChild('afterTpl', { static: true }) afterTpl!: TemplateRef<any>;
+    @ViewChild('implTpl', { static: true }) implTpl!: TemplateRef<any>;
+    @ViewChild('respTpl', { static: true }) respTpl!: TemplateRef<any>;
+
+    /* ────────── table state ────────── */
+    rows: RiskAssessment[] = [];
+    total = 0;
+    page = 1;
+    limit = 10;
+    sort: Sort = { name: 'public_id', order: SortDirection.ASCENDING };
+    loading = false;
+
+    columns: Column[] = [];
+    initialVisibleColumns: string[] = [];
+
+    /* ────────── look-up maps ────────── */
+    private riskNameMap = new Map<number, string>();
+    private personNameMap = new Map<number, string>();
+    private groupNameMap = new Map<number, string>();
+    private implStateMap = new Map<number, string>();
+    private riskMatrixFlat: any[] = [];
+    private riskClassMap = new Map<number, RiskClass>();
+
+    /* ────────── ctor ────────── */
+    constructor(
+        private readonly route: ActivatedRoute,
+        private readonly router: Router,
+        private readonly destroyRef: DestroyRef,
+
+        /* services (full names!) */
+        private readonly riskAssessmentService: RiskAssessmentService,
+        private readonly riskService: RiskService,
+        private readonly personService: PersonService,
+        private readonly personGroupService: PersonGroupService,
+        private readonly optionService: ExtendableOptionService,
+        private readonly riskMatrixService: RiskMatrixService,
+        private readonly riskClassService: RiskClassService,
+
+        private readonly loader: LoaderService,
+        private readonly toast: ToastService,
+        private readonly modal: NgbModal,
+    ) { }
+
+    /* ══════════════════ life-cycle ══════════════════ */
+    ngOnInit(): void {
+        this.readFiltersFromRoute();
+        this.columns = this.buildColumns();
+        this.initialVisibleColumns = this.columns.filter(c => !c.hidden)
+            .map(c => c.name);
+
+        /* first load dictionaries ➜ then rows */
+        this.loadReferenceData()
+            .subscribe({ next: () => this.loadRows() });
+    }
+
+    ngOnChanges(ch: SimpleChanges): void {
+        if (ch['riskId'] || ch['objectId'] || ch['groupId']) {
+            this.page = 1;
+            this.loadRows();
+        }
+    }
+
+    /* ══════════════════ private helpers ══════════════════ */
+
+    private readFiltersFromRoute(): void {
+        const p = this.route.snapshot.paramMap;
+        this.riskId ??= p.get('riskId') ? +p.get('riskId')! : undefined;
+        this.objectId ??= p.get('objectId') ? +p.get('objectId')! : undefined;
+        this.groupId ??= p.get('groupId') ? +p.get('groupId')! : undefined;
+    }
+
+    private buildColumns(): Column[] {
+        return [
+            { display: 'Risk', name: 'risk', data: 'risk_id', template: this.riskTpl },
+            {
+                display: 'Risk before treatment',
+                name: 'risk_before', data: 'public_id',
+                template: this.beforeTpl,
+                style: { width: '170px', 'text-align': 'center' }
+            },
+            {
+                display: 'Risk after treatment',
+                name: 'risk_after', data: 'public_id',
+                template: this.afterTpl,
+                style: { width: '170px', 'text-align': 'center' }
+            },
+            {
+                display: 'Implementation state',
+                name: 'implementation_status',
+                data: 'implementation_status', template: this.implTpl
+            },
+            {
+                display: 'Responsible',
+                name: 'responsible',
+                data: 'responsible_persons_id',
+                template: this.respTpl
+            },
+            {
+                display: 'Actions',
+                name: 'actions', data: 'public_id', fixed: true,
+                template: this.actionTpl,
+                style: { width: '110px', 'text-align': 'center' }
+            }
+        ];
+    }
+
+    /* ───── build filter object for API ───── */
+    private buildFilter(): any {
+        if (this.riskId) { return { risk_id: this.riskId }; }
+
+        if (this.objectId) {
+            return {
+                $and: [
+                    { object_id_ref_type: 'OBJECT' },
+                    { object_id: this.objectId }
+                ]
+            };
+        }
+        if (this.groupId) {
+            return {
+                $and: [
+                    { object_id_ref_type: 'OBJECT_GROUP' },
+                    { object_id: this.groupId }
+                ]
+            };
+        }
+        return {};
+    }
+
+    /* ───── dictionaries (names, matrix, classes) ───── */
+    private loadReferenceData(): Observable<void> {
+
+        this.loader.show(); this.loading = true;
+
+        const base: CollectionParameters = {
+            filter: '', limit: 0, page: 1,
+            sort: 'public_id', order: SortDirection.ASCENDING
+        };
+
+        return forkJoin({
+            risks: this.riskService.getRisks(base),
+            persons: this.personService.getPersons(base),
+            groups: this.personGroupService.getPersonGroups(base),
+            implOpt: this.optionService.getExtendableOptionsByType('IMPLEMENTATION_STATE'),
+            matrix: this.riskMatrixService.getRiskMatrix(1).pipe(
+                map((r: any) => r.result?.risk_matrix ?? r.risk_matrix ?? []),
+                map((arr: any[]) => arr.map(c => ({
+                    ...c,
+                    impact_value: +c.impact_value,
+                    likelihood_value: +c.likelihood_value
+                })))
+            ),
+            classes: this.riskClassService.getRiskClasses(base)
+        }).pipe(
+            map(res => {
+                res.risks.results.forEach((r: any) => this.riskNameMap.set(r.public_id, r.name));
+                res.persons.results.forEach((p: any) => this.personNameMap.set(p.public_id, p.display_name));
+                res.groups.results.forEach((g: any) => this.groupNameMap.set(g.public_id, g.name));
+                res.implOpt.results.forEach((o: any) => this.implStateMap.set(o.public_id, o.value));
+                res.classes.results.forEach((c: RiskClass) => this.riskClassMap.set(c.public_id, c));
+                this.riskMatrixFlat = res.matrix;
+            }),
+            finalize(() => { this.loader.hide(); this.loading = false; }),
+            takeUntilDestroyed(this.destroyRef)
+        );
+    }
+
+    /* ───── rows ───── */
+    private loadRows(): void {
+
+        this.loader.show(); this.loading = true;
+
+        const params: CollectionParameters = {
+            filter: this.buildFilter(),
+            page: this.page,
+            limit: this.limit,
+            sort: this.sort.name,
+            order: this.sort.order
+        };
+
+        this.riskAssessmentService.getRiskAssessments(params)
+            .pipe(finalize(() => { this.loader.hide(); this.loading = false; }))
+            .subscribe({
+                next: res => { this.rows = res.results; this.total = res.total; },
+                error: err => this.toast.error(err?.error?.message || 'Load failed')
+            });
+
+            console.log('rows', this.rows);
+    }
+
+    /* ───── table events ───── */
+    onPageChange(p: number) { this.page = p; this.loadRows(); }
+    onPageSizeChange(l: number) { this.limit = l; this.page = 1; this.loadRows(); }
+    onSortChange(s: Sort) { this.sort = s; this.loadRows(); }
+
+    /* ───── look-ups ───── */
+    riskName(id: number) { return this.riskNameMap.get(id) ?? '–'; }
+    implState(id: number) { return this.implStateMap.get(id) ?? id; }
+
+    responsible(row: RiskAssessment): string {
+        const id = row.responsible_persons_id;
+        if (!id) { return '–'; }
+
+        if (row.responsible_persons_id_ref_type === 'PERSON') {
+            return this.personNameMap.get(id) ?? '–';
+        }
+        if (row.responsible_persons_id_ref_type === 'PERSON_GROUP') {
+            return this.groupNameMap.get(id) ?? '–';
+        }
+        return '–';
+    }
+
+    /* ───── colour helpers ───── */
+    private colour(maxImpact: number, lh: number): string {
+        if (!this.riskMatrixFlat.length || !maxImpact || !lh) { return GREY; }
+
+        const cell = this.riskMatrixFlat.find(
+            (c: any) => c.impact_value === maxImpact && c.likelihood_value === lh
+        );
+        const cls = cell ? this.riskClassMap.get(cell.risk_class_id) : undefined;
+        return cls?.color ?? GREY;
+    }
+
+    riskBeforeColour(row: RiskAssessment) {
+        return this.colour(
+            row.risk_calculation_before?.maximum_impact_value ?? 0,
+            row.risk_calculation_before?.likelihood_value ?? 0
+        );
+    }
+    riskAfterColour(row: RiskAssessment) {
+        return this.colour(
+            row.risk_calculation_after?.maximum_impact_value ?? 0,
+            row.risk_calculation_after?.likelihood_value ?? 0
+        );
+    }
+
+    riskBeforeValue(row: RiskAssessment) {
+        return (row.risk_calculation_before?.maximum_impact_value ?? 0) *
+            (row.risk_calculation_before?.likelihood_value ?? 0);
+    }
+    riskAfterValue(row: RiskAssessment) {
+        return (row.risk_calculation_after?.maximum_impact_value ?? 0) *
+            (row.risk_calculation_after?.likelihood_value ?? 0);
+    }
+
+    /* ───── actions ───── */
+    onEdit(row: any) {
+        this.router.navigate(['/isms/risk-assessments/edit', row.public_id], {
+          state: { riskAssessment: row }
+        });
+        console.log('edit', row);
+        console.log('edit', row.public_id);
+      }
+    
+      onDuplicate(row: any) {
+        this.router.navigate(['/isms/risk-assessments/add'], {
+          state: { riskAssessment: row }
+        });
+      }
+    
+      onView(row: any) {
+        this.router.navigate(['/isms/risk-assessments/view', row.public_id], {
+          state: { riskAssessment: row }
+        });
+      }
+
+    /* ───── DELETE helper ───── */
+    onDelete(row: RiskAssessment): void {
+
+        const ref = this.modal.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
+        ref.componentInstance.title = 'Delete Risk-Assessment';
+        ref.componentInstance.item = row;
+        ref.componentInstance.itemType = 'Risk-Assessment';
+        ref.componentInstance.itemName = `#${row.public_id}`;
+
+        ref.result.then(result => {
+            if (result !== 'confirmed') { return; }
+
+            this.loader.show();
+            this.riskAssessmentService
+                .deleteRiskAssessment(row.public_id!)
+                .pipe(finalize(() => this.loader.hide()))
+                .subscribe({
+                    next: () => { this.toast.success('Deleted'); this.loadRows(); },
+                    error: err => this.toast.error(err?.error?.message || 'Delete failed')
+                });
+        }).catch(() => { /* dismissed */ });
+    }
+}

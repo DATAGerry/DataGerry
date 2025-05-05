@@ -12,6 +12,7 @@ import { RiskAssessmentAuditComponent } from './risk-assessment-audit/risk-asses
 import { RiskAssessmentBeforeComponent } from './risk-assessment-before/risk-assessment-before.component';
 import { RiskAssessmentFormTopComponent } from './risk-assessment-form-top/risk-assessment-form-top.component';
 import { RiskAssessmentTreatmentComponent } from './risk-assessment-treatment/risk-assessment-treatment.component';
+import { RiskAssessmentListComponent } from './risk-assesment-list/risk-assessment-list.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { RiskAssessmentTreatmentComponent } from './risk-assessment-treatment/ri
     RiskAssessmentAuditComponent,
     RiskAssessmentBeforeComponent,
     RiskAssessmentFormTopComponent,
-    RiskAssessmentTreatmentComponent
+    RiskAssessmentTreatmentComponent,
+    RiskAssessmentListComponent
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,9 @@ import { RiskAssessmentTreatmentComponent } from './risk-assessment-treatment/ri
     CoreModule,
     ReactiveFormsModule,
     CoreModule
+  ],
+  exports: [
+    RiskAssessmentListComponent
   ]
 })
 export class RiskAssessmentModule { }

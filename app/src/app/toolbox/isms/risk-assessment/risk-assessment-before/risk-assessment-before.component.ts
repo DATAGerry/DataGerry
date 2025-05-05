@@ -356,7 +356,6 @@ const FALLBACK_GREY = '#f5f5f5';
   selector: 'app-risk-assessment-before',
   templateUrl: './risk-assessment-before.component.html',
   styleUrls: ['./risk-assessment-before.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RiskAssessmentBeforeComponent implements OnInit {
   @Input({ required: true }) parentForm!: FormGroup;
@@ -393,6 +392,7 @@ export class RiskAssessmentBeforeComponent implements OnInit {
     if (this.riskClasses && this.riskClasses.length) {
       this.riskClassMap = new Map(this.riskClasses.map((rc) => [rc.public_id, rc]));
     }
+    
 
     this.bindRecalculation();
   }

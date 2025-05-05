@@ -1,0 +1,64 @@
+<cmdb-table
+  [items]="rows"
+  [columns]="columns"
+  [page]="page"
+  [pageSize]="limit"
+  [totalItems]="total"
+  [initialVisibleColumns]="initialVisibleColumns"
+  [loading]="loading"
+  (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)"
+  (sortChange)="onSortChange($event)">
+
+  <!-- Risk name -->
+  <ng-template #riskTpl let-item="item">
+    {{ riskName(item?.risk_id) }}
+  </ng-template>
+
+  <!-- Risk BEFORE -->
+  <ng-template #beforeTpl let-item="item">
+    <div class="risk-box"
+         [style.background-color]="riskBeforeColour(item)">
+      {{ riskBeforeValue(item) }}
+    </div>
+  </ng-template>
+
+  <!-- Risk AFTER -->
+  <ng-template #afterTpl let-item="item">
+    <div class="risk-box"
+         [style.background-color]="riskAfterColour(item)">
+      {{ riskAfterValue(item) }}
+    </div>
+  </ng-template>
+
+  <!-- Implementation state -->
+  <ng-template #implTpl let-item="item">
+    {{ implState(item?.implementation_status) }}
+  </ng-template>
+
+  <!-- Responsible -->
+  <ng-template #respTpl let-item="item">
+    {{ responsible(item) }}
+  </ng-template>
+
+<!-- Actions -->
+<ng-template #actionTpl let-item="item">
+  <i class="far fa-eye   icon-margin"  title="View"      (click)="onView(item)"></i>
+  <i class="far fa-edit  icon-margin"  title="Edit"      (click)="onEdit(item)"></i>
+  <i class="far fa-copy  icon-margin"  title="Duplicate" (click)="onDuplicate(item)"></i>
+  <i class="far fa-trash-alt icon-margin"
+     title="Delete" (click)="onDelete(item)"></i>
+</ng-template>
+
+
+</cmdb-table>
+
+<!-- tiny helper style -->
+<style>
+  .risk-box{
+    display:flex; justify-content:center; align-items:center;
+    height:28px; min-width:60px; border-radius:3px;
+    font-weight:600; color:#fff;
+  }
+  .icon-margin{ cursor:pointer; margin:0 4px; }
+</style>
