@@ -59,10 +59,7 @@ class SecurityManager:
             dbm (MongoDatabaseManager): The database manager to interact with the database
             database (str, optional): The database name to use. Defaults to None
         """
-        if database:
-            dbm.connector.set_database(database)
-
-        self.settings_manager = SettingsManager(dbm)
+        self.settings_manager = SettingsManager(dbm, database)
         self.salt = "cmdb"
 
 

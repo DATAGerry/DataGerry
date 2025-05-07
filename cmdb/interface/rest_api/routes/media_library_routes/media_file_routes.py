@@ -77,19 +77,21 @@ def get_file_list(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         list of files
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES, request_user)
-
     try:
+        media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES, request_user)
+
         metadata = generate_collection_parameters(params=params)
         response_query = {'limit': params.limit, 'skip': params.skip, 'sort': [(params.sort, params.order)]}
         output = media_files_manager.get_many_media_files(metadata, **response_query)
+
         api_response = GetMultiResponse(output.result, total=output.total, params=params, url=request.url)
-    except MediaFileManagerGetError:
-        #TODO: ERROR-FIX
-        abort(404, "Could not retrive file list!")
-
-    return api_response.make_response()
-
+        return api_response.make_response()
+    except MediaFileManagerGetError as err:
+        LOGGER.error("[get_file_list] ImpactManagerGetError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve the FilesList from the database!")
+    except Exception as err:
+        LOGGER.error("[get_file_list] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving the FilesList!")
 
 @media_file_blueprint.route('/', methods=['POST'])
 @insert_request_user
@@ -127,10 +129,10 @@ def add_new_file(request_user: CmdbUser):
     Returns:
         New MediaFile.
     """
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
-                                                                         request_user)
-
     try:
+        media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
+                                                                            request_user)
+
         file = get_file_in_request('file')
         filter_metadata = generate_metadata_filter('metadata', request)
         filter_metadata.update({'filename': file.filename})
@@ -148,17 +150,18 @@ def add_new_file(request_user: CmdbUser):
         if exist:
             metadata['reference'] = exist['metadata']['reference']
             metadata['reference_type'] = exist['metadata']['reference_type']
+
         metadata['author_id'] = request_user.public_id
         metadata['mime_type'] = file.mimetype
 
         result = media_files_manager.insert_file(data=file, metadata=metadata)
+
+        return InsertSingleResponse(result, result['public_id']).make_response()
     except (MediaFileManagerInsertError, MediaFileManagerGetError):
         #TODO: ERROR-FIX
         abort(500)
 
-    api_response = InsertSingleResponse(raw=result, result_id=result['public_id'])
 
-    return api_response.make_response()
 
 
 @media_file_blueprint.route('/', methods=['PUT'])
@@ -196,6 +199,7 @@ def update_file(request_user: CmdbUser):
     Returns: MediaFile as JSON
 
     """
+    LOGGER.debug("[update_file] called")
     media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
@@ -242,6 +246,7 @@ def get_file(filename: str, request_user: CmdbUser):
 
     Returns: MediaFile as JSON
     """
+    LOGGER.debug("[get_file] called")
     media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
@@ -257,9 +262,7 @@ def get_file(filename: str, request_user: CmdbUser):
         #TODO: ERROR-FIX
         abort(404, f"Could not retrieve file with filename: {filename}")
 
-    api_response = DefaultResponse(result)
-
-    return api_response.make_response()
+    return DefaultResponse(result).make_response()
 
 
 @media_file_blueprint.route('/download/<path:filename>', methods=['GET'])
@@ -279,6 +282,7 @@ def download_file(filename: str, request_user: CmdbUser):
 
     Returns: File
     """
+    LOGGER.debug("[download_file] called")
     media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
@@ -319,6 +323,7 @@ def delete_file(public_id: int, request_user: CmdbUser):
     Returns:
          Delete result with the deleted File as JSON.
     """
+    LOGGER.debug("[delete_file] called")
     media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 

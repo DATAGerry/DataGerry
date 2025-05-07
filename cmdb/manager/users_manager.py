@@ -67,10 +67,7 @@ class UsersManager(BaseManager):
             database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbUser.COLLECTION, dbm)
+            super().__init__(CmdbUser.COLLECTION, dbm, database)
         except Exception as err:
             raise UsersManagerInitError(err) from err
 

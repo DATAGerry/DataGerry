@@ -41,15 +41,15 @@ class BaseDatabaseUpdate:
     """
     Base class for database updates
     """
-    def __init__(self, dbm:MongoDatabaseManager= None):
+    def __init__(self, dbm:MongoDatabaseManager, db_name: str):
         scr = SystemConfigReader()
         mode = 'cloud' if cmdb.__CLOUD_MODE__ and not cmdb.__LOCAL_MODE__ else 'local'
-        LOGGER.debug("Manager MODE: %s", mode)
         self.dbm = dbm if dbm else MongoDatabaseManager(**scr.get_all_values_from_section('Database'), mode=mode)
-        self.categories_manager = CategoriesManager(self.dbm)
-        self.objects_manager = ObjectsManager(self.dbm)
-        self.types_manager = TypesManager(self.dbm)
-        self.settings_manager = SettingsManager(self.dbm)
+        self.db_name = db_name if db_name else self.dbm.db_name
+        self.categories_manager = CategoriesManager(self.dbm, self.db_name)
+        self.objects_manager = ObjectsManager(self.dbm, self.db_name)
+        self.types_manager = TypesManager(self.dbm, self.db_name)
+        self.settings_manager = SettingsManager(self.dbm, self.db_name)
 
 
     @abstractmethod

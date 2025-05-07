@@ -73,10 +73,7 @@ class GroupsManager(BaseManager):
         try:
             self.rights = flat_rights_tree(ALL_RIGHTS)
 
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbUserGroup.COLLECTION, dbm)
+            super().__init__(CmdbUserGroup.COLLECTION, dbm, database)
         except Exception as err:
             raise GroupsManagerInitError(err) from err
 

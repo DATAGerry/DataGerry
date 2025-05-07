@@ -53,10 +53,7 @@ class LogsManager(BaseManager):
         Args:
             database_manager (MongoDatabaseManager): Active database managers instance
         """
-        if database:
-            dbm.connector.set_database(database)
-
-        super().__init__(CmdbMetaLog.COLLECTION, dbm)
+        super().__init__(CmdbMetaLog.COLLECTION, dbm, database)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 

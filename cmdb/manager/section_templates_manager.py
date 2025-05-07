@@ -21,8 +21,8 @@ from deepdiff import DeepDiff
 
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager.query_builder import BuilderParameters
-from cmdb.manager.types_manager import TypesManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependecy)
-from cmdb.manager.objects_manager import ObjectsManager #TODO: CYCLIC-IMPORT-FIX (Resolve Dependency)
+from cmdb.manager.types_manager import TypesManager
+from cmdb.manager.objects_manager import ObjectsManager
 from cmdb.manager.base_manager import BaseManager
 
 from cmdb.models.user_model import CmdbUser
@@ -56,13 +56,11 @@ class SectionTemplatesManager(BaseManager):
         Args:
             dbm (MongoDatabaseManager): Database connection
         """
-        if database:
-            dbm.connector.set_database(database)
+        # TODO: REFACTOR-FIX (Remove dependencies to the managers)
+        self.types_manager = TypesManager(dbm, database)
+        self.objects_manager = ObjectsManager(dbm, database)
 
-        self.types_manager = TypesManager(dbm)
-        self.objects_manager = ObjectsManager(dbm)
-
-        super().__init__(CmdbSectionTemplate.COLLECTION, dbm)
+        super().__init__(CmdbSectionTemplate.COLLECTION, dbm, database)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
@@ -112,8 +110,9 @@ class SectionTemplatesManager(BaseManager):
         try:
             aggregation_result, total = self.iterate_query(builder_params, user, permission)
 
-            iteration_result: IterationResult[CmdbSectionTemplate] = IterationResult(aggregation_result, total)
-            iteration_result.convert_to(CmdbSectionTemplate)
+            iteration_result: IterationResult[CmdbSectionTemplate] = IterationResult(aggregation_result,
+                                                                                     total,
+                                                                                     CmdbSectionTemplate)
 
             return iteration_result
         except Exception as err:

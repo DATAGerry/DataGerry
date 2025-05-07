@@ -55,7 +55,7 @@ class RiskManager(GenericManager):
             bool: True if the Risk was successfully deleted, False otherwise
         """
         # Delete all RiskAssessments referencing this Risk
-        self.dbm.get_collection(IsmsRiskAssessment.COLLECTION).delete_many({'risk_id': public_id})
+        self.dbm.get_collection(IsmsRiskAssessment.COLLECTION, self.db_name).delete_many({'risk_id': public_id})
 
         # Delete the Risk itself
         return self.delete_item(public_id)

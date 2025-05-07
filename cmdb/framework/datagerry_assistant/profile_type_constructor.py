@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""This module contains the ProfileTypeConstructor class"""
+"""
+This module contains the implementation of ProfileTypeConstructor
+"""
 import logging
 from datetime import datetime, timezone
 
@@ -27,13 +29,13 @@ from cmdb.framework.results import IterationResult
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                            ProfileTypeConstructor - CALSS                                            #
+#                                            ProfileTypeConstructor - CLASS                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
 class ProfileTypeConstructor:
     """Creates valid section and field data for types in order to be stored in the DB"""
 
-    def __init__(self, database_manager):
-        self.template_manager = SectionTemplatesManager(database_manager)
+    def __init__(self, section_templates_manager: SectionTemplatesManager):
+        self.section_templates_manager = section_templates_manager
         self.predefined_templates = self.__get_predefined_templates()
         self.type_config: dict = {}
 
@@ -384,7 +386,7 @@ class ProfileTypeConstructor:
 
         builder_params: BuilderParameters = BuilderParameters(predefined_filter)
 
-        iteration_result: IterationResult[CmdbSectionTemplate] = self.template_manager.iterate(builder_params)
+        iteration_result: IterationResult[CmdbSectionTemplate] = self.section_templates_manager.iterate(builder_params)
 
         template_list: list[dict] = [template_.__dict__ for template_ in iteration_result.results]
 

@@ -53,13 +53,10 @@ class DocapiTemplatesManager(BaseManager):
         Set the database connection for the DocapiTemplatesManager
 
         Args:
-            `dbm` (MongoDatabaseManager): Database interaction manager
-            `database` (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
+            dbm (MongoDatabaseManager): Database interaction manager
+            database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
-        if database:
-            dbm.connector.set_database(database)
-
-        super().__init__(DocapiTemplate.COLLECTION, dbm)
+        super().__init__(DocapiTemplate.COLLECTION, dbm, database)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 

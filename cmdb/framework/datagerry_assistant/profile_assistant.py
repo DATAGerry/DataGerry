@@ -20,6 +20,8 @@ import logging
 from datetime import datetime, timezone
 
 from cmdb.manager import CategoriesManager
+from cmdb.manager.types_manager import TypesManager
+from cmdb.manager.section_templates_manager import SectionTemplatesManager
 
 from cmdb.errors.dg_assistant.dg_assistant_errors import ProfileCreationError
 
@@ -39,9 +41,14 @@ class ProfileAssistant:
     """
     This class creates all types and categories selected in the DATAGERRY assistant
     """
-    def __init__(self, categories_manager: CategoriesManager):
+    def __init__(
+            self,
+            categories_manager: CategoriesManager,
+            types_manager: TypesManager,
+            section_templates_manager: SectionTemplatesManager):
         self.categories_manager = categories_manager
-
+        self.types_manager = types_manager
+        self.section_templates_manager = section_templates_manager
 
     def create_profiles(self, profile_list):
         """
@@ -78,32 +85,44 @@ class ProfileAssistant:
         try:
             # create all types from user management profile
             if ProfileName.USER_MANAGEMENT in profile_list:
-                cur_profile = UserManagementProfile(created_type_ids)
+                cur_profile = UserManagementProfile(created_type_ids,
+                                                    self.types_manager,
+                                                    self.section_templates_manager)
                 created_type_ids = cur_profile.create_user_management_profile()
 
             # create all types from location profile
             if ProfileName.LOCATION in profile_list:
-                cur_profile = LocationProfile(created_type_ids)
+                cur_profile = LocationProfile(created_type_ids,
+                                              self.types_manager,
+                                              self.section_templates_manager)
                 created_type_ids = cur_profile.create_location_profile()
 
             # create all types from ipam profile
             if ProfileName.IPAM in profile_list:
-                cur_profile = IPAMProfile(created_type_ids)
+                cur_profile = IPAMProfile(created_type_ids,
+                                          self.types_manager,
+                                          self.section_templates_manager)
                 created_type_ids = cur_profile.create_ipam_profile()
 
             # create all types from client management profile
             if ProfileName.CLIENT_MANAGEMENT in profile_list:
-                cur_profile = ClientManagementProfile(created_type_ids)
+                cur_profile = ClientManagementProfile(created_type_ids,
+                                                      self.types_manager,
+                                                      self.section_templates_manager)
                 created_type_ids = cur_profile.create_client_management_profile()
 
             # create all types from server management profile
             if ProfileName.SERVER_MANAGEMENT in profile_list:
-                cur_profile = ServerManagementProfile(created_type_ids)
+                cur_profile = ServerManagementProfile(created_type_ids,
+                                                      self.types_manager,
+                                                      self.section_templates_manager)
                 created_type_ids = cur_profile.create_server_management_profile()
 
             # create all types from network infrastructure profile
             if ProfileName.NETWORK_INFRASTRUCTURE in profile_list:
-                cur_profile = NetworkInfrastructureProfile(created_type_ids)
+                cur_profile = NetworkInfrastructureProfile(created_type_ids,
+                                                           self.types_manager,
+                                                           self.section_templates_manager)
                 created_type_ids = cur_profile.create_network_infrastructure_profile()
 
 

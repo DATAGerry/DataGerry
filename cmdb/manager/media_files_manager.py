@@ -57,11 +57,9 @@ class MediaFilesManager(BaseManager):
             dbm (MongoDatabaseManager): The database manager instance
             database (str, optional): Specific database name to switch to
         """
-        if database:
-            dbm.connector.set_database(database)
-
-        self.fs = DatabaseGridFS(dbm.connector.database, MediaFile.COLLECTION)
-        super().__init__(MediaFile.COLLECTION, dbm)
+        target_db = database if database else dbm.db_name
+        self.fs = DatabaseGridFS(dbm.connector.get_database(target_db), MediaFile.COLLECTION)
+        super().__init__(MediaFile.COLLECTION, dbm, database)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 

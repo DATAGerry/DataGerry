@@ -84,7 +84,7 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
         locations_manager: LocationsManager = ManagerProvider.get_manager(ManagerType.LOCATIONS, request_user)
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
-        location_creation_params= {}
+        location_creation_params = {}
 
         location_creation_params['object_id'] = int(params['object_id'])
         location_creation_params['parent'] = int(params['parent'])
@@ -110,9 +110,6 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
                 abort(404, "The linked Object was not found in the database!")
 
             current_object = CmdbObject.from_data(current_object)
-
-            if current_app.cloud_mode:
-                current_app.database_manager.connector.set_database(request_user.database)
 
             rendered_list = RenderList([current_object],
                                     request_user,
@@ -416,8 +413,6 @@ def update_cmdb_location_for_object(params: dict, request_user: CmdbUser):
                 abort(404, "The linked Object was not found in the database!")
 
             current_object = CmdbObject.from_data(current_object)
-            if current_app.cloud_mode:
-                current_app.database_manager.connector.set_database(request_user.database)
 
             rendered_list = RenderList([current_object],
                                     request_user,

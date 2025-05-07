@@ -91,9 +91,6 @@ def post_login():
         if 'subscription' in login_data:
             request_subscription = login_data['subscription']
 
-        users_manager = UsersManager(current_app.database_manager)
-        security_manager = SecurityManager(current_app.database_manager)
-
         try:
             if current_app.cloud_mode:
                 request_user_name = request_user_name.lower()
@@ -137,15 +134,11 @@ def post_login():
                     LOGGER.error("[post_login] Could not retrieve User from database!")
                     abort(401, "Invalid user or password. Could not login!")
 
-                current_app.database_manager.connector.set_database(user_database)
                 token, token_issued_at, token_expire = generate_token_with_params(user,
                                                                                 current_app.database_manager,
                                                                                 True)
 
-                login_response = LoginResponse(user, token, token_issued_at, token_expire)
-
-                return login_response.make_response()
-
+                return LoginResponse(user, token, token_issued_at, token_expire).make_response()
         except HTTPException as http_err:
             raise http_err
         except NoAccessTokenError as err:
@@ -174,6 +167,8 @@ def post_login():
             abort(500, "An internal server error occured while trying to login!")
 
         # PATH when its not cloud mode
+        users_manager = UsersManager(current_app.database_manager)
+        security_manager = SecurityManager(current_app.database_manager)
         settings_manager = SettingsManager(current_app.database_manager)
 
         auth_module = AuthModule(

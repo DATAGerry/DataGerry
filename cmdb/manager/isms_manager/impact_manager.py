@@ -73,7 +73,11 @@ class ImpactManager(GenericManager):
 
         updates = []
 
-        affected_risk_assessments: list[dict] = self.dbm.find(collection=IsmsRiskAssessment.COLLECTION, filter=query)
+        affected_risk_assessments: list[dict] = self.dbm.find(
+                                                    collection=IsmsRiskAssessment.COLLECTION,
+                                                    db_name=self.db_name,
+                                                    filter=query
+                                                )
 
         for risk_assessment in affected_risk_assessments:
             update_fields = {}
@@ -138,7 +142,7 @@ class ImpactManager(GenericManager):
 
         # Bulk execute all updates
         if updates:
-            self.dbm.bulk_write(IsmsRiskAssessment.COLLECTION, updates)
+            self.dbm.bulk_write(IsmsRiskAssessment.COLLECTION, self.db_name, updates)
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 

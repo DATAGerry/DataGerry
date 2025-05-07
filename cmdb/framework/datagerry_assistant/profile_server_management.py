@@ -18,6 +18,9 @@ This module manages the 'Server Management'-Profile for the DATAGERRY assistant
 """
 import logging
 
+from cmdb.manager.types_manager import TypesManager
+from cmdb.manager.section_templates_manager import SectionTemplatesManager
+
 from .profile_base import ProfileBase
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -28,10 +31,13 @@ class ServerManagementProfile(ProfileBase):
     """
     This class cointains all types and logics for the 'Server Management'-Profile
     """
-
-    def __init__(self, created_type_ids: dict):
+    def __init__(
+            self,
+            created_type_ids: dict,
+            types_manager: TypesManager,
+            section_templates_manager: SectionTemplatesManager):
         self.created_type_ids = created_type_ids
-        super().__init__(created_type_ids)
+        super().__init__(created_type_ids, types_manager, section_templates_manager)
 
 
     def create_server_management_profile(self) -> dict:

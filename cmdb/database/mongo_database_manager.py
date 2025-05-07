@@ -59,7 +59,7 @@ class MongoDatabaseManager:
     def __init__(self, host: str, port: int, database_name: str, mode: str = 'local'):
         self.host = host
         self.port = int(port)
-        self.database_name = database_name
+        self.db_name = database_name
         self.mode = mode  # Define the mode ('local' or 'cloud')
 
         self.client_options = {
@@ -83,7 +83,8 @@ class MongoDatabaseManager:
         else:
             self.client_options['ssl'] = False  # Disable SSL for local mode
 
-        self.connector = MongoConnector(self.host, self.port, self.database_name, self.client_options)
+        # self.connector = MongoConnector(self.host, self.port, self.db_name, self.client_options)
+        self.connector = MongoConnector(self.host, self.port, self.client_options)
 
 
     def reset_connection(self):
@@ -91,7 +92,8 @@ class MongoDatabaseManager:
         Reset the MongoConnector to create a fresh MongoDB connection
         """
         self.connector.disconnect()
-        self.connector = MongoConnector(self.host, self.port, self.database_name, self.client_options)
+        # self.connector = MongoConnector(self.host, self.port, self.db_name, self.client_options)
+        self.connector = MongoConnector(self.host, self.port, self.client_options)
 
 
     def __enter__(self):
@@ -101,11 +103,17 @@ class MongoDatabaseManager:
         return self
 
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def target_database(self, db_name: str) -> str:
         """
-        Ensures the database connection is closed when exiting a context
+        Retrieves the target database for operations
+
+        Args:
+            db_name (str): Name of given database
+
+        Returns:
+            str: If mode is 'local' then use the database name from the config file, else the given database name
         """
-        self.connector.disconnect()
+        return db_name if db_name else self.db_name
 
 # ---------------------------------------------- BASE DATABSE OPERATIONS --------------------------------------------- #
 
@@ -180,7 +188,7 @@ class MongoDatabaseManager:
             raise DatabaseConnectionError(f"Failed to drop database '{database}': {err}") from err
 
 
-    def create_collection(self, collection_name: str) -> str:
+    def create_collection(self, collection_name: str, db_name: str) -> str:
         """
         Creation an empty MongoDB collection
 
@@ -195,10 +203,10 @@ class MongoDatabaseManager:
             str: The name of the created collection
         """
         try:
-            all_collections = self.connector.database.list_collection_names()
+            all_collections = self.connector.get_database(self.target_database(db_name)).list_collection_names()
 
             if collection_name not in all_collections:
-                self.connector.database.create_collection(collection_name)
+                self.connector.get_database(self.target_database(db_name)).create_collection(collection_name)
 
             return collection_name
         except Exception as err:
@@ -208,7 +216,7 @@ class MongoDatabaseManager:
             raise DatabaseConnectionError(f"Failed to create collection '{collection_name}': {err}") from err
 
 
-    def get_collection(self, name: str) -> Collection:
+    def get_collection(self, name: str, db_name: str) -> Collection:
         """
         Get a collection from the database
 
@@ -222,15 +230,13 @@ class MongoDatabaseManager:
             (Collection): The requested collection
         """
         try:
-            requested_collection = self.connector.database[name]
-
-            return requested_collection
+            return  self.connector.get_database(self.target_database(db_name))[name]
         except Exception as err:
             LOGGER.error("[get_collection] '%s' Exception: %s. Type: %s", name, err, type(err))
             raise GetCollectionError(err) from err
 
 
-    def delete_collection(self, collection: str) -> dict[str, Any]:
+    def delete_collection(self, collection: str, db_name: str) -> dict[str, Any]:
         """
         Delete an existing collection
 
@@ -244,12 +250,12 @@ class MongoDatabaseManager:
             delete ack
         """
         try:
-            return self.connector.database.drop_collection(collection)
+            return self.connector.get_database(self.target_database(db_name)).drop_collection(collection)
         except Exception as err:
             raise DeleteCollectionError(f"Failed to delete collection '{collection}': {err}") from err
 
 
-    def create_indexes(self, collection: str, indexes: list[IndexModel]) -> list[str]:
+    def create_indexes(self, collection: str, db_name: str, indexes: list[IndexModel]) -> list[str]:
         """
         Creates indexes for collection
 
@@ -264,12 +270,12 @@ class MongoDatabaseManager:
             list[str]: List of created indexes
         """
         try:
-            return self.get_collection(collection).create_indexes(indexes)
+            return self.get_collection(collection, db_name).create_indexes(indexes)
         except Exception as err:
             raise CreateIndexesError(f"Failed to create indexes for collection '{collection}': {err}") from err
 
 
-    def get_index_info(self, collection: str) -> MutableMapping[str, Any]:
+    def get_index_info(self, collection: str, db_name: str) -> MutableMapping[str, Any]:
         """
         Retrives index information for a collection
 
@@ -283,7 +289,7 @@ class MongoDatabaseManager:
             MutableMapping[str, Any]: Index information of the collection
         """
         try:
-            return self.get_collection(collection).index_information()
+            return self.get_collection(collection, db_name).index_information()
         except Exception as err:
             raise GetIndexesError(
                 f"Failed to retrieve index information for collection '{collection}': {err}"
@@ -301,7 +307,7 @@ class MongoDatabaseManager:
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-    def insert(self, collection: str, data: dict, skip_public: bool = False) -> int:
+    def insert(self, collection: str, db_name: str, data: dict, skip_public: bool = False) -> int:
         """
         Adds a document to a collection
 
@@ -318,20 +324,20 @@ class MongoDatabaseManager:
         """
         try:
             if skip_public:
-                return self.get_collection(collection).insert_one(data)
+                return self.get_collection(collection, db_name).insert_one(data)
 
             if 'public_id' not in data:
-                data['public_id'] = self.get_next_public_id(collection)
+                data['public_id'] = self.get_next_public_id(collection, db_name)
 
-            self.get_collection(collection).insert_one(data)
-            self.update_public_id_counter(collection, data['public_id'], increment=True)
+            self.get_collection(collection, db_name).insert_one(data)
+            self.update_public_id_counter(collection, db_name, data['public_id'], increment=True)
 
             return data['public_id']
         except Exception as err:
             raise DocumentInsertError(f"Failed to insert document into collection '{collection}': {err}") from err
 
 
-    def bulk_write(self, collection: str, operations: list) -> None:
+    def bulk_write(self, collection: str,  db_name: str, operations: list) -> None:
         """
         Performs a bulk write operation on the specified collection.
 
@@ -343,12 +349,12 @@ class MongoDatabaseManager:
             DocumentInsertError: If bulk write fails.
         """
         try:
-            self.get_collection(collection).bulk_write(operations)
+            self.get_collection(collection, db_name).bulk_write(operations)
         except Exception as err:
             raise DocumentInsertError(f"Failed bulk write in collection '{collection}': {err}") from err
 
 
-    def init_public_id_counter(self, collection: str) -> int:
+    def init_public_id_counter(self, collection: str, db_name: str) -> int:
         """
         Initializes a public ID counter for the given collection
 
@@ -362,9 +368,9 @@ class MongoDatabaseManager:
             int: The highest existing ID in the collection, which is set as the counter's initial value
         """
         try:
-            highest_id = self.get_highest_id(collection)
+            highest_id = self.get_highest_id(collection, db_name)
 
-            self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).insert_one(
+            self.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name).insert_one(
                 {'_id': collection, 'counter': highest_id}
             )
 
@@ -379,6 +385,7 @@ class MongoDatabaseManager:
     def update(
             self,
             collection: str,
+            db_name: str,
             criteria: dict,
             data: dict,
             *args,
@@ -410,7 +417,7 @@ class MongoDatabaseManager:
             else:
                 update_data = data
 
-            result = self.get_collection(collection).update_one(criteria, update_data, *args, **kwargs)
+            result = self.get_collection(collection, db_name).update_one(criteria, update_data, *args, **kwargs)
 
             return result
         except Exception as err:
@@ -418,7 +425,7 @@ class MongoDatabaseManager:
             raise DocumentUpdateError(f"Failed to update document in '{collection}': {err}") from err
 
 
-    def upsert_set(self, collection:str, data: dict) -> UpdateResult:
+    def upsert_set(self, collection:str, db_name: str, data: dict) -> UpdateResult:
         """
         Performs an upsert operation on a specified MongoDB collection.
         
@@ -442,7 +449,7 @@ class MongoDatabaseManager:
                                 an exception is raised with details about the failure.
         """
         try:
-            self.get_collection(collection).update_one(
+            self.get_collection(collection, db_name).update_one(
                 {"public_id": data['public_id']},
                 {"$set": data},  # Update the fields of the document
                 upsert=True  # Insert if document does not exist)
@@ -452,7 +459,13 @@ class MongoDatabaseManager:
             raise DocumentUpdateError(f"Failed to update/create document in '{collection}': {err}") from err
 
 
-    def unset_update_many(self, collection: str, criteria: dict, field: str, *args, **kwargs) -> UpdateResult:
+    def unset_update_many(
+            self,
+            collection: str,
+            db_name: str,
+            criteria: dict,
+            field: str,
+            *args, **kwargs) -> UpdateResult:
         """
         Removes a field from multiple documents in the specified collection
 
@@ -472,7 +485,7 @@ class MongoDatabaseManager:
         try:
             update_data = {'$unset': {field: 1}}
 
-            result = self.get_collection(collection).update_many(criteria, update_data, *args, **kwargs)
+            result = self.get_collection(collection, db_name).update_many(criteria, update_data, *args, **kwargs)
 
             if result.modified_count == 0:
                 LOGGER.warning(
@@ -484,12 +497,14 @@ class MongoDatabaseManager:
             raise DocumentUpdateError(f"Failed to unset field '{field}' in '{collection}': {err}") from err
 
 
-    def update_many(self,
-                    collection: str,
-                    criteria: dict,
-                    update: Union[dict, list],
-                    add_to_set: bool = False,
-                    plain: bool = False) -> UpdateResult:
+    def update_many(
+            self,
+            collection: str,
+            db_name: str,
+            criteria: dict,
+            update: Union[dict, list],
+            add_to_set: bool = False,
+            plain: bool = False) -> UpdateResult:
         """
         Updates multiple documents that match the filter in a collection
 
@@ -513,12 +528,17 @@ class MongoDatabaseManager:
             else:
                 formatted_data = update
 
-            return self.get_collection(collection).update_many(criteria, formatted_data)
+            return self.get_collection(collection, db_name).update_many(criteria, formatted_data)
         except Exception as err:
             raise DocumentUpdateError(f"Failed to update documents in '{collection}': {err}") from err
 
 
-    def update_many_pull(self, collection: str, criteria: dict, update: dict) -> UpdateResult:
+    def update_many_pull(
+            self,
+            collection: str,
+            db_name: str,
+            criteria: dict,
+            update: dict) -> UpdateResult:
         """
         Updates multiple documents that match the filter in a collection
 
@@ -538,12 +558,17 @@ class MongoDatabaseManager:
         try:
             formatted_data = {"$pull": update}
 
-            return self.get_collection(collection).update_many(criteria, formatted_data)
+            return self.get_collection(collection, db_name).update_many(criteria, formatted_data)
         except Exception as err:
             raise DocumentUpdateError(f"Failed to update documents in '{collection}': {err}") from err
 
 
-    def update_public_id_counter(self, collection: str, value: int = None, increment: bool = False) -> None:
+    def update_public_id_counter(
+            self,
+            collection: str,
+            db_name: str,
+            value: int = None,
+            increment: bool = False) -> None:
         """
         Updates or increments the public_id counter for the given collection
 
@@ -556,7 +581,7 @@ class MongoDatabaseManager:
             DocumentUpdateError: If the counter update operation fails or no valid operation is provided
         """
         try:
-            working_collection = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION)
+            working_collection = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name)
             query = {'_id': collection}
 
             # Fetch the current counter document
@@ -564,7 +589,7 @@ class MongoDatabaseManager:
 
             if not counter_doc:
                 # If the counter document does not exist, initialize it
-                self.init_public_id_counter(collection)
+                self.init_public_id_counter(collection, db_name)
                 counter_doc = working_collection.find_one(query)
 
             if increment:
@@ -588,7 +613,7 @@ class MongoDatabaseManager:
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-    def find_all(self, collection, *args, **kwargs) -> list:
+    def find_all(self, collection: str, db_name: str, *args, **kwargs) -> list:
         """
         Retrives documents from the specified collection
 
@@ -604,7 +629,7 @@ class MongoDatabaseManager:
             list: A list of retrieved documents
         """
         try:
-            found_documents = self.find(collection, *args, **kwargs)
+            found_documents = self.find(collection, db_name, *args, **kwargs)
 
             return list(found_documents)
         except Exception as err:
@@ -612,7 +637,7 @@ class MongoDatabaseManager:
             raise DocumentGetError(f"Failed to retrieve documents from '{collection}': {err}") from err
 
 
-    def find(self, collection: str, *args, **kwargs) -> Cursor:
+    def find(self, collection: str, db_name: str, *args, **kwargs) -> Cursor:
         """
         Retrieves documents from the specified collection with optional filters and projections
         
@@ -632,12 +657,12 @@ class MongoDatabaseManager:
             if 'projection' not in kwargs:
                 kwargs.update({'projection': {'_id': 0}})
 
-            return self.get_collection(collection).find(*args, **kwargs)
+            return self.get_collection(collection, db_name).find(*args, **kwargs)
         except Exception as err:
             raise DocumentGetError(f"Failed to retrieve documents from collection '{collection}': {err}") from err
 
 
-    def find_one_by(self, collection: str, *args, **kwargs) -> dict:
+    def find_one_by(self, collection: str, db_name: str, *args, **kwargs) -> dict:
         """
         Find one specific document by special requirements
 
@@ -653,7 +678,7 @@ class MongoDatabaseManager:
             dict: The found document or None if no document matches the criteria
         """
         try:
-            cursor_result = self.find(collection, limit=1, *args, **kwargs)
+            cursor_result = self.find(collection, db_name, limit=1, *args, **kwargs)
 
             result = next(cursor_result, None)
 
@@ -662,7 +687,7 @@ class MongoDatabaseManager:
             raise DocumentGetError(f"Failed to retrieve document from collection '{collection}': {err}") from err
 
 
-    def find_one(self, collection: str, public_id: int, *args, **kwargs) -> dict:
+    def find_one(self, collection: str, db_name: str, public_id: int, *args, **kwargs) -> dict:
         """
         Retrieves a single document with the given public_id from the specified collection
 
@@ -679,7 +704,7 @@ class MongoDatabaseManager:
             dict: The document with the given public_id, or None if not found
         """
         try:
-            cursor_result = self.find(collection, {'public_id': public_id}, limit=1, *args, **kwargs)
+            cursor_result = self.find(collection, db_name, {'public_id': public_id}, limit=1, *args, **kwargs)
 
             for result in cursor_result.limit(-1):
                 return result
@@ -689,7 +714,7 @@ class MongoDatabaseManager:
             ) from err
 
 
-    def count(self, collection: str, *args, criteria: dict = None, **kwargs) -> int:
+    def count(self, collection: str, db_name: str, *args, criteria: dict = None, **kwargs) -> int:
         """
         Count documents based on criteria parameters
 
@@ -709,14 +734,14 @@ class MongoDatabaseManager:
         criteria = criteria or {}
 
         try:
-            return self.get_collection(collection).count_documents(criteria, *args, **kwargs)
+            return self.get_collection(collection, db_name).count_documents(criteria, *args, **kwargs)
         except Exception as err:
             raise DocumentGetError(
                 f"Failed to count documents in collection '{collection}': {err}"
             ) from err
 
 
-    def aggregate(self, collection: str, *args, **kwargs) -> Cursor:
+    def aggregate(self, collection: str, db_name: str, *args, **kwargs) -> Cursor:
         """
         Perform aggregation on MongoDB
 
@@ -732,12 +757,12 @@ class MongoDatabaseManager:
             Cursor: The computed aggregation results as a cursor
         """
         try:
-            return self.get_collection(collection).aggregate(*args, **kwargs, allowDiskUse=True)
+            return self.get_collection(collection, db_name).aggregate(*args, **kwargs, allowDiskUse=True)
         except Exception as err:
             raise DocumentAggregationError(f"Aggregation operation failed: {err}") from err
 
 
-    def get_highest_id(self, collection: str) -> int:
+    def get_highest_id(self, collection: str, db_name: str) -> int:
         """
         Wrapper function that calls get_document_with_highest_id() and returns the highest public_id
 
@@ -754,7 +779,7 @@ class MongoDatabaseManager:
             formatted_sort = [('public_id', -1)]
 
             # Get the highest public_id document
-            highest_id_doc = self.find_one_by(collection=collection, sort=formatted_sort)
+            highest_id_doc = self.find_one_by(collection=collection, db_name=db_name, sort=formatted_sort)
 
             # If no document is found, return 0
             if highest_id_doc is None:
@@ -768,7 +793,7 @@ class MongoDatabaseManager:
             ) from err
 
 
-    def get_next_public_id(self, collection: str) -> int:
+    def get_next_public_id(self, collection: str, db_name: str) -> int:
         """
         Retrieves the next public_id for the specified collection
 
@@ -782,15 +807,15 @@ class MongoDatabaseManager:
             int: The next available public_id for the collection
         """
         try:
-            found_counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
+            found_counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name).find_one({'_id': collection})
 
             if found_counter:
                 new_id = found_counter['counter'] + 1
             else:
-                docs_count = self.init_public_id_counter(collection)
+                docs_count = self.init_public_id_counter(collection, db_name)
                 new_id = docs_count + 1
 
-            self.update_public_id_counter(collection)
+            self.update_public_id_counter(collection, db_name)
 
             return new_id
         except Exception as err:
@@ -798,7 +823,7 @@ class MongoDatabaseManager:
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-    def delete(self, collection: str, criteria: dict) -> DeleteResult:
+    def delete(self, collection: str, db_name: str, criteria: dict) -> DeleteResult:
         """
         Deletes a document from the specified collection based on the given criteria
 
@@ -813,14 +838,14 @@ class MongoDatabaseManager:
             DeleteResult: Contains the result of the delete operation
         """
         try:
-            result = self.get_collection(collection).delete_one(criteria)
+            result = self.get_collection(collection, db_name).delete_one(criteria)
 
             return result
         except Exception as err:
             raise DocumentDeleteError(f"Error deleting document from collection '{collection}': {err}") from err
 
 
-    def delete_many(self, collection: str, **requirements: dict) -> DeleteResult:
+    def delete_many(self, collection: str, db_name: str, **requirements: dict) -> DeleteResult:
         """
         Removes all documents that match the filter from the collection
 
@@ -835,6 +860,6 @@ class MongoDatabaseManager:
             DeleteResult: The result of the delete operation, including the number of documents deleted
         """
         try:
-            return self.get_collection(collection).delete_many(requirements)
+            return self.get_collection(collection, db_name).delete_many(requirements)
         except Exception as err:
             raise DocumentDeleteError(f"Error deleting documents from collection '{collection}': {err}") from err

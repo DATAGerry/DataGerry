@@ -70,10 +70,7 @@ class ObjectRelationLogsManager(BaseManager):
             ObjectRelationLogsManagerInitError: If the ObjectRelationLogsManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbObjectRelationLog.COLLECTION, dbm)
+            super().__init__(CmdbObjectRelationLog.COLLECTION, dbm, database)
         except Exception as err:
             raise ObjectRelationLogsManagerInitError(err) from err
 
