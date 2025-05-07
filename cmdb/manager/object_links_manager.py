@@ -69,10 +69,7 @@ class ObjectLinksManager(BaseManager):
             dbm (MongoDatabaseManager): Active database managers instance
             database (str): Name of the database to which the 'dbm' should connect. Only used in CLOUD_MODE
         """
-        if database:
-            dbm.connector.set_database(database)
-
-        super().__init__(CmdbObjectLink.COLLECTION, dbm)
+        super().__init__(CmdbObjectLink.COLLECTION, dbm, database)
 
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #

@@ -76,10 +76,7 @@ class TypesManager(BaseManager):
             TypesManagerInitError: If the TypesManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbType.COLLECTION, dbm)
+            super().__init__(CmdbType.COLLECTION, dbm, database)
         except Exception as err:
             raise TypesManagerInitError(err) from err
 

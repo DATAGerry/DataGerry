@@ -44,9 +44,7 @@ class SettingsManager(SystemReader):
         Args:
             database_manager: database managers
         """
-        if database:
-            dbm.connector.set_database(database)
-
+        self.db_name = database
         self.dbm = dbm
 
         super().__init__()
@@ -62,7 +60,10 @@ class SettingsManager(SystemReader):
         Returns:
             value
         """
-        return self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter={'_id': section})[name]
+        return self.dbm.find_one_by(
+                            collection=SettingsManager.COLLECTION,
+                            db_name=self.db_name,
+                            filter={'_id': section})[name]
 
 
     def get_section(self, section_name: str) -> dict:
@@ -77,7 +78,11 @@ class SettingsManager(SystemReader):
         """
         query_filter = {'_id': section_name}
 
-        return self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter=query_filter)
+        return self.dbm.find_one_by(
+                            collection=SettingsManager.COLLECTION,
+                            db_name=self.db_name,
+                            filter=query_filter
+                        )
 
 
     def get_sections(self) -> list:
@@ -87,7 +92,11 @@ class SettingsManager(SystemReader):
         Returns:
             list: A list of section names (as dictionaries containing '_id' keys).
         """
-        return self.dbm.find_all(collection=SettingsManager.COLLECTION, projection={'_id': 1})
+        return self.dbm.find_all(
+                            collection=SettingsManager.COLLECTION,
+                            db_name=self.db_name,
+                            projection={'_id': 1}
+                        )
 
 
     def get_all_values_from_section(self, section, default=None) -> dict:
@@ -105,7 +114,11 @@ class SettingsManager(SystemReader):
             dict: A dictionary containing all key-value pairs from the specified section
         """
 
-        section_values = self.dbm.find_one_by(collection=SettingsManager.COLLECTION, filter={'_id': section})
+        section_values = self.dbm.find_one_by(
+                                    collection=SettingsManager.COLLECTION,
+                                    db_name=self.db_name,
+                                    filter={'_id': section}
+                                )
 
         if not section_values:
             if default:
@@ -127,4 +140,10 @@ class SettingsManager(SystemReader):
         Returns:
             UpdateResult: The result object of the database update operation
         """
-        return self.dbm.update(collection=self.COLLECTION, criteria={'_id': _id}, data=data, upsert=True)
+        return self.dbm.update(
+                        collection=self.COLLECTION,
+                        db_name=self.db_name,
+                        criteria={'_id': _id},
+                        data=data,
+                        upsert=True
+                    )

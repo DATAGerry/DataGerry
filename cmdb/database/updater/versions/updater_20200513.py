@@ -48,7 +48,7 @@ class Update20200513(BaseDatabaseUpdate):
             collection = CmdbType.COLLECTION
             all_types: list[dict] = []
 
-            all_types = self.dbm.find_all(collection)
+            all_types = self.dbm.find_all(collection, self.db_name)
 
             for cur_type in all_types:
                 #Check if the type already has the 'global_template_ids' property, else create it
@@ -59,6 +59,7 @@ class Update20200513(BaseDatabaseUpdate):
                 if not global_template_ids in cur_type.keys():
                     cur_type[global_template_ids] = []
                     self.dbm.update(collection=collection,
+                                    db_name=self.db_name,
                                     criteria={'public_id':cur_public_id},
                                     data=cur_type)
                     LOGGER.info("Updated 'global_template_ids' for type ID: %s", cur_public_id)
@@ -66,6 +67,7 @@ class Update20200513(BaseDatabaseUpdate):
                 if not selectable_as_parent in cur_type.keys():
                     cur_type[selectable_as_parent] = True
                     self.dbm.update(collection=collection,
+                                    db_name=self.db_name,
                                     criteria={'public_id':cur_public_id},
                                     data=cur_type)
                     LOGGER.info("Updated 'selectable_as_parent' for type ID: %s", cur_public_id)

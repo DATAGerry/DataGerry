@@ -86,10 +86,7 @@ class ObjectsManager(BaseManager):
             ObjectsManagerInitError: If the ObjectsManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbObject.COLLECTION, dbm)
+            super().__init__(CmdbObject.COLLECTION, dbm, database)
         except Exception as err:
             raise ObjectsManagerInitError(err) from err
 
@@ -800,6 +797,7 @@ class ObjectsManager(BaseManager):
 
         matching_risk_assessments = list(self.dbm.find(
             IsmsRiskAssessment.COLLECTION,
+            self.db_name,
             risk_assessment_query,
             projection={'public_id': 1}
         ))
@@ -814,6 +812,7 @@ class ObjectsManager(BaseManager):
             # Delete the RiskAssessments
             self.dbm.delete_many(
                 IsmsRiskAssessment.COLLECTION,
+                self.db_name,
                 {'public_id': {'$in': risk_assessment_ids}},
                 plain=True
             )
@@ -821,6 +820,7 @@ class ObjectsManager(BaseManager):
             # Delete all ControlMeasureAssignments referencing those RiskAssessments
             self.dbm.delete_many(
                 IsmsControlMeasureAssignment.COLLECTION,
+                self.db_name,
                 {'risk_assessment_id': {'$in': risk_assessment_ids}},
                 plain=True
             )

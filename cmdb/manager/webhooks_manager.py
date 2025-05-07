@@ -52,12 +52,9 @@ class WebhooksManager(BaseManager):
         Args:
             dbm (MongoDatabaseManager): Database connection
         """
-        if database:
-            dbm.connector.set_database(database)
+        self.webhooks_event_manager = WebhooksEventManager(dbm, database)
 
-        self.webhooks_event_manager = WebhooksEventManager(dbm)
-
-        super().__init__(CmdbWebhook.COLLECTION, dbm)
+        super().__init__(CmdbWebhook.COLLECTION, dbm, database)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 

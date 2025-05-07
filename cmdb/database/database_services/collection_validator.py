@@ -93,8 +93,6 @@ class CollectionValidator:
             self.db_name = db_name
             self.dbm = dbm
             self.local_mode = local_mode
-
-            dbm.connector.set_database(db_name)
         except Exception as err:
             raise CollectionValidatorInitError(err) from err
 
@@ -143,44 +141,44 @@ class CollectionValidator:
             CollectionInitError: If the initialisation of a collection failed
         """
         try:
-            all_collections = self.get_all_db_collections()
+            all_collections = self.get_all_db_collections(self.db_name)
 
             # Check all Framework Classes
             for framework_class in FRAMEWORK_CLASSES:
                 # If collection does not exist, create it and initialise with default data
                 if framework_class.COLLECTION not in all_collections:
-                    self.dbm.create_collection(framework_class.COLLECTION)
-                    self.dbm.create_indexes(framework_class.COLLECTION, framework_class.get_index_keys())
+                    self.dbm.create_collection(framework_class.COLLECTION, self.db_name)
+                    self.dbm.create_indexes(framework_class.COLLECTION, self.db_name, framework_class.get_index_keys())
 
                     # Create the root CmdbLocation
                     if framework_class == CmdbLocation:
-                        self.set_root_location(CmdbLocation.COLLECTION, create=True)
+                        self.set_root_location(CmdbLocation.COLLECTION, self.db_name, create=True)
 
                     # Create the predefined CmdbSectionTemplates
                     if framework_class == CmdbSectionTemplate:
-                        self.init_predefined_templates(CmdbSectionTemplate.COLLECTION)
+                        self.init_predefined_templates(CmdbSectionTemplate.COLLECTION, self.db_name)
 
                     # Create the predefined CmdbReportCategories
                     if framework_class == CmdbReportCategory:
-                        self.create_general_report_category(CmdbReportCategory.COLLECTION)
+                        self.create_general_report_category(CmdbReportCategory.COLLECTION, self.db_name)
 
                     # Create the default IsmsProtectionGoals
                     if framework_class == IsmsProtectionGoal:
                         default_protection_goals = get_default_protection_goals()
 
                         for protection_goal in default_protection_goals:
-                            self.dbm.insert(IsmsProtectionGoal.COLLECTION, protection_goal)
+                            self.dbm.insert(IsmsProtectionGoal.COLLECTION, self.db_name, protection_goal)
 
                     # Create the default IsmsRiskMatrix
                     if framework_class == IsmsRiskMatrix:
-                        self.dbm.upsert_set(IsmsRiskMatrix.COLLECTION, get_default_risk_matrix())
+                        self.dbm.upsert_set(IsmsRiskMatrix.COLLECTION, self.db_name, get_default_risk_matrix())
 
                     # Create predefined CmdbExtendableOptions
                     if framework_class == CmdbExtendableOption:
                         predefined_isms_options = get_default_isms_extendable_options()
 
                         for predefined_isms_option in predefined_isms_options:
-                            self.dbm.insert(CmdbExtendableOption.COLLECTION, predefined_isms_option)
+                            self.dbm.insert(CmdbExtendableOption.COLLECTION, self.db_name, predefined_isms_option)
         except Exception as err:
             LOGGER.error("[init_framework_collections] Exception: %s. Type: %s.", err, type(err), exc_info=True)
             raise CollectionInitError(err) from err
@@ -194,12 +192,16 @@ class CollectionValidator:
             CollectionInitError: If the initialisation of a collection failed
         """
         try:
-            all_collections = self.get_all_db_collections()
+            all_collections = self.get_all_db_collections(self.db_name)
 
             for management_class in USER_MANAGEMENT_COLLECTION:
                 if management_class.COLLECTION not in all_collections:
-                    self.dbm.create_collection(management_class.COLLECTION)
-                    self.dbm.create_indexes(management_class.COLLECTION, management_class.get_index_keys())
+                    self.dbm.create_collection(management_class.COLLECTION, self.db_name)
+                    self.dbm.create_indexes(
+                                    management_class.COLLECTION,
+                                    self.db_name,
+                                    management_class.get_index_keys()
+                            )
 
                     if management_class == CmdbUserGroup:
                         groups_manager = GroupsManager(self.dbm, self.db_name)
@@ -228,18 +230,18 @@ class CollectionValidator:
             raise CollectionInitError(err) from err
 # -------------------------------------------------- HELEPER METHODS ------------------------------------------------- #
 
-    def get_all_db_collections(self) -> list[str]:
+    def get_all_db_collections(self, db_name: str) -> list[str]:
         """
         Retrieves all collection names in the current database
 
         Returns:
             list[str]: List of all collection names
         """
-        return self.dbm.connector.database.list_collection_names()
+        return self.dbm.connector.get_database(db_name).list_collection_names()
 
 # ---------------------------------------------- CmdbLocation - SECTION ---------------------------------------------- #
 
-    def set_root_location(self, collection: str, create: bool = False) -> UpdateResult:
+    def set_root_location(self, collection: str, db_name: str, create: bool = False) -> UpdateResult:
         """
         Set up the root location. If no counter for locations exists, it will be created
 
@@ -258,17 +260,17 @@ class CollectionValidator:
             # If creation is requested, ensure the counter exists
             if create:
                 # Check if the counter exists, if not initialize it
-                if not self.dbm.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection}):
-                    self.dbm.init_public_id_counter(collection)
+                if not self.dbm.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name).find_one({'_id': collection}):
+                    self.dbm.init_public_id_counter(collection, db_name)
 
                 # Insert root location data
                 LOGGER.info("Creating ROOT location!")
-                status = self.dbm.upsert_set(collection, get_root_location_data())
+                status = self.dbm.upsert_set(collection, self.db_name, get_root_location_data())
 
             else:
                 # Update the root location data
                 LOGGER.info("Updating ROOT location!")
-                status = self.dbm.upsert_set(collection, get_root_location_data())
+                status = self.dbm.upsert_set(collection, self.db_name, get_root_location_data())
 
             return status
         except Exception as err:
@@ -276,7 +278,7 @@ class CollectionValidator:
 
 # ------------------------------------------- CmdbSectionTemplate - Section ------------------------------------------ #
 
-    def init_predefined_templates(self, collection: str) -> None:
+    def init_predefined_templates(self, collection: str, db_name: str) -> None:
         """
         Checks if all predefined templates are created, else creates them.
 
@@ -289,10 +291,10 @@ class CollectionValidator:
                               for existing templates or counters
         """
         try:
-            counter = self.dbm.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
+            counter = self.dbm.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name).find_one({'_id': collection})
 
             if not counter:
-                self.dbm.init_public_id_counter(collection)
+                self.dbm.init_public_id_counter(collection, self.db_name)
 
             predefined_template_creator = SectionTemplateCreator()
             predefined_templates: list[dict] = predefined_template_creator.get_predefined_templates()
@@ -300,12 +302,12 @@ class CollectionValidator:
             for predefined_template in predefined_templates:
                 # First, check if the template already exists
                 template_name = predefined_template['name']
-                result = self.dbm.get_collection(collection).find_one({'name': template_name})
+                result = self.dbm.get_collection(collection, self.db_name).find_one({'name': template_name})
 
                 if not result:
                     # The template does not exist, create it
                     LOGGER.info("Creating Template: %s", template_name)
-                    self.dbm.insert(collection, predefined_template)
+                    self.dbm.insert(collection, self.db_name, predefined_template)
         except Exception as err:
             raise DocumentInsertError(
                 f"Error initializing predefined templates for collection '{collection}': {err}"
@@ -313,7 +315,7 @@ class CollectionValidator:
 
 # ----------------------------------------------- CmdbReport - Section ----------------------------------------------- #
 
-    def create_general_report_category(self, collection: str) -> None:
+    def create_general_report_category(self, collection: str, db_name: str) -> None:
         """
         Creates the General Report Category if it does not already exist
 
@@ -324,12 +326,12 @@ class CollectionValidator:
             DocumentInsertError: If there is an error inserting the general report category into the collection
         """
         try:
-            counter = self.dbm.get_collection(PUBLIC_ID_COUNTER_COLLECTION).find_one({'_id': collection})
+            counter = self.dbm.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name).find_one({'_id': collection})
 
             if not counter:
-                self.dbm.init_public_id_counter(collection)
+                self.dbm.init_public_id_counter(collection, db_name)
 
-            result = self.dbm.get_collection(collection).find_one({'name': 'General'})
+            result = self.dbm.get_collection(collection, db_name).find_one({'name': 'General'})
 
             if not result:
                 # The category does not exist, create it
@@ -340,7 +342,7 @@ class CollectionValidator:
                     'predefined': True,
                 }
 
-                self.dbm.insert(collection, general_category)
+                self.dbm.insert(collection, db_name, general_category)
         except Exception as err:
             LOGGER.error("[create_general_report_category] Exception: %s. Type: %s", err, type(err), exc_info=True)
             raise DocumentInsertError(

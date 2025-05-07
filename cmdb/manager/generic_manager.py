@@ -55,12 +55,9 @@ class GenericManager(BaseManager):
             database (str): The database name (optional, for cloud mode)
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
             self.model = model
             self.exceptions = exceptions
-            super().__init__(model.COLLECTION, dbm)
+            super().__init__(model.COLLECTION, dbm, database)
         except Exception as err:
             raise exceptions.get("init", Exception)(f"Initialization error: {err}") from err
 

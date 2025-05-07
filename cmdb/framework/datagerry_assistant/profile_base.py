@@ -19,7 +19,7 @@ This module is the base class for the profiles of DATAGERRY assistant
 import logging
 from flask import current_app
 
-from cmdb.manager import TypesManager
+from cmdb.manager import TypesManager, SectionTemplatesManager
 
 from cmdb.models.type_model import CmdbType
 from .profile_type_constructor import ProfileTypeConstructor
@@ -34,15 +34,20 @@ class ProfileBase:
     """
     This class cointains all functions required by the different profiles
     """
-    def __init__(self, created_type_ids: dict):
+    def __init__(
+            self,
+            created_type_ids: dict,
+            types_manager: TypesManager,
+            section_templates_manager: SectionTemplatesManager):
+        self.types_manager = types_manager
+        self.section_templates_manager = section_templates_manager
         self.type_dict: dict = {}
         self.created_type_ids: dict = created_type_ids
 
         self.type_collection = CmdbType.COLLECTION
 
         with current_app.app_context():
-            self.types_manager = TypesManager(current_app.database_manager)
-            self.type_constructor = ProfileTypeConstructor(current_app.database_manager)
+            self.type_constructor = ProfileTypeConstructor(self.section_templates_manager)
 
 # ------------------------------------------------- HELPER FUNCTIONS ------------------------------------------------- #
 

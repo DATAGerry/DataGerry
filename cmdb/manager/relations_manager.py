@@ -71,10 +71,7 @@ class RelationsManager(BaseManager):
             RelationsManagerInitError: If the RelationsManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbRelation.COLLECTION, dbm)
+            super().__init__(CmdbRelation.COLLECTION, dbm, database)
         except Exception as err:
             raise RelationsManagerInitError(err) from err
 

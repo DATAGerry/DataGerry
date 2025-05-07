@@ -23,9 +23,10 @@ from werkzeug.exceptions import HTTPException
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager import (
     ObjectsManager,
-    TypesManager,
     CategoriesManager,
 )
+from cmdb.manager.types_manager import TypesManager
+from cmdb.manager.section_templates_manager import SectionTemplatesManager
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -96,6 +97,8 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
                                                                             request_user)
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
         types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+        section_templates_manager: SectionTemplatesManager = ManagerProvider.get_manager(ManagerType.SECTION_TEMPLATES,
+                                                                                         request_user)
 
         profiles = data['data'].split('#')
 
@@ -107,7 +110,7 @@ def create_initial_profiles(data: str, request_user: CmdbUser):
         if categories_total > 0 or types_total > 0 or objects_total > 0:
             abort(400, "There are objects, types, or categories in the database which prevents this action!")
 
-        profile_assistant = ProfileAssistant(categories_manager)
+        profile_assistant = ProfileAssistant(categories_manager, types_manager, section_templates_manager)
         created_ids = profile_assistant.create_profiles(profiles)
 
         return DefaultResponse(created_ids).make_response()

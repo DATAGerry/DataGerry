@@ -49,14 +49,17 @@ class Update20200512(BaseDatabaseUpdate):
         try:
             collection = CmdbCategory.COLLECTION
             new_categories: list[CmdbCategory] = []
-            raw_categories_old_structure: list[dict] = self.dbm.find_all(collection=collection,
-                                                                                    filter={})
+            raw_categories_old_structure: list[dict] = self.dbm.find_all(
+                                                                collection=collection,
+                                                                db_name=self.db_name,
+                                                                filter={}
+                                                        )
             for idx, old_raw_category in enumerate(raw_categories_old_structure):
                 new_categories.append(self.__convert_category_to_new_structure(old_raw_category, index=idx))
 
-            self.dbm.delete_collection(collection=CmdbCategory.COLLECTION)
-            self.dbm.create_collection(CmdbCategory.COLLECTION)
-            self.dbm.create_indexes(CmdbCategory.COLLECTION, CmdbCategory.get_index_keys())
+            self.dbm.delete_collection(collection=CmdbCategory.COLLECTION, db_name=self.db_name)
+            self.dbm.create_collection(CmdbCategory.COLLECTION, self.db_name)
+            self.dbm.create_indexes(CmdbCategory.COLLECTION, self.db_name, CmdbCategory.get_index_keys())
 
             for category in new_categories:
                 try:
@@ -100,11 +103,20 @@ class Update20200512(BaseDatabaseUpdate):
             Do not use type_instance.category_id here - doesnt exists anymore
         """
         return [type.get('public_id') for type in
-                self.dbm.find_all(collection=CmdbType.COLLECTION, filter={'category_id': category_id})]
+                self.dbm.find_all(
+                            collection=CmdbType.COLLECTION,
+                            db_name=self.db_name,
+                            filter={'category_id': category_id}
+                        )]
 
 
     def __clear_up_types(self):
         """
         Removes the category_id field from type collection
         """
-        self.dbm.unset_update_many(collection=CmdbType.COLLECTION, criteria={}, field='category_id')
+        self.dbm.unset_update_many(
+                    collection=CmdbType.COLLECTION,
+                    db_name=self.db_name,
+                    criteria={},
+                    field='category_id'
+                )

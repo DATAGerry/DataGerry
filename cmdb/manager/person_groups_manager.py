@@ -147,6 +147,7 @@ class PersonGroupsManager(GenericManager):
         # Perform the update using the update_many function
         self.dbm.update_many(
             IsmsControlMeasureAssignment.COLLECTION,
+            self.db_name,
             query,
             {"$set": {'responsible_for_implementation_id': None}},
             plain=True
@@ -176,7 +177,7 @@ class PersonGroupsManager(GenericManager):
         }
 
         # Retrieve all matching RiskAssessments
-        risk_assessments = self.dbm.find(IsmsRiskAssessment.COLLECTION, query)
+        risk_assessments = self.dbm.find(IsmsRiskAssessment.COLLECTION, self.db_name, query)
 
         # Loop through each RiskAssessment to check and update relevant fields
         risk_assessment: dict
@@ -202,6 +203,7 @@ class PersonGroupsManager(GenericManager):
             if update_fields:
                 self.dbm.update_many(
                     IsmsRiskAssessment.COLLECTION,
+                    self.db_name,
                     {'public_id': risk_assessment['public_id']},
                     {'$set': update_fields},
                     plain=True

@@ -84,12 +84,13 @@ def export_objects(params: CollectionParameters, request_user: CmdbUser):
             else params.optional.get('classname', 'JsonExportFormat')
         exporter_class = load_class('cmdb.framework.exporter.format.' + _class)()
 
+        db_name = None
         if current_app.cloud_mode:
-            current_app.database_manager.connector.set_database(request_user.database)
+            db_name = request_user.database
 
         exporter = BaseExportWriter(exporter_class, _config)
 
-        exporter.from_database(current_app.database_manager, request_user, AccessControlPermission.READ)
+        exporter.from_database(current_app.database_manager, request_user, AccessControlPermission.READ, db_name)
 
         return exporter.export()
     except ModuleNotFoundError as err:

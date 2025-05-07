@@ -62,6 +62,7 @@ class IsmsControlMeasureAssignment(CmdbDAO):
         },
         'planned_implementation_date': { # Date of planned implementation
             'type': 'dict',
+            'required': True,
         },
         'implementation_status': { # public_id of CmdbExtendableOption 'IMPLEMENTATION_STATE'
             'type': 'integer',
@@ -70,16 +71,21 @@ class IsmsControlMeasureAssignment(CmdbDAO):
         },
         'finished_implementation_date': { # Date of finished implementation
             'type': 'dict',
+            'required': True,
         },
         'priority': { # Priority enum (1 = Low, 2 = Medium, 3 = High, 4 = Very high)
-            'type': 'integer'
+            'type': 'integer',
+            'required': True,
         },
         'responsible_for_implementation_id_ref_type': { # PersonReferenceType Enum
             'type': 'string',
+            'required': True,
         },
         'responsible_for_implementation_id': { # public_id of CmdbPerson or CmdbPersonGroup
             'type': 'integer',
             'min': 1,
+            'required': True,
+            'nullable': True,
         },
     }
 

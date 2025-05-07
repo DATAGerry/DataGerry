@@ -81,6 +81,7 @@ class ObjectGroupsManager(GenericManager):
 
         matching_risk_assessments = list(self.dbm.find(
             IsmsRiskAssessment.COLLECTION,
+            self.db_name,
             risk_assessment_query,
             projection={'public_id': 1}
         ))
@@ -95,6 +96,7 @@ class ObjectGroupsManager(GenericManager):
             # Delete the RiskAssessments
             self.dbm.delete_many(
                 IsmsRiskAssessment.COLLECTION,
+                self.db_name,
                 {'public_id': {'$in': risk_assessment_ids}},
                 plain=True
             )
@@ -102,6 +104,7 @@ class ObjectGroupsManager(GenericManager):
             # Delete all ControlMeasureAssignments referencing those RiskAssessments
             self.dbm.delete_many(
                 IsmsControlMeasureAssignment.COLLECTION,
+                self.db_name,
                 {'risk_assessment_id': {'$in': risk_assessment_ids}},
                 plain=True
             )
