@@ -23,6 +23,7 @@ from pytest import fixture
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 
+from cmdb.database.mongo_connector import MongoConnector
 from cmdb.models.object_model import CmdbObject
 from cmdb.models.type_model import (
     CmdbType,
@@ -83,7 +84,7 @@ def fixture_example_object():
 
 
 @fixture(scope='module', name="collection")
-def fixture_collection(connector, database_name):
+def fixture_collection(connector: MongoConnector, database_name):
     """
     Fixture for retrieving the MongoDB collection used for testing.
     Returns a reference to the collection object.

@@ -17,9 +17,14 @@
 This module defines pytest fixtures for MongoDB connection and database management.
 These fixtures provide necessary parameters and connections for testing purposes.
 """
+import logging
 import pytest
 
 from cmdb.database import MongoConnector, MongoDatabaseManager
+# -------------------------------------------------------------------------------------------------------------------- #
+
+LOGGER = logging.getLogger(__name__)
+
 # -------------------------------------------------------------------------------------------------------------------- #
 
 @pytest.fixture(scope="session", name="mongodb_parameters")
@@ -64,7 +69,8 @@ def connector(mongodb_parameters: tuple):
         MongoConnector: An instance of MongoConnector configured for testing
     """
     host, port, database = mongodb_parameters
-    return MongoConnector(host, port, database)
+    LOGGER.debug("Tests database: %s", database)
+    return MongoConnector(host, port)
 
 
 @pytest.fixture(scope="session")
