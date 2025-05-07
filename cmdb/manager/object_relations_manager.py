@@ -31,7 +31,6 @@ from cmdb.framework.results import IterationResult
 from cmdb.errors.manager import (
     BaseManagerInsertError,
     BaseManagerGetError,
-    BaseManagerUpdateError,
     BaseManagerDeleteError,
 )
 from cmdb.errors.manager.object_relations_manager import (
@@ -69,10 +68,7 @@ class ObjectRelationsManager(BaseManager):
             ObjectRelationsManagerInitError: If the ObjectRelationsManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbObjectRelation.COLLECTION, dbm)
+            super().__init__(CmdbObjectRelation.COLLECTION, dbm, database)
         except Exception as err:
             raise ObjectRelationsManagerInitError(err) from err
 
@@ -164,10 +160,6 @@ class ObjectRelationsManager(BaseManager):
         """
         try:
             self.update({'public_id':public_id}, CmdbObjectRelation.to_json(data))
-        except CmdbObjectRelationToJsonError as err:
-            raise ObjectRelationsManagerUpdateError(err) from err
-        except BaseManagerUpdateError as err:
-            raise ObjectRelationsManagerUpdateError(err) from err
         except Exception as err:
             LOGGER.error("[update_object_relation] Exception: %s. Type: %s", err, type(err))
             raise ObjectRelationsManagerUpdateError(err) from err
@@ -191,7 +183,6 @@ class ObjectRelationsManager(BaseManager):
             return self.delete({'public_id':public_id})
         except BaseManagerDeleteError as err:
             raise ObjectRelationsManagerDeleteError(err) from err
-
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 

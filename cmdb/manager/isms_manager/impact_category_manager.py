@@ -79,7 +79,11 @@ class ImpactCategoryManager(GenericManager):
             bool: True if the ImpactCategory was successfully deleted, False otherwise
         """
         # Fetch all RiskAssessments
-        all_risk_assessments: Cursor = self.dbm.find(collection=IsmsRiskAssessment.COLLECTION, filter={})
+        all_risk_assessments: Cursor = self.dbm.find(
+                                                collection=IsmsRiskAssessment.COLLECTION,
+                                                db_name=self.db_name,
+                                                filter={}
+                                        )
 
         updates = []
 
@@ -114,7 +118,7 @@ class ImpactCategoryManager(GenericManager):
 
         # Apply the updates to RiskAssessments
         if updates:
-            self.dbm.bulk_write(IsmsRiskAssessment.COLLECTION, updates)
+            self.dbm.bulk_write(IsmsRiskAssessment.COLLECTION, self.db_name, updates)
 
         # Delete the ImpactCategory itself through the Manager
         return self.delete_item(impact_category_id)

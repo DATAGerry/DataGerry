@@ -51,7 +51,7 @@ class Update20240603(BaseDatabaseUpdate):
             collection = CmdbObject.COLLECTION
             all_objects: list[dict] = []
 
-            all_objects = self.dbm.find_all(collection)
+            all_objects = self.dbm.find_all(collection, self.db_name)
 
             for cur_obj in all_objects:
                 # Check if the object already has the property 'multi_data_sections', else create it
@@ -60,6 +60,7 @@ class Update20240603(BaseDatabaseUpdate):
                     cur_obj['multi_data_sections'] = []
 
                     self.dbm.update(collection=collection,
+                                    db_name=self.db_name,
                                     criteria={'public_id':cur_public_id},
                                     data=cur_obj)
                     LOGGER.info("Updated 'multi_data_sections' for object ID: %s", cur_public_id)

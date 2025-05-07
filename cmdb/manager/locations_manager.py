@@ -68,10 +68,7 @@ class LocationsManager(BaseManager):
             LocationsManagerInitError: If the LocationsManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbLocation.COLLECTION, dbm)
+            super().__init__(CmdbLocation.COLLECTION, dbm, database)
         except Exception as err:
             raise LocationsManagerInitError(err) from err
 

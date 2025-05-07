@@ -46,10 +46,7 @@ class WebhooksEventManager(BaseManager):
         Args:
             dbm (MongoDatabaseManager): Database connection
         """
-        if database:
-            dbm.connector.set_database(database)
-
-        super().__init__(CmdbWebhookEvent.COLLECTION, dbm)
+        super().__init__(CmdbWebhookEvent.COLLECTION, dbm, database)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
@@ -67,9 +64,7 @@ class WebhooksEventManager(BaseManager):
         try:
             new_webhook_event = CmdbWebhookEvent(**data)
 
-            ack = self.insert(new_webhook_event.__dict__)
-
-            return ack
+            return self.insert(new_webhook_event.__dict__)
             #TODO: ERROR-FIX
         except Exception as err:
             raise BaseManagerInsertError(err) from err

@@ -77,7 +77,7 @@ class LikelihoodManager(GenericManager):
             }}
         ]
 
-        self.dbm.update_many(IsmsRiskAssessment.COLLECTION, criteria, update_data, plain=True)
+        self.dbm.update_many(IsmsRiskAssessment.COLLECTION, self.db_name, criteria, update_data, plain=True)
 
         self.update_item(public_id, IsmsLikelihood.from_data(new_data))
 

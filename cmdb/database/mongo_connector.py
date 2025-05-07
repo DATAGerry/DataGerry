@@ -24,7 +24,7 @@ from pymongo.database import Database
 
 from cmdb.database.connection_status import ConnectionStatus
 
-from cmdb.errors.database import DatabaseConnectionError, SetDatabaseError
+from cmdb.errors.database import DatabaseConnectionError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -39,7 +39,8 @@ class MongoConnector:
     _instance = None # Singleton instance
 
 
-    def __new__(cls, host: str, port: int, database_name: str, client_options: dict = None):
+    # def __new__(cls, host: str, port: int, database_name: str, client_options: dict = None):
+    def __new__(cls, host: str, port: int, client_options: dict = None):
         """
         This method ensures that only one instance of MongoConnector is created.
         It will return the same instance every time.
@@ -59,15 +60,15 @@ class MongoConnector:
             # Initialize the instance with the provided arguments
             cls._instance.host = host
             cls._instance.port = int(port)
-            cls._instance.database_name = database_name
+            # cls._instance.database_name = database_name
             cls._instance.client_options = client_options or {}
             cls._instance._client = None  # Lazy-loaded MongoClient
-            cls._instance._database = None  # Lazy-loaded Database reference
+            # cls._instance._database = None  # Lazy-loaded Database reference
 
         return cls._instance
 
-
-    def __init__(self, host: str, port: int, database_name: str, client_options: dict = None):
+    # def __init__(self, host: str, port: int, database_name: str, client_options: dict = None):
+    def __init__(self, host: str, port: int, client_options: dict = None):
         """
         Initialises the connection to MongoDB and the attributes of the `MongoConnector`
 
@@ -83,10 +84,10 @@ class MongoConnector:
         self.connection_string = os.getenv('CONNECTION_STRING')
         self.host = host
         self.port = int(port)
-        self.database_name = database_name
+        # self.database_name = database_name
         self.client_options = client_options or {}
         self._client = None  # Lazy-loaded MongoClient
-        self._database = None  # Lazy-loaded Database reference
+        # self._database = None  # Lazy-loaded Database reference
 
 
     @property
@@ -106,38 +107,29 @@ class MongoConnector:
         return self._client
 
 
-    @property
-    def database(self) -> Database:
-        """
-        Lazy-loads the database reference
-        """
-        if self._database is None:
-            self._database = self.client.get_database(self.database_name)
-
-        return self._database
-
-    # def __exit__(self, *err):
+    # @property
+    # def database(self) -> Database:
     #     """
-    #     Automatically disconnects the `MongoConnector` when exiting the context manager
+    #     Lazy-loads the database reference
     #     """
-    #     self.disconnect()
+    #     if self._database is None:
+    #         self._database = self.client.get_database(self.database_name)
+
+    #     return self._database
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-    def set_database(self, db_name: str) -> None:
+    def get_database(self, db_name: str) -> Database:
         """
-        Sets the database of the `MongoConnector`
+        Retrieves database from client
 
         Args:
-            `db_name` (str): Name of the database
+            db_name (str): name of Database
 
-        Raises:
-            `SetDatabaseError`: Raised when not possible to set connector to `db_name`
+        Returns:
+            Database: The database with the given name
         """
-        try:
-            self._database = self.client.get_database(db_name)
-        except Exception as err:
-            raise SetDatabaseError(err) from err
+        return self.client.get_database(db_name)
 
 
     def connect(self) -> ConnectionStatus:
@@ -171,7 +163,7 @@ class MongoConnector:
             if self._client:
                 self._client.close()
                 self._client = None
-                self._database = None
+                # self._database = None
                 return ConnectionStatus(connected=False, message="Successfully disconnected from the database.")
 
             return ConnectionStatus(connected=False, message="No active database connection to close.")

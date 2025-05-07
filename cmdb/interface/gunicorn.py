@@ -38,7 +38,9 @@ LOGGER = logging.getLogger(__name__)
 #                                                WebCmdbService - CLASS                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 class WebCmdbService(AbstractCmdbService):
-    """CmdbService: Webapp"""
+    """
+    Implementation of WebCmdbService
+    """
 
     def __init__(self):
         super().__init__()
@@ -54,7 +56,6 @@ class WebCmdbService(AbstractCmdbService):
             **SystemConfigReader().get_all_values_from_section('Database'),
             mode=mode
         )
-
 
         # get WSGI app
         app = DispatcherMiddleware(

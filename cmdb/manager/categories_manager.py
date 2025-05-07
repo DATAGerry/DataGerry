@@ -73,10 +73,7 @@ class CategoriesManager(BaseManager):
         Raises: If the CategoriesManager could not be initialised
         """
         try:
-            if database:
-                dbm.connector.set_database(database)
-
-            super().__init__(CmdbCategory.COLLECTION, dbm)
+            super().__init__(CmdbCategory.COLLECTION, dbm, database)
         except Exception as err:
             raise CategoriesManagerInitError(err) from err
 

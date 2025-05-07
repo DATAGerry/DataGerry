@@ -60,7 +60,8 @@ class  BaseExportWriter:
             self,
             dbm: MongoDatabaseManager,
             user: CmdbUser,
-            permission: AccessControlPermission
+            permission: AccessControlPermission,
+            db_name: str = None
         ) -> None:
         """
         Retrieves all objects from the collection and processes them for export
@@ -70,7 +71,7 @@ class  BaseExportWriter:
             user (CmdbUser): The user requesting the data
             permission (AccessControlPermission): The user's access permissions
         """
-        objects_manager = ObjectsManager(dbm)
+        objects_manager = ObjectsManager(dbm, db_name)
         export_params = self.export_config.parameters
 
         builder_params = BuilderParameters(

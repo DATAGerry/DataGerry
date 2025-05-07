@@ -147,7 +147,7 @@ class PersonsManager(GenericManager):
         }
 
         # Find all RiskAssessments where the person_id is referenced and then update them properly
-        risk_assessments = self.dbm.find(collection=IsmsRiskAssessment.COLLECTION, filter=query)
+        risk_assessments = self.dbm.find(collection=IsmsRiskAssessment.COLLECTION, db_name=self.db_name, filter=query)
 
         risk_assessment: dict
         for risk_assessment in risk_assessments:
@@ -183,6 +183,7 @@ class PersonsManager(GenericManager):
                 # Perform the update with $pull for 'interviewed_persons'
                 self.dbm.update(
                     IsmsRiskAssessment.COLLECTION,
+                    self.db_name,
                     {"public_id": risk_assessment["public_id"]},
                     {"$pull": pull_update},
                     plain=True
@@ -192,6 +193,7 @@ class PersonsManager(GenericManager):
             if update_fields:
                 self.dbm.update(
                     IsmsRiskAssessment.COLLECTION,
+                    self.db_name,
                     {"public_id": risk_assessment["public_id"]},
                     {"$set": update_fields},
                     plain=True
@@ -222,6 +224,7 @@ class PersonsManager(GenericManager):
         # Perform the update using the update_many function
         self.dbm.update_many(
             IsmsControlMeasureAssignment.COLLECTION,
+            self.db_name,
             query,
             {"$set": {'responsible_for_implementation_id': None}},
             plain=True

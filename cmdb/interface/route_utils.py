@@ -206,7 +206,6 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # LOGGER.debug("verify_api_access() called")
             if not current_app.cloud_mode:
                 return func(*args, **kwargs)
 
@@ -413,6 +412,7 @@ def parse_authorization_header(header):
                 username = username.decode("utf-8")
                 password = password.decode("utf-8")
 
+                db_name = None
                 if current_app.cloud_mode:
                     user_data = check_user_in_service_portal(username, password)
 
@@ -421,13 +421,13 @@ def parse_authorization_header(header):
 
                     if current_app.local_mode:
                         # Test API only with user with 1 subscription
-                        current_app.database_manager.connector.set_database(user_data['subscriptions'][0]['database'])
+                        db_name = user_data['subscriptions'][0]['database']
                     else:
-                        current_app.database_manager.connector.set_database(user_data['database'])
+                        db_name = user_data['database']
 
-                users_manager = UsersManager(current_app.database_manager)
-                security_manager = SecurityManager(current_app.database_manager)
-                settings_manager = SettingsManager(current_app.database_manager)
+                users_manager = UsersManager(current_app.database_manager, db_name)
+                security_manager = SecurityManager(current_app.database_manager, db_name)
+                settings_manager = SettingsManager(current_app.database_manager, db_name)
 
                 auth_settings = settings_manager.get_all_values_from_section('auth', AuthModule.__DEFAULT_SETTINGS__)
                 auth_module = AuthModule(auth_settings,
@@ -450,7 +450,6 @@ def parse_authorization_header(header):
 
                     if current_app.cloud_mode:
                         token_payload['user']['database'] = user_instance.database
-                        return tg.generate_token(payload=token_payload)
 
                     return tg.generate_token(payload=token_payload)
 
@@ -591,9 +590,8 @@ def init_db_routine(db_name: str) -> None:
 def set_admin_user(user_data: dict, subscription: dict):
     """Creates a new admin user"""
     with current_app.app_context():
-        current_app.database_manager.connector.set_database(subscription['database'])
-        users_manager = UsersManager(current_app.database_manager)
-        scm = SecurityManager(current_app.database_manager)
+        users_manager = UsersManager(current_app.database_manager, subscription['database'])
+        scm = SecurityManager(current_app.database_manager, subscription['database'])
 
     try:
         admin_user_from_db = None
@@ -627,8 +625,6 @@ def set_admin_user(user_data: dict, subscription: dict):
 
     except UsersManagerGetError as err:
         raise UsersManagerGetError(err) from err
-    except UsersManagerInsertError as err:
-        raise UsersManagerInsertError(err) from err
     except Exception as err:
         LOGGER.debug("[set_admin_user] Exception: %s, Type: %s", err, type(err))
         raise UsersManagerInsertError(err) from err
@@ -672,8 +668,7 @@ def delete_database(db_name: str) -> None:
     """
     try:
         with current_app.app_context():
-            current_app.database_manager.connector.set_database(db_name)
-            users_manager = UsersManager(current_app.database_manager)
+            users_manager = UsersManager(current_app.database_manager, db_name)
 
             users_manager.dbm.drop_database(db_name)
     except Exception as err:

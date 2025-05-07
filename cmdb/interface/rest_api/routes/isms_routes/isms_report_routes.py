@@ -19,12 +19,9 @@ Implementation of all API routes for Isms Reports
 import logging
 from flask import abort
 
-from cmdb.manager import (
-    RiskAssessmentManager,
-    RiskMatrixManager,
-    ExtendableOptionsManager,
-)
-
+from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
+from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
+from cmdb.manager.isms_manager.risk_assessment_manager import RiskAssessmentManager
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser

@@ -48,9 +48,7 @@ class DatabaseUpdater:
         Initialises the DatabaseUpdater
         """
         self.dbm = dbm
-        if db_name:
-            self.dbm = dbm.connector.set_database(db_name)
-
+        self.db_name = db_name
         self.settings_manager = SettingsManager(dbm, db_name)
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -78,7 +76,7 @@ class DatabaseUpdater:
                 updater_class = load_class(
                     f'cmdb.database.updater.versions.updater_{update_version}.Update{update_version}'
                 )
-                updater_instance = updater_class(self.dbm)
+                updater_instance = updater_class(self.dbm, self.db_name)
                 updater_instance.start_update()
 
 
