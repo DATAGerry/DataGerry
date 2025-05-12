@@ -250,7 +250,10 @@ class CmdbRender:
         editor_name = None
         if self.object_instance.editor_id:
             try:
-                editor_name = self.users_manager.get_user(self.object_instance.editor_id).get_display_name()
+                editor = self.users_manager.get_user(self.object_instance.editor_id)
+
+                if editor:
+                    editor_name = editor.get_display_name()
             except UsersManagerGetError:
                 editor_name = None
 
