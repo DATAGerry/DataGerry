@@ -25,6 +25,7 @@ import { SortDirection } from 'src/app/layout/table/table.types';
 })
 export class RiskAddComponent implements OnInit {
     public isEditMode = false;
+    public isViewMode = false;
     public isLoading$ = this.loaderService.isLoading$;
 
     // Main Reactive Form
@@ -65,17 +66,32 @@ export class RiskAddComponent implements OnInit {
         private protectionGoalService: ProtectionGoalService
     ) {
         // Check navigation state to see if we're editing an existing risk
+        // const navState = this.router.getCurrentNavigation()?.extras?.state;
+        // if (navState && navState['risk']) {
+        //     this.isEditMode = true;
+        //     this.risk = navState['risk'] as Risk;
+        // }
         const navState = this.router.getCurrentNavigation()?.extras?.state;
+
         if (navState && navState['risk']) {
-            this.isEditMode = true;
             this.risk = navState['risk'] as Risk;
-        }
+        
+            if (this.router.url.includes('/view')) {
+              this.isViewMode = true;
+            } else {
+              this.isEditMode = true;
+            }
+          }
     }
 
     ngOnInit(): void {
         this.initForm();
-        if (this.isEditMode && this.risk.public_id) {
+        if (this.isEditMode || this.isViewMode && this.risk.public_id) {
             this.patchRiskForm(this.risk);
+        }
+
+        if(this.isViewMode) {
+            this.riskForm.disable();
         }
 
         // Load references: Threats, Vulnerabilities, and Protection Goals

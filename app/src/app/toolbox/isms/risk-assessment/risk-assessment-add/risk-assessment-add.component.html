@@ -66,13 +66,14 @@
 <!-- risk-assessment-add.component.html -->
 <div class="risk-assessment-add container" *ngIf="!loading">
 
-  <!-- Risk & Object Information Section -->
+  <!-- Risk & Object Information Section --> 
 
   <h2>Risk Assessment</h2>
 
   <form [formGroup]="form" style="margin-top: 25px;">
     <app-risk-assessment-form-top [parentForm]="form" [fromRisk]="fromRisk" [fromObject]="fromObject"
-      [fromObjectGroup]="fromObjectGroup" [risks]="allRisks" [objects]="allObjects" [objectGroups]="allObjectGroups">
+      [fromObjectGroup]="fromObjectGroup" [risks]="allRisks" [objects]="allObjects" [objectGroups]="allObjectGroups"
+      [objectSummary]="objectSummary" [mode]="CurrentMode">
     </app-risk-assessment-form-top>
     <div class="risk-assessment-sections">
 

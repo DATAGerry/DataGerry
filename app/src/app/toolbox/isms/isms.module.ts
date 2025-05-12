@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -39,6 +39,10 @@ import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
 import { ControlMeasuresAddComponent } from './control-measure/control-measure-add/control-measures-add.component';
+import { RisksFooterComponent } from './risks/risks-footer/risks-footer.component';
+import { ControlMeasureAssignmentAddComponent } from './control‑measure‑assignment/control‑measure‑assignment-add/control-measure-assignment-add.component';
+import { ControlMeasureAssignmentListComponent } from './control‑measure‑assignment/control‑measure‑assignment-list/control‑measure‑assignment-list.component';
+import { ControlMeasureFooterComponent } from './control-measure/control-measure-footer/control-measure-footer.component';
 
 @NgModule({
   declarations: [
@@ -62,17 +66,19 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
     VulnerabilitiesAddComponent,
     RiskAddComponent,
     RisksListComponent,
+    RisksFooterComponent,
     ControlmeasuresListComponent,
     ControlMeasuresAddComponent,
     PersonListComponent,
-    PersonAddEditComponent
+    PersonAddEditComponent,
+    ControlMeasureAssignmentAddComponent,
+    ControlMeasureAssignmentListComponent,
+    ControlMeasureFooterComponent
+
   ],
   imports: [
     CommonModule,
     LayoutModule,
-    IsmsRoutingModule,
-    PersonRoutingModule,
-    RiskAssessmentModule,
     ArchwizardModule,
     ReactiveFormsModule,
     NgSelectModule,
@@ -81,7 +87,11 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
     CoreModule,
     TableModule,
     FormsModule,
-    NgbModule
-  ]
+    NgbModule,
+    IsmsRoutingModule,
+    PersonRoutingModule,
+    RiskAssessmentModule,
+    // ControlMeasureAssignmentRoutingModule,
+  ],
 })
 export class ISMSModule {}

@@ -13,6 +13,7 @@
         [(ngModel)]="group.name"
         name="groupName"
         required
+        [readonly]="isViewMode"
         #groupName="ngModel" />
     </div>
 
@@ -26,6 +27,7 @@
           id="staticRadio"
           name="groupType"
           [value]="'STATIC'"
+          [disabled]="isViewMode"
           [(ngModel)]="group.group_type"
           (change)="onGroupTypeChange()" />
         <label class="form-check-label" for="staticRadio">Static</label>
@@ -37,6 +39,7 @@
           id="dynamicRadio"
           name="groupType"
           [value]="'DYNAMIC'"
+          [disabled]="isViewMode"
           [(ngModel)]="group.group_type"
           (change)="onGroupTypeChange()" />
         <label class="form-check-label" for="dynamicRadio">Dynamic</label>
@@ -52,8 +55,10 @@
           bindLabel="value"
           bindValue="public_id"
           [multiple]="true"
+          [disabled]="isViewMode"
           placeholder="Select categories..."
           [(ngModel)]="group.categories"
+          [disabled]="isViewMode"
           name="groupCategories"
           class="flex-grow-1">
         </ng-select>
@@ -61,7 +66,7 @@
         <button
           type="button"
           class="btn btn-outline-secondary btn-sm"
-          (click)="openCategoryManager()">
+          (click)="openCategoryManager()" [disabled]="isViewMode">
           Manage Categories
         </button>
       </div>
@@ -92,6 +97,7 @@
     bindValue="value"
     [multiple]="true"
     placeholder="Select types..."
+    [disabled]="isViewMode"
     [(ngModel)]="group.assigned_ids"
     name="assignedIdsDynamic"
     [style.display]="group.group_type === 'DYNAMIC' ? 'block' : 'none'">
@@ -100,19 +106,20 @@
 
 
     <!-- Footer buttons -->
-    <div class="mt-4 d-flex justify-content-between">
-      <button class="btn btn-secondary mr-2" type="button" (click)="onCancel()">
-        Cancel
-      </button>
-      <button
-        class="btn btn-success"
-        type="button"
-        (click)="onSave()"
-        [disabled]="groupForm.invalid || isSaveDisabled()">
+    <div *ngIf="!isViewMode" class="mt-4 d-flex justify-content-between">
+      <button class="btn btn-secondary mr-2" type="button" (click)="onCancel()">Cancel</button>
+      <button class="btn btn-success" type="button" (click)="onSave()" [disabled]="groupForm.invalid || isSaveDisabled()">
         {{ isEditMode ? 'Save Changes' : 'Add Group' }}
       </button>
     </div>
+    
   </form>
+</div>
+
+<hr>
+
+<div id="object-view-footer" class="col-12" *ngIf="isViewMode">
+  <cmdb-object-groups-footer [objectGroupName]="group.name" [groupId]="groupId"></cmdb-object-groups-footer>
 </div>
 
 

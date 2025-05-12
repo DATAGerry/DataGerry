@@ -29,6 +29,9 @@
   
   <!-- Action buttons template -->
   <ng-template #actionTemplate let-item="item">
+    <i class="fas fa-eye icon-margin icon-view spacing-right"
+       (click)="onView(item)"
+       title="View Control/Measure"></i>
     <i class="far fa-edit icon-margin icon-edit spacing-right"
        (click)="onEdit(item)"
        title="Edit Control/Measure"></i>

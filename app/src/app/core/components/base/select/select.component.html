@@ -1,12 +1,10 @@
 <!-- form-select.component.html -->
 <div class="form-group">
-    <!-- Label -->
     <label *ngIf="label" class="form-label">
       {{ label }}
       <span *ngIf="required" class="required">*</span>
     </label>
   
-    <!-- The actual ng-select -->
     <ng-select
       [items]="items"
       [bindLabel]="bindLabel"
@@ -19,7 +17,26 @@
       [dropdownPosition]="dropdownDirection"
       (change)="onValueChange($event)"
       (blur)="onTouched()"
+      [groupBy]="groupBy"
     >
     </ng-select>
   </div>
   
+
+  <!-- <div class="form-group">
+
+  
+    <ng-select
+    [items]="items"
+    [groupBy]="groupBy"
+    [bindLabel]="bindLabel" 
+    [multiple]="multiple"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [clearable]="clearable"
+    [(ngModel)]="selection"    
+    [dropdownPosition]="dropdownDirection"
+    (ngModelChange)="onSelectionChange($event)" 
+    (blur)="onTouched()">
+  </ng-select>
+  </div> -->

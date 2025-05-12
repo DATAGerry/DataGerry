@@ -195,6 +195,7 @@ export class RiskClassesComponent implements OnInit {
     modalRef.componentInstance.item = item;
     modalRef.componentInstance.itemType = 'Risk Class';
     modalRef.componentInstance.itemName = item.name;
+    console.log('risk delete clicked')
 
     modalRef.result.then(
       (result) => {
@@ -202,13 +203,17 @@ export class RiskClassesComponent implements OnInit {
           this.loaderService.show();
           this.riskClassService
             .deleteRiskClass(item?.public_id!)
-            .pipe(finalize(() => this.loaderService.hide()))
+            .pipe(finalize(() => {
+              this.loaderService.hide();
+            }))
             .subscribe({
               next: () => {
+                console.log('risk delete success')
                 this.toast.success('Risk Class deleted successfully.');
                 this.loadRiskClasses();
               },
               error: (err) => {
+                console.log('risk delete error')
                 this.toast.error(err?.error?.message);
               }
             });
@@ -282,6 +287,10 @@ export class RiskClassesComponent implements OnInit {
       });
   }
 
+  /**
+   * Updates the warnings based on the current risk classes.
+   * @returns void
+   */
   private updateWarnings(): void {
     this.warnings = [];
 

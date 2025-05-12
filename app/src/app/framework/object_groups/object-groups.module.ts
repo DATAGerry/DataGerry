@@ -11,11 +11,15 @@ import { ObjectGroupsAddComponent } from './add/object-groups-add.component';
 import { TableModule } from 'src/app/layout/table/table.module';
 import { AuthModule } from 'src/app/modules/auth/auth.module';
 import { CoreModule } from 'src/app/core/core.module';
+import { ObjectGroupsFooterComponent } from './object-groups-footer/object-groups-footer.component';
+import { RiskAssessmentModule } from 'src/app/toolbox/isms/risk-assessment/risk-assesment.module';
 
 @NgModule({
   declarations: [
     ObjectGroupsListComponent,
     ObjectGroupsAddComponent,
+    ObjectGroupsFooterComponent,
+
   ],
   imports: [
     CommonModule,
@@ -25,6 +29,8 @@ import { CoreModule } from 'src/app/core/core.module';
     ObjectGroupsRoutingModule,
     TableModule,
     AuthModule,
-    CoreModule  ]
+    CoreModule,
+    RiskAssessmentModule
+    ]
 })
 export class ObjectGroupsModule { }

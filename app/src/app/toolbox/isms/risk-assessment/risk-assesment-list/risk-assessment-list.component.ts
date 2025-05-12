@@ -39,6 +39,9 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     @Input() riskId?: number;
     @Input() objectId?: number;
     @Input() groupId?: number;
+    // @Input() summaryLine: string = '';s
+    @Input() riskSummaryLine: string = '';
+    @Input() objectGroupName: string = '';
 
     /* ────────── column templates ────────── */
     @ViewChild('actionTpl', { static: true }) actionTpl!: TemplateRef<any>;
@@ -47,6 +50,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     @ViewChild('afterTpl', { static: true }) afterTpl!: TemplateRef<any>;
     @ViewChild('implTpl', { static: true }) implTpl!: TemplateRef<any>;
     @ViewChild('respTpl', { static: true }) respTpl!: TemplateRef<any>;
+    // Table Custom Template: Link add button
+    @ViewChild('addButtonTemplate', { static: true }) addButtonTemplate: TemplateRef<any>;
 
     /* ────────── table state ────────── */
     rows: RiskAssessment[] = [];
@@ -117,7 +122,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
     private buildColumns(): Column[] {
         return [
-            { display: 'Risk', name: 'risk', data: 'risk_id', template: this.riskTpl },
+            { display: 'Public ID', name: 'public_id', data: 'public_id', style: { width: '100px', 'text-align': 'center' } },
+            { display: 'Risk', name: 'risk', data: 'risk_id', template: this.riskTpl, style: { 'text-align': 'center' } },
             {
                 display: 'Risk before treatment',
                 name: 'risk_before', data: 'public_id',
@@ -133,25 +139,28 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
             {
                 display: 'Implementation state',
                 name: 'implementation_status',
-                data: 'implementation_status', template: this.implTpl
+                data: 'implementation_status', template: this.implTpl,
+                style: { 'text-align': 'center' }
             },
             {
                 display: 'Responsible',
                 name: 'responsible',
                 data: 'responsible_persons_id',
-                template: this.respTpl
+                template: this.respTpl,
+                style: { 'text-align': 'center' }
             },
             {
                 display: 'Actions',
                 name: 'actions', data: 'public_id', fixed: true,
                 template: this.actionTpl,
-                style: { width: '110px', 'text-align': 'center' }
+                style: { width: '140px', 'text-align': 'center' }
             }
         ];
     }
 
     /* ───── build filter object for API ───── */
     private buildFilter(): any {
+        // console.log('buildFilter', this.riskId, this.objectId, this.groupId);
         if (this.riskId) { return { risk_id: this.riskId }; }
 
         if (this.objectId) {
@@ -216,6 +225,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
         this.loader.show(); this.loading = true;
 
+        console.log('buildFilter', this.buildFilter());
+
         const params: CollectionParameters = {
             filter: this.buildFilter(),
             page: this.page,
@@ -231,7 +242,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
                 error: err => this.toast.error(err?.error?.message || 'Load failed')
             });
 
-            console.log('rows', this.rows);
+        console.log('rows', this.rows);
     }
 
     /* ───── table events ───── */
@@ -290,25 +301,83 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     }
 
     /* ───── actions ───── */
-    onEdit(row: any) {
-        this.router.navigate(['/isms/risk-assessments/edit', row.public_id], {
-          state: { riskAssessment: row }
-        });
-        console.log('edit', row);
-        console.log('edit', row.public_id);
-      }
-    
-      onDuplicate(row: any) {
-        this.router.navigate(['/isms/risk-assessments/add'], {
-          state: { riskAssessment: row }
-        });
-      }
-    
-      onView(row: any) {
-        this.router.navigate(['/isms/risk-assessments/view', row.public_id], {
-          state: { riskAssessment: row }
-        });
-      }
+    // onEdit(row: any): void {
+    //     this.router.navigate(['/isms/risk-assessments/edit', row.public_id], {
+    //       state: {
+    //         riskAssessment: row,
+    //         objectSummary: this.summaryLine 
+    //       }
+    //     });
+    //   }
+
+    onEdit(row: RiskAssessment): void {
+        console.log('onEdit', row);
+        switch (this.ctx()) {
+            case 'RISK':
+                this.router.navigate(
+                    [`/isms/risks/${this.riskId}/risk-assessments/edit`, row.public_id],
+                    { state: { riskAssessment: row } });
+                return;
+
+            case 'OBJECT':
+                this.router.navigate(
+                    [`/isms/objects/${this.objectId}/risk-assessments/edit`, row.public_id],
+                    { state: { riskAssessment: row } });
+                return;
+
+            case 'GROUP':
+                this.router.navigate(
+                    [`/isms/object-groups/${this.groupId}/risk-assessments/edit`, row.public_id],
+                    { state: { riskAssessment: row } });
+                return;
+
+            default:
+                this.router.navigate(
+                    ['/isms/risk-assessments/edit', row.public_id],
+                    { state: { riskAssessment: row } });
+        }
+    }
+
+    onDuplicate(row: any) {
+        // this.router.navigate(['/isms/risk-assessments/add'], {
+        //     state: { riskAssessment: row }
+        // });
+    }
+
+    //   onView(row: any) {
+    //     this.router.navigate(['/isms/risk-assessments/view', row.public_id], {
+    //       state: { riskAssessment: row, objectSummary: this.summaryLine }
+    //     });
+    //   }
+
+    onView(row: RiskAssessment): void {
+        switch (this.ctx()) {
+            case 'RISK':
+                this.router.navigate(
+                    [`/isms/risks/${this.riskId}/risk-assessments/view`, row.public_id],
+                    { state: { riskAssessment: row } });
+                return;
+
+            case 'OBJECT':
+                this.router.navigate(
+                    [`/isms/objects/${this.objectId}/risk-assessments/view`, row.public_id],
+                    { state: { riskAssessment: row } });
+                return;
+
+            case 'GROUP':
+                this.router.navigate(
+                    [`/isms/object-groups/${this.groupId}/risk-assessments/view`, row.public_id],
+                    { state: { riskAssessment: row } });
+                return;
+
+            default:
+                this.router.navigate(
+                    ['/isms/risk-assessments/view', row.public_id],
+                    { state: { riskAssessment: row } });
+        }
+    }
+
+
 
     /* ───── DELETE helper ───── */
     onDelete(row: RiskAssessment): void {
@@ -331,5 +400,48 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
                     error: err => this.toast.error(err?.error?.message || 'Delete failed')
                 });
         }).catch(() => { /* dismissed */ });
+    }
+
+    private ctx(): 'RISK' | 'OBJECT' | 'GROUP' | 'NONE' {
+        if (this.riskId) { return 'RISK'; }
+        if (this.objectId) { return 'OBJECT'; }
+        if (this.groupId) { return 'GROUP'; }
+        return 'NONE';
+    }
+
+
+    // onAddAssessment(): void {
+    //     if (this.objectId) {
+    //         this.router.navigate(
+    //             ['/isms/objects', this.objectId, 'risk-assessments', 'add'],
+    //             { state: { objectSummary: this.summaryLine } }
+    //         );
+    //     } else {
+    //         this.router.navigate(['/isms/risk-assessments/add']);
+    //     }
+    // }
+
+    onAddAssessment(): void {
+        console.log('risk summary line', this.riskSummaryLine);
+        if (this.objectId) {
+            this.router.navigate(
+                ['/isms/objects', this.objectId, 'risk-assessments', 'add'],
+            );
+        } else if (this.riskId) {
+            this.router.navigate(
+                ['/isms/risks', this.riskId, 'risk-assessments', 'add'],
+                { state: { riskName: this.riskSummaryLine } }
+            );
+        } else if (this.groupId) {
+            this.router.navigate(
+                ['/isms/object-groups', this.groupId, 'risk-assessments', 'add'],
+                { state: { objectGroupName: this.objectGroupName } }
+            );
+        }
+
+
+        else {
+            this.router.navigate(['/isms/risk-assessments/add']);
+        }
     }
 }

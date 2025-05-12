@@ -409,7 +409,7 @@
 //     private patchFormWithData(data: any): void {
 //       // Patch top-level fields
 //       this.form.patchValue(data, { emitEvent: false });
-  
+
 //       // Handle impacts FormArrays
 //       const patchImpacts = (formArray: FormArray, impacts: any[]) => {
 //         formArray.clear();
@@ -420,7 +420,7 @@
 //           }));
 //         });
 //       };
-  
+
 //       patchImpacts(
 //         this.form.get('risk_calculation_before.impacts') as FormArray,
 //         data.risk_calculation_before.impacts
@@ -436,6 +436,7 @@
 import {
   Component,
   inject,
+  Input,
   OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -471,6 +472,7 @@ import { SortDirection } from 'src/app/layout/table/table.types';
 import { RiskMatrixService } from '../../services/risk-matrix.service';
 import { RiskClassService } from '../../services/risk-class.service';
 import { RiskClass } from '../../models/risk-class.model';
+import { Location } from '@angular/common';
 
 /* ------------------------------------------------------------------------------------ */
 /*  Small enum for string literals                                                      */
@@ -544,6 +546,11 @@ export class RiskAssessmentAddComponent implements OnInit {
   riskMatrix: any;
   riskClasses: RiskClass[] = [];
 
+
+  @Input() objectSummary: string | null = null;
+  @Input() riskName: string | null = null;
+
+
   /* ──────────────────────────────────────────────────────────────────────────
    *  UI helpers
    * ────────────────────────────────────────────────────────────────────────── */
@@ -555,11 +562,21 @@ export class RiskAssessmentAddComponent implements OnInit {
   /* ══════════════════════════════════════════════════════════════════════════
    *  Lifecycle
    * ═════════════════════════════════════════════════════════════════════════ */
+
+  constructor(private location: Location) { }
+
   ngOnInit(): void {
     this.applyRouteDefaults();
     this.loadReferenceData();
-  
 
+    console.log('is view:', this.isView);
+
+
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state as { objectSummary?: string, riskName?: string };
+
+    this.objectSummary = state?.objectSummary || null;
+    this.riskName = state?.riskName || null;  // Pass risk name from state if present
 
   }
 
@@ -580,6 +597,8 @@ export class RiskAssessmentAddComponent implements OnInit {
   * @returns {void}
   */
   onSave(): void {
+    console.log('Form value on submit:', this.form.value);
+
     // Prevent saving in view mode
     if (this.isView) return;
 
@@ -594,7 +613,9 @@ export class RiskAssessmentAddComponent implements OnInit {
         .subscribe({
           next: () => {
             this.toast.success('Risk Assessment updated!');
-            this.router.navigate(['/isms/risk-assessments']);
+            // this.router.navigate(['/isms/risk-assessments']);
+
+            this.location.back();
           },
           error: this.handleError('Update error')
         });
@@ -609,7 +630,7 @@ export class RiskAssessmentAddComponent implements OnInit {
         .subscribe({
           next: () => {
             this.toast.success('Risk Assessment created!');
-            this.router.navigate(['/isms/risk-assessments']);
+            this.location.back();
           },
           error: this.handleError('Creation error')
         });
@@ -621,7 +642,7 @@ export class RiskAssessmentAddComponent implements OnInit {
   * @returns {void}
   */
   onCancel(): void {
-    this.router.navigate(['/isms/risk-assessments']);
+    this.location.back();
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -637,6 +658,7 @@ export class RiskAssessmentAddComponent implements OnInit {
       impacts: fb.array([]),
       likelihood_id: [null],
       likelihood_value: 0,
+      maximum_impact_id: [null],
       maximum_impact_value: 0,
       risk_level_value: 0
     });
@@ -651,7 +673,7 @@ export class RiskAssessmentAddComponent implements OnInit {
       /* ── BEFORE ── */
       risk_calculation_before: riskCalcGroup(),
       risk_assessor_id: null,
-      risk_owner_id_ref_type: [IdRefType.PERSON],
+      risk_owner_id_ref_type: [null, Validators.required],
       risk_owner_id: null,
       interviewed_persons: [[]],
       risk_assessment_date: [null, Validators.required],
@@ -668,7 +690,7 @@ export class RiskAssessmentAddComponent implements OnInit {
       required_resources: '',
       costs_for_implementation: 0,
       costs_for_implementation_currency: '',
-      priority: null,
+      priority: [null],
 
       /* ── AFTER ── */
       risk_calculation_after: riskCalcGroup(),
@@ -755,6 +777,7 @@ export class RiskAssessmentAddComponent implements OnInit {
           if (this.isEditMode || this.isView) {
             if (state && state.riskAssessment) {
               this.patchFormWithData(state.riskAssessment);
+              console.log('Form value:', this.form.value);
               if (this.isView) {
                 this.form.disable({ emitEvent: false });
               }
@@ -790,10 +813,10 @@ export class RiskAssessmentAddComponent implements OnInit {
   private patchFormWithData(data: any): void {
     // Patch top-level fields like likelihood_id
     this.form.patchValue(data, { emitEvent: false });
-  
+
     const patchImpacts = (formArray: FormArray, impacts: any[]): void => {
       const impactMap = new Map(impacts.map(i => [i.impact_category_id, i.impact_id]));
-      
+
       // Update each control in the existing FormArray
       formArray.controls.forEach(control => {
         const categoryId = control.get('impact_category_id').value;
@@ -801,7 +824,7 @@ export class RiskAssessmentAddComponent implements OnInit {
         control.get('impact_id').setValue(impactId, { emitEvent: false });
       });
     };
-  
+
     patchImpacts(
       this.form.get('risk_calculation_before.impacts') as FormArray,
       data.risk_calculation_before.impacts
@@ -833,4 +856,14 @@ export class RiskAssessmentAddComponent implements OnInit {
     (fallback: string) =>
       (err: unknown): void =>
         this.toast.error((err as any)?.error?.message ?? fallback);
+
+    get CurrentMode(): string {
+      if (this.isEditMode) {
+        return 'EDIT';
+      } else if (this.isView) {
+        return 'VIEW';
+      } else {
+        return 'add';
+      }
+    }
 }

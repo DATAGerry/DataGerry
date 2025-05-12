@@ -9,7 +9,7 @@
             <app-form-date [formControl]="parentForm.get('audit_done_date')"></app-form-date>
         </div>
 
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <label>Auditor Type</label>
             <app-form-select [formControl]="parentForm.get('auditor_id_ref_type')" [items]="personRefTypes"
                 bindLabel="label" bindValue="value"></app-form-select>
@@ -27,6 +27,37 @@
                         bindLabel="name" bindValue="public_id"></app-form-select>
                 </ng-container>
             </ng-container>
+        </div> -->
+
+        <!-- <div class="form-block mt-4">
+          <label>Auditor</label>
+        
+          <app-form-select
+              class="w-100"
+              [items]="auditorOptions"
+              bindLabel="display_name"
+              bindValue="public_id"
+              groupBy="group"
+              idProp="public_id"
+              placeholder="Select owner…"
+              [formControl]="parentForm.get('auditor_id')"
+              (selectedItemChange)="onAuditorSelected($event)">
+          </app-form-select>
+        </div> -->
+
+        <div class="form-block mt-4">
+          <label>Auditor</label>
+        
+          <app-form-select
+              class="w-100"
+              [items]="auditorOptions"
+              bindLabel="display_name"
+              bindValue="public_id"
+              groupBy="group"
+              placeholder="Select owner…"
+              [formControl]="parentForm.get('auditor_id')"
+              (selectedItemChange)="onAuditorSelected($event)">
+          </app-form-select>
         </div>
 
         <div class="mb-3">

@@ -1,9 +1,26 @@
+<!-- <button
+*ngIf="objectId"
+class="btn btn-primary"
+[routerLink]="['/isms/objects', objectId, 'risk-assessments', 'add']"
+>
+Add Assessment
+</button> -->
+
+<!-- <button
+  *ngIf="objectId || riskId || groupId"
+  class="btn btn-primary"
+  (click)="onAddAssessment()"
+>
+  Add Assessment
+</button> -->
+
 <cmdb-table
   [items]="rows"
   [columns]="columns"
   [page]="page"
   [pageSize]="limit"
   [totalItems]="total"
+  [customButtons]="[addButtonTemplate]"
   [initialVisibleColumns]="initialVisibleColumns"
   [loading]="loading"
   (pageChange)="onPageChange($event)"
@@ -49,6 +66,16 @@
   <i class="far fa-trash-alt icon-margin"
      title="Delete" (click)="onDelete(item)"></i>
 </ng-template>
+
+<!-- Custom table buttons -->
+<ng-template #addButtonTemplate>
+  <button  *ngIf="objectId || riskId || groupId" type="button" (click)="onAddAssessment()" class="btn btn-success btn-sm"
+  ><i
+    class="fas fa-plus-circle"></i> Add
+  </button>
+</ng-template>
+
+
 
 
 </cmdb-table>

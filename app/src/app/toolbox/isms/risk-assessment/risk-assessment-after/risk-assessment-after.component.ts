@@ -67,10 +67,12 @@ export class RiskAssessmentAfterComponent implements OnInit {
     const selectedLikelihood = this.likelihoods.find(l => l.public_id === +lhId) ?? null;
     const lhVal = selectedLikelihood ? selectedLikelihood.calculation_basis : 0;
     const impactBasis = selectedImpact ? selectedImpact.calculation_basis : 0;
+    const impactId    = selectedImpact?.public_id         ?? null;
     const riskVal = impactBasis * lhVal;
 
     this.afterGroup.patchValue({
       likelihood_value: lhVal,
+      maximum_impact_id:    impactId,
       maximum_impact_value: impactBasis,
       risk_level_value: riskVal
     });

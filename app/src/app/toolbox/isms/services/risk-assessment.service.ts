@@ -25,6 +25,7 @@ export class RiskAssessmentService extends BaseApiService<RiskAssessment> {
 
   getRiskAssessments(params: CollectionParameters): Observable<APIGetMultiResponse<RiskAssessment>> {
     const httpParams = this.buildHttpParams(params);
+    console.log('httpParams:', httpParams);
     return this.handleGetRequest<APIGetMultiResponse<RiskAssessment>>(`${this.servicePrefix}/`, httpParams);
   }
 

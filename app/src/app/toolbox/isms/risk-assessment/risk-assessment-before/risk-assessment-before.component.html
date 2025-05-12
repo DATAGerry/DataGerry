@@ -415,7 +415,7 @@
   </div> -->
 
   <!-- Risk Owner -->
-  <div class="form-block mt-4">
+  <!-- <div class="form-block mt-4">
     <label>Risk Owner</label>
     <ng-container [ngSwitch]="parentForm.get('risk_owner_id_ref_type')?.value">
       <app-form-select *ngSwitchCase="'PERSON'" class="w-100" [items]="allPersons" bindLabel="display_name"
@@ -426,7 +426,36 @@
         bindValue="public_id" [formControl]="parentForm.get('risk_owner_id')">
       </app-form-select>
     </ng-container>
-  </div>
+  </div> -->
+
+  <!-- <div class="form-block mt-4">
+    <label>Risk Owner<span class="required">*</span></label>
+  
+    <app-form-select
+    [items]="ownerOptions"
+    bindLabel="display_name"
+    bindValue="public_id"
+    [formControl]="parentForm.get('risk_owner_id')"
+    (selectedItemChange)="onOwnerSelected($event)">
+  </app-form-select>
+  </div> -->
+
+<!-- Risk Owner -->
+<div class="form-block mt-4">
+  <label>Risk Owner<span class="required">*</span></label>
+
+  <app-form-select
+      class="w-100"
+      [items]="ownerOptions"
+      bindLabel="display_name"
+      bindValue="public_id"
+      groupBy="group"
+      placeholder="Select owner…"
+      [formControl]="parentForm.get('risk_owner_id')"
+      (selectedItemChange)="onOwnerSelected($event)">
+  </app-form-select>
+</div>
+
 
   <!-- Interviewed Persons -->
   <div class="form-block">

@@ -1,0 +1,190 @@
+<!-- <div class="container" *ngIf="!isSaving">
+  <h2>Add Control / Measure Assignment</h2>
+
+  <form [formGroup]="form" class="mt-4">
+
+    <div class="form-block">
+      <label>Control / Measure <span class="required">*</span></label>
+      <app-form-select class="w-100"
+        [items]="allControlMeasures"
+        bindLabel="title" bindValue="public_id"
+        [formControl]="form.get('control_measure_id')">
+      </app-form-select>
+    </div>
+
+
+
+    
+
+    <div class="form-block">
+      <label>Risk Assessment <span class="required">*</span></label>
+      <app-form-select class="w-100"
+        [items]="allRiskAssessments"
+        bindLabel="public_id" bindValue="public_id"
+        placeholder="Select Risk Assessment"
+        [formControl]="form.get('risk_assessment_id')">
+      </app-form-select>
+    </div>
+
+    <div class="form-block">
+      <label>Planned Implementation Date</label>
+      <app-form-date class="w-100"
+        [formControl]="form.get('planned_implementation_date')">
+      </app-form-date>
+    </div>
+
+    <div class="form-block">
+      <label>Implementation Status <span class="required">*</span></label>
+      <app-form-select class="w-100"
+        [items]="implementationStates"
+        bindLabel="value" bindValue="public_id"
+        placeholder="Select Implementation Status"
+        [formControl]="form.get('implementation_status')">
+      </app-form-select>
+    </div>
+
+    <div class="form-block">
+      <label>Finished Implementation Date</label>
+      <app-form-date class="w-100"
+        [formControl]="form.get('finished_implementation_date')">
+      </app-form-date>
+    </div>
+
+    <div class="form-block">
+      <label>Priority</label>
+      <app-form-select class="w-100"
+        [items]="priorityOptions"
+        bindLabel="label" bindValue="value"
+        [formControl]="form.get('priority')">
+      </app-form-select>
+    </div>
+
+    <div class="form-block">
+      <label>Responsible for Implementation <span class="required">*</span></label>
+      <app-form-select class="w-100"
+        [items]="responsiblePersonOptions"
+        bindLabel="display_name" bindValue="public_id"
+        groupBy="group"
+        placeholder="Select responsible person…"
+        [formControl]="form.get('responsible_for_implementation_id')"
+        (selectedItemChange)="onResponsibleSelected($event)">
+      </app-form-select>
+    </div>
+
+    <div class="mt-4">
+      <button type="button" class="btn btn-primary me-2" (click)="onSave()">Save</button>
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<app-loading-popup
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data...">
+</app-loading-popup> -->
+
+
+<div class="container" *ngIf="!isSaving">
+  <h2>Add Control / Measure Assignment</h2>
+
+  <form [formGroup]="form" class="mt-4">
+
+    <!-- Control / Measure Field -->
+    <ng-container *ngIf="form.get('control_measure_id')?.disabled; else controlMeasureSelector">
+      <div class="form-block">
+        <label>Control / Measure</label>
+        <div class="bg-light border rounded px-3 py-2 mb-1">
+          {{ controlMeasureName }} - #{{ form.get('control_measure_id')?.value }}
+        </div>
+        
+      </div>
+    </ng-container>
+    <ng-template #controlMeasureSelector>
+      <div class="form-block">
+        <label>Control / Measure <span class="required">*</span></label>
+        <app-form-select class="w-100"
+          [items]="allControlMeasures"
+          bindLabel="title" bindValue="public_id"
+          [formControl]="form.get('control_measure_id')">
+        </app-form-select>
+      </div>
+    </ng-template>
+
+    <!-- Risk Assessment Field -->
+    <ng-container *ngIf="form.get('risk_assessment_id')?.disabled; else riskAssessmentSelector">
+      <div class="form-block">
+        <label>Risk Assessment</label>
+        <div class="bg-light border rounded px-3 py-2 mb-1">
+          {{ riskAssessmentName }} - {{ form.get('risk_assessment_id')?.value }}
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #riskAssessmentSelector>
+      <div class="form-block">
+        <label>Risk Assessment <span class="required">*</span></label>
+        <app-form-select class="w-100"
+          [items]="allRiskAssessments"
+          bindLabel="public_id" bindValue="public_id"
+          placeholder="Select Risk Assessment"
+          [formControl]="form.get('risk_assessment_id')">
+        </app-form-select>
+      </div>
+    </ng-template>
+
+    <!-- Rest of your form fields remain unchanged -->
+    <div class="form-block">
+      <label>Planned Implementation Date</label>
+      <app-form-date class="w-100"
+        [formControl]="form.get('planned_implementation_date')">
+      </app-form-date>
+    </div>
+
+    <div class="form-block">
+      <label>Implementation Status <span class="required">*</span></label>
+      <app-form-select class="w-100"
+        [items]="implementationStates"
+        bindLabel="value" bindValue="public_id"
+        placeholder="Select Implementation Status"
+        [formControl]="form.get('implementation_status')">
+      </app-form-select>
+    </div>
+
+    <div class="form-block">
+      <label>Finished Implementation Date</label>
+      <app-form-date class="w-100"
+        [formControl]="form.get('finished_implementation_date')">
+      </app-form-date>
+    </div>
+
+    <div class="form-block">
+      <label>Priority</label>
+      <app-form-select class="w-100"
+        [items]="priorityOptions"
+        bindLabel="label" bindValue="value"
+        [formControl]="form.get('priority')">
+      </app-form-select>
+    </div>
+
+    <div class="form-block">
+      <label>Responsible for Implementation <span class="required">*</span></label>
+      <app-form-select class="w-100"
+        [items]="responsiblePersonOptions"
+        bindLabel="display_name" bindValue="public_id"
+        groupBy="group"
+        placeholder="Select responsible person…"
+        [formControl]="form.get('responsible_for_implementation_id')"
+        (selectedItemChange)="onResponsibleSelected($event)">
+      </app-form-select>
+    </div>
+
+    <div class="mt-4">
+      <button type="button" class="btn btn-primary me-2" (click)="onSave()">Save</button>
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<app-loading-popup
+  [isVisible]="isLoading$ | async"
+  message="We're Processing the Data...">
+</app-loading-popup>

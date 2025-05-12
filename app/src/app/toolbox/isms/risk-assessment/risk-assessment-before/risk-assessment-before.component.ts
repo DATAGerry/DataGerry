@@ -332,11 +332,12 @@
 // }
 
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   Input,
+  OnChanges,
   OnInit,
+  SimpleChanges,
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import {
@@ -357,7 +358,7 @@ const FALLBACK_GREY = '#f5f5f5';
   templateUrl: './risk-assessment-before.component.html',
   styleUrls: ['./risk-assessment-before.component.scss'],
 })
-export class RiskAssessmentBeforeComponent implements OnInit {
+export class RiskAssessmentBeforeComponent implements OnInit, OnChanges {
   @Input({ required: true }) parentForm!: FormGroup;
 
   @Input() impacts: Impact[] = [];
@@ -378,10 +379,14 @@ export class RiskAssessmentBeforeComponent implements OnInit {
   calcRiskBgColor = FALLBACK_GREY;
 
   private riskClassMap = new Map<number, RiskClass>();
+  ownerOptions: any[] = [];
+
 
   constructor(
     private readonly destroyRef: DestroyRef
   ) { }
+
+
 
   ngOnInit(): void {
     // Include "Not rated" in the labels
@@ -396,6 +401,7 @@ export class RiskAssessmentBeforeComponent implements OnInit {
 
     this.bindRecalculation();
   }
+
 
 
   /*
@@ -457,11 +463,13 @@ export class RiskAssessmentBeforeComponent implements OnInit {
       this.likelihoods.find((l) => l.public_id === +lhId) ?? null;
 
     const impactBasis = selectedImpact?.calculation_basis ?? 0;
+    const impactId    = selectedImpact?.public_id         ?? null;
     const likelihoodBasis = selectedLikelihood?.calculation_basis ?? 0;
     const risk = impactBasis * likelihoodBasis;
 
     this.beforeGroup.patchValue(
       {
+        maximum_impact_id:    impactId,
         likelihood_value: likelihoodBasis,
         maximum_impact_value: impactBasis,
         risk_level_value: risk,
@@ -487,4 +495,35 @@ export class RiskAssessmentBeforeComponent implements OnInit {
 
   // Template helper
   trackByIndex = (_: number, i: any) => i;
+
+
+ngOnChanges(ch: SimpleChanges): void {
+  if (ch['allPersons'] || ch['allPersonGroups']) {
+    this.ownerOptions = [
+      ...this.allPersonGroups.map(pg => ({
+        public_id   : pg.public_id,
+        display_name: pg.name,
+        group       : 'Person groups',
+        type        : 'PERSON_GROUP'
+      })),
+      ...this.allPersons.map(p => ({
+        public_id   : p.public_id,
+        display_name: p.display_name,
+        group       : 'Persons',
+        type        : 'PERSON'
+      }))
+    ];
+  }
+}
+
+onOwnerSelected(item: any): void {
+  if (!item) return;
+
+  this.parentForm.patchValue({
+    risk_owner_id_ref_type : item.type   // PERSON / PERSON_GROUP
+    // risk_owner_id is **already set** by the CVA above
+  }, { emitEvent: false });
+  
+}
+
 }
