@@ -61,29 +61,37 @@ class IsmsControlMeasure(CmdbDAO):
         'source': {
             'type': 'integer',
             'required': True,
+            'nullable': True,
         },
         'implementation_state': {
             'type': 'integer',
             'required': True,
+            'nullable': True,
         },
         'identifier': {
             'type': 'string',
             'required': True,
+            'nullable': True,
         },
         'chapter': {
             'type': 'string',
             'required': True,
+            'nullable': True,
         },
         'description': {
             'type': 'string',
+            'required': True,
+            'nullable': True,
         },
         'is_applicable': {
             'type': 'boolean',
             'required': True,
+            'nullable': True,
         },
         'reason': {
             'type': 'string',
             'required': True,
+            'nullable': True,
         }
     }
 

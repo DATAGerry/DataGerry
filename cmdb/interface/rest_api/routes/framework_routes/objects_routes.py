@@ -332,6 +332,34 @@ def get_cmdb_objects(params: CollectionParameters, request_user: CmdbUser):
         abort(500, "Internal server error!")
 
 
+@objects_blueprint.route('/count', methods=['GET'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
+@objects_blueprint.protect(auth=True, right='base.framework.object.view')
+def get_cmdb_object_count(request_user: CmdbUser):
+    """
+    HTTP `GET` route to retrieve the amount of CmdbObjects in database
+
+    Args:
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        DefaultResponse: The amount of CmdbObject in database
+    """
+    try:
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+
+        count_of_objects = objects_manager.count_objects()
+
+        return DefaultResponse(count_of_objects).make_response()
+    except ObjectsManagerGetError as err:
+        LOGGER.error("[get_cmdb_object_count] ObjectsManagerGetError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve the number of Objects stored in database!")
+    except Exception as err:
+        LOGGER.error("[get_cmdb_object_count] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "Internal server error while retrieving the number of Objects stored in database!")
+
+
 @objects_blueprint.route('/native/<int:public_id>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
