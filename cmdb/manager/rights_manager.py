@@ -24,7 +24,11 @@ from cmdb.framework.results import IterationResult
 
 from cmdb.models.right_model.all_rights import ALL_RIGHTS
 
-from cmdb.errors.manager import BaseManagerGetError, BaseManagerIterationError
+from cmdb.errors.manager.rights_manager import (
+    RightsManagerInitError,
+    RightsManagerGetError,
+    RightsManagerIterationError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -45,10 +49,16 @@ class RightsManager(BaseManager):
 
         Args:
             right_tree : A nested structure of rights
-        """
-        self.rights = RightsManager.flat_tree(ALL_RIGHTS)
 
-        super().__init__()
+        Raises:
+            RightsManagerInitError: If the RightsManager could not be initialised
+        """
+        try:
+            self.rights = RightsManager.flat_tree(ALL_RIGHTS)
+
+            super().__init__()
+        except Exception as err:
+            raise RightsManagerInitError(err) from err
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -66,7 +76,7 @@ class RightsManager(BaseManager):
             IterationResult[BaseRight]: Paginated and sorted result of rights
 
         Raises:
-                BaseManagerIterationError: If sorting or pagination fails due to bad attributes or indices
+            RightsManagerIterationError: If retrieving the rights failed
         """
         try:
             sorted_rights = sorted(self.rights, key=lambda right: right[sort], reverse=order == -1)
@@ -81,8 +91,7 @@ class RightsManager(BaseManager):
 
             return result
         except Exception as err:
-            #TODO: ERROR-FIX (RightsManager specific error)
-            raise BaseManagerIterationError(err) from err
+            raise RightsManagerIterationError(err) from err
 
 
     def get_right(self, name: str) -> BaseRight:
@@ -101,8 +110,7 @@ class RightsManager(BaseManager):
         try:
             return next(right for right in self.rights if right.name == name)
         except Exception as err:
-            #TODO: ERROR-FIX (RightsManager specific error)
-            raise BaseManagerGetError(err) from err
+            raise RightsManagerGetError(err) from err
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
