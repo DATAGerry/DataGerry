@@ -39,12 +39,8 @@ from cmdb.models.type_model import (
 )
 from cmdb.models.user_model import CmdbUser
 
-from cmdb.errors.manager import BaseManagerGetError
 from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.manager.users_manager import UsersManagerGetError
-from cmdb.errors.manager.types_manager import (
-    TypesManagerGetError,
-)
 
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.render import ObjectInstanceError, TypeInstanceError, InstanceRenderError
@@ -241,7 +237,13 @@ class CmdbRender:
             RenderResult: The updated render result with object-specific information
         """
         try:
-            author_name = self.users_manager.get_user(self.object_instance.author_id).get_display_name()
+            author_name = None
+            author = self.users_manager.get_user(self.object_instance.author_id)
+
+            if author:
+                author_name = author = author.get_display_name()
+            else:
+                author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
         except Exception:
             author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
 
@@ -278,7 +280,13 @@ class CmdbRender:
             RenderResult: The updated render result with type-specific information
         """
         try:
-            author_name = self.users_manager.get_user(self.type_instance.author_id).get_display_name()
+            author_name = None
+            author = self.users_manager.get_user(self.object_instance.author_id)
+
+            if author:
+                author_name = author = author.get_display_name()
+            else:
+                author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
         except UsersManagerGetError:
             author_name = CmdbRender.AUTHOR_ANONYMOUS_NAME
 

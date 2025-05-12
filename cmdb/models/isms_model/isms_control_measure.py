@@ -60,24 +60,30 @@ class IsmsControlMeasure(CmdbDAO):
         },
         'source': {
             'type': 'integer',
+            'required': True,
         },
         'implementation_state': {
             'type': 'integer',
+            'required': True,
         },
         'identifier': {
             'type': 'string',
+            'required': True,
         },
         'chapter': {
             'type': 'string',
+            'required': True,
         },
         'description': {
             'type': 'string',
         },
         'is_applicable': {
             'type': 'boolean',
+            'required': True,
         },
         'reason': {
             'type': 'string',
+            'required': True,
         }
     }
 

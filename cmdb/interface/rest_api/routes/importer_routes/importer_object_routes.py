@@ -244,9 +244,8 @@ def parse_objects():
 
         try:
             parsed_output = generate_parsed_output(request_file, file_format, parser_config).output()
-        except (ParserRuntimeError, Exception) as err:
-            #TODO: ERROR-FIX
-            LOGGER.error("[parse_objects] Error: %s, Type: %s", err, type(err))
+        except Exception as err:
+            LOGGER.error("[parse_objects] Error: %s, Type: %s", err, type(err), exc_info=True)
             abort(500, "Could not generate parsed output!")
 
         return DefaultResponse(parsed_output).make_response()
