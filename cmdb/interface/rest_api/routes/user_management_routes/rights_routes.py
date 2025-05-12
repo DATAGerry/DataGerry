@@ -32,7 +32,7 @@ from cmdb.interface.rest_api.responses.response_parameters import CollectionPara
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.rest_api.responses import GetMultiResponse, GetSingleResponse
 
-from cmdb.errors.manager import BaseManagerGetError
+from cmdb.errors.manager.rights_manager import RightsManagerGetError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -111,9 +111,8 @@ def get_right(name: str):
         return GetSingleResponse(BaseRight.to_dict(right), body=request.method == 'HEAD').make_response()
     except HTTPException as http_err:
         raise http_err
-    except BaseManagerGetError as err:
-        # TODO: ERROR-FIX (RightsManager specific exception required)
-        LOGGER.error("[get_right] BaseManagerGetError: %s", err, exc_info=True)
+    except RightsManagerGetError as err:
+        LOGGER.error("[get_right] RightsManagerGetError: %s", err, exc_info=True)
         abort(500, f"Failed to retrieve the Right with name: {name}!")
     except Exception as err:
         LOGGER.error("[get_right] Exception: %s. Type: %s", err, type(err), exc_info=True)
