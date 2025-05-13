@@ -220,8 +220,8 @@ def default(obj):
 #                     error_message = COSMOS_DB_ERROR_CODES[e.status_code]
 #                     backoff_delay = retry_delay + random.uniform(0, 1)  # Add jitter to prevent thundering herd problem
 #                     LOGGER.warning(
-#                         f"Attempt {retries} failed for {func.__name__} with Cosmos DB error {error_message}:\
-#                           {e.message}. Retrying in {backoff_delay:.2f}s..."
+#                         f"Attempt {retries} failed for {func.__name__} with Cosmos DB error {error_message}:"
+#                         f" {e.message}. Retrying in {backoff_delay:.2f}s..."
 #                     )
 
 #                     if retries < MAX_RETRIES:
@@ -229,8 +229,8 @@ def default(obj):
 #                         retry_delay *= 2  # Exponentially increase the delay
 #                     else:
 #                         LOGGER.error(
-#                             f"All {MAX_RETRIES} attempts failed for {func.__name__} with Cosmos DB error {error_message}:\
-#                               {e.message}"
+#                             f"All {MAX_RETRIES} attempts failed for {func.__name__} with Cosmos DB error {error_message}:"
+#                             f" {e.message}"
 #                         )
 #                         raise
 #                 else:

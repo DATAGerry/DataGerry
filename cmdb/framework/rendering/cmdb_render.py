@@ -426,8 +426,7 @@ class CmdbRender:
                                                                                 ref_section_field,
                                                                                 reference_object
                                                                             )
-                                    except (FileNotFoundError, ValueError, IndexError, \
-                                            CmdbTypeFieldNotFoundError):
+                                    except Exception:
                                         continue
                                     field['reference']['summaries'].append(ref_field)
 
@@ -570,7 +569,6 @@ class CmdbRender:
                                                              AccessControlPermission.READ)
                 ref_object = CmdbObject.from_data(ref_object)
             except AccessDeniedError as err:
-                #TODO: ERROR-FIX
                 return err
             except ObjectsManagerGetError:
                 return TypeReference.to_json(reference)

@@ -14,23 +14,39 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Implementation of Gunicorn post fork method
+Implementation of ProcessController
 """
 import logging
+from threading import Thread, Event
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
-
-
-def post_fork(server, worker):
+#                                               ProcessController - CLASS                                              #
+# -------------------------------------------------------------------------------------------------------------------- #
+class ProcessController(Thread):
     """
-    Ensures MongoDB connections are properly reinitialized after forking
+    Controlls the state of a process
     """
 
-    if hasattr(worker, 'app') and\
-       hasattr(worker.app, 'application') and\
-       hasattr(worker.app.application, 'database_manager'):
-        # Access the `database_manager` and reset the connection
-        worker.app.application.database_manager.reset_connection()
+    def __init__(self, process, flag_shutdown: Event, cb_shutdown):
+        """
+        Creates a new instance
+        
+        Args:
+            process(multiprocessingProcess): process to control
+            flag_shutdown(threading.Event): shutdown flag
+            cb_shutdown(func): callback function if a process crashed
+        """
+        super().__init__()
+        self.__process = process
+        self.__flag_shutdown = flag_shutdown
+        self.__cb_shutdown = cb_shutdown
+
+
+    def run(self):
+        self.__process.join()
+        # terminate app, if process crashed
+        if not self.__flag_shutdown.is_set():
+            self.__cb_shutdown()

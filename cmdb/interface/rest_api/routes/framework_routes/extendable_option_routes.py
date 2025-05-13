@@ -26,6 +26,9 @@ from cmdb.manager import (
     VulnerabilityManager,
     ObjectGroupsManager,
     ControlMeasureManager,
+    RiskManager,
+    RiskAssessmentManager,
+    ControlMeasureAssignmentManager,
 )
 
 from cmdb.manager.query_builder import BuilderParameters
@@ -335,6 +338,13 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
     object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(ManagerType.OBJECT_GROUP, request_user)
     control_measure_manager: ControlMeasureManager = ManagerProvider.get_manager(ManagerType.CONTROL_MEASURE,
                                                                                    request_user)
+    risk_manager: RiskManager = ManagerProvider.get_manager(ManagerType.RISK, request_user)
+    risk_assessment_manager: RiskAssessmentManager = ManagerProvider.get_manager(ManagerType.RISK_ASSESSMENT,
+                                                                                   request_user)
+    c_m_assignment_manager: ControlMeasureAssignmentManager = ManagerProvider.get_manager(
+                                                                                ManagerType.CONTROL_MEASURE_ASSIGNMENT,
+                                                                                request_user
+                                                                            )
 
     if extendable_option.get('option_type') == OptionType.THREAT:
         return threat_manager.count_items({"source": extendable_option.get('public_id')}) > 0
@@ -349,7 +359,22 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
         return control_measure_manager.count_items({"source": extendable_option.get('public_id')}) > 0
 
     if extendable_option.get('option_type') == OptionType.IMPLEMENTATION_STATE:
-        return control_measure_manager.count_items({"implementation_state": extendable_option.get('public_id')}) > 0
+        control_measures_used = control_measure_manager.count_items(
+                                    {"implementation_state": extendable_option.get('public_id')}
+                                ) > 0
+
+        risk_assessment_used = risk_assessment_manager.count_items(
+                                        {"implementation_status": extendable_option.get('public_id')}
+                                ) > 0
+
+        c_m_assignment_used = c_m_assignment_manager.count_items(
+                                        {"implementation_status": extendable_option.get('public_id')}
+                                ) > 0
+
+        return control_measures_used or risk_assessment_used or c_m_assignment_used
+
+    if extendable_option.get('option_type') == OptionType.RISK:
+        return risk_manager.count_items({"category_id": extendable_option.get('public_id')}) > 0
 
     # If option_type is not recognized
     return False

@@ -19,15 +19,14 @@ Implementation of the DocApiRenderer in DataGerry
 import logging
 from io import BytesIO
 
-from cmdb.manager import (
-    ObjectsManager,
-    DocapiTemplatesManager,
-)
+from cmdb.manager import ObjectsManager
 
 from cmdb.models.object_model import CmdbObject
-from cmdb.framework.rendering.cmdb_render import CmdbRender
 from cmdb.models.docapi_model.object_document_generator import ObjectDocumentGenerator
 from cmdb.models.docapi_model.pdf_document_type import PdfDocumentType
+
+from cmdb.framework.rendering.cmdb_render import CmdbRender
+from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -39,20 +38,21 @@ class DocApiRenderer:
     """
      A renderer for generating documents from CmdbObjects using predefined templates
     """
-    #TODO: INIT-FIX (refactor the initalisation)
-    def __init__(self, objects_manager: ObjectsManager, docapi_manager: DocapiTemplatesManager):
+
+    def __init__(self, objects_manager: ObjectsManager, target_template: DocapiTemplate, target_object: CmdbObject):
         """
         Initializes the DocApiRenderer
 
         Args:
             objects_manager (ObjectsManager): The manager responsible for CmdbObjects
-            docapi_manager (DocapiTemplatesManager): The manager handling DocapiTemplates
+            template (DocapiTemplate): Target template
         """
-        self.docapi_manager = docapi_manager
+        self.target_template = target_template
+        self.target_object = target_object
         self.objects_manager = objects_manager
 
 
-    def render_object_template(self, doctpl_id: int, object_id: int) -> BytesIO:
+    def render_object_template(self,) -> BytesIO:
         """
         Renders a document by applying the provided DocapiTemplate to a CmdbObject
 
@@ -67,25 +67,18 @@ class DocApiRenderer:
             5. Use `ObjectDocumentGenerator` to generate a PDF document
             6. Return the generated PDF as a BytesIO object
 
-        Args:
-            doctpl_id (int): The public_id of the DocapiTemplate to be used
-            object_id (int): The public_id of the CmdbObject to be rendered in the DocapiTemplate
-
         Returns:
             BytesIO: A file-like object containing the generated PDF document
         """
-        template = self.docapi_manager.get_template(doctpl_id)
-        cmdb_object = self.objects_manager.get_object(object_id)
-        cmdb_object = CmdbObject.from_data(cmdb_object)
-        type_instance = self.objects_manager.get_object_type(cmdb_object.get_type_id())
+        type_instance = self.objects_manager.get_object_type(self.target_object.get_type_id())
 
-        cmdb_render_object = CmdbRender(cmdb_object,
+        cmdb_render_object = CmdbRender(self.target_object,
                                         type_instance,
                                         None,
                                         False,
                                         self.objects_manager.dbm)
 
-        generator = ObjectDocumentGenerator(template,
+        generator = ObjectDocumentGenerator(self.target_template,
                                             cmdb_render_object.result(),
                                             PdfDocumentType(),
                                             self.objects_manager)

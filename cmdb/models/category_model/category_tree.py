@@ -41,7 +41,7 @@ class CategoryTree:
 
         Args:
             categories (list[CmdbCategory]): A list of CmdbCategories to create the CategoryTree
-            types (list[CmdbType], optional): A list of CmdbTypes to associate with the CmdbCategories.\
+            types (list[CmdbType], optional): A list of CmdbTypes to associate with the CmdbCategories.
                                               Defaults to None
         """
         self.categories = categories
@@ -90,9 +90,9 @@ class CategoryTree:
 
         Args:
             categories list[CmdbCategory]: list of root/child CmdbCategories
-            parent (int, optional): The parent public_id of the CmdbCategory for the current subset of CmdbCategories.\
+            parent (int, optional): The parent public_id of the CmdbCategory for the current subset of CmdbCategories.
                     Defaults to None (for root CmdbCategories)
-            types (list[CmdbType], optional): A list of all available CmdbTypes to associate with the CmdbCategories.\
+            types (list[CmdbType], optional): A list of all available CmdbTypes to associate with the CmdbCategories.
                                               Defaults to None
 
         Returns:

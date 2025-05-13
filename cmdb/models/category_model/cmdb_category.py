@@ -68,8 +68,8 @@ class CmdbCategory(CmdbDAO):
             label (str, optional): The Label of the CmdbCategory. Defaults to None
             meta (CategoryMeta, optional): The CategoryMeta of the CmdbCategory. Defaults to None
             parent (int, optional): The public_id of the parent CmdbCategory. Defaults to None
-            types list[int], optional): public_ids of CmdbTypes assigned to this CmdbCategory.\
-                                                                Defaults to None
+            types list[int], optional): public_ids of CmdbTypes assigned to this CmdbCategory.
+                                        Defaults to None
 
         Raises:
             CmdbCategoryInitError: if the CmdbCategory could not be initialised
