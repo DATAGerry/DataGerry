@@ -17,6 +17,9 @@ import { Vulnerability } from '../../models/vulnerability.model';
 import { ProtectionGoal } from '../../models/protection-goal.model';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { SortDirection } from 'src/app/layout/table/table.types';
+import { ExtendableOptionService } from '../../services/extendable-option.service';
+import { OptionType } from '../../models/option-type.enum';
+import { ExtendableOption } from 'src/app/framework/models/object-group.model';
 
 @Component({
     selector: 'app-risk-add',
@@ -27,6 +30,12 @@ export class RiskAddComponent implements OnInit {
     public isEditMode = false;
     public isViewMode = false;
     public isLoading$ = this.loaderService.isLoading$;
+
+    // Show/hide the new Category Manager component
+    public showCategoryManager = false;
+
+    // Category options for the main form
+    public categoryOptions: ExtendableOption[] = [];
 
     // Main Reactive Form
     public riskForm: FormGroup;
@@ -39,7 +48,7 @@ export class RiskAddComponent implements OnInit {
         protection_goals: [],
         description: '',
         consequences: '',
-
+        category_id: ''
     };
 
     // Data fetched from other services for multi-select or checkboxes
@@ -63,7 +72,8 @@ export class RiskAddComponent implements OnInit {
         private riskService: RiskService,
         private threatService: ThreatService,
         private vulnerabilityService: VulnerabilityService,
-        private protectionGoalService: ProtectionGoalService
+        private protectionGoalService: ProtectionGoalService,
+        private extendableOptionService: ExtendableOptionService,
     ) {
         // Check navigation state to see if we're editing an existing risk
         // const navState = this.router.getCurrentNavigation()?.extras?.state;
@@ -75,13 +85,13 @@ export class RiskAddComponent implements OnInit {
 
         if (navState && navState['risk']) {
             this.risk = navState['risk'] as Risk;
-        
+
             if (this.router.url.includes('/view')) {
-              this.isViewMode = true;
+                this.isViewMode = true;
             } else {
-              this.isEditMode = true;
+                this.isEditMode = true;
             }
-          }
+        }
     }
 
     ngOnInit(): void {
@@ -90,10 +100,12 @@ export class RiskAddComponent implements OnInit {
             this.patchRiskForm(this.risk);
         }
 
-        if(this.isViewMode) {
+        if (this.isViewMode) {
             this.riskForm.disable();
         }
 
+        // Load categories to display in ng-select
+        this.loadCategories();
         // Load references: Threats, Vulnerabilities, and Protection Goals
         this.loadThreats();
         this.loadVulnerabilities();
@@ -113,7 +125,8 @@ export class RiskAddComponent implements OnInit {
             vulnerabilities: [[]],     // multi-select
             description: [''],
             consequences: [''],
-            protection_goals: [[], Validators.required]
+            protection_goals: [[], Validators.required],
+            category_id: ['']
         });
     }
 
@@ -127,7 +140,8 @@ export class RiskAddComponent implements OnInit {
             vulnerabilities: data.vulnerabilities || [],
             description: data.description,
             consequences: data.consequences,
-            protection_goals: data.protection_goals || []
+            protection_goals: data.protection_goals || [],
+            category_id: data.category_id
         });
     }
 
@@ -240,10 +254,32 @@ export class RiskAddComponent implements OnInit {
             });
     }
 
+    /* --------------------------------------------------------------
+     *  Load Categories
+     * -------------------------------------------------------------- */
 
-    public onCancel(): void {
-        this.router.navigate(['/isms/risks']);
+    private loadCategories(): void {
+        this.extendableOptionService.getExtendableOptionsByType(OptionType.RISK)
+            .subscribe({
+                next: (res) => {
+                    this.categoryOptions = res.results;
+                    
+                    // Check if current category_id exists in the updated list
+                    const currentCategoryId = this.riskForm.get('category_id')?.value;
+                    const categoryExists = this.categoryOptions.some(
+                        cat => cat.public_id === currentCategoryId
+                    );
+                    
+                    // Clear the selection if the category no longer exists
+                    if (currentCategoryId && !categoryExists) {
+                        this.riskForm.get('category_id')?.setValue(null);
+                        this.toast.info('Selected category was removed.');
+                    }
+                },
+                error: (err) => this.toast.error(err?.error?.message)
+            });
     }
+
 
     /* --------------------------------------------------------------
      *  PROTECTION GOALS CHECKBOX LOGIC
@@ -293,13 +329,27 @@ export class RiskAddComponent implements OnInit {
         return rt === 'EVENT';
     }
 
-    /* --------------------------------------------------------------
-     *  HELPER FOR TEMPLATE FORM ERRORS
-     * -------------------------------------------------------------- */
+    public openCategoryManager(): void {
+        this.showCategoryManager = true;
+    }
+
+    public closeCategoryManager(): void {
+        this.showCategoryManager = false;
+        // Refresh main category list after closing
+        this.loadCategories();
+    }
+
 
 
     public hasError(controlName: string, error: string): boolean {
         const control = this.riskForm.get(controlName);
         return !!(control?.hasError(error) && (control.dirty || control.touched));
+    }
+
+    /* --------------------------------------------------------------
+    *  ACTIONS
+    * -------------------------------------------------------------- */
+    public onCancel(): void {
+        this.router.navigate(['/isms/risks']);
     }
 }

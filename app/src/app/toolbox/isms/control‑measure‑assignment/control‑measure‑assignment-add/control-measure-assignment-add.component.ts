@@ -280,6 +280,7 @@ export class ControlMeasureAssignmentAddComponent implements OnInit {
     const stop = () => { this.isSaving = false; this.loader.hide(); };
 
     if (this.isEditMode && this.assignmentId) {
+      payload.public_id = this.assignmentId;
       this.srvAssign.updateAssignment(this.assignmentId, payload).subscribe({
         next: () => { stop(); this.toast.success('Updated'); this.loc.back(); },
         error: err => { stop(); this.toast.error(err?.error?.message); }
