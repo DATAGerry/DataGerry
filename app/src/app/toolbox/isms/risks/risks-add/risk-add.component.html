@@ -17,6 +17,23 @@
     <app-form-input formControlName="identifier" label="Identifier:" [required]="false">
     </app-form-input>
 
+    <!-- Categories with "Manage Categories" -->
+    <div class="form-group mt-3">
+      <label>Category:</label>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <ng-select [items]="categoryOptions" bindLabel="value" bindValue="public_id" [disabled]="isViewMode"
+          placeholder="Select category..." formControlName="category_id" class="flex-grow-1">
+        </ng-select>
+
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openCategoryManager()"
+          [disabled]="isViewMode">
+          Manage Categories
+        </button>
+      </div>
+    </div>
+
+
+
     <!-- Risk Type (Radio Buttons) -->
     <div class="form-group mt-3">
       <label>Risk Type:<span class="required">*</span></label>
@@ -89,8 +106,8 @@
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'" *ngIf="!isViewMode"
-        [disabled]="riskForm.invalid"></app-button>
+      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
+        *ngIf="!isViewMode" [disabled]="riskForm.invalid"></app-button>
 
     </div>
   </form>
@@ -99,6 +116,12 @@
     <cmdb-risks-footer [riskName]="riskForm.get('name')?.value" [riskId]="risk.public_id"></cmdb-risks-footer>
   </div>
 </div>
+
+
+<app-extendable-option-manager *ngIf="showCategoryManager" [options]="categoryOptions" [optionType]="'RISK'"
+  [modalTitle]="'Manage Categories'" [itemLabel]="'Category'" [itemLabelPlural]="'Categories'"
+  (close)="closeCategoryManager()">
+</app-extendable-option-manager>
 
 <!-- Loading Spinner -->
 <app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data...">

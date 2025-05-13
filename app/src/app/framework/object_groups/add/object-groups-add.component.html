@@ -112,14 +112,12 @@
         {{ isEditMode ? 'Save Changes' : 'Add Group' }}
       </button>
     </div>
-    
+    <hr>
+
+    <div id="object-view-footer" class="col-12" *ngIf="isViewMode">
+      <cmdb-object-groups-footer [objectGroupName]="group.name" [groupId]="groupId"></cmdb-object-groups-footer>
+    </div>
   </form>
-</div>
-
-<hr>
-
-<div id="object-view-footer" class="col-12" *ngIf="isViewMode">
-  <cmdb-object-groups-footer [objectGroupName]="group.name" [groupId]="groupId"></cmdb-object-groups-footer>
 </div>
 
 

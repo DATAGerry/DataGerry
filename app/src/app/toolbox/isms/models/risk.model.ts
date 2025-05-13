@@ -8,4 +8,5 @@ export interface Risk {
     protection_goals?: number[];
     description?: string;
     consequences?: string;
+    category_id?: string;
   }  
