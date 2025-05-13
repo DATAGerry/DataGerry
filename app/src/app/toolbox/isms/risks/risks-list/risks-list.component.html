@@ -6,13 +6,6 @@
 </div>
 <hr />
 
-
-
-<button class="btn btn-primary" [routerLink]="['/isms/risks', 13, 'risk-assessments', 'add']">
-  Add Assessment
-</button>
-
-
 <cmdb-table [items]="risks" [columns]="columns" [page]="page" [sort]="sort" [id]="'risks-table'"
   [emptyMessage]="'No risks found.'" [totalItems]="totalRisks" [selectEnabled]="false" [loading]="loading"
   [pageSize]="limit" [toggleable]="true" [initialVisibleColumns]="initialVisibleColumns"

@@ -1,27 +1,11 @@
-<!-- header + add button -->
-<div class="d-flex justify-content-between align-items-center mb-3"
-     *ngIf="!riskId && !controlMeasureId">
+<div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Control / Measure Assignments</h2>
   <button class="btn btn-sm btn-success" (click)="onAddNew()">
     <i class="fas fa-plus"></i> Add
   </button>
 </div>
+<hr />
 
-<!-- embedded headers -->
-<div *ngIf="riskId || controlMeasureId" class="d-flex justify-content-between mb-2">
-  <h5 class="mb-0">
-    Assignments
-    <ng-container *ngIf="riskId">for Risk #{{ riskId }}</ng-container>
-    <ng-container *ngIf="controlMeasureId">for Control / Measure #{{ controlMeasureId }}</ng-container>
-  </h5>
-  <button class="btn btn-sm btn-success" (click)="onAddNew()">
-    <i class="fas fa-plus"></i> Add
-  </button>
-</div>
-
-<hr *ngIf="!hideHeader" />
-
-<!-- cmdb table -->
 <cmdb-table
   [items]="assignments"
   [columns]="columns"
@@ -41,9 +25,23 @@
   (searchChange)="onSearchChange($event)">
 </cmdb-table>
 
-<!-- action‑cell template -->
+<!-- <ng-template #actionTemplate let-item="item">
+  <i class="far fa-eye   icon-margin cursor-pointer"
+     title="View"  (click)="onView(item)"></i>
+  <i class="far fa-edit  icon-margin cursor-pointer"
+     title="Edit"  (click)="onEdit(item)"></i>
+  <i class="far fa-trash-alt cursor-pointer"
+     title="Delete"(click)="onDelete(item)"></i>
+</ng-template> -->
+
 <ng-template #actionTemplate let-item="item">
-  <i class="far fa-eye icon-margin cursor-pointer"
-     title="View"
-     (click)="onView(item)"></i>
+  <span *permissionLink="['base.isms.controlMeasureAssignment.edit']">
+    <i class="far fa-eye spacing-right icon-view" (click)="onView(item)" title="View"></i>
+  </span>
+  <span *permissionLink="['base.isms.controlMeasureAssignment.edit']">
+    <i class="far fa-edit btn-edit spacing-right icon-edit" (click)="onEdit(item)" title="Edit"></i>
+  </span>
+  <span *permissionLink="['base.isms.controlMeasureAssignment.delete']">
+    <i class="far fa-trash-alt btn-delete icon-delete" (click)="onDelete(item)" title="Delete"></i>
+  </span>
 </ng-template>

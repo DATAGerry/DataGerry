@@ -1,20 +1,43 @@
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import {
   Component, Input, OnInit, OnChanges, SimpleChanges,
   TemplateRef, ViewChild
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { ActivatedRoute, Router }    from '@angular/router';
+import { finalize, forkJoin }        from 'rxjs';
+
+import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
+import { CollectionParameters }        from 'src/app/services/models/api-parameter';
 
 import { LoaderService }  from 'src/app/core/services/loader.service';
 import { ToastService }   from 'src/app/layout/toast/toast.service';
 import { FilterBuilderService } from 'src/app/core/services/filter-builder.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CoreDeleteConfirmationModalComponent }
+        from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
 
-import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
-import { CollectionParameters } from 'src/app/services/models/api-parameter';
-import { ControlMeasureAssignment } from '../../models/control‑measure‑assignment.model';
+import { ControlMeasureService }    from '../../services/control-measure.service';
+import { RiskAssessmentService }    from '../../services/risk-assessment.service';
+import { ExtendableOptionService }  from 'src/app/toolbox/isms/services/extendable-option.service';
+import { PersonService }            from '../../services/person.service';
+import { PersonGroupService }       from '../../services/person-group.service';
 import { ControlMeasureAssignmentService } from '../../services/control‑measure‑assignment.service';
-
-
 
 @Component({
   selector   : 'app-control-measure-assignment-list',
@@ -24,168 +47,263 @@ import { ControlMeasureAssignmentService } from '../../services/control‑measur
 export class ControlMeasureAssignmentListComponent
         implements OnInit, OnChanges {
 
-  /* ───── optional context IDs (for embedded use) ───── */
-  @Input() riskId?: number;
+  /* ── optional context from parent ── */
   @Input() controlMeasureId?: number;
-  @Input() hideHeader = false;
   @Input() controlMeasureName?: string;
+  @Input() riskAssesmentId?: number;
   @Input() riskAssessmentName?: string;
 
-
-  /* ───── action‑cell template ───── */
+  /* ── action template ── */
   @ViewChild('actionTemplate', { static: true }) actionTemplate!: TemplateRef<any>;
 
-  /* ───── data & table config ───── */
-  public assignments: ControlMeasureAssignment[] = [];
-  public totalAssignments = 0;
+  /* ── table state ── */
+  assignments: any[] = [];
+  totalAssignments = 0;
+  page = 1;
+  limit = 10;
+  loading = false;
+  filter = '';
+  sort: Sort = { name: 'public_id', order: SortDirection.DESCENDING };
+  columns: Column[] = [];
+  initialVisibleColumns: string[] = [];
 
-  public page  = 1;
-  public limit = 10;
-  public loading = false;
-  public filter = '';
-  public sort: Sort = { name: 'public_id', order: SortDirection.DESCENDING };
-
-  public columns: Column[] = [];
-  public initialVisibleColumns: string[] = [];
+  /* ── lookup maps ── */
+  private cmMap = new Map<number, string>();
+  private raMap = new Map<number, string>();
+  private respMap = new Map<number, string>();
+  private stsMap = new Map<number, string>();
+  private metaReady = false;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private assignmentSrv: ControlMeasureAssignmentService,
-    private loaderService: LoaderService,
-    private toast: ToastService,
-    private filterBuilder: FilterBuilderService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly srvAssign: ControlMeasureAssignmentService,
+    private readonly srvCM: ControlMeasureService,
+    private readonly srvRA: RiskAssessmentService,
+    private readonly srvStatus: ExtendableOptionService,
+    private readonly srvPers: PersonService,
+    private readonly srvPG: PersonGroupService,
+    private readonly loader: LoaderService,
+    private readonly toast: ToastService,
+    private readonly filterBld: FilterBuilderService,
+    private readonly modalService: NgbModal
   ) {}
 
-  /* ═════════ life‑cycle ═════════ */
+  /* ────────── lifecycle ────────── */
   ngOnInit(): void {
-    /* when routed directly (IDs come from params) */
-    if (!this.riskId && !this.controlMeasureId) {
-      const rId = this.route.snapshot.paramMap.get('riskId');
-      const cm  = this.route.snapshot.paramMap.get('cmId');
-      if (rId) this.riskId           = +rId;
-      if (cm)  this.controlMeasureId = +cm;
+    /* fallback: read params if not embedded */
+    if (!this.riskAssesmentId && !this.controlMeasureId) {
+      const r = this.route.snapshot.paramMap.get('riskAssesmentId');
+      const c = this.route.snapshot.paramMap.get('cmId');
+      if (r) { this.riskAssesmentId           = +r; }
+      if (c) { this.controlMeasureId = +c; }
     }
 
     this.setupColumns();
-    this.loadAssignments();
+    this.loadLookups();
   }
 
   ngOnChanges(ch: SimpleChanges): void {
-    if (ch['riskId'] || ch['controlMeasureId']) {
+    if ((ch['riskAssesmentId'] || ch['controlMeasureId']) && this.metaReady) {
       this.page = 1;
       this.loadAssignments();
     }
   }
 
-  /* ═════════ columns ═════════ */
+  /* ────────── columns ────────── */
   private setupColumns(): void {
     this.columns = [
       { display: 'ID', name: 'public_id', data: 'public_id',
         searchable: false, sortable: true,
-        style: { width:'80px','text-align':'center' } },
+        style: { width: '80px', 'text-align': 'center' } },
 
-      { display: 'Control / Measure ID', name: 'control_measure_id',
-        data:'control_measure_id', searchable:false, sortable:true },
+      { display: 'Control / Measure', name: 'cmLabel', data: 'cmLabel',
+        searchable: true, sortable: false },
 
-      { display: 'Risk Assessment ID', name:'risk_assessment_id',
-        data:'risk_assessment_id', searchable:false, sortable:true },
+      { display: 'Risk Assessment', name: 'raLabel', data: 'raLabel',
+        searchable: true, sortable: false },
 
-      { display: 'Responsible ID', name:'responsible_for_implementation_id',
-        data:'responsible_for_implementation_id', searchable:false, sortable:false },
+      { display: 'Responsible', name: 'responsibleName', data: 'responsibleName',
+        searchable: true, sortable: false },
 
-      { display: 'Priority', name:'priority', data:'priority',
-        searchable:false, sortable:true,
-        style:{ width:'100px','text-align':'center' } },
+      { display: 'Priority', name: 'priorityLabel', data: 'priorityLabel',
+        searchable: false, sortable: true,
+        style: { width: '120px', 'text-align': 'center' } },
 
-      { display: 'Implementation Status', name:'implementation_status',
-        data:'implementation_status', searchable:false, sortable:true,
-        style:{ width:'160px' } },
+      { display: 'Implementation Status', name: 'statusLabel', data: 'statusLabel',
+        searchable: false, sortable: true,
+        style: { width: '160px' } },
 
-      { display: 'Actions', name:'actions', data:'public_id',
-        template:this.actionTemplate, searchable:false, sortable:false,
-        fixed:true, style:{ width:'100px','text-align':'center' } }
+      { display: 'Actions', name: 'actions', data: 'public_id',
+        searchable: false, sortable: false, fixed: true,
+        template: this.actionTemplate,
+        style: { width: '120px', 'text-align': 'center' } }
     ];
+
     this.initialVisibleColumns = this.columns.map(c => c.name);
   }
 
-  /* ═════════ data load ═════════ */
+  /* ────────── look‑ups ────────── */
+  private loadLookups(): void {
+    const base: CollectionParameters = {
+      filter: '', limit: 0, page: 1, sort: 'public_id', order: SortDirection.ASCENDING
+    };
+
+    this.loader.show();
+    forkJoin({
+      cms: this.srvCM.getControlMeasures(base),
+      ras: this.srvRA.getRiskAssessments(base),
+      sts: this.srvStatus.getExtendableOptionsByType('IMPLEMENTATION_STATE'),
+      prs: this.srvPers.getPersons(base),
+      pgs: this.srvPG.getPersonGroups(base)
+    })
+    .pipe(finalize(() => this.loader.hide()))
+    .subscribe({
+      next: res => {
+        res.cms.results.forEach((c: any) => this.cmMap.set(c.public_id, c.title));
+
+        res.ras.results.forEach((ra: any) => {
+          const nm = ra.risk_name || ra.risk_title || ra.name || 'Risk';
+          this.raMap.set(ra.public_id, `RA #${ra.public_id} – ${nm}`);
+        });
+
+        res.sts.results.forEach((s: any) => this.stsMap.set(s.public_id, s.value));
+        res.prs.results.forEach((p: any) => this.respMap.set(p.public_id, p.display_name));
+        res.pgs.results.forEach((g: any) => this.respMap.set(g.public_id, g.name));
+
+        this.metaReady = true;
+        this.loadAssignments();
+      },
+      error: err => this.toast.error(err?.error?.message ?? 'Failed to load reference data')
+    });
+  }
+
+  /* ────────── data load ────────── */
   private loadAssignments(): void {
-    this.loading = true;
-    this.loaderService.show();
+    if (!this.metaReady) { return; }
 
-    /* free‑text search (IDs only, keep minimal) */
-    const searchFilter = this.filter
-      ? this.filterBuilder.buildFilter(this.filter, [{ name:'public_id' }])
+    this.loading = true; this.loader.show();
+
+    const freeTxt = this.filter
+      ? this.filterBld.buildFilter(this.filter, [{ name: 'public_id' }])
       : '';
+    const ctx = this.riskAssesmentId
+      ? { risk_assessment_id: this.riskAssesmentId }
+      : this.controlMeasureId
+        ? { control_measure_id: this.controlMeasureId }
+        : '';
 
-    const ctxFilter =
-      this.riskId ? { risk_assessment_id: this.riskId } :
-      this.controlMeasureId ? { control_measure_id: this.controlMeasureId } : '';
-
-    const finalFilter = searchFilter && ctxFilter
-      ? { $and:[searchFilter, ctxFilter] }
-      : (searchFilter || ctxFilter);
+    const finalFilter = freeTxt && ctx ? { $and: [freeTxt, ctx] } : (freeTxt || ctx);
 
     const params: CollectionParameters = {
       filter: finalFilter,
-      limit : this.limit,
-      page  : this.page,
-      sort  : this.sort.name,
-      order : this.sort.order
+      limit: this.limit,
+      page: this.page,
+      sort: this.sort.name,
+      order: this.sort.order
     };
 
-    this.assignmentSrv.getAssignments(params)
-      .pipe(finalize(() => {
-        this.loading = false;
-        this.loaderService.hide();
-      }))
+    this.srvAssign.getAssignments(params)
+      .pipe(finalize(() => { this.loading = false; this.loader.hide(); }))
       .subscribe({
-        next : resp => {
-          this.assignments       = resp.results ?? [];
-          this.totalAssignments  = resp.total   ?? this.assignments.length;
+        next: resp => {
+          this.assignments = (resp.results ?? []).map(a => ({
+            ...a,
+            cmLabel       : `${this.cmMap.get(a.control_measure_id) ?? 'CM'} (#${a.control_measure_id})`,
+            raLabel       : this.raMap.get(a.risk_assessment_id) ?? `RA #${a.risk_assessment_id}`,
+            responsibleName : this.respMap.get(a.responsible_for_implementation_id)
+                              ?? a.responsible_for_implementation_id,
+            priorityLabel : ({ 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Very High' } as any)[a.priority] ?? '',
+            statusLabel   : this.stsMap.get(a.implementation_status) ?? a.implementation_status
+          }));
+          this.totalAssignments = resp.total ?? this.assignments.length;
         },
         error: err => this.toast.error(err?.error?.message ?? 'Failed to load assignments')
       });
   }
 
-  /* ═════════ toolbar & actions ═════════ */
-  // public onAddNew(): void {
-  //   if (this.riskId) {
-  //     this.router.navigate(['/isms/risk_assessments', this.riskId,
-  //                           'control_measure_assignments','add']);
-  //   } else if (this.controlMeasureId) {
-  //     this.router.navigate(['/isms/control_measures', this.controlMeasureId,
-  //                           'control_measure_assignments','add']);
-  //   }
-  // }
-
-  public onAddNew(): void {
-    if (this.riskId) {
-      // Pass only riskAssessmentName from risk context
+  /* ────────── action handlers ────────── */
+  onAddNew(): void {
+    if (this.riskAssesmentId) {
       this.router.navigate(
-        ['/isms/risk_assessments', this.riskId, 'control_measure_assignments', 'add'],
-        { state: { riskAssessmentName: this.riskAssessmentName } }
+        ['/isms/risk_assessments', this.riskAssesmentId, 'control_measure_assignments', 'add'],
+        { state: { riskAssesmentId: this.riskAssesmentId, riskAssessmentName: this.riskAssessmentName } }
       );
     } else if (this.controlMeasureId) {
-      // Pass only controlMeasureName from control context
       this.router.navigate(
         ['/isms/control_measures', this.controlMeasureId, 'control_measure_assignments', 'add'],
-        { state: { controlMeasureName: this.controlMeasureName } }
+        { state: { controlMeasureId: this.controlMeasureId, controlMeasureName: this.controlMeasureName } }
       );
+    } else {
+      this.router.navigate(['/isms/control-measure-assignments/add']);
     }
   }
 
-  public onView(item: ControlMeasureAssignment): void {
-    this.router.navigate(
-      ['/isms/control-measure-assignments/edit'],
-      { state:{ assignment:item, mode:'view' } }
-    );
+onView(item: any): void {
+  this.router.navigate(
+    ['/isms/control-measure-assignments/edit'],
+    {
+      state: {
+        assignment: item,
+        mode: 'view',
+        ...(this.controlMeasureId ? {
+            controlMeasureId:   this.controlMeasureId,
+            controlMeasureName: this.controlMeasureName
+        } : {}),
+        ...(this.riskAssesmentId ? {
+            riskAssesmentId:             this.riskAssesmentId,
+            riskAssessmentName: this.riskAssessmentName
+        } : {})
+      }
+    }
+  );
+}
+
+onEdit(item: any): void {
+  this.router.navigate(
+    ['/isms/control-measure-assignments/edit'],
+    {
+      state: {
+        assignment: item,
+        mode: 'edit',
+        ...(this.controlMeasureId ? {
+            controlMeasureId:   this.controlMeasureId,
+            controlMeasureName: this.controlMeasureName
+        } : {}),
+        ...(this.riskAssesmentId ? {
+            riskAssesmentId:             this.riskAssesmentId,
+            riskAssessmentName: this.riskAssessmentName
+        } : {})
+      }
+    }
+  );
+}
+
+
+  onDelete(item: any): void {
+    if (!item.public_id) { return; }
+    const modal = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
+    modal.componentInstance.title    = 'Delete Assignment';
+    modal.componentInstance.item     = item;
+    modal.componentInstance.itemType = 'Control / Measure Assignment';
+    modal.componentInstance.itemName = `#${item.public_id}`;
+
+    modal.result.then(result => {
+      if (result === 'confirmed') {
+        this.loader.show();
+        this.srvAssign.deleteAssignment(item.public_id)
+          .pipe(finalize(() => this.loader.hide()))
+          .subscribe({
+            next : () => { this.toast.success('Assignment deleted'); this.loadAssignments(); },
+            error: err => this.toast.error(err?.error?.message)
+          });
+      }
+    }, () => { /* dismissed */ });
   }
 
-  /* ═════════ cmdb‑table events ═════════ */
-  public onPageChange(v:number): void { this.page  = v; this.loadAssignments(); }
-  public onPageSizeChange(v:number):void{ this.limit = v; this.page=1; this.loadAssignments(); }
-  public onSortChange(s:Sort):void      { this.sort  = s; this.loadAssignments(); }
-  public onSearchChange(q:string):void   { this.filter = q; this.page=1; this.loadAssignments(); }
+  /* ────────── table events ────────── */
+  onPageChange(v: number)    { this.page = v;        this.loadAssignments(); }
+  onPageSizeChange(v: number){ this.limit = v; this.page = 1; this.loadAssignments(); }
+  onSortChange(s: Sort)      { this.sort = s;        this.loadAssignments(); }
+  onSearchChange(q: string)  { this.filter = q; this.page = 1; this.loadAssignments(); }
 }

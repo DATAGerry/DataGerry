@@ -1,0 +1,18 @@
+<div id="risk-assesment-footer" class="card">
+    
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#object-tab-risk-assesments-list" role="tab">Risk
+                    Assessments</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body tab-content">
+        <div class="tab-pane fade show active" id="object-tab-risk-assesments-list" role="tabpanel">
+            <app-control-measure-assignment-list [riskAssesmentId]="currentID" [riskAssessmentName]="riskAssessmentName">
+            </app-control-measure-assignment-list>
+
+        </div>
+    </div>
+</div>

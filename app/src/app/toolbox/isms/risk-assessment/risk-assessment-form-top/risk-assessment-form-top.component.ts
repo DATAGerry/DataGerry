@@ -1,49 +1,20 @@
-// import { Component, Input, OnInit } from '@angular/core';
-// import { FormGroup } from '@angular/forms';
-// import { ActivatedRoute, Router } from '@angular/router';
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
 
-// @Component({
-//   selector: 'app-risk-assessment-form-top',
-//   templateUrl: './risk-assessment-form-top.component.html',
-//   styleUrls: ['./risk-assessment-form-top.component.scss']
-// })
-// export class RiskAssessmentFormTopComponent implements OnInit {
-//   @Input() parentForm!: FormGroup;
-//   @Input() fromRisk = false;
-//   @Input() fromObject = false;
-//   @Input() fromObjectGroup = false;
-//   @Input() risks: any[] = [];
-//   @Input() objects: any[] = [];
-//   @Input() objectGroups: any[] = [];
-//   @Input() objectSummary: string | null = null; 
-//   @Input() riskSummaryLine: string | null = null;
-
-
-//   public objectRefTypes = [
-//     { label: 'Object', value: 'OBJECT' },
-//     { label: 'Object Group', value: 'OBJECT_GROUP' }
-//   ];
-
-//   ngOnInit(): void {
-
-//     console.log('objectss', this.objects);
-
-//     const state = history.state as { objectSummary?: string };
-//     if (state?.objectSummary) {
-//       this.objectSummary = state.objectSummary;
-//     }
-
-
-//     if (this.fromObject || this.fromObjectGroup) {
-//       this.parentForm.get('object_id_ref_type')?.disable();
-//     }
-//     console.log('fromRisk:', this.fromRisk)
-//     console.log('fromObject:', this.fromObject);
-//   }
-// }
-
-
-
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { finalize } from 'rxjs/operators';

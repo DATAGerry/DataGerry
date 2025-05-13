@@ -63,10 +63,12 @@
    -->
 
 
-<!-- risk-assessment-add.component.html -->
+
+
+
 <div class="risk-assessment-add container" *ngIf="!loading">
 
-  <!-- Risk & Object Information Section --> 
+  <!-- Risk & Object Information Section -->
 
   <h2>Risk Assessment</h2>
 
@@ -143,17 +145,20 @@
     </div> -->
 
 
-        <!-- Footer Buttons -->
-        <div class="mt-4 d-flex justify-content-between">
-          <!-- Cancel Button -->
-          <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
-            (clicked)="onCancel()"></app-button>
-    
-          <!-- Submit Button -->
-          <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'"
-          (clicked)="onSave()"
-            ></app-button>
-    
-        </div>
+    <!-- Footer Buttons -->
+    <div class="mt-4 d-flex justify-content-between">
+      <!-- Cancel Button -->
+      <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
+        (clicked)="onCancel()"></app-button>
+
+      <!-- Submit Button -->
+      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()"></app-button>
+
+    </div>
+
+    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId">
+    </cmdb-risk-assessment-footer>
   </form>
+
+
 </div>
