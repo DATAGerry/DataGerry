@@ -65,6 +65,10 @@ class IsmsRisk(CmdbDAO):
         'threats': {
             'type': 'list',
         },
+        'category_id' : {
+            'type': 'integer',
+            'nullable': True,
+        },
         'vulnerabilities': {
             'type': 'list',
         },
@@ -89,6 +93,7 @@ class IsmsRisk(CmdbDAO):
             protection_goals: list[int],
             threats: list[int] = None,
             vulnerabilities: list[int] = None,
+            category_id: int = None,
             identifier: str = None,
             consequences: str = None,
             description: str = None,
@@ -103,6 +108,7 @@ class IsmsRisk(CmdbDAO):
             protection_goals (list[int]): List of affected protection goals of the IsmsRisk
             threats (list[int]): List of threats linked with this IsmsRisk
             vulnerabilities (list[int]): List of vulnerabilities linked with this IsmsRisk
+            category_id (int): The public_id of the CmdbExtendableOption representing the value
             identifier (str, optional): Identifier of the IsmsRisk
             consequences (str, optional): Consequences of the IsmsRisk
             description (str, optional): Description of the IsmsRisk
@@ -116,6 +122,7 @@ class IsmsRisk(CmdbDAO):
             self.protection_goals = protection_goals
             self.threats = threats or []
             self.vulnerabilities = vulnerabilities or []
+            self.category_id = category_id
             self.identifier = identifier
             self.consequences = consequences
             self.description = description
@@ -148,6 +155,7 @@ class IsmsRisk(CmdbDAO):
                 protection_goals = data.get('protection_goals'),
                 threats = data.get('threats', []),
                 vulnerabilities = data.get('vulnerabilities', []),
+                category_id = data.get('category_id'),
                 identifier = data.get('identifier'),
                 consequences = data.get('consequences'),
                 description = data.get('description'),
@@ -178,6 +186,7 @@ class IsmsRisk(CmdbDAO):
                 'protection_goals': instance.protection_goals,
                 'threats': instance.threats,
                 'vulnerabilities': instance.vulnerabilities,
+                'category_id': instance.category_id,
                 'identifier': instance.identifier,
                 'consequences': instance.consequences,
                 'description': instance.description,

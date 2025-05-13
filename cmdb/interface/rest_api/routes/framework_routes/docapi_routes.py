@@ -20,6 +20,7 @@ import logging
 import json
 from bson import json_util
 from flask import abort, request, Response
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.manager.query_builder import BuilderParameters
@@ -29,6 +30,7 @@ from cmdb.manager import (
 )
 
 from cmdb.models.user_model import CmdbUser
+from cmdb.models.object_model import CmdbObject
 from cmdb.models.docapi_model.docapi_renderer import DocApiRenderer
 from cmdb.framework.docapi.docapi_template.docapi_template import DocapiTemplate
 from cmdb.framework.results import IterationResult
@@ -55,7 +57,7 @@ docs_blueprint = APIBlueprint('docs', __name__)
 
 # --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-#TODO: ROUTE-FIX (remove one route)
+#TODO: ROUTE-FIX (Adapt route to first version in frontend)
 @docapi_blueprint.route('/template', methods=['POST'])
 @docapi_blueprint.route('/template/', methods=['POST'])
 @insert_request_user
@@ -136,8 +138,6 @@ def get_templates(params: CollectionParameters, request_user: CmdbUser):
         abort(500, "An error occured when trying to retrieve the templates!")
 
 
-#TODO: ROUTE-FIX (Remove one route)
-@docapi_blueprint.route('/template/by/<string:searchfilter>/', methods=['GET'])
 @docapi_blueprint.route('/template/by/<string:searchfilter>', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -252,11 +252,20 @@ def render_object_template(public_id: int, object_id: int, request_user: CmdbUse
         docapi_manager: DocapiTemplatesManager = ManagerProvider.get_manager(ManagerType.DOCAPI_TEMPLATES,
                                                                                 request_user)
 
-        #TODO: DEPENDENCY-FIX (Remove dependency on ObjectsManager)
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
-        docapi_renderer = DocApiRenderer(objects_manager, docapi_manager)
-        output = docapi_renderer.render_object_template(public_id, object_id)
+        target_template = docapi_manager.get_template(public_id)
+
+        if not target_template:
+            abort(404, f"Template with ID: {public_id} not found!")
+
+        target_object = objects_manager.get_object(object_id)
+
+        if not target_object:
+            abort(404, f"Object with ID: {object_id} for Template with ID: {public_id} not found!")
+
+        docapi_renderer = DocApiRenderer(objects_manager, target_template, CmdbObject.from_data(target_object))
+        output = docapi_renderer.render_object_template()
 
         return Response(
             output,
@@ -265,13 +274,18 @@ def render_object_template(public_id: int, object_id: int, request_user: CmdbUse
                 "Content-Disposition": "attachment; filename=output.pdf"
             }
         )
+    except HTTPException as http_err:
+        raise http_err
     except Exception as err:
         LOGGER.error("[render_object_template] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "An error occured when trying to render the template!")
+        abort(500,
+              f"An unexpected error occured while trying to render the Template with ID: {public_id} "
+              f"for Object with ID: {object_id}!"
+            )
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
-#TODO: ROUTE-FIX (Remove one route)
+#TODO: ROUTE-FIX (Adapt route to first version in frontend)
 @docapi_blueprint.route('/template', methods=['PUT'])
 @docapi_blueprint.route('/template/', methods=['PUT'])
 @insert_request_user
@@ -311,8 +325,6 @@ def update_template(request_user: CmdbUser):
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
-#TODO: ROUTE-FIX (Remove one route)
-@docapi_blueprint.route('/template/<int:public_id>/', methods=['DELETE'])
 @docapi_blueprint.route('/template/<int:public_id>', methods=['DELETE'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)

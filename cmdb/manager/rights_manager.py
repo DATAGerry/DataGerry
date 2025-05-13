@@ -114,9 +114,8 @@ class RightsManager(BaseManager):
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
-    #TODO: ANNOTATION-FIX (get type of right_tree)
     @staticmethod
-    def flat_tree(right_tree) -> list[BaseRight]:
+    def flat_tree(right_tree: tuple) -> list[BaseRight]:
         """
         Flattens a nested right tree into a flat list of rights
 

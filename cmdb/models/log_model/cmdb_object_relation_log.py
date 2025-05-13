@@ -137,7 +137,7 @@ class CmdbObjectRelationLog(CmdbDAO):
             instance (CmdbObjectRelationLog): The CmdbObjectRelationLog which should be converted
 
         Raises:
-            CmdbObjectRelationLogToJsonError: If the CmdbObjectRelationLog could not be converted\
+            CmdbObjectRelationLogToJsonError: If the CmdbObjectRelationLog could not be converted
                                               to a json compatible dict
 
         Returns:

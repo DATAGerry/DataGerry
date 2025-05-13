@@ -13,37 +13,49 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""Access Control helper functions"""
+"""
+Implementation of CmdbProcess
+"""
 import logging
-
-from cmdb.security.acl.access_control_list import AccessControlList
-from cmdb.security.acl.permission import AccessControlPermission
-from cmdb.models.type_model import CmdbType
-from cmdb.models.user_model import CmdbUser
-
-from cmdb.errors.security import AccessDeniedError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------------------------- #
+#                                                  CmdbProcess - CLASS                                                 #
+# -------------------------------------------------------------------------------------------------------------------- #
+class CmdbProcess:
+    """
+    Implementation of CmdbProcess
+    """
 
-def has_access_control(target_type: CmdbType, user: CmdbUser, permission: AccessControlPermission) -> bool:
-    """Check if a user has access to object/objects for a given permission"""
-    acl: AccessControlList = target_type.acl
+    def __init__(self, name: str, classname: str):
+        """
+        Create a new instance of CmdbProcess
 
-    if acl and acl.activated:
-        return acl.verify_access(user.group_id, permission)
+        Args:
+            name(str): name of the process
+            classname(str): classname of the process
+        """
+        self.__name = name
+        self.__classname = classname
 
-    return True
+
+    def get_name(self):
+        """
+        Return the process name
+
+        Returns:
+            str: name of the process
+        """
+        return self.__name
 
 
-def verify_access(target_type: CmdbType, user: CmdbUser = None, permission: AccessControlPermission = None):
-    """Validate if a user has access to objects of this type."""
-    if not user or not permission:
-        return
+    def get_class(self):
+        """
+        Return the class name
 
-    verify = has_access_control(target_type, user, permission)
-
-    if not verify:
-        raise AccessDeniedError('Protected by ACL permission!')
+        Returns:
+            str: name of the class
+        """
+        return self.__classname

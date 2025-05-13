@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-Process Manager
-Manager for handling CMDB processes
+Implementation of ProcessManager to handle CmdbProcesses
 """
 import logging
 import multiprocessing
 import threading
 from time import sleep
+
 from cmdb.utils.helpers import load_class
+from cmdb.process_management.cmdb_process import CmdbProcess
+from cmdb.process_management.process_controller import ProcessController
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -125,61 +127,3 @@ class ProcessManager:
         # Clear process lists
         self.__process_list.clear()
         self.__process_controllers.clear()
-
-
-class CmdbProcess:
-    #TODO: REFACTOR-FIX
-    """Definition of a CmdbProcess"""
-
-    def __init__(self, name, classname):
-        """Create a new instance
-
-        Args:
-            name(str): name of the process
-            classname(str): classname of the process
-        """
-        self.__name = name
-        self.__classname = classname
-
-
-    def get_name(self):
-        """return the process name
-
-        Returns:
-            str: name of the process
-        """
-        return self.__name
-
-
-    def get_class(self):
-        """return the class name
-
-        Returns:
-            str: name of the class
-        """
-        return self.__classname
-
-
-class ProcessController(threading.Thread):
-    #TODO: REFACTOR-FIX
-    """Controlls the state of a process"""
-
-    def __init__(self, process, flag_shutdown, cb_shutdown):
-        """Creates a new instance
-        
-        Args:
-            process(multiprocessingProcess): process to control
-            flag_shutdown(threading.Event): shutdown flag
-            cb_shutdown(func): callback function if a process crashed
-        """
-        super().__init__()
-        self.__process = process
-        self.__flag_shutdown = flag_shutdown
-        self.__cb_shutdown = cb_shutdown
-
-
-    def run(self):
-        self.__process.join()
-        # terminate app, if process crashed
-        if not self.__flag_shutdown.is_set():
-            self.__cb_shutdown()

@@ -284,6 +284,7 @@ def get_cmdb_type_schema() -> dict:
                                     'required': False
                                 },
                                 'empty': True,
+                                'nullable': True,
                             }
                         }
                     },

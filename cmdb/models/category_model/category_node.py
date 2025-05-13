@@ -42,10 +42,10 @@ class CategoryNode:
 
         Args:
             category (CmdbCategory): The CmdbCategory associated with this node
-            children (list[CategoryNode], optional): A list of child CategoryNodes, sorted by their order.\
-                Defaults to None
+            children (list[CategoryNode], optional): A list of child CategoryNodes, sorted by their order.
+                                                     Defaults to None
             types (list[CmdbType], optional): A list of CmdbType instances to filter based on the CmdbCategory's types.
-                Defaults to None
+                                              Defaults to None
         """
         try:
             self.category = category

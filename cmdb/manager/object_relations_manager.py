@@ -199,7 +199,7 @@ class ObjectRelationsManager(BaseManager):
         and deletes them.
 
         Args:
-            relation_id (int): The public_id of the CmdbRelation for which invalid\
+            relation_id (int): The public_id of the CmdbRelation for which invalid
                                CmdbObjectRelations should be deleted
             invalid_ids (list[int]): A list of IDs (either parent or child) that should be invalidated
             is_parent_ids (bool): A flag indicating whether the invalid IDs belong to parent type relations

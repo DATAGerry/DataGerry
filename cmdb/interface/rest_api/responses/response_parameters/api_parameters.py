@@ -56,11 +56,11 @@ class APIParameters:
 
         Args:
             query_string (str): The query string to filter or search data in the API request
-            **optional (dict, optional): Any additional parameters, including an optional `projection`\
+            **optional (dict, optional): Any additional parameters, including an optional `projection`
                                          key which will be parsed
 
         Returns:
-            APIParameters: An instance of the APIParameters class with the provided query string\
+            APIParameters: An instance of the APIParameters class with the provided query string
                            and optional parameters
         """
         if 'projection' in optional:
