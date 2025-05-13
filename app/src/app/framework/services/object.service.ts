@@ -274,11 +274,10 @@ export class ObjectService<T = CmdbObject | RenderResult> implements ApiServiceP
     public countObjects<T>(): Observable<number> {
         const options = this.options;
         options.params = new HttpParams();
-
-        return this.api.callHead<T[]>(this.servicePrefix + '/', options).pipe(
-            map((apiResponse: HttpResponse<APIGetMultiResponse<T>>) => {
-                const count = +apiResponse.headers.get('X-Total-Count');
-                // Store the fetched count
+        return this.api.callGet<any>(this.servicePrefix + '/count', options).pipe(
+            map((count: any) => {
+                
+                count = +count.body;
                 this.lastObjectCountSubject.next(count);
                 return count;
             })
