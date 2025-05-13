@@ -65,24 +65,7 @@ export class ObjectGroupsAddComponent implements OnInit {
     private typeService: TypeService
   ) { }
 
-  // ngOnInit(): void {
-  //   this.groupId = +this.route.snapshot.paramMap.get('id');
-  //   this.isEditMode = !!this.groupId;
 
-  //   // Always load categories & types
-  //   this.loadCategories();
-  //   this.loadTypesIfNeeded();
-
-  //   // If editing, fetch the single group by ID
-  //   if (this.isEditMode && this.groupId) {
-  //     this.loadGroupToEdit(this.groupId);
-  //   }
-
-  //   // Cache the group_type for toggling logic
-  //   this.previousGroupType = this.group.group_type;
-
-  //   console.log('types', this.allTypeIds)
-  // }
 
   ngOnInit(): void {
     const state = history.state;

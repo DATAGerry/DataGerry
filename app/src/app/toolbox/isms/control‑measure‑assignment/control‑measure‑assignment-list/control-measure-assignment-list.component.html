@@ -25,14 +25,7 @@
   (searchChange)="onSearchChange($event)">
 </cmdb-table>
 
-<!-- <ng-template #actionTemplate let-item="item">
-  <i class="far fa-eye   icon-margin cursor-pointer"
-     title="View"  (click)="onView(item)"></i>
-  <i class="far fa-edit  icon-margin cursor-pointer"
-     title="Edit"  (click)="onEdit(item)"></i>
-  <i class="far fa-trash-alt cursor-pointer"
-     title="Delete"(click)="onDelete(item)"></i>
-</ng-template> -->
+
 
 <ng-template #actionTemplate let-item="item">
   <span *permissionLink="['base.isms.controlMeasureAssignment.edit']">

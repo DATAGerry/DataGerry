@@ -23,23 +23,6 @@ import { RiskAssessmentListComponent } from './risk-assesment-list/risk-assessme
 
 
 
-// risk-assessment-routing.module.ts
-// const routes: Routes = [
-//   /* create screens (already there) */
-//   { path: 'risks/:riskId/risk-assessments/add',        component: RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
-//   { path: 'objects/:objectId/risk-assessments/add',    component: RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
-//   { path: 'object-groups/:groupId/risk-assessments/add', component: RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
-
-//   /* NEW – list */
-//   { path: 'risks/:riskId/risk-assessments',            component: RiskAssessmentListComponent, canActivate:[preCloudGuard] },
-//   { path: 'objects/:objectId/risk-assessments',        component: RiskAssessmentListComponent, canActivate:[preCloudGuard] },
-//   { path: 'object-groups/:groupId/risk-assessments',   component: RiskAssessmentListComponent, canActivate:[preCloudGuard] },
-
-//   { path: 'risk-assessments/view/:id',  component: RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
-//   { path: 'risk-assessments/edit/:id',  component: RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
-//   { path: 'risk-assessments/add',       component: RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
-// ];
-
 const routes: Routes = [
   /* ➜ CREATE ------------------------------------------------------------- */
   { path:'risks/:riskId/risk-assessments/add',          component:RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
@@ -67,10 +50,6 @@ const routes: Routes = [
   { path:'risk-assessments/add',      component:RiskAssessmentAddComponent, canActivate:[preCloudGuard] },
 ];
 
-
-
-
-  
 
 @NgModule({
   imports: [RouterModule.forChild(routes)  ],
