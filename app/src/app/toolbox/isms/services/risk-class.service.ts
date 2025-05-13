@@ -187,6 +187,7 @@ export class RiskClassService<T = any> implements ApiServicePrefix {
     const options = { ...this.options };
     options.params = new HttpParams();
 
+
     return this.api.callDelete<APIDeleteSingleResponse<T>>(`${this.servicePrefix}/${publicId}`, options)
       .pipe(
         map((apiResponse: HttpResponse<APIDeleteSingleResponse<T>>) => apiResponse.body),

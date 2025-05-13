@@ -1,0 +1,40 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Control / Measure Assignments</h2>
+  <button class="btn btn-sm btn-success" (click)="onAddNew()">
+    <i class="fas fa-plus"></i> Add
+  </button>
+</div>
+<hr />
+
+<cmdb-table
+  [items]="assignments"
+  [columns]="columns"
+  [page]="page"
+  [sort]="sort"
+  [id]="'control-measure-assignments-table'"
+  [emptyMessage]="'No assignments found.'"
+  [totalItems]="totalAssignments"
+  [selectEnabled]="false"
+  [loading]="loading"
+  [pageSize]="limit"
+  [toggleable]="true"
+  [initialVisibleColumns]="initialVisibleColumns"
+  (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)"
+  (sortChange)="onSortChange($event)"
+  (searchChange)="onSearchChange($event)">
+</cmdb-table>
+
+
+
+<ng-template #actionTemplate let-item="item">
+  <span *permissionLink="['base.isms.controlMeasureAssignment.edit']">
+    <i class="far fa-eye spacing-right icon-view" (click)="onView(item)" title="View"></i>
+  </span>
+  <span *permissionLink="['base.isms.controlMeasureAssignment.edit']">
+    <i class="far fa-edit btn-edit spacing-right icon-edit" (click)="onEdit(item)" title="Edit"></i>
+  </span>
+  <span *permissionLink="['base.isms.controlMeasureAssignment.delete']">
+    <i class="far fa-trash-alt btn-delete icon-delete" (click)="onDelete(item)" title="Delete"></i>
+  </span>
+</ng-template>

@@ -1,0 +1,112 @@
+<div class="container">
+
+  <!-- ────────────── HEADLINE ────────────── -->
+  <h2>
+    {{ isViewMode ? 'View'
+    : isEditMode ? 'Edit'
+    : 'Add' }}
+    Control&nbsp;/&nbsp;Measure Assignment
+  </h2>
+
+  <!-- ═══════════════ FORM ═══════════════ -->
+  <form [formGroup]="form" class="mt-4">
+
+    <!-- ────────────── CONTROL / MEASURE ────────────── -->
+    <div class="form-block">
+      <label>
+        Control&nbsp;/&nbsp;Measure
+        <span *ngIf="!isViewMode" class="required">*</span>
+      </label>
+
+      <ng-container *ngIf="form.get('control_measure_id')?.disabled; else cmSelect">
+        <div class="bg-light border rounded px-3 py-2">
+          {{ getCMTitle(form.getRawValue().control_measure_id) }}
+        </div>
+      </ng-container>
+
+      <ng-template #cmSelect>
+        <app-form-select class="w-100" [items]="cmOptions" bindLabel="title" bindValue="public_id"
+          [formControl]="form.get('control_measure_id')">
+        </app-form-select>
+      </ng-template>
+    </div>
+
+    <!-- ────────────── RISK ASSESSMENT ────────────── -->
+    <div class="form-block">
+      <label>
+        Risk&nbsp;Assessment
+        <span *ngIf="!isViewMode" class="required">*</span>
+      </label>
+
+      <ng-container *ngIf="form.get('risk_assessment_id')?.disabled; else raSelect">
+        <div class="bg-light border rounded px-3 py-2">
+          {{ getRALabel(form.getRawValue().risk_assessment_id) }}
+        </div>
+      </ng-container>
+
+      <ng-template #raSelect>
+        <app-form-select class="w-100" [items]="raOptions" bindLabel="label" bindValue="public_id"
+          [formControl]="form.get('risk_assessment_id')">
+        </app-form-select>
+      </ng-template>
+    </div>
+
+    <!-- ────────────── DATES ────────────── -->
+    <div class="form-block">
+      <label>Planned Implementation Date</label>
+      <app-form-date class="w-100" [formControl]="form.get('planned_implementation_date')">
+      </app-form-date>
+    </div>
+
+    <div class="form-block">
+      <label>Implementation Status
+        <span *ngIf="!isViewMode" class="required">*</span>
+      </label>
+      <app-form-select class="w-100" [items]="statusOptions" bindLabel="value" bindValue="public_id"
+        [formControl]="form.get('implementation_status')">
+      </app-form-select>
+    </div>
+
+    <div class="form-block">
+      <label>Finished Implementation Date</label>
+      <app-form-date class="w-100" [formControl]="form.get('finished_implementation_date')">
+      </app-form-date>
+    </div>
+
+    <!-- ────────────── PRIORITY ────────────── -->
+    <div class="form-block">
+      <label>Priority</label>
+      <app-form-select class="w-100" [items]="priorityOptions" bindLabel="label" bindValue="value"
+        [formControl]="form.get('priority')">
+      </app-form-select>
+    </div>
+
+    <!-- ────────────── RESPONSIBLE ────────────── -->
+    <div class="form-block">
+      <label>Responsible
+        <span *ngIf="!isViewMode" class="required">*</span>
+      </label>
+      <app-form-select class="w-100" [items]="respOptions" bindLabel="display_name" bindValue="public_id"
+        groupBy="group" [formControl]="form.get('responsible_for_implementation_id')"
+        (selectedItemChange)="onRespSelected($event)">
+      </app-form-select>
+    </div>
+
+    <!-- ────────────── ACTION BUTTONS ────────────── -->
+    <div class="mt-4 d-flex justify-content-between">
+      <!-- Cancel Button -->
+      <app-button [bootstrapClass]="'btn-secondary'" label="Cancel" type="button" (clicked)="onCancel()"
+        *ngIf="!isViewMode">
+      </app-button>
+      <!-- Submit Button -->
+      <app-button [bootstrapClass]="'btn-success'" [disabled]="form.invalid" *ngIf="!isViewMode"
+        [label]="isEditMode ? 'Save Changes' : 'Create Control/Measure'" (clicked)="onSave()">
+      </app-button>
+    </div>
+
+  </form>
+</div>
+
+<!--  loader popup -->
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data...">
+</app-loading-popup>

@@ -7,6 +7,7 @@ export interface RiskCalculationData {
     }>;
     likelihood_id?: number | null;
     likelihood_value?: number;
+    maximum_impact_id?:   number | null;
     maximum_impact_value?: number;
     risk_level_value?: number;
   }

@@ -1,4 +1,21 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -39,6 +56,9 @@ import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
 import { ControlMeasuresAddComponent } from './control-measure/control-measure-add/control-measures-add.component';
+import { RisksFooterComponent } from './risks/risks-footer/risks-footer.component';
+import { ControlMeasureFooterComponent } from './control-measure/control-measure-footer/control-measure-footer.component';
+import { ControlMeasureAssignmentModule } from './control‑measure‑assignment/control-measure-assignment.module';
 
 @NgModule({
   declarations: [
@@ -62,17 +82,17 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
     VulnerabilitiesAddComponent,
     RiskAddComponent,
     RisksListComponent,
+    RisksFooterComponent,
     ControlmeasuresListComponent,
     ControlMeasuresAddComponent,
     PersonListComponent,
-    PersonAddEditComponent
+    PersonAddEditComponent,
+    ControlMeasureFooterComponent
+
   ],
   imports: [
     CommonModule,
     LayoutModule,
-    IsmsRoutingModule,
-    PersonRoutingModule,
-    RiskAssessmentModule,
     ArchwizardModule,
     ReactiveFormsModule,
     NgSelectModule,
@@ -81,7 +101,11 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
     CoreModule,
     TableModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    IsmsRoutingModule,
+    PersonRoutingModule,
+    RiskAssessmentModule,
+    ControlMeasureAssignmentModule
   ]
 })
 export class ISMSModule {}

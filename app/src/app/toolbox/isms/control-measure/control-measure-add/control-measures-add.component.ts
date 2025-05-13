@@ -25,6 +25,7 @@ export const IMPLEMENTATION_STATE = 'IMPLEMENTATION_STATE';
 export class ControlMeasuresAddComponent implements OnInit {
 
   public isEditMode = false;
+  public isViewMode = false;
   public isLoading$ = this.loaderService.isLoading$;
 
   public controlMeasureForm: FormGroup;
@@ -58,9 +59,17 @@ export class ControlMeasuresAddComponent implements OnInit {
   ) {
     // Check if editing existing control/measure via router state
     const navState = this.router.getCurrentNavigation()?.extras?.state;
+    // if (navState && navState['controlMeasure']) {
+    //   this.isEditMode = true;
+    //   this.controlMeasure = navState['controlMeasure'] as ControlMeasure;
+    // }
+
     if (navState && navState['controlMeasure']) {
       this.isEditMode = true;
       this.controlMeasure = navState['controlMeasure'] as ControlMeasure;
+      if (navState['mode'] === 'view') {
+        this.isViewMode = true;
+      }
     }
   }
 
@@ -70,6 +79,9 @@ export class ControlMeasuresAddComponent implements OnInit {
     if (this.isEditMode && this.controlMeasure.public_id) {
       console.log('editing control measure:', this.controlMeasure);
       this.patchForm(this.controlMeasure);
+      if (this.isViewMode) {
+        this.controlMeasureForm.disable();
+      }
     }
 
     // Load dropdown data from ExtendableOptions

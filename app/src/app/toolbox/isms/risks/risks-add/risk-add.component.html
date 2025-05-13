@@ -81,18 +81,23 @@
       </div>
     </div>
 
+    <hr>
     <!-- Footer Buttons -->
     <div class="mt-4 d-flex justify-content-between">
       <!-- Cancel Button -->
-      <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
+      <app-button *ngIf="!isViewMode" label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
+      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'" *ngIf="!isViewMode"
         [disabled]="riskForm.invalid"></app-button>
 
     </div>
   </form>
+
+  <div id="object-view-footer" class="col-12" *ngIf="isViewMode">
+    <cmdb-risks-footer [riskName]="riskForm.get('name')?.value" [riskId]="risk.public_id"></cmdb-risks-footer>
+  </div>
 </div>
 
 <!-- Loading Spinner -->

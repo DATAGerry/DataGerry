@@ -3,7 +3,8 @@ import {
     forwardRef,
     Input,
     OnInit,
-    ChangeDetectionStrategy
+    EventEmitter,
+    Output
   } from '@angular/core';
   import {
     ControlValueAccessor,
@@ -14,7 +15,6 @@ import {
     selector: 'app-form-select',
     templateUrl: './select.component.html',
     styleUrls: ['./select.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
       {
         provide: NG_VALUE_ACCESSOR,
@@ -69,6 +69,10 @@ import {
 
     @Input() dropdownDirection?: 'bottom' | 'top' = 'bottom';
 
+    @Input() groupBy?: string;
+
+    @Output() selectedItemChange = new EventEmitter<any>();
+
   
     /**
      * These are callbacks for ControlValueAccessor
@@ -114,22 +118,20 @@ import {
     /**
      * Custom 'change' handler triggered by the template
      */
-    // onValueChange(selectedValue: any) {
-    //     console.log('Selected Value:', selectedValue); // Debugging
-
-    //   this.value = selectedValue;
-    //   this.onChange(selectedValue);
-    //   this.onTouched();
-    // }
-
     onValueChange(selectedValue: any) {
-        if (this.multiple) {
-          this.value = selectedValue.map((item: any) => item[this.bindValue]); // Extract public_id
-        } else {
-          this.value = selectedValue[this.bindValue]; // Extract public_id for single select
-        }
-        this.onChange(this.value); // Notify Angular forms API
-        this.onTouched();
+      let outputValue;
+      if (this.multiple) {
+        this.value = selectedValue.map((item: any) => item[this.bindValue]);
+        outputValue = selectedValue;
+      } else {
+        this.value = selectedValue ? selectedValue[this.bindValue] : null;
+        outputValue = selectedValue;
       }
+      
+      this.onChange(this.value); // Notify Angular forms API
+      this.selectedItemChange.emit(outputValue);
+      this.onTouched();
+    }
   }
   
+

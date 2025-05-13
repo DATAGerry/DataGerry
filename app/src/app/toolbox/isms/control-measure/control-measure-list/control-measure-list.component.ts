@@ -153,6 +153,15 @@ export class ControlmeasuresListComponent implements OnInit {
         this.router.navigate(['/isms/control-measures/add']);
     }
 
+    /**
+     * Navigate to view control/measure page
+     * @param item - The control/measure to view
+     * @returns {void}
+     */
+    public onView(item: ControlMeasure): void {
+        this.router.navigate(['/isms/control-measures/view'], { state: { controlMeasure: item, mode: 'view' } });
+    }
+
 
     /**
      * Navigate to edit control/measure page

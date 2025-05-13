@@ -63,7 +63,9 @@
    -->
 
 
-<!-- risk-assessment-add.component.html -->
+
+
+
 <div class="risk-assessment-add container" *ngIf="!loading">
 
   <!-- Risk & Object Information Section -->
@@ -72,7 +74,8 @@
 
   <form [formGroup]="form" style="margin-top: 25px;">
     <app-risk-assessment-form-top [parentForm]="form" [fromRisk]="fromRisk" [fromObject]="fromObject"
-      [fromObjectGroup]="fromObjectGroup" [risks]="allRisks" [objects]="allObjects" [objectGroups]="allObjectGroups">
+      [fromObjectGroup]="fromObjectGroup" [risks]="allRisks" [objects]="allObjects" [objectGroups]="allObjectGroups"
+      [objectSummary]="objectSummary" [mode]="CurrentMode">
     </app-risk-assessment-form-top>
     <div class="risk-assessment-sections">
 
@@ -142,17 +145,20 @@
     </div> -->
 
 
-        <!-- Footer Buttons -->
-        <div class="mt-4 d-flex justify-content-between">
-          <!-- Cancel Button -->
-          <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
-            (clicked)="onCancel()"></app-button>
-    
-          <!-- Submit Button -->
-          <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'"
-          (clicked)="onSave()"
-            ></app-button>
-    
-        </div>
+    <!-- Footer Buttons -->
+    <div class="mt-4 d-flex justify-content-between">
+      <!-- Cancel Button -->
+      <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
+        (clicked)="onCancel()"></app-button>
+
+      <!-- Submit Button -->
+      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()"></app-button>
+
+    </div>
+
+    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId">
+    </cmdb-risk-assessment-footer>
   </form>
+
+
 </div>

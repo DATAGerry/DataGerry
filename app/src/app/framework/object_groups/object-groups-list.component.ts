@@ -177,15 +177,27 @@ export class ObjectGroupsListComponent implements OnInit {
   }
 
   /**
+   * view object group
+   * @param group
+   * @returns void  
+   */
+  onView(group: ObjectGroup): void {
+    this.router.navigate(['framework/object_groups/view', group.public_id], {
+      state: { group, isViewMode: true }
+    });
+  }
+  
+    /**
    * Edit object group
    * @param group
    * @returns void  
    */
   onEdit(group: ObjectGroup): void {
-    if (group.public_id) {
-      this.router.navigate(['framework/object_groups/edit', group.public_id]);
-    }
+    this.router.navigate(['framework/object_groups/edit', group.public_id], {
+      state: { group, isViewMode: false }
+    });
   }
+  
 
 
   /**

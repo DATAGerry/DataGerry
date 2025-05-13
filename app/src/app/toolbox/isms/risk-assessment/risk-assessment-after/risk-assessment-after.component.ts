@@ -1,3 +1,20 @@
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { RiskClass } from '../../models/risk-class.model';
@@ -67,10 +84,12 @@ export class RiskAssessmentAfterComponent implements OnInit {
     const selectedLikelihood = this.likelihoods.find(l => l.public_id === +lhId) ?? null;
     const lhVal = selectedLikelihood ? selectedLikelihood.calculation_basis : 0;
     const impactBasis = selectedImpact ? selectedImpact.calculation_basis : 0;
+    const impactId    = selectedImpact?.public_id         ?? null;
     const riskVal = impactBasis * lhVal;
 
     this.afterGroup.patchValue({
       likelihood_value: lhVal,
+      maximum_impact_id:    impactId,
       maximum_impact_value: impactBasis,
       risk_level_value: riskVal
     });

@@ -26,6 +26,7 @@ interface SelectOption {
 })
 export class ObjectGroupsAddComponent implements OnInit {
   public isEditMode = false;
+  public isViewMode = false;
   public groupId?: number;
   public isLoading$ = this.loaderService.isLoading$;
 
@@ -52,6 +53,8 @@ export class ObjectGroupsAddComponent implements OnInit {
   public allTypeIds: number[] = [];
   public typesLoaded = false;
 
+
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -62,22 +65,31 @@ export class ObjectGroupsAddComponent implements OnInit {
     private typeService: TypeService
   ) { }
 
+
+
   ngOnInit(): void {
+    const state = history.state;
     this.groupId = +this.route.snapshot.paramMap.get('id');
-    this.isEditMode = !!this.groupId;
+    this.isViewMode = !!state?.isViewMode;
+    this.isEditMode = !!this.groupId && !this.isViewMode;
+
+
+    if (state?.group) {
+      this.group = { ...state.group };
+    }
 
     // Always load categories & types
     this.loadCategories();
     this.loadTypesIfNeeded();
 
-    // If editing, fetch the single group by ID
-    if (this.isEditMode && this.groupId) {
+    // Only call API if data not passed (fallback)
+    if (!state?.group && this.groupId) {
       this.loadGroupToEdit(this.groupId);
     }
 
-    // Cache the group_type for toggling logic
     this.previousGroupType = this.group.group_type;
   }
+
 
   /* --------------------------- Categories --------------------------- */
 
@@ -94,6 +106,7 @@ export class ObjectGroupsAddComponent implements OnInit {
   /* --------------------------- Editing a single group --------------------------- */
 
   private loadGroupToEdit(id: number): void {
+    console.log('Loading group to edit', id);
     this.loaderService.show();
     this.objectGroupService.getObjectGroupById(id)
       .pipe(finalize(() => this.loaderService.hide()))

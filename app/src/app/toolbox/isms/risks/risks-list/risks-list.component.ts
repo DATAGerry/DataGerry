@@ -152,6 +152,16 @@ export class RisksListComponent implements OnInit {
     this.router.navigate(['/isms/risks/add']);
   }
 
+  /**
+   * View Risk
+   */
+  onView(risk: Risk): void {
+    this.router.navigate(
+      ['/isms/risks/view'],
+      { state: { risk } }
+    );
+  }
+
 
   /**
    * Edit Risk
