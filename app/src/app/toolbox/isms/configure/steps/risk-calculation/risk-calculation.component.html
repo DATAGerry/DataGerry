@@ -9,11 +9,11 @@
         <option value="$">Dollar ($)</option>
       </select>
     </div>
-    <div>
+    <!-- <div>
       <button class="btn btn-success" (click)="saveMatrix()" *permissionLink="'base.isms.riskMatrix.edit'">
         Save Configurations
       </button>
-    </div>
+    </div> -->
 
   </div>
 </div>
@@ -83,7 +83,7 @@
         <div class="risk-class-options">
           <div *ngFor="let rc of riskClasses" class="risk-class-option" [style.backgroundColor]="rc.color"
             (click)="assignRiskClass(rc)">
-            <span class="risk-class-label" [style.color]="getTextColorBasedOnBackground(rc.color)">{{ rc.name }}</span>
+            <span class="risk-class-label" [style.color]="getTextColor(rc.color)">{{ rc.name }}</span>
           </div>
         </div>
       </div>

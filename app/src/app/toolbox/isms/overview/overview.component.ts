@@ -15,7 +15,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ISMSService } from '../services/isms.service';
+import { IsmsConfigValidation } from '../models/isms-config-validation.model';
 
 @Component({
   selector: 'app-isms-overview',
@@ -24,9 +26,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OverviewComponent implements OnInit {
 
-  constructor() { }
+  public validationStatus: boolean = false;
+
+  constructor(private ismsService: ISMSService,
+    private cdRef: ChangeDetectorRef
+
+  ) { }
 
   ngOnInit(): void {
-    // e.g. fetch data for the overview, if needed
+    this.ismsService.getIsmsValidationStatus().subscribe((status: IsmsConfigValidation) => {
+      this.validationStatus =
+        status.risk_classes &&
+        status.likelihoods &&
+        status.impacts &&
+        status.impact_categories &&
+        status.risk_matrix;
+  
+      this.cdRef.detectChanges();
+    });
   }
+  
 }

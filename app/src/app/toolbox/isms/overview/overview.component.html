@@ -1,13 +1,18 @@
 <div class="card-deck">
   <div class="card">
     <a routerLink="/isms/configure">
-      <div class="dash-card primary">
+      <div
+        class="dash-card primary"
+        [ngClass]="{ 'greyish': !validationStatus }"
+        [attr.title]="!validationStatus ? 'Some error in configuration. Please validate.' : null"
+      >
         <i class="far fa-object-ungroup"></i>
         <span class="text-title">Configure ISMS Settings</span>
       </div>
     </a>
+    
   </div>
-
+  
   <div class="card">
     <a routerLink="/isms/risks">
       <div class="dash-card primary">

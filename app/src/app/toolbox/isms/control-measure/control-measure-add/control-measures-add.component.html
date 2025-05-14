@@ -1,4 +1,4 @@
-<div class="container" [formGroup]="controlMeasureForm">
+<div class="container" *ngIf="controlMeasureForm" [formGroup]="controlMeasureForm">
   <h2 class="mb-3">
     {{ isViewMode ? 'View Control/Measure' : isEditMode ? 'Edit Control/Measure' : 'Add Control/Measure' }}  </h2>
 

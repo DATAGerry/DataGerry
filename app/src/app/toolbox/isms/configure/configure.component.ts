@@ -20,6 +20,7 @@ import { WizardComponent } from '@rg-software/angular-archwizard';
 import { IsmsConfig } from '../models/isms-config.model';
 import { ISMSService } from '../services/isms.service';
 import { IsmsConfigValidation } from '../models/isms-config-validation.model';
+import { RiskCalculationComponent } from './steps/risk-calculation/risk-calculation.component';
 
 @Component({
   selector: 'app-isms-configure',
@@ -28,6 +29,8 @@ import { IsmsConfigValidation } from '../models/isms-config-validation.model';
 })
 export class ConfigureComponent implements OnInit, AfterViewInit {
   @ViewChild('wizard') wizard: WizardComponent;
+  @ViewChild(RiskCalculationComponent) riskCalculationComponent: RiskCalculationComponent;
+
 
   public ismsConfig: IsmsConfig;
   public totalSteps: number = 6;
@@ -200,6 +203,17 @@ export class ConfigureComponent implements OnInit, AfterViewInit {
       this.validationStatus = validationStatus;
       this.updateStepIndicatorColors();
     });
+  }
+
+  /**
+   * Save configurations by calling the saveMatrix() method of RiskCalculationComponent.
+   */
+  public onSaveConfigurations(): void {
+    if (this.riskCalculationComponent) {
+      this.riskCalculationComponent.saveMatrix();
+    } else {
+      console.error('RiskCalculationComponent not found.');
+    }
   }
 
   /* --------------------------------------------------- CONFIGURATION CHANGE HANDLERS --------------------------------------------------- */

@@ -18,11 +18,13 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { finalize } from 'rxjs/operators';
+import { CoreWarningModalComponent } from 'src/app/core/components/dialog/core-warning-modal/core-warning-modal.component';
 
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Likelihood } from 'src/app/toolbox/isms/models/likelihood.model';
+import { ISMSService } from 'src/app/toolbox/isms/services/isms.service';
 import { LikelihoodService } from 'src/app/toolbox/isms/services/likelihood.service';
 import { nonZeroValidator, numericOrDecimalValidator, uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
 
@@ -44,7 +46,10 @@ export class LikelihoodModalComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private likelihoodService: LikelihoodService,
-    private toast: ToastService
+    private toast: ToastService,
+    private ismsService: ISMSService,
+    private modalService: NgbModal,
+    
   ) { }
 
   ngOnInit(): void {
@@ -138,6 +143,25 @@ export class LikelihoodModalComponent implements OnInit {
           next: () => {
             this.toast.success('Likelihood updated successfully!');
             this.activeModal.close('saved');
+
+            this.ismsService.getIsmsValidationStatus().subscribe({
+              next: (status) => {
+                if (status?.risk_matrix) {
+                  const modalRef = this.modalService.open(CoreWarningModalComponent, { centered: true });
+                  modalRef.componentInstance.title = 'Risk Matrix Needs Review';
+                  modalRef.componentInstance.message = 'You have modified the calculation basis for likelihood. Please review the Risk Matrix accordingly to reflect these changes.';
+                  modalRef.componentInstance.cancelLabel = 'Continue';
+
+                  // Listen to modal result
+                  return modalRef.result.then(
+                    () => false, // when confirmed
+                    () => {
+                      return false;
+                    }
+                  );
+                }
+              }
+            })
           },
           error: (err) => {
             this.toast.error(err?.error?.message);
