@@ -33,6 +33,7 @@ import { RiskAssessmentService } from '../../services/risk-assessment.service';
 import { ExtendableOptionService } from 'src/app/toolbox/isms/services/extendable-option.service';
 import { PersonService } from '../../services/person.service';
 import { PersonGroupService } from '../../services/person-group.service';
+import { IsmsValidationService } from '../../services/isms-validation.service';
 
 @Component({
   selector: 'app-control-measure-assignment-add',
@@ -60,6 +61,8 @@ export class ControlMeasureAssignmentAddComponent implements OnInit {
   private readonly srvExtOpt = inject(ExtendableOptionService);
   private readonly srvPer = inject(PersonService);
   private readonly srvPg = inject(PersonGroupService);
+  private readonly ismsValidationService = inject(IsmsValidationService);
+  private readonly location = inject(Location);
 
   /* ───── UI state ───── */
   form!: FormGroup;
@@ -109,38 +112,53 @@ export class ControlMeasureAssignmentAddComponent implements OnInit {
   /* ────────── lifecycle ────────── */
   ngOnInit(): void {
 
-    /* ---------- detect current mode ---------- */
-    const st = history.state as any;
-    this.isEditMode = st.mode === 'edit';
-    this.isViewMode = st.mode === 'view';
-    const incoming: ControlMeasureAssignment | undefined = st.assignment;
-    if (incoming) { this.assignmentId = incoming.public_id; }
+    this.ismsValidationService.checkAndHandleInvalidConfig().subscribe({
+      next: (isValid) => {
+        if (!isValid) return;
 
-    /* ---------- consolidate context ---------- */
-    /* 1/ inputs */
-    if (this.controlMeasureId) { this.ctx.cmId = this.controlMeasureId; }
-    if (this.controlMeasureName) { this.ctx.cmName = this.controlMeasureName; }
-    if (this.riskAssesmentId) { this.ctx.raId = this.riskAssesmentId; }
-    if (this.riskAssessmentName) { this.ctx.raName = this.riskAssessmentName; }
 
-    /* 2/ navigation‑state */
-    if (st.controlMeasureId) { this.ctx.cmId = st.controlMeasureId; }
-    if (st.controlMeasureName) { this.ctx.cmName = st.controlMeasureName; }
-    if (st.riskAssesmentId) { this.ctx.raId = st.riskAssesmentId; }
-    if (st.riskAssessmentName) { this.ctx.raName = st.riskAssessmentName; }
+        /* ---------- detect current mode ---------- */
+        const st = history.state as any;
+        this.isEditMode = st.mode === 'edit';
+        this.isViewMode = st.mode === 'view';
+        const incoming: ControlMeasureAssignment | undefined = st.assignment;
+        if (incoming) { this.assignmentId = incoming.public_id; }
 
-    /* 3/ url params */
-    const cmParam = this.route.snapshot.paramMap.get('cmId');
-    const raParam = this.route.snapshot.paramMap.get('riskId');
-    if (cmParam) { this.ctx.cmId = +cmParam; }
-    if (raParam) { this.ctx.raId = +raParam; }
+        /* ---------- consolidate context ---------- */
+        /* 1/ inputs */
+        if (this.controlMeasureId) { this.ctx.cmId = this.controlMeasureId; }
+        if (this.controlMeasureName) { this.ctx.cmName = this.controlMeasureName; }
+        if (this.riskAssesmentId) { this.ctx.raId = this.riskAssesmentId; }
+        if (this.riskAssessmentName) { this.ctx.raName = this.riskAssessmentName; }
 
-    /* ---------- form ---------- */
-    this.buildForm();
-    if (incoming) { this.form.patchValue(incoming, { emitEvent: false }); }
+        /* 2/ navigation‑state */
+        if (st.controlMeasureId) { this.ctx.cmId = st.controlMeasureId; }
+        if (st.controlMeasureName) { this.ctx.cmName = st.controlMeasureName; }
+        if (st.riskAssesmentId) { this.ctx.raId = st.riskAssesmentId; }
+        if (st.riskAssessmentName) { this.ctx.raName = st.riskAssessmentName; }
 
-    /* ---------- look‑ups ---------- */
-    this.loadLookups(incoming);
+        /* 3/ url params */
+        const cmParam = this.route.snapshot.paramMap.get('cmId');
+        const raParam = this.route.snapshot.paramMap.get('riskId');
+        if (cmParam) { this.ctx.cmId = +cmParam; }
+        if (raParam) { this.ctx.raId = +raParam; }
+
+        /* ---------- form ---------- */
+        this.buildForm();
+        if (incoming) { this.form.patchValue(incoming, { emitEvent: false }); }
+
+        /* ---------- look‑ups ---------- */
+        this.loadLookups(incoming);
+
+      },
+      error: (err) => {
+        this.toast.error('Failed to validate ISMS configuration. Please try again later.');
+        this.location.back();
+      }
+    });
+
+
+
   }
 
   /* ────────── form factory ────────── */
@@ -248,7 +266,7 @@ export class ControlMeasureAssignmentAddComponent implements OnInit {
             this.form.disable({ emitEvent: false });
           }
         },
-        error: err => this.toast.error(err?.error?.message )
+        error: err => this.toast.error(err?.error?.message)
       });
   }
 

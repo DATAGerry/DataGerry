@@ -186,6 +186,9 @@ export class RisksListComponent implements OnInit {
     modalRef.componentInstance.item = risk;
     modalRef.componentInstance.itemType = 'Risk';
     modalRef.componentInstance.itemName = risk.name;
+    modalRef.componentInstance.warningTitle = 'Warning:';
+    modalRef.componentInstance.warningMessage = `Deleting this Risk will also permanently remove all associated Risk Assessments. This action cannot be undone!`;
+    modalRef.componentInstance.warningIconClass = 'fas fa-exclamation-triangle';
 
     modalRef.result.then(
       (result) => {

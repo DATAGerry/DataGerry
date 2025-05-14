@@ -1,7 +1,13 @@
 /* Current step styling */
+// ::ng-deep .steps-indicator li.current .step-indicator {
+//   background-color: #d4643e !important; /* Orange for the current step */
+//   color: white; /* Optional: text color for the current step */
+// }
+
+/* Current step styling */
 ::ng-deep .steps-indicator li.current .step-indicator {
-  background-color: #d4643e !important; /* Orange for the current step */
-  color: white; /* Optional: text color for the current step */
+  background-color: #007bff !important; /* Blue for the current step */
+  color: #ffffff !important; /* White text for contrast */
 }
 
 /* Valid step styling */
@@ -27,7 +33,7 @@
 /* Highlight the current step title */
 ::ng-deep .steps-indicator li.current .label {
   font-weight: bold;
-  color: #d4643e !important; /* Highlighted color for the current step title */
+  color: #007bff !important; /* Highlighted color for the current step title */
 }
 
 /* Styling for completed steps */

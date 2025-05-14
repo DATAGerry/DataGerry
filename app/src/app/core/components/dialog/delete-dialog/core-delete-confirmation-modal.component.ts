@@ -11,7 +11,10 @@ export class CoreDeleteConfirmationModalComponent {
   @Input() itemType: string;
   @Input() itemName: string;
   @Input() description: string;
-
+  @Input() warningTitle: string = 'Warning:';
+  @Input() warningMessage: string = '';
+  @Input() warningIconClass: string = 'fas fa-exclamation-circle';
+  
   constructor(public activeModal: NgbActiveModal) { }
 
   confirmDelete(): void {

@@ -1,15 +1,19 @@
+import { Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { finalize } from 'rxjs/operators';
+import { CoreWarningModalComponent } from 'src/app/core/components/dialog/core-warning-modal/core-warning-modal.component';
 
 import { ToastService } from 'src/app/layout/toast/toast.service';
 import { Impact } from 'src/app/toolbox/isms/models/impact.model';
 import { ImpactService } from 'src/app/toolbox/isms/services/impact.service';
+import { IsmsValidationService } from 'src/app/toolbox/isms/services/isms-validation.service';
+import { ISMSService } from 'src/app/toolbox/isms/services/isms.service';
 import { nonZeroValidator, numericOrDecimalValidator, uniqueCalculationBasisValidator } from 'src/app/toolbox/isms/utils/isms-utils';
 
 
@@ -28,12 +32,16 @@ export class ImpactModalComponent implements OnInit {
     public isSubmitting = false;
     public isEditMode = false;
     public isModalVisible = true;
+    private isMatrixValid = true;
 
     constructor(
         public activeModal: NgbActiveModal,
         private fb: FormBuilder,
         private impactService: ImpactService,
-        private toast: ToastService
+        private toast: ToastService,
+        private ismsService: ISMSService,
+        private modalService: NgbModal,
+        private location: Location
     ) { }
 
     ngOnInit(): void {
@@ -129,6 +137,10 @@ export class ImpactModalComponent implements OnInit {
                 this.isSubmitting = false;
                 return;
             }
+
+            const calculationBasisChanged =
+                this.impact?.calculation_basis !== payload.calculation_basis;
+
             this.impactService
                 .updateImpact(publicId, payload)
                 .pipe(finalize(() => (this.isSubmitting = false)))
@@ -136,6 +148,29 @@ export class ImpactModalComponent implements OnInit {
                     next: () => {
                         this.toast.success('Impact updated successfully!');
                         this.activeModal.close('saved');
+
+                        // If calculation_basis was changed, show the warning dialog
+                        if (calculationBasisChanged) {
+                            console.log('Calculation basis changed, checking risk matrix...');
+                            this.ismsService.getIsmsValidationStatus().subscribe({
+                                next: (status) => {
+                                    if (status?.risk_matrix) {
+                                        const modalRef = this.modalService.open(CoreWarningModalComponent, { centered: true });
+                                        modalRef.componentInstance.title = 'Risk Matrix Needs Review';
+                                        modalRef.componentInstance.message = 'You have modified the calculation basis for Impact. Please review the Risk Matrix accordingly to reflect these changes.';
+                                        modalRef.componentInstance.cancelLabel = 'Continue';
+
+                                        // Listen to modal result
+                                        return modalRef.result.then(
+                                            () => false, // when confirmed
+                                            () => {
+                                                return false;
+                                            }
+                                        );
+                                    }
+                                }
+                            })
+                        }
                     },
                     error: (err) => {
                         this.toast.error(err?.error?.message);

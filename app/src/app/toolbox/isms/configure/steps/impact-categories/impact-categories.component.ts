@@ -176,6 +176,7 @@ export class ImpactCategoriesComponent implements OnInit {
    */
   public addImpactCategory(): void {
     const modalRef = this.modalService.open(ImpactCategoryModalComponent, { size: 'lg' });
+    modalRef.componentInstance.sort = this.totalImpactCategories;
     modalRef.result.then(
       (result) => {
         if (result === 'saved') {

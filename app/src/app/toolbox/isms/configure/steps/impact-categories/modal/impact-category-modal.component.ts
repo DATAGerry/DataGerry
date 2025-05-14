@@ -35,6 +35,9 @@ export class ImpactCategoryModalComponent implements OnInit {
    */
   @Input() isCopyMode = false;
 
+
+  @Input() sort?: number;
+
   public form: FormGroup;
   public isSubmitting = false;
   public isEditMode = false; // true if editing (impactCategory provided and not in copy mode)
@@ -65,7 +68,8 @@ export class ImpactCategoryModalComponent implements OnInit {
   private buildForm(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      impact_descriptions: this.fb.array([])
+      impact_descriptions: this.fb.array([]),
+      sort: this.sort
     });
   }
 
@@ -167,7 +171,8 @@ export class ImpactCategoryModalComponent implements OnInit {
     // In edit mode (and not copy mode), include public_id.
     const payload: Partial<ImpactCategory> = {
       name: formValue.name,
-      impact_descriptions: finalDescs
+      impact_descriptions: finalDescs,
+      sort: this.sort
     };
 
     if (this.isEditMode) {

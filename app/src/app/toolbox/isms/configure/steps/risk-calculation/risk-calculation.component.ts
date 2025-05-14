@@ -30,7 +30,6 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 import { RiskMatrixService } from '../../../services/risk-matrix.service';
 import { IsmsRiskMatrix, RiskMatrixCell } from 'src/app/toolbox/isms/models/risk-matrix.model';
 import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
-
 @Component({
   selector: 'app-isms-risk-calculation',
   templateUrl: './risk-calculation.component.html',
@@ -108,11 +107,12 @@ export class RiskCalculationComponent implements OnInit {
               filter: '',
               limit: 0,
               page: 1,
-              sort: '',
+              sort: 'sort',
               order: 1
             }).subscribe({
               next: (rcResp) => {
                 this.riskClasses = rcResp.results;
+                console.log('Risk Classes:', this.riskClasses);
                 // 4) Finally, load the matrix from the backend.
                 this.loadMatrixFromBackend();
               },
@@ -191,7 +191,7 @@ export class RiskCalculationComponent implements OnInit {
 
     // Build distinct row indices and sort descending (so the lowest row number is at the bottom).
     const rowIndices = Array.from(new Set(this.riskMatrix.risk_matrix.map(c => c.row)));
-    // rowIndices.sort((a, b) => b - a);
+     rowIndices.sort((a, b) => b - a);
     this.orderedLikelihoods = rowIndices.map(rIndex => {
       // Use the cell with column=0 to identify the Likelihood.
       const rowCell = this.riskMatrix!.risk_matrix.find(c => c.row === rIndex && c.column === 0);
@@ -206,13 +206,6 @@ export class RiskCalculationComponent implements OnInit {
           sort: 0
         } as Likelihood;
       }
-      // return {
-      //   public_id: -1,
-      //   name: 'Unknown LH',
-      //   description: '',
-      //   calculation_basis: 0,
-      //   sort: 0
-      // } as Likelihood;
     });
 
     // Build distinct column indices and sort ascending.
@@ -232,13 +225,6 @@ export class RiskCalculationComponent implements OnInit {
           sort: 0
         } as Impact;
       }
-      // return {
-      //   public_id: -1,
-      //   name: 'Unknown IMP',
-      //   description: '',
-      //   calculation_basis: 0,
-      //   sort: 0
-      // } as Impact;
     });
   }
 
@@ -390,4 +376,11 @@ export class RiskCalculationComponent implements OnInit {
 
     return { backgroundColor, color: textColor };
   }
+
+    /**
+     * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
+     */
+    public getTextColor(color: string): string {
+      return getTextColorBasedOnBackground(color);
+    }
 }

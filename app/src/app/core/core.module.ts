@@ -14,6 +14,8 @@ import { RadioComponent } from './components/base/radio/radio.component';
 import { SelectComponent } from './components/base/select/select.component';
 import { SliderComponent } from './components/base/slider/slider.component';
 import { FormDateComponent } from './components/base/date/form-date.component';
+import { CoreDeleteConfirmationModalComponent } from './components/dialog/delete-dialog/core-delete-confirmation-modal.component';
+import { CoreWarningModalComponent } from './components/dialog/core-warning-modal/core-warning-modal.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { FormDateComponent } from './components/base/date/form-date.component';
     RadioComponent,
     SelectComponent,
     SliderComponent,
-    FormDateComponent
+    FormDateComponent,
+    CoreDeleteConfirmationModalComponent,
+    CoreWarningModalComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +51,9 @@ import { FormDateComponent } from './components/base/date/form-date.component';
     RadioComponent,
     SelectComponent,
     SliderComponent,
-    FormDateComponent
+    FormDateComponent,
+    CoreDeleteConfirmationModalComponent,
+    CoreWarningModalComponent
   ]
 })
 export class CoreModule { }

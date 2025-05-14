@@ -146,17 +146,17 @@
 
 
     <!-- Footer Buttons -->
-    <div class="mt-4 d-flex justify-content-between">
+    <div class="mt-4 d-flex justify-content-between" *ngIf="!isView">
       <!-- Cancel Button -->
       <app-button label="Cancel" type="button" [bootstrapClass]="'btn-secondary mr-2'"
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()"></app-button>
+      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()" ></app-button>
 
     </div>
 
-    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId">
+    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId" *ngIf="isView">
     </cmdb-risk-assessment-footer>
   </form>
 
