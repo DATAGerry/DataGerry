@@ -68,7 +68,7 @@ export class VulnerabilitiesAddComponent implements OnInit {
     this.vulnerabilityForm = this.fb.group({
       name: ['', Validators.required],
       identifier: [''], // optional
-      source: [null, Validators.required],
+      source: [null],
       description: ['']
     });
   }

@@ -1,3 +1,5 @@
+<div *permissionLink="'base.isms.likelihood.view'"> 
+
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h1>Likelihoods</h1>
     <button type="button" class="btn btn-sm btn-success" (click)="addLikelihood()"
@@ -18,6 +20,8 @@
     [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false" [searchEnabled]="false"
     (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
 </cmdb-table>
+
+</div>
 
 <!-- Actions Template -->
 <ng-template #actionsTemplate let-item="item">

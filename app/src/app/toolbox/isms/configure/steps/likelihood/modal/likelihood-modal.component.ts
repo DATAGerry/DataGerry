@@ -71,7 +71,7 @@ export class LikelihoodModalComponent implements OnInit {
     const currentBasis = this.isEditMode && this.likelihood ? this.likelihood.calculation_basis : undefined;
     this.form = this.fb.group({
       name: ['', Validators.required],
-      description: ['', Validators.required],
+      description: [''],
       calculation_basis: [
         this.defaultCalculationBasis,
         [

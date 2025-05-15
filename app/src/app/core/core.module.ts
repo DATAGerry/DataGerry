@@ -37,8 +37,7 @@ import { CoreWarningModalComponent } from './components/dialog/core-warning-moda
   imports: [
     CommonModule,
     NgSelectModule,
-    FormsModule
-  ],
+    FormsModule  ],
   exports: [
     LoadingPopupComponent,
     ObjectSelectorComponent,

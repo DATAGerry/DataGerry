@@ -77,7 +77,6 @@ export class ControlMeasuresAddComponent implements OnInit {
     this.initForm();
 
     if (this.isEditMode && this.controlMeasure.public_id) {
-      console.log('editing control measure:', this.controlMeasure);
       this.patchForm(this.controlMeasure);
       if (this.isViewMode) {
         this.controlMeasureForm.disable();
@@ -96,8 +95,8 @@ export class ControlMeasuresAddComponent implements OnInit {
     this.controlMeasureForm = this.fb.group({
       title: ['', Validators.required],
       control_measure_type: ['CONTROL', Validators.required],
-      source: [null, Validators.required],
-      implementation_state: [null, Validators.required],
+      source: [null],
+      implementation_state: [null],
       identifier: [''],
       chapter: [''],
       description: [''],

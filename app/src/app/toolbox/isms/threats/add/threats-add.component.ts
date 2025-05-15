@@ -66,7 +66,7 @@ export class ThreatsAddComponent implements OnInit {
     this.threatForm = this.fb.group({
       name: ['', Validators.required],
       identifier: [''], // optional
-      source: [null, Validators.required],
+      source: [null],
       description: ['']
     });
   }
