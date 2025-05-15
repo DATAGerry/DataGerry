@@ -62,7 +62,8 @@
       <label>Is Applicable?</label>
       <app-checkbox [id]="'is_applicable'" [label]="'Yes, it is applicable'"
         [checked]="controlMeasureForm.get('is_applicable')?.value"
-        (checkedChange)="controlMeasureForm.get('is_applicable')?.setValue($event)"></app-checkbox>
+        (checkedChange)="controlMeasureForm.get('is_applicable')?.setValue($event)"
+        [disabled]="isViewMode"></app-checkbox>
     </div>
 
     <!-- Reason -->
@@ -74,7 +75,7 @@
         <div class="flex-grow-1">
           <app-form-select [items]="implementationStateOptions" bindLabel="value" bindValue="public_id"
             [multiple]="false" placeholder="Select an implementation state..."
-            formControlName="implementation_state"></app-form-select>
+            formControlName="implementation_state" [dropdownDirection]="'top'"></app-form-select>
         </div>
         <div>
           <!-- <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openImplementationStateManager()">

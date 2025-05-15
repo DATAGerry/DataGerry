@@ -39,6 +39,8 @@ export class RiskAddComponent implements OnInit {
 
     // Main Reactive Form
     public riskForm: FormGroup;
+    types = ['Threat x Vulnerability', 'Threat', 'Event'];
+
     public risk: Risk = {
         name: '',
         identifier: '',
@@ -48,7 +50,7 @@ export class RiskAddComponent implements OnInit {
         protection_goals: [],
         description: '',
         consequences: '',
-        category_id: ''
+        category_id: null
     };
 
     // Data fetched from other services for multi-select or checkboxes
@@ -92,6 +94,15 @@ export class RiskAddComponent implements OnInit {
                 this.isEditMode = true;
             }
         }
+
+        this.riskForm = this.fb.group({
+            name: ['', Validators.required],
+            type: ['', Validators.required],
+            threat: [{ value: '', disabled: true }],
+            vulnerability: [{ value: '', disabled: true }],
+            consequences: [{ value: '', disabled: true }],
+            description: [{ value: '', disabled: true }]
+        });
     }
 
     ngOnInit(): void {
@@ -103,6 +114,13 @@ export class RiskAddComponent implements OnInit {
         if (this.isViewMode) {
             this.riskForm.disable();
         }
+
+
+        this.riskForm.get('risk_type')?.valueChanges.subscribe(value => {
+            this.updateFieldValidators(value);
+        });
+
+        this.updateFieldValidators(this.riskForm.get('risk_type')?.value);
 
         // Load categories to display in ng-select
         this.loadCategories();
@@ -125,8 +143,8 @@ export class RiskAddComponent implements OnInit {
             vulnerabilities: [[]],     // multi-select
             description: [''],
             consequences: [''],
-            protection_goals: [[], Validators.required],
-            category_id: ['']
+            protection_goals: [[]],
+            category_id: null
         });
     }
 
@@ -144,6 +162,36 @@ export class RiskAddComponent implements OnInit {
             category_id: data.category_id
         });
     }
+
+
+    updateFieldValidators(type: string): void {
+        // Clear all validators first
+        this.riskForm.get('threats')?.clearValidators();
+        this.riskForm.get('vulnerabilities')?.clearValidators();
+        this.riskForm.get('consequences')?.clearValidators();
+        this.riskForm.get('description')?.clearValidators();
+
+        // Apply validators based on the risk type
+        if (type === 'THREAT_X_VULNERABILITY') {
+            this.riskForm.get('threats')?.setValidators(Validators.required);
+            this.riskForm.get('vulnerabilities')?.setValidators(Validators.required);
+        } else if (type === 'THREAT') {
+            this.riskForm.get('threats')?.setValidators(Validators.required);
+        } else if (type === 'EVENT') {
+            this.riskForm.get('consequences')?.setValidators(Validators.required);
+            this.riskForm.get('description')?.setValidators(Validators.required);
+        }
+
+        // Update the validity of the fields
+        this.riskForm.get('threats')?.updateValueAndValidity();
+        this.riskForm.get('vulnerabilities')?.updateValueAndValidity();
+        this.riskForm.get('consequences')?.updateValueAndValidity();
+        this.riskForm.get('description')?.updateValueAndValidity();
+
+        // Recalculate the form's validity
+        this.riskForm.updateValueAndValidity();
+    }
+
 
     /* --------------------------------------------------------------
      *  LOADING REFERENCE DATA
@@ -263,13 +311,13 @@ export class RiskAddComponent implements OnInit {
             .subscribe({
                 next: (res) => {
                     this.categoryOptions = res.results;
-                    
+
                     // Check if current category_id exists in the updated list
                     const currentCategoryId = this.riskForm.get('category_id')?.value;
                     const categoryExists = this.categoryOptions.some(
                         cat => cat.public_id === currentCategoryId
                     );
-                    
+
                     // Clear the selection if the category no longer exists
                     if (currentCategoryId && !categoryExists) {
                         this.riskForm.get('category_id')?.setValue(null);
@@ -345,6 +393,11 @@ export class RiskAddComponent implements OnInit {
         const control = this.riskForm.get(controlName);
         return !!(control?.hasError(error) && (control.dirty || control.touched));
     }
+
+    public isEventType(): boolean {
+        return this.riskForm.get('risk_type')?.value === 'EVENT';
+    }
+
 
     /* --------------------------------------------------------------
     *  ACTIONS

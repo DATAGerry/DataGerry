@@ -41,8 +41,8 @@ export class RiskClassModalComponent implements OnInit {
   private buildForm(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      color: ['#ff0000'],  // default color
-      description: ['', Validators.required],
+      color: ['#ff0000', Validators.required],  // default color
+      description: [''],
       sort: this.sort
     });
   }

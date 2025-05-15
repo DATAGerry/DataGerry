@@ -1,22 +1,21 @@
 /* Applies only when validationStatus is false */
 .dash-card.primary.greyish {
-    background-color: #e0e0e0 !important;
-    border-color: #b0b0b0 !important;
-    color: #9e9e9e !important;
-    cursor: pointer !important;
-    opacity: 0.7;
-    box-shadow: none;
-  
-    i {
-      color: #b0b0b0 !important;
-    }
-  
-    .text-title {
-      color: #9e9e9e !important;
-    }
-  
-    &:hover {
-      background-color: #d6d6d6 !important;
-    }
+  background-color: #ffe6e6 !important; /* Light red background */
+  border-color: #ff9999 !important; /* Light red border */
+  color: #ff4d4d !important; /* Red text color */
+  cursor: pointer !important;
+  opacity: 1; /* Full opacity to avoid disabled look */
+  box-shadow: none;
+
+  i {
+    color: #ff4d4d !important; /* Red icon color */
   }
-  
+
+  .text-title {
+    color: #ff4d4d !important; /* Red text title */
+  }
+
+  &:hover {
+    background-color: #ffcccc !important; /* Slightly darker red on hover */
+  }
+}

@@ -1,6 +1,6 @@
 <div class="container" [formGroup]="riskForm">
   <h2 class="mb-3">
-    {{ isEditMode ? 'Edit Risk' : 'Add Risk' }}
+    {{ isEditMode ? 'Edit Risk' : isViewMode ? 'View Risk' : 'Add Risk' }}
   </h2>
 
   <form autocomplete="off" class="needs-validation" (ngSubmit)="onSave()" [formGroup]="riskForm">
@@ -65,29 +65,29 @@
 
     <!-- Threats (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY or THREAT -->
     <div class="form-group mt-3" *ngIf="showThreats()">
-      <app-form-select label="Threats:" [items]="threatOptions" bindLabel="name" bindValue="public_id" [multiple]="true"
+      <app-form-select label="Threats:" [items]="threatOptions" bindLabel="name" bindValue="public_id" [multiple]="true" [required]="true"
         placeholder="Select one or more threats..." formControlName="threats"></app-form-select>
     </div>
 
     <!-- Vulnerabilities (Multi-select) Shown if risk_type = THREAT_X_VULNERABILITY -->
     <div class="form-group mt-3" *ngIf="showVulnerabilities()">
-      <app-form-select label="Vulnerabilities:" [items]="vulnerabilityOptions" bindLabel="name" bindValue="public_id"
+      <app-form-select label="Vulnerabilities:" [items]="vulnerabilityOptions" bindLabel="name" bindValue="public_id" [required]="true"
         [multiple]="true" placeholder="Select one or more vulnerabilities..."
         formControlName="vulnerabilities"></app-form-select>
     </div>
 
 
     <!-- Consequences (Textarea) Shown if risk_type = THREAT or EVENT -->
-    <app-form-textarea formControlName="consequences" label="Consequences:" [rows]="4"
+    <app-form-textarea formControlName="consequences" label="Consequences:" [rows]="4" [required]="isEventType()"
       *ngIf="showConsequences()"></app-form-textarea>
 
     <!-- Description (Textarea) -->
-    <app-form-textarea formControlName="description" label="Description:" [rows]="4">
+    <app-form-textarea formControlName="description" label="Description:" [rows]="4" [required]="isEventType()">
     </app-form-textarea>
 
     <!-- Protection Goals (Checkboxes) -->
     <div class="form-group mt-3">
-      <label>Affected Protection Goals:<span class="required">*</span></label>
+      <label>Affected Protection Goals:</label>
       <div class="d-flex flex-wrap gap-3 flex-column">
         <ng-container *ngFor="let pg of protectionGoalOptions">
           <app-checkbox [id]="'pg-' + pg.public_id" [label]="pg.name"

@@ -32,7 +32,7 @@ import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabiliti
 import { RisksListComponent } from './risks/risks-list/risks-list.component';
 
 import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
-import { ControlMeasuresAddComponent }   from './control-measure/control-measure-add/control-measures-add.component';
+import { ControlMeasuresAddComponent } from './control-measure/control-measure-add/control-measures-add.component';
 import { ControlMeasureAssignmentAddComponent } from './control‑measure‑assignment/control‑measure‑assignment-add/control-measure-assignment-add.component';
 import { ControlMeasureAssignmentListComponent } from './control‑measure‑assignment/control‑measure‑assignment-list/control‑measure‑assignment-list.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
@@ -57,72 +57,222 @@ const routes: Routes = [
   },
 
   /* ─── threats ─── */
-  { path: 'threats',              component: ThreatsListComponent, canActivate: [preCloudGuard] },
-  { path: 'threats/add',          component: ThreatsAddComponent,  canActivate: [preCloudGuard] },
-  { path: 'threats/edit/:id',     component: ThreatsAddComponent,  canActivate: [preCloudGuard] },
+  // { path: 'threats', component: ThreatsListComponent, canActivate: [preCloudGuard] },
+  // { path: 'threats/add', component: ThreatsAddComponent, canActivate: [preCloudGuard] },
+  // { path: 'threats/edit/:id', component: ThreatsAddComponent, canActivate: [preCloudGuard] },
+
+  {
+    path: 'threats',
+    component: ThreatsListComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Threats',
+      right: 'base.isms.threat.view' // Permission to view threats
+    }
+  },
+  {
+    path: 'threats/add',
+    component: ThreatsAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Add Threat',
+      right: 'base.isms.threat.add'
+    }
+  },
+  {
+    path: 'threats/edit/:id',
+    component: ThreatsAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Edit Threat',
+      right: 'base.isms.threat.edit'
+    }
+  },
+  {
+    path: 'threats/view',
+    component: ThreatsAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'View Threat',
+      right: 'base.isms.threat.view'
+    }
+  },
 
   /* ─── vulnerabilities ─── */
-  { path: 'vulnerabilities',      component: VulnerabilitiesListComponent, canActivate: [preCloudGuard] },
-  { path: 'vulnerabilities/add',  component: VulnerabilitiesAddComponent,  canActivate: [preCloudGuard] },
-  { path: 'vulnerabilities/edit', component: VulnerabilitiesAddComponent,  canActivate: [preCloudGuard] },
+  // { path: 'vulnerabilities', component: VulnerabilitiesListComponent, canActivate: [preCloudGuard] },
+  // { path: 'vulnerabilities/add', component: VulnerabilitiesAddComponent, canActivate: [preCloudGuard] },
+  // { path: 'vulnerabilities/edit', component: VulnerabilitiesAddComponent, canActivate: [preCloudGuard] },
+
+  {
+    path: 'vulnerabilities',
+    component: VulnerabilitiesListComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Vulnerabilities',
+      right: 'base.isms.vulnerability.view' // Permission to view vulnerabilities
+    }
+  },
+  {
+    path: 'vulnerabilities/add',
+    component: VulnerabilitiesAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Add Vulnerability',
+      right: 'base.isms.vulnerability.add' // Permission to add vulnerabilities
+    }
+  },
+  {
+    path: 'vulnerabilities/edit',
+    component: VulnerabilitiesAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Edit Vulnerability',
+      right: 'base.isms.vulnerability.edit' // Permission to edit vulnerabilities
+    }
+  },
+  {
+    path: 'vulnerabilities/view',
+    component: VulnerabilitiesAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'View Vulnerability',
+      right: 'base.isms.vulnerability.view' // Permission to view vulnerabilities
+    }
+  },
+
 
   /* ─── risks ─── */
-  { path: 'risks',       component: RisksListComponent, canActivate: [preCloudGuard] },
-  { path: 'risks/add',   component: RiskAddComponent,   canActivate: [preCloudGuard] },
-  { path: 'risks/edit',  component: RiskAddComponent,   canActivate: [preCloudGuard] },
-  { path: 'risks/view',  component: RiskAddComponent,   canActivate: [preCloudGuard] },
+  // { path: 'risks',       component: RisksListComponent, canActivate: [preCloudGuard] },
+  // { path: 'risks/add',   component: RiskAddComponent,   canActivate: [preCloudGuard] },
+  // { path: 'risks/edit',  component: RiskAddComponent,   canActivate: [preCloudGuard] },
+  // { path: 'risks/view',  component: RiskAddComponent,   canActivate: [preCloudGuard] },
+
+  {
+    path: 'risks',
+    component: RisksListComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Risks',
+      right: 'base.isms.risk.view'
+    }
+  },
+  {
+    path: 'risks/add',
+    component: RiskAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Add Risk',
+      right: 'base.isms.risk.add'
+    }
+  },
+  {
+    path: 'risks/edit',
+    component: RiskAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Edit Risk',
+      right: 'base.isms.risk.edit'
+    }
+  },
+  {
+    path: 'risks/view',
+    component: RiskAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'View Risk',
+      right: 'base.isms.risk.view'
+    }
+  },
 
   /* ─── control / measures ─── */
-  { path: 'control-measures',      component: ControlmeasuresListComponent, canActivate: [preCloudGuard] },
-  { path: 'control-measures/add',  component: ControlMeasuresAddComponent,  canActivate: [preCloudGuard] },
-  { path: 'control-measures/edit', component: ControlMeasuresAddComponent,  canActivate: [preCloudGuard] },
-  { path: 'control-measures/view', component: ControlMeasuresAddComponent,  canActivate: [preCloudGuard] },
+  { path: 'control-measures', component: ControlmeasuresListComponent, canActivate: [preCloudGuard] },
+  { path: 'control-measures/add', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] },
+  { path: 'control-measures/edit', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] },
+  { path: 'control-measures/view', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] },
 
   /* ─── Control‑Measure Assignments (generic) ─── */
-/* ─── Control‑Measure Assignments ─── */
-{
-  path: 'control-measure-assignments',
-  component: ControlMeasureAssignmentListComponent,
-  canActivate: [preCloudGuard]
-},
-{
-  path: 'control-measure-assignments/add',
-  component: ControlMeasureAssignmentAddComponent,
-  canActivate: [preCloudGuard]
-},
-{
-  path: 'control-measure-assignments/edit',
-  component: ControlMeasureAssignmentAddComponent,
-  canActivate: [preCloudGuard]
-},
+  /* ─── Control‑Measure Assignments ─── */
+  // {
+  //   path: 'control-measure-assignments',
+  //   component: ControlMeasureAssignmentListComponent,
+  //   canActivate: [preCloudGuard]
+  // },
+  // {
+  //   path: 'control-measure-assignments/add',
+  //   component: ControlMeasureAssignmentAddComponent,
+  //   canActivate: [preCloudGuard]
+  // },
+  // {
+  //   path: 'control-measure-assignments/edit',
+  //   component: ControlMeasureAssignmentAddComponent,
+  //   canActivate: [preCloudGuard]
+  // },
 
-/* embedded under Risk Assessment */
-{
-  path: 'risk_assessments/:riskId/control_measure_assignments',
-  component: ControlMeasureAssignmentListComponent,
-  canActivate: [preCloudGuard]
-},
-{
-  path: 'risk_assessments/:riskId/control_measure_assignments/add',
-  component: ControlMeasureAssignmentAddComponent,
-  canActivate: [preCloudGuard]
-},
+  {
+    path: 'control-measures',
+    component: ControlmeasuresListComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Control Measures',
+      right: 'base.isms.controlMeasure.view'
+    }
+  },
+  {
+    path: 'control-measures/add',
+    component: ControlMeasuresAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Add Control Measure',
+      right: 'base.isms.controlMeasure.add' 
+    }
+  },
+  {
+    path: 'control-measures/edit',
+    component: ControlMeasuresAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Edit Control Measure',
+      right: 'base.isms.controlMeasure.edit' 
+    }
+  },
+  {
+    path: 'control-measures/view',
+    component: ControlMeasuresAddComponent,
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'View Control Measure',
+      right: 'base.isms.controlMeasure.view'
+    }
+  },
 
-/* embedded under Control / Measure */
-{
-  path: 'control_measures/:cmId/control_measure_assignments',
-  component: ControlMeasureAssignmentListComponent,
-  canActivate: [preCloudGuard]
-},
-{
-  path: 'control_measures/:cmId/control_measure_assignments/add',
-  component: ControlMeasureAssignmentAddComponent,
-  canActivate: [preCloudGuard]
-}
+
+  /* embedded under Risk Assessment */
+  {
+    path: 'risk_assessments/:riskId/control_measure_assignments',
+    component: ControlMeasureAssignmentListComponent,
+    canActivate: [preCloudGuard]
+  },
+  {
+    path: 'risk_assessments/:riskId/control_measure_assignments/add',
+    component: ControlMeasureAssignmentAddComponent,
+    canActivate: [preCloudGuard]
+  },
+
+  /* embedded under Control / Measure */
+  {
+    path: 'control_measures/:cmId/control_measure_assignments',
+    component: ControlMeasureAssignmentListComponent,
+    canActivate: [preCloudGuard]
+  },
+  {
+    path: 'control_measures/:cmId/control_measure_assignments/add',
+    component: ControlMeasureAssignmentAddComponent,
+    canActivate: [preCloudGuard]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class IsmsRoutingModule {}
+export class IsmsRoutingModule { }

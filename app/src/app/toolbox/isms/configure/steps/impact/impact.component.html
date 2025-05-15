@@ -1,4 +1,4 @@
-<div>
+<div *permissionLink="'base.isms.impact.view'">
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h1>Impacts</h1>
         <button type="button" class="btn btn-sm btn-success" (click)="addImpact()"
@@ -22,11 +22,11 @@
 
     <!-- Actions Template -->
     <ng-template #actionsTemplate let-item="item">
-        <span *permissionLink="['base.isms.impact.edit']">
+        <span *permissionLink="'base.isms.impact.edit'">
             <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="editImpact(item)"
                 title="Edit Impact"></i>
         </span>
-        <span *permissionLink="['base.isms.impact.delete']">
+        <span *permissionLink="'base.isms.impact.delete'">
             <i class="far fa-trash-alt icon-delete" (click)="deleteImpact(item)" title="Delete Impact"></i>
         </span>
     </ng-template>

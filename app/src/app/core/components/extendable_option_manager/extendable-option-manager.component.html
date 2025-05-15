@@ -1,92 +1,75 @@
 <div class="option-manager-backdrop" (click)="closeModal()">
-    <!-- Modal Wrapper -->
-    <div class="option-manager-modal" (click)="$event.stopPropagation()">
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h5 class="modal-title mb-0">{{ modalTitle }}</h5>
-        <button type="button" class="close" (click)="closeModal()">
-          <span aria-hidden="true">×</span>
+  <!-- Modal Wrapper -->
+  <div class="option-manager-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h5 class="modal-title mb-0">{{ modalTitle }}</h5>
+      <button type="button" class="close" (click)="closeModal()">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="d-flex align-items-center mb-3">
+        <input type="text" class="form-control" [(ngModel)]="newItemValue" name="newItemValue"
+          placeholder="New {{ itemLabel.toLowerCase() }} name..." />
+        <button class="btn btn-success ml-2" (click)="onAddNewItem()">
+          Add
         </button>
       </div>
-  
-      <!-- Modal Body -->
-      <div class="modal-body">
-        <!-- Add new item inline form -->
-        <div class="d-flex align-items-center mb-3">
-          <input 
-            type="text"
-            class="form-control"
-            [(ngModel)]="newItemValue"
-            name="newItemValue"
-            placeholder="New {{ itemLabel.toLowerCase() }} name..."
-          />
-          <button class="btn btn-success ml-2" (click)="onAddNewItem()">
-            Add
-          </button>
-        </div>
-  
-        <div class="table-responsive">
-          <table class="table table-sm mb-0">
-            <thead>
-              <tr>
-                <th>{{ itemLabelPlural }}</th>
-                <th style="width: 90px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let opt of localOptions">
-                <td>
-                  <ng-container *ngIf="editingItemId === opt.public_id; else readMode">
-                    <input 
-                      type="text"
-                      class="form-control form-control-sm"
-                      [(ngModel)]="editingItemValue" 
-                    />
-                  </ng-container>
-                  <ng-template #readMode>
-                    {{ opt.value }}
-                  </ng-template>
-                </td>
-                <td>
-                  <ng-container *ngIf="editingItemId === opt.public_id; else normalActions">
-                    <button 
-                      class="btn btn-link btn-sm text-success p-0 mr-2"
-                      (click)="saveEditItem(opt)"
-                    >
+
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th>{{ itemLabelPlural }}</th>
+              <th style="width: 90px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let opt of localOptions">
+              <td>
+                <ng-container *ngIf="editingItemId === opt.public_id; else readMode">
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="editingItemValue" />
+                </ng-container>
+                <ng-template #readMode>
+                  {{ opt.value }}
+                </ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="opt.predefined; else normalActions">
+                  <!-- Show Predefined Tag -->
+                  <span class="badge badge-secondary">Predefined</span>
+                </ng-container>
+                <ng-template #normalActions>
+                  <ng-container *ngIf="editingItemId === opt.public_id; else actionButtons">
+                    <button class="btn btn-link btn-sm text-success p-0 mr-2" (click)="saveEditItem(opt)">
                       <i class="fas fa-check"></i>
                     </button>
-                    <button 
-                      class="btn btn-link btn-sm text-secondary p-0"
-                      (click)="cancelEditItem()"
-                    >
+                    <button class="btn btn-link btn-sm text-secondary p-0" (click)="cancelEditItem()">
                       <i class="fas fa-ban"></i>
                     </button>
                   </ng-container>
-                  <ng-template #normalActions>
-                    <button 
-                      class="btn btn-link btn-sm text-primary p-0 mr-2"
-                      (click)="onEditItem(opt)"
-                    >
+                  <ng-template #actionButtons>
+                    <button class="btn btn-link btn-sm text-primary p-0 mr-2" (click)="onEditItem(opt)">
                       <i class="far fa-edit"></i>
                     </button>
-                    <button 
-                      class="btn btn-link btn-sm text-danger p-0"
-                      (click)="onDeleteItem(opt)"
-                    >
+                    <button class="btn btn-link btn-sm text-danger p-0" (click)="onDeleteItem(opt)">
                       <i class="far fa-trash-alt"></i>
                     </button>
                   </ng-template>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-  
-      <!-- Modal Footer -->
-      <div class="modal-footer">
-        <button class="btn btn-primary" (click)="closeModal()">Done</button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="closeModal()">Done</button>
+    </div>
   </div>
-  
+</div>

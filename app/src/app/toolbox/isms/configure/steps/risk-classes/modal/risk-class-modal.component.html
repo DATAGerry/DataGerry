@@ -62,7 +62,7 @@
     <div class="mb-3">
       <div class="form-group">
         <label for="riskClassDescription" class="form-label">
-          Description <span class="text-danger">*</span>
+          Description 
         </label>
         <textarea
           id="riskClassDescription"
@@ -71,13 +71,6 @@
           rows="3"
           placeholder="Enter a description..."
         ></textarea>
-        <!-- Error message below the field -->
-        <div
-          class="invalid-feedback d-block"
-          *ngIf="form.get('description')?.invalid && (form.get('description')?.touched || form.get('description')?.dirty)"
-        >
-          Description is required.
-        </div>
       </div>
     </div>
 

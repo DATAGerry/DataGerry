@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Risks</h2>
-  <button class="btn btn-sm btn-success" (click)="onAddNew()">
+  <button class="btn btn-sm btn-success" *permissionLink="['base.isms.risk.add']" (click)="onAddNew()">
     <i class="fas fa-plus"></i> Add Risk
   </button>
 </div>
@@ -22,7 +22,10 @@
 
 <!-- Actions Template -->
 <ng-template #actionTemplate let-data="data" let-item="item">
-  <i class="far fa-eye icon-margin icon-view spacing-right" (click)="onView(item)" title="View Risk"></i>
-  <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="onEdit(item)" title="Edit Risk"></i>
-  <i class="far fa-trash-alt icon-delete" (click)="onDelete(item)" title="Delete Risk"></i>
+  <i *permissionLink="['base.isms.risk.view']" class="far fa-eye icon-margin icon-view spacing-right"
+    (click)="onView(item)" title="View Risk"></i>
+  <i *permissionLink="['base.isms.risk.edit']" class="far fa-edit icon-margin icon-edit spacing-right"
+    (click)="onEdit(item)" title="Edit Risk"></i>
+  <i *permissionLink="['base.isms.risk.delete']" class="far fa-trash-alt icon-delete" (click)="onDelete(item)"
+    title="Delete Risk"></i>
 </ng-template>
