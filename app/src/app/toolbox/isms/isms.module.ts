@@ -59,6 +59,7 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
 import { RisksFooterComponent } from './risks/risks-footer/risks-footer.component';
 import { ControlMeasureFooterComponent } from './control-measure/control-measure-footer/control-measure-footer.component';
 import { ControlMeasureAssignmentModule } from './control‑measure‑assignment/control-measure-assignment.module';
+import { RiskMatrixReportModule } from './risk-matrix-report/risk-matrix-report.module';
 
 @NgModule({
   declarations: [
@@ -105,7 +106,8 @@ import { ControlMeasureAssignmentModule } from './control‑measure‑assignment
     IsmsRoutingModule,
     PersonRoutingModule,
     RiskAssessmentModule,
-    ControlMeasureAssignmentModule
+    ControlMeasureAssignmentModule,
+    RiskMatrixReportModule
   ]
 })
 export class ISMSModule {}
