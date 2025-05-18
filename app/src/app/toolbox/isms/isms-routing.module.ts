@@ -36,6 +36,7 @@ import { ControlMeasuresAddComponent } from './control-measure/control-measure-a
 import { ControlMeasureAssignmentAddComponent } from './control‑measure‑assignment/control‑measure‑assignment-add/control-measure-assignment-add.component';
 import { ControlMeasureAssignmentListComponent } from './control‑measure‑assignment/control‑measure‑assignment-list/control‑measure‑assignment-list.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
+import { RiskMatrixReportComponent } from './risk-matrix-report/risk-matrix-report.component';
 
 
 const routes: Routes = [
@@ -268,7 +269,13 @@ const routes: Routes = [
     path: 'control_measures/:cmId/control_measure_assignments/add',
     component: ControlMeasureAssignmentAddComponent,
     canActivate: [preCloudGuard]
+  },
+  {
+    path: 'reports/risk_matrix',
+    component: RiskMatrixReportComponent,
+    canActivate: [preCloudGuard]
   }
+  
 ];
 
 @NgModule({
