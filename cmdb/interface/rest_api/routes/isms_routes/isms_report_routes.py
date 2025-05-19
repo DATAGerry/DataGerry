@@ -25,6 +25,7 @@ from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 from cmdb.manager.isms_manager.risk_assessment_manager import RiskAssessmentManager
 from cmdb.manager.isms_manager.control_measure_manager import ControlMeasureManager
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
+from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.isms_model import IsmsReportBuilder
@@ -35,6 +36,7 @@ from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import DefaultResponse
 
+from cmdb.errors.manager.risk_assessment_manager import RiskAssessmentManagerIterationError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
@@ -82,6 +84,262 @@ def get_isms_risk_matrix_report(request_user: CmdbUser):
         abort(500, "An internal server error occured while retrieving the RiskMatrix report!")
 
 
+@isms_report_blueprint.route('/risk_treatment_plan', methods=['GET', 'HEAD'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@isms_report_blueprint.protect(auth=True, right='base.isms.report.view')
+def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
+    """
+    HTTP `GET`/`HEAD` route to retrieve the Risk Treatment Plan report
+
+    Args:
+        request_user (CmdbUser): CmdbUser requesting the Risk Treatment Plan report
+
+    Returns:
+        DefaultResponse: The Risk Treatment Plan report as a dictionary
+    """
+    try:
+        risk_assessment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
+                                                                            ManagerType.RISK_ASSESSMENT,
+                                                                            request_user)
+
+        query_pipeline = [
+            # Step 0: Get all IsmsRiskAssessments
+            {
+                "$match": {}
+            },
+            # Step 1: Lookup associated Risk
+            {
+                "$lookup": {
+                    "from": "isms.risk",
+                    "localField": "risk_id",
+                    "foreignField": "public_id",
+                    "as": "risk"
+                }
+            },
+            {"$unwind": {"path": "$risk", "preserveNullAndEmptyArrays": True}},
+
+            # Step 2: Lookup implementation status (ExtendableOption)
+            {
+                "$lookup": {
+                    "from": "framework.extendableOptions",
+                    "localField": "implementation_status",
+                    "foreignField": "public_id",
+                    "as": "implementation_status"
+                }
+            },
+            {"$unwind": {"path": "$implementation_status", "preserveNullAndEmptyArrays": True}},
+
+            # Step 3: Lookup risk treatment option (ExtendableOption)
+            {
+                "$lookup": {
+                    "from": "framework.extendableOptions",
+                    "localField": "treatment_option_id",
+                    "foreignField": "public_id",
+                    "as": "treatment_option"
+                }
+            },
+            {"$unwind": {"path": "$treatment_option", "preserveNullAndEmptyArrays": True}},
+
+            # Step 4: Lookup Object or ObjectGroup based on object_id_ref_type
+            {
+                "$lookup": {
+                    "from": "framework.objects",
+                    "localField": "object_id",
+                    "foreignField": "public_id",
+                    "as": "object"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "framework.objectGroups",
+                    "localField": "object_id",
+                    "foreignField": "public_id",
+                    "as": "object_group"
+                }
+            },
+
+            # Step 5: Lookup type label if object is used
+            {
+                "$lookup": {
+                    "from": "framework.types",
+                    "localField": "object.type_id",
+                    "foreignField": "public_id",
+                    "as": "object_type"
+                }
+            },
+
+            # Step 6: Lookup person/personGroup
+            {
+                "$lookup": {
+                    "from": "management.person",
+                    "localField": "responsible_for_implementation_id",
+                    "foreignField": "public_id",
+                    "as": "responsible_person"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "management.personGroup",
+                    "localField": "responsible_for_implementation_id",
+                    "foreignField": "public_id",
+                    "as": "responsible_person_group"
+                }
+            },
+
+            # Step 7: Lookup risk class matrix values
+            {
+                "$lookup": {
+                    "from": "isms.riskMatrix",
+                    "let": {
+                        "likelihood_id": "$likelihood_id",
+                        "impact_id": "$maximum_impact_id"
+                    },
+                    "pipeline": [
+                        {"$match": {"public_id": 1}},
+                        {"$unwind": "$risk_matrix"},
+                        {"$match": {
+                            "$expr": {
+                                "$and": [
+                                    {"$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"]},
+                                    {"$eq": ["$risk_matrix.impact_id", "$$impact_id"]}
+                                ]
+                            }
+                        }},
+                        {"$replaceRoot": {"newRoot": "$risk_matrix"}}
+                    ],
+                    "as": "risk_before"
+                }
+            },
+            {"$unwind": {"path": "$risk_before", "preserveNullAndEmptyArrays": True}},
+
+            {
+                "$lookup": {
+                    "from": "isms.riskClass",
+                    "localField": "risk_before.risk_class_id",
+                    "foreignField": "public_id",
+                    "as": "risk_before_class"
+                }
+            },
+            {"$unwind": {"path": "$risk_before_class", "preserveNullAndEmptyArrays": True}},
+
+            # Step 8: Repeat for risk after treatment
+            {
+                "$lookup": {
+                    "from": "isms.riskMatrix",
+                    "let": {
+                        "likelihood_id": "$post_likelihood_id",
+                        "impact_id": "$post_impact_id"
+                    },
+                    "pipeline": [
+                        {"$match": {"public_id": 1}},
+                        {"$unwind": "$risk_matrix"},
+                        {"$match": {
+                            "$expr": {
+                                "$and": [
+                                    {"$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"]},
+                                    {"$eq": ["$risk_matrix.impact_id", "$$impact_id"]}
+                                ]
+                            }
+                        }},
+                        {"$replaceRoot": {"newRoot": "$risk_matrix"}}
+                    ],
+                    "as": "risk_after"
+                }
+            },
+            {"$unwind": {"path": "$risk_after", "preserveNullAndEmptyArrays": True}},
+
+            {
+                "$lookup": {
+                    "from": "isms.riskClass",
+                    "localField": "risk_after.risk_class_id",
+                    "foreignField": "public_id",
+                    "as": "risk_after_class"
+                }
+            },
+            {"$unwind": {"path": "$risk_after_class", "preserveNullAndEmptyArrays": True}},
+
+            # Step 9: Lookup assigned control measures
+            {
+                "$lookup": {
+                    "from": "isms.controlMeasureAssignment",
+                    "localField": "public_id",
+                    "foreignField": "risk_assessment_id",
+                    "as": "control_assignments"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "isms.controlMeasure",
+                    "localField": "control_assignments.control_measure_id",
+                    "foreignField": "public_id",
+                    "as": "control_measures"
+                }
+            },
+
+            # Step 10: Project final fields
+            {
+                "$project": {
+                    "_id": 0,
+                    "risk_name": "$risk.name",
+                    "risk_identifier": "$risk.identifier",
+                    "risk_category": "$risk.category_id",  # Optional: Join with ExtendableOption for name
+                    "protection_goals": "$risk.protection_goals",  # Could join for names
+
+                    "object": {
+                        "$cond": [
+                            {"$eq": ["$object_id_ref_type", "OBJECT_GROUP"]},
+                            {"$arrayElemAt": ["$object_group.name", 0]},
+                            {"$arrayElemAt": ["$object.public_id", 0]}
+                        ]
+                    },
+                    "object_type": {
+                        "$cond": [
+                            {"$eq": ["$object_id_ref_type", "OBJECT_GROUP"]},
+                            "Object group",
+                            {"$arrayElemAt": ["$object_type.label", 0]}
+                        ]
+                    },
+
+                    "risk_before": {
+                        "value": "$risk_before.calculated_value",
+                        "color": "$risk_before_class.color"
+                    },
+                    "risk_after": {
+                        "value": "$risk_after.calculated_value",
+                        "color": "$risk_after_class.color"
+                    },
+
+                    "risk_treatment_option": "$treatment_option.value",
+                    "implementation_status": "$implementation_status.value",
+                    "planned_implementation_date": 1,
+
+                    "responsible_person": {
+                        "$cond": [
+                            {"$eq": ["$responsible_for_implementation_id_ref_type", "PERSON"]},
+                            {"$arrayElemAt": ["$responsible_person.display_name", 0]},
+                            {"$arrayElemAt": ["$responsible_person_group.name", 0]}
+                        ]
+                    },
+
+                    "control_measures": "$control_measures.title"
+                }
+            }
+        ]
+
+        results = risk_assessment_manager.iterate_items(BuilderParameters(query_pipeline))
+
+        return DefaultResponse(results).make_response()
+    except RiskAssessmentManagerIterationError as err:
+        LOGGER.error(
+            "[get_isms_risk_treatment_plan_report] RiskAssessmentManagerIterationError: %s. Type: %s", err, type(err)
+        )
+        abort(500, "Failed to iterate components for Risk Treatment Plan report!")
+    except Exception as err:
+        LOGGER.error("[get_isms_risk_treatment_plan_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving the Risk Treatment Plan report!")
+
+
 @isms_report_blueprint.route('/soa', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -91,10 +349,10 @@ def get_isms_soa_report(request_user: CmdbUser):
     HTTP `GET`/`HEAD` route to retrieve the Statement of Applicability(SOA) report
 
     Args:
-        request_user (CmdbUser): CmdbUser requesting the RiskMatrix report
+        request_user (CmdbUser): CmdbUser requesting the SOA report
 
     Returns:
-        DefaultResponse: The RiskMatrix report as a dictionary
+        DefaultResponse: The SOA report as a dictionary
     """
     try:
         control_measure_manager: ControlMeasureManager = ManagerProvider.get_manager(

@@ -238,6 +238,9 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
         if not to_update_extendable_option:
             abort(404, f"The ExtendableOption with ID:{public_id} was not found!")
 
+        if to_update_extendable_option.predefined:
+            abort(400, "It is not possible to edit a predefined ExtendableOption!")
+
         # Predefined cannot be changed
         if data.get('predefined') != to_update_extendable_option.predefined:
             abort(404, "The 'predefined' property of an ExtendableOption cannot be changed!")
@@ -300,7 +303,7 @@ def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
 
         # Predefined is undeletable
         if to_delete_extendable_option['predefined']:
-            abort(404, "A predefined ExtendableOption cannot be deleted !")
+            abort(400, "A predefined ExtendableOption cannot be deleted!")
 
         if is_extendable_option_used(to_delete_extendable_option, request_user):
             abort(400, f"Cannot delete the ExtendableOption with ID: {public_id} as it is in use by other resources!")

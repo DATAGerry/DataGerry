@@ -85,7 +85,10 @@ def get_isms_config_status(request_user: CmdbUser):
             'likelihoods': likelihood_amount >= 3,
             'impacts': impact_amount >= 3,
             'impact_categories': impact_category_amount >= 1,
-            'risk_matrix': risk_matrix_risk_class_status,
+            'risk_matrix': risk_matrix_risk_class_status and\
+                           risk_class_amount >= 3 and\
+                           likelihood_amount >= 3 and\
+                           impact_amount >= 3,
         }
 
         return DefaultResponse(config_status).make_response()

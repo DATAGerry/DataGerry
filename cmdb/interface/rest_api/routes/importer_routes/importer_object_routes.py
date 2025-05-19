@@ -68,10 +68,7 @@ from cmdb.errors.manager import BaseManagerInsertError
 from cmdb.errors.security import AccessDeniedError
 from cmdb.errors.manager.objects_manager import ObjectsManagerGetError
 from cmdb.errors.render import InstanceRenderError
-from cmdb.errors.importer import ImportRuntimeError, ParserRuntimeError, ImporterLoadError, ParserLoadError
-from cmdb.errors.manager.types_manager import (
-    TypesManagerGetError,
-)
+from cmdb.errors.importer import ImportRuntimeError, ImporterLoadError, ParserLoadError
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
