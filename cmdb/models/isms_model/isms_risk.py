@@ -57,7 +57,7 @@ class IsmsRisk(CmdbDAO):
         'risk_type': {
             'type': 'string',
             'required': True,
-            'empty': False
+            'empty': False,
         },
         'protection_goals': {
             'type': 'list',
@@ -67,7 +67,9 @@ class IsmsRisk(CmdbDAO):
         },
         'category_id' : {
             'type': 'integer',
+            'required': True,
             'nullable': True,
+            'empty': False,
         },
         'vulnerabilities': {
             'type': 'list',

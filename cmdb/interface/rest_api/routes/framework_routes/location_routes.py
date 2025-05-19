@@ -17,7 +17,7 @@
 Implementation of all API routes for CmdbLocations
 """
 import logging
-from flask import request, current_app, abort
+from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -100,8 +100,6 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
         location_creation_params['type_label'] = object_type.label
         location_creation_params['type_icon'] = object_type.get_icon()
         location_creation_params['type_selectable'] = object_type.selectable_as_parent
-
-        location_creation_params['public_id'] = locations_manager.get_next_public_id()
 
         if params['name'] == '' or params['name'] is None:
             current_object = objects_manager.get_object(int(params['object_id']))

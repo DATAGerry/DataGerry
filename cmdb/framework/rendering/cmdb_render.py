@@ -462,6 +462,9 @@ class CmdbRender:
 
                 try:
                     ref_type = self.types_manager.get_type(section.reference.type_id)
+                    if not ref_type:
+                        continue
+
                     ref_type = CmdbType.from_data(ref_type)
                     ref_section = ref_type.get_section(section.reference.section_name)
                     ref_field['references'] = {
@@ -471,8 +474,7 @@ class CmdbRender:
                         'type_icon': ref_type.get_icon(),
                         'fields': []
                     }
-                except Exception as err:
-                    LOGGER.debug("%s",err)
+                except Exception:
                     continue
 
                 if not ref_section:

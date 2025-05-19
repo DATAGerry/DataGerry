@@ -465,11 +465,16 @@ class MongoDatabaseManager:
                                 an exception is raised with details about the failure.
         """
         try:
-            self.get_collection(collection, db_name).update_one(
-                {"public_id": data['public_id']},
-                {"$set": data},  # Update the fields of the document
-                upsert=True  # Insert if document does not exist)
-            )
+            result = self.get_collection(collection, db_name).update_one(
+                        {"public_id": data['public_id']},
+                        {"$set": data},  # Update the fields of the document
+                        upsert=True  # Insert if document does not exist)
+                    )
+
+            # If something got created, update the public_id counter in database
+            if result.upserted_id:
+                self.update_public_id_counter(collection, db_name, data['public_id'], increment=True)
+
         except Exception as err:
             LOGGER.error("[upsert_set] Exception: %s. Type: %s", err, type(err))
             raise DocumentUpdateError(f"Failed to update/create document in '{collection}': {err}") from err

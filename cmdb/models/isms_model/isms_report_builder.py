@@ -108,53 +108,44 @@ class IsmsReportBuilder:
 
         matrix = []
 
-        for row in range(len(risk_matrix_data['risk_matrix'])):
-            for col in range(len(risk_matrix_data['risk_matrix'][row])):
-                cell_data = risk_matrix_data['risk_matrix'][row][col]
-                impact_id = cell_data['impact_id']
-                likelihood_id = cell_data['likelihood_id']
+        for cell_data in risk_matrix_data['risk_matrix']:
+            row = cell_data['row']
+            col = cell_data['column']
+            impact_id = cell_data['impact_id']
+            likelihood_id = cell_data['likelihood_id']
 
-                # Initialize the matrix cell for the given row and column
-                matrix_cell = {
-                    'row': row,
-                    'column': col,
-                    'risk_class_id': cell_data['risk_class_id'],
-                    'count': 0,
-                    'risk_assessment_ids': []
-                }
+            matrix_cell = {
+                'row': row,
+                'column': col,
+                'risk_class_id': cell_data['risk_class_id'],
+                'count': 0,
+                'risk_assessment_ids': []
+            }
 
-                for risk_assessment in risk_assessments:
-                    # Initialize impact and likelihood values for each assessment
-                    maximum_impact_id = None
-                    likelihood_id_assessment = None
-
-                    if matrix_type == "before_treatment":
-                        # Get the maximum impact id for 'before_treatment'
-                        maximum_impact_id = risk_assessment['risk_calculation_before']['maximum_impact_id']
-                        likelihood_id_assessment = risk_assessment['risk_calculation_before']['likelihood_id']
-                    elif matrix_type == "current_state":
-                        # Check if the implementation status is 'Implemented'
-                        if risk_assessment.get('implementation_status') == implemented_status_id['public_id']:
-                            maximum_impact_id = risk_assessment['risk_calculation_after']['maximum_impact_id']
-                            likelihood_id_assessment = risk_assessment['risk_calculation_after']['likelihood_id']
-                        else:
-                            maximum_impact_id = risk_assessment['risk_calculation_before']['maximum_impact_id']
-                            likelihood_id_assessment = risk_assessment['risk_calculation_before']['likelihood_id']
-                    elif matrix_type == "after_treatment":
+            for risk_assessment in risk_assessments:
+                if matrix_type == "before_treatment":
+                    maximum_impact_id = risk_assessment['risk_calculation_before']['maximum_impact_id']
+                    likelihood_id_assessment = risk_assessment['risk_calculation_before']['likelihood_id']
+                elif matrix_type == "current_state":
+                    if risk_assessment.get('implementation_status') == implemented_status_id:
                         maximum_impact_id = risk_assessment['risk_calculation_after']['maximum_impact_id']
                         likelihood_id_assessment = risk_assessment['risk_calculation_after']['likelihood_id']
+                    else:
+                        maximum_impact_id = risk_assessment['risk_calculation_before']['maximum_impact_id']
+                        likelihood_id_assessment = risk_assessment['risk_calculation_before']['likelihood_id']
+                elif matrix_type == "after_treatment":
+                    maximum_impact_id = risk_assessment['risk_calculation_after']['maximum_impact_id']
+                    likelihood_id_assessment = risk_assessment['risk_calculation_after']['likelihood_id']
+                else:
+                    continue
 
-                    # Skip risk assessments where impact_id or likelihood_id is None
-                    if maximum_impact_id is None or likelihood_id_assessment is None:
-                        continue
+                if maximum_impact_id is None or likelihood_id_assessment is None:
+                    continue
 
-                    # Check if the current cell matches the risk assessment
-                    if maximum_impact_id is not None and likelihood_id_assessment is not None:
-                        if impact_id == maximum_impact_id and likelihood_id == likelihood_id_assessment:
-                            matrix_cell['count'] += 1
-                            matrix_cell['risk_assessment_ids'].append(risk_assessment['public_id'])
+                if impact_id == maximum_impact_id and likelihood_id == likelihood_id_assessment:
+                    matrix_cell['count'] += 1
+                    matrix_cell['risk_assessment_ids'].append(risk_assessment['public_id'])
 
-                # Add the matrix cell to the final matrix (even if count is 0)
-                matrix.append(matrix_cell)
+            matrix.append(matrix_cell)
 
         return matrix
