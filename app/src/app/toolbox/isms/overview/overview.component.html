@@ -1,54 +1,18 @@
-<div class="card-deck">
-  <div class="card">
-    <a routerLink="/isms/configure">
-      <div
-        class="dash-card primary"
-        [ngClass]="{ 'greyish': !validationStatus }"
-        [attr.title]="!validationStatus ? 'Some error in configuration. Please validate.' : null"
-      >
-        <i class="far fa-object-ungroup"></i>
-        <span class="text-title">Configure ISMS Settings</span>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let card of cards">
+      <div class="card">
+        <a [routerLink]="card.link">
+          <div
+            class="dash-card primary"
+            [ngClass]="{ 'greyish': card.validationStatus === false }"
+            [attr.title]="card.validationStatus === false ? 'Some error in configuration. Please validate.' : null"
+          >
+            <i [class]="card.icon"></i>
+            <span class="text-title">{{ card.title }}</span>
+          </div>
+        </a>
       </div>
-    </a>
-    
+    </div>
   </div>
-  
-  <div class="card">
-    <a routerLink="/isms/risks">
-      <div class="dash-card primary">
-        <i class="far fa-object-ungroup"></i>
-        <span class="text-title">Risks</span>
-      </div>
-    </a>
-  </div>
-
-
-  <div class="card">
-    <a routerLink="/isms/control-measures">
-      <div class="dash-card primary">
-        <i class="far fa-object-ungroup"></i>
-        <span class="text-title">Measures/Controls</span>
-      </div>
-    </a>
-  </div>
-  <br>
-  <div class="card">
-    <a routerLink="/isms/threats">
-      <div class="dash-card primary">
-        <i class="far fa-object-ungroup"></i>
-        <span class="text-title">Threats</span>
-      </div>
-    </a>
-  </div>
-
-  <div class="card">
-    <a routerLink="/isms/vulnerabilities">
-      <div class="dash-card primary">
-        <i class="far fa-object-ungroup"></i>
-        <span class="text-title">Vulnerabilities</span>
-      </div>
-    </a>
-  </div>
-
-
 </div>

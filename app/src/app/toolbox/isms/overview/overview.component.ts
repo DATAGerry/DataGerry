@@ -28,6 +28,55 @@ export class OverviewComponent implements OnInit {
 
   public validationStatus: boolean = false;
 
+  public cards = [
+    {
+      title: 'Configure ISMS Settings',
+      icon: 'fas fa-cogs',
+      link: '/isms/configure',
+      validationStatus: false
+    },
+    {
+      title: 'Risks',
+      icon: 'fas fa-exclamation-triangle',
+      link: '/isms/risks'
+    },
+    {
+      title: 'Measures/Controls',
+      icon: 'fas fa-shield-alt',
+      link: '/isms/control-measures'
+    },
+    {
+      title: 'Threats',
+      icon: 'fas fa-bolt',
+      link: '/isms/threats'
+    },
+    {
+      title: 'Vulnerabilities',
+      icon: 'fas fa-bug',
+      link: '/isms/vulnerabilities'
+    },
+
+    {
+      title: 'Persons',
+      icon: 'fas fa-user-friends',
+      link: '/isms/persons'
+    },
+
+    {
+      title: 'Person Groups',
+      icon: 'fas fa-users',
+      link: '/framework/person-groups'
+    },
+
+    // {
+    //   title: 'Risk Matrix Report',
+    //   icon: 'fas fa-table',
+    //   link: '/isms/reports/risk_matrix'
+    // },
+
+  ];
+
+
   constructor(private ismsService: ISMSService,
     private cdRef: ChangeDetectorRef
 
@@ -35,13 +84,20 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.ismsService.getIsmsValidationStatus().subscribe((status: IsmsConfigValidation) => {
-      this.validationStatus =
+      const isValid =
         status.risk_classes &&
         status.likelihoods &&
         status.impacts &&
         status.impact_categories &&
         status.risk_matrix;
   
+      this.cards.forEach(card => {
+        if (card.hasOwnProperty('validationStatus')) {
+          card.validationStatus = isValid;
+        }
+      });
+  
+      // Trigger change detection
       this.cdRef.detectChanges();
     });
   }
