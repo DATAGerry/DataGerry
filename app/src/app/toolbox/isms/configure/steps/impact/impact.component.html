@@ -20,16 +20,16 @@
         [searchEnabled]="false" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
     </cmdb-table>
 
-    <!-- Actions Template -->
-    <ng-template #actionsTemplate let-item="item">
-        <span *permissionLink="'base.isms.impact.edit'">
-            <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="editImpact(item)"
-                title="Edit Impact"></i>
-        </span>
-        <span *permissionLink="'base.isms.impact.delete'">
-            <i class="far fa-trash-alt icon-delete" (click)="deleteImpact(item)" title="Delete Impact"></i>
-        </span>
-    </ng-template>
 </div>
+    <!-- Actions Template -->
+<ng-template #actionsTemplate let-item="item">
+    <span *permissionLink="'base.isms.impact.edit'">
+        <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="editImpact(item)"
+            title="Edit Impact"></i>
+    </span>
+    <span *permissionLink="'base.isms.impact.delete'">
+        <i class="far fa-trash-alt icon-delete" (click)="deleteImpact(item)" title="Delete Impact"></i>
+    </span>
+</ng-template>
 
 <app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>
