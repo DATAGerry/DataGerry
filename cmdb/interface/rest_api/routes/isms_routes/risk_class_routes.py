@@ -237,7 +237,6 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
     Returns:
         DefaultResponse: The new data of the IsmsRiskClass
     """
-    LOGGER.debug("update_multiple_isms_risk_classes() called")
     try:
         data = request.get_json()
 

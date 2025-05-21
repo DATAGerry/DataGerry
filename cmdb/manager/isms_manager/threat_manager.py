@@ -71,7 +71,7 @@ class ThreatManager(GenericManager):
             if risk_using_threat:
                 raise ThreatManagerRiskUsageError('Threat is used by IsmsRisks!')
 
-            return self.delete(public_id)
+            return self.delete_item(public_id)
         except ThreatManagerRiskUsageError as err:
             raise err
         except Exception as err:
