@@ -156,6 +156,7 @@ export class ObjectSelectorComponent implements OnInit {
   @Input() typeIds: number[] = [];
   @Input() multiple = false;
   @Input() selectedIds: any[] = [];
+  @Input() isViewMode = false;
   @Output() selectionChange = new EventEmitter<number[]>();
 
   public objectList: RenderResult[] = [];

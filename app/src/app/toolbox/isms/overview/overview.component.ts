@@ -68,11 +68,11 @@ export class OverviewComponent implements OnInit {
       link: '/framework/person-groups'
     },
 
-    // {
-    //   title: 'Risk Matrix Report',
-    //   icon: 'fas fa-table',
-    //   link: '/isms/reports/risk_matrix'
-    // },
+        {
+      title: 'Risk Matrix Report',
+      icon: 'fas fa-table',
+      link: '/isms/reports/risk_matrix'
+    },
 
   ];
 

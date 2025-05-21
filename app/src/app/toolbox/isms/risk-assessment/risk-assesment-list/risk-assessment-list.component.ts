@@ -40,7 +40,7 @@ import { RiskClass } from '../../models/risk-class.model';
 
 import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
 
 const GREY = '#f5f5f5';
@@ -56,6 +56,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     @Input() riskId?: number;
     @Input() objectId?: number;
     @Input() groupId?: number;
+    @Input() assessmentIds: number[] = null;
+    @Input() fromReport = false;
     // @Input() summaryLine: string = '';s
     @Input() riskSummaryLine: string = '';
     @Input() objectGroupName: string = '';
@@ -107,6 +109,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         private readonly loader: LoaderService,
         private readonly toast: ToastService,
         private readonly modal: NgbModal,
+        public activeModal: NgbActiveModal
+
     ) { }
 
     /* ══════════════════ life-cycle ══════════════════ */
@@ -177,7 +181,6 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
     /* ───── build filter object for API ───── */
     private buildFilter(): any {
-        // console.log('buildFilter', this.riskId, this.objectId, this.groupId);
         if (this.riskId) { return { risk_id: this.riskId }; }
 
         if (this.objectId) {
@@ -195,6 +198,9 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
                     { object_id: this.groupId }
                 ]
             };
+        }
+        if (this.assessmentIds) {
+            return { public_id: { $in: this.assessmentIds } };
         }
         return {};
     }
@@ -242,8 +248,6 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
         this.loader.show(); this.loading = true;
 
-        console.log('buildFilter', this.buildFilter());
-
         const params: CollectionParameters = {
             filter: this.buildFilter(),
             page: this.page,
@@ -259,7 +263,6 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
                 error: err => this.toast.error(err?.error?.message || 'Load failed')
             });
 
-        console.log('rows', this.rows);
     }
 
     /* ───── table events ───── */
@@ -328,7 +331,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     //   }
 
     onEdit(row: RiskAssessment): void {
-        console.log('onEdit', row);
+        this.activeModal.dismiss();
         switch (this.ctx()) {
             case 'RISK':
                 this.router.navigate(
@@ -346,6 +349,13 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
                 this.router.navigate(
                     [`/isms/object-groups/${this.groupId}/risk-assessments/edit`, row.public_id],
                     { state: { riskAssessment: row } });
+                return;
+
+            case 'REPORT':
+                this.router.navigate(
+                    [`/isms/risk-assessments/edit`, row.public_id],
+                    { state: { riskAssessment: row, fromReport: true } }
+                );
                 return;
 
             default:
@@ -368,6 +378,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     //   }
 
     onView(row: RiskAssessment): void {
+        this.activeModal.dismiss();
         switch (this.ctx()) {
             case 'RISK':
                 this.router.navigate(
@@ -385,6 +396,13 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
                 this.router.navigate(
                     [`/isms/object-groups/${this.groupId}/risk-assessments/view`, row.public_id],
                     { state: { riskAssessment: row } });
+                return;
+
+            case 'REPORT':
+                this.router.navigate(
+                    [`/isms/risk-assessments/view`, row.public_id],
+                    { state: { riskAssessment: row, fromReport: true } }
+                );
                 return;
 
             default:
@@ -419,10 +437,11 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         }).catch(() => { /* dismissed */ });
     }
 
-    private ctx(): 'RISK' | 'OBJECT' | 'GROUP' | 'NONE' {
+    private ctx(): 'RISK' | 'OBJECT' | 'GROUP' | 'REPORT' | 'NONE' {
         if (this.riskId) { return 'RISK'; }
         if (this.objectId) { return 'OBJECT'; }
         if (this.groupId) { return 'GROUP'; }
+        if (this.assessmentIds) return 'REPORT';
         return 'NONE';
     }
 
@@ -439,7 +458,6 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     // }
 
     onAddAssessment(): void {
-        console.log('risk summary line', this.riskSummaryLine);
         if (this.objectId) {
             this.router.navigate(
                 ['/isms/objects', this.objectId, 'risk-assessments', 'add'],

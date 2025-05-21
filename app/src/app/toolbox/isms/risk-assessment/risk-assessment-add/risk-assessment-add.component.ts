@@ -102,6 +102,7 @@ export class RiskAssessmentAddComponent implements OnInit {
   readonly fromRisk = this.route.snapshot.paramMap.has('riskId');
   readonly fromObject = this.route.snapshot.paramMap.has('objectId');
   readonly fromObjectGroup = this.route.snapshot.paramMap.has('groupId');
+  readonly fromReport = !!this.router.getCurrentNavigation()?.extras?.state?.['fromReport'];
 
   // Added flags for view, edit, and duplicate modes
   readonly isEditMode = this.router.url.includes('/edit/');
@@ -151,9 +152,6 @@ export class RiskAssessmentAddComponent implements OnInit {
     this.applyRouteDefaults();
     this.loadReferenceData();
 
-    console.log('is view:', this.isView);
-
-
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state as { objectSummary?: string, riskName?: string };
 
@@ -179,7 +177,6 @@ export class RiskAssessmentAddComponent implements OnInit {
   * @returns {void}
   */
   onSave(): void {
-    console.log('Form value on submit:', this.form.value);
 
     // Prevent saving in view mode
     if (this.isView) return;
@@ -359,7 +356,6 @@ export class RiskAssessmentAddComponent implements OnInit {
           if (this.isEditMode || this.isView) {
             if (state && state.riskAssessment) {
               this.patchFormWithData(state.riskAssessment);
-              console.log('Form value:', this.form.value);
               if (this.isView) {
                 this.form.disable({ emitEvent: false });
               }
@@ -439,13 +435,13 @@ export class RiskAssessmentAddComponent implements OnInit {
       (err: unknown): void =>
         this.toast.error((err as any)?.error?.message ?? fallback);
 
-    get CurrentMode(): string {
-      if (this.isEditMode) {
-        return 'EDIT';
-      } else if (this.isView) {
-        return 'VIEW';
-      } else {
-        return 'add';
-      }
+  get CurrentMode(): string {
+    if (this.isEditMode) {
+      return 'EDIT';
+    } else if (this.isView) {
+      return 'VIEW';
+    } else {
+      return 'add';
     }
+  }
 }

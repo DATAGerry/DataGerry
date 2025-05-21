@@ -1,0 +1,24 @@
+<div class="modal-header">
+    <h4 class="modal-title">Risk Assessment Details</h4>
+    <!-- "X" close button -->
+    <button type="button" class="close" (click)="activeModal.dismiss()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Risk Assessment Table -->
+    <div class="table-container">
+      <app-risk-assessment-list [assessmentIds]="assessmentIds" [fromReport]="true"></app-risk-assessment-list>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="activeModal.dismiss()"
+    >
+      Close
+    </button>
+  </div>

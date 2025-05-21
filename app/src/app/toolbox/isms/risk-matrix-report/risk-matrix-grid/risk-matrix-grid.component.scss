@@ -1,0 +1,132 @@
+.matrix-head {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .risk-matrix {
+    border-collapse: collapse;
+    border: 2px solid #333;
+    font-family: Arial, sans-serif;
+    background: white;
+    font-size: 14px;
+    margin: 0 auto;
+  }
+  
+  .risk-matrix th,
+  .risk-matrix td {
+    border: 1px solid #333;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Empty corner cell */
+  .axis-corner {
+    background-color: #f5f5f5;
+    width: 120px;
+    height: 60px;
+    position: relative;
+  }
+  
+  .axis-labels {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: normal;
+    color: #555;
+  }
+  
+  .likelihood-label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .impact-label {
+    display: block;
+  }
+  
+  /* Impact headers (top row) */
+  .impact-header {
+    background-color: #f5f5f5;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    min-width: 120px;
+  }
+  
+  /* Likelihood headers (left column) */
+  .likelihood-header {
+    background-color: #f5f5f5;
+    padding: 20px 15px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    width: 120px;
+  }
+  
+  /* Matrix cells */
+  .matrix-cell {
+    width: 120px;
+    height: 80px;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .matrix-cell:hover {
+    opacity: 0.8;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .risk-matrix {
+      font-size: 12px;
+    }
+    
+    .matrix-cell {
+      width: 100px;
+      height: 60px;
+      font-size: 24px;
+    }
+    
+    .axis-corner,
+    .likelihood-header {
+      width: 100px;
+    }
+    
+    .impact-header {
+      min-width: 100px;
+      padding: 12px 15px;
+    }
+    
+    .likelihood-header {
+      padding: 15px 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .matrix-cell {
+      width: 80px;
+      height: 50px;
+      font-size: 18px;
+    }
+    
+    .axis-corner,
+    .likelihood-header {
+      width: 80px;
+    }
+    
+    .impact-header {
+      min-width: 80px;
+      padding: 10px 8px;
+      font-size: 14px;
+    }
+  }
