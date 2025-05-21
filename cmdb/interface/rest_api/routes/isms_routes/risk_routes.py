@@ -299,7 +299,6 @@ def is_risk_data_valid(data: dict) -> bool:
         if not data.get('threats'):
             return False
 
-
     if data_risk_type == RiskType.EVENT:
         if not data.get('consequences'):
             return False

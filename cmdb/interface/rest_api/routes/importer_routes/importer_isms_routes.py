@@ -17,7 +17,7 @@
 Implementation of all API routes for Isms Imports
 """
 import io
-from csv import DictReader, Sniffer, Error, excel
+from csv import DictReader, Sniffer, Error
 import logging
 from typing import Optional
 from flask import request, abort
@@ -454,15 +454,30 @@ def read_csv_file(csv_file: FileStorage, expected_headers: set) -> DictReader:
     """
     stream = io.StringIO(csv_file.stream.read().decode("utf-8"))
 
-    # Detect delimiter
-    sample = stream.read(1024)  # Read first 1KB for sniffing
-    stream.seek(0)  # Reset stream to start again
+    # Read a sample for sniffing
+    sample = stream.read(1024)
+    stream.seek(0)
 
     try:
         dialect = Sniffer().sniff(sample, delimiters=";,")
+        delimiter = dialect.delimiter
     except Error:
-        dialect = excel
-    reader = DictReader(stream, dialect=dialect)
+        dialect = None
+        delimiter = None
+
+    if delimiter is None:
+        # Try semicolon first
+        reader = DictReader(stream, delimiter=';')
+        if len(reader.fieldnames or []) <= 1:
+            # Probably not semicolon, try comma
+            stream.seek(0)
+            reader = DictReader(stream, delimiter=',')
+            if len(reader.fieldnames or []) <= 1:
+                abort(400, "Could not determine CSV delimiter or invalid CSV format.")
+    else:
+        # Sniffer succeeded, use detected dialect
+        stream.seek(0)
+        reader = DictReader(stream, dialect=dialect)
 
     # Validate headers
     file_headers = set(reader.fieldnames or [])

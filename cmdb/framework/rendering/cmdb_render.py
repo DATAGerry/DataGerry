@@ -656,7 +656,7 @@ class CmdbRender:
                     summary_line += f' | {line["value"]}'
 
             render_result.summary_line = summary_line
-        except (Exception, CmdbTypeFieldNotFoundError):
+        except Exception:
             summary_line = default_line
         finally:
             render_result.summary_line = summary_line
