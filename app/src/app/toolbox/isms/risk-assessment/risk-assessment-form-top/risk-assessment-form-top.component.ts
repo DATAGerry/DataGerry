@@ -42,6 +42,7 @@ export class RiskAssessmentFormTopComponent implements OnInit {
   @Input() fromRisk        = false;
   @Input() fromObject      = false;
   @Input() fromObjectGroup = false;
+  @Input() fromReport = false;
 
   @Input() risks:        any[]        = [];
   @Input() objects:      CmdbObject[] = [];
@@ -73,34 +74,58 @@ export class RiskAssessmentFormTopComponent implements OnInit {
   private static cachedTypes: CmdbType[] | null = null;
 
   /* ══════════════════════════════════════ */
+
+
   ngOnInit(): void {
-
-    console.log('fromRisk:', this.fromRisk);
-    console.log('fromObject:', this.fromObject);
-    console.log('fromObjectGroup:', this.fromObjectGroup);
     const objectId = this.parentForm.get('object_id')?.value;
-
-    if (this.fromRisk) {
-      const riskId = +this.parentForm.get('risk_id')!.value;
+    const riskId = this.parentForm.get('risk_id')?.value;
+  
+    //  Resolve risk name in all scenarios
+    if (riskId) {
       this.riskName =
         this.risks.find(r => r.public_id === riskId)?.name
         ?? this.riskSummaryLine
         ?? null;
-
+    }
+  
+    //  Enable object selector only if fromRisk and not VIEW
+    if (this.fromRisk && this.mode !== 'VIEW') {
       this.loadTypesIfNeeded();
     }
-
-    console.log('from topppp objectId:', objectId, 'mode', this.mode);
-    
-
-    if (this.fromObject || this.fromObjectGroup) {
-      this.parentForm.get('object_id_ref_type')?.disable();
+  
+    //  Lock both in report mode
+    if (this.fromReport) {
+      this.parentForm.get('risk_id')?.disable({ emitEvent: false });
+      this.parentForm.get('object_id_ref_type')?.disable({ emitEvent: false });
+      this.parentForm.get('object_id')?.disable({ emitEvent: false });
     }
-
-    if ((this.fromObject || (this.fromRisk && this.mode === 'VIEW')) && objectId) {        
+  
+    //  Lock object ref type in object-based context (edit/view/add)
+    if (this.fromObject || this.fromObjectGroup) {
+      this.parentForm.get('object_id_ref_type')?.disable({ emitEvent: false });
+      this.parentForm.get('object_id')?.disable({ emitEvent: false });
+    }
+  
+    //  Lock risk_id only in VIEW mode for object/group
+    if ((this.fromObject || this.fromObjectGroup) && this.mode === 'VIEW') {
+      this.parentForm.get('risk_id')?.disable({ emitEvent: false });
+    }
+  
+    //  Lock risk_id if fromRisk (view/edit/add)
+    if (this.fromRisk) {
+      this.parentForm.get('risk_id')?.disable({ emitEvent: false });
+    }
+  
+    // Load render view if applicable
+    const shouldRender =
+      (this.fromObject || this.fromReport || (this.fromRisk && this.mode === 'VIEW'));
+  
+    if (shouldRender && objectId) {
       this.loadSelectedObjectRenderResult(objectId);
     }
   }
+  
+  
 
   public onObjectSelected(ids: number[]): void {
     this.parentForm.get('object_id')?.setValue(ids?.[0] ?? null);
@@ -132,7 +157,6 @@ export class RiskAssessmentFormTopComponent implements OnInit {
   }
 
   private loadSelectedObjectRenderResult(objectId: number): void {
-    console.log('loadSelectedObjectRenderResult called with objectId:', objectId);
     if (!objectId) return;
 
     this.isObjectLoading = true;

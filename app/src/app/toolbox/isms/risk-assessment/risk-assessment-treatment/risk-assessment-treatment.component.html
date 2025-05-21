@@ -116,7 +116,7 @@
         </div>
 
         <div class="mb-3">
-            <label>Priority</label>
+            <label>Priority<span class="required">*</span></label>
             <app-form-select [formControl]="parentForm.get('priority')" [items]="priorityOptions" bindLabel="label"
                 bindValue="value" dropdownDirection="top"
                 (selectedItemChange)="onPrioritySelected($event)"></app-form-select>

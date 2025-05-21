@@ -66,7 +66,8 @@
         <button
           type="button"
           class="btn btn-outline-secondary btn-sm"
-          (click)="openCategoryManager()" [disabled]="isViewMode">
+          *ngIf="!isViewMode"
+          (click)="openCategoryManager()" >
           Manage Categories
         </button>
       </div>
@@ -86,6 +87,7 @@
     [multiple]="true"
     [selectedIds]="group.assigned_ids"
     (selectionChange)="onObjectsSelected($event)"
+    [isViewMode]="isViewMode"
     [style.display]="group.group_type === 'STATIC' ? 'block' : 'none'">
   </app-object-selector>
 

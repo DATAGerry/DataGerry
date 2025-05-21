@@ -273,8 +273,11 @@ const routes: Routes = [
   {
     path: 'reports/risk_matrix',
     component: RiskMatrixReportComponent,
-    canActivate: [preCloudGuard]
-  }
+    canActivate: [preCloudGuard],
+    data: {
+      breadcrumb: 'Risk Matrix Report',
+    }
+  } 
   
 ];
 

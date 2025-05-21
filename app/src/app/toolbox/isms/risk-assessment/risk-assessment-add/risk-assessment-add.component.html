@@ -73,10 +73,14 @@
   <h2>Risk Assessment</h2>
 
   <form [formGroup]="form" style="margin-top: 25px;">
-    <app-risk-assessment-form-top [parentForm]="form" [fromRisk]="fromRisk" [fromObject]="fromObject"
-      [fromObjectGroup]="fromObjectGroup" [risks]="allRisks" [objects]="allObjects" [objectGroups]="allObjectGroups"
-      [objectSummary]="objectSummary" [mode]="CurrentMode">
-    </app-risk-assessment-form-top>
+    <!--  Risk-assessment-form-top  -->
+    <app-risk-assessment-form-top [parentForm]="form" [fromRisk]="fromRisk || fromReport"
+      [fromObject]="fromObject || (fromReport && form.get('object_id_ref_type')?.value === 'OBJECT')"
+      [fromObjectGroup]="fromObjectGroup || (fromReport && form.get('object_id_ref_type')?.value === 'OBJECT_GROUP')"
+      [fromReport]="fromReport" [risks]="allRisks" [objects]="allObjects" [objectGroups]="allObjectGroups"
+      [riskSummaryLine]="riskName" [objectSummary]="objectSummary" [mode]="CurrentMode"></app-risk-assessment-form-top>
+
+
     <div class="risk-assessment-sections">
 
 
@@ -152,13 +156,16 @@
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()" ></app-button>
+      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()"></app-button>
 
     </div>
 
-    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId" *ngIf="isView">
+    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId"
+      *ngIf="isView">
     </cmdb-risk-assessment-footer>
   </form>
 
 
 </div>
+
+<app-loading-popup [isVisible]="loading$ | async" message="Loading Dashboard..."></app-loading-popup>

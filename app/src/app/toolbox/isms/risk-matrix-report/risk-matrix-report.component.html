@@ -2,3 +2,30 @@
     <h1>Risk-Matrix Report</h1>
   </div>
   
+  <app-risk-matrix-grid
+    [title]="'Risk matrix – BEFORE treatment'"
+    [impacts]="impacts"
+    [likelihoods]="likelihoods"
+    [cells]="before"
+    [riskClasses]="riskClasses"
+    (viewAssessments)="onCell($event)">
+  </app-risk-matrix-grid>
+  
+  <app-risk-matrix-grid
+    [title]="'Risk matrix – CURRENT state'"
+    [impacts]="impacts"
+    [likelihoods]="likelihoods"
+    [cells]="current"
+    [riskClasses]="riskClasses"
+    (viewAssessments)="onCell($event)">
+  </app-risk-matrix-grid>
+  
+  <app-risk-matrix-grid
+    [title]="'Risk matrix – AFTER treatment'"
+    [impacts]="impacts"
+    [likelihoods]="likelihoods"
+    [cells]="after"
+    [riskClasses]="riskClasses"
+    (viewAssessments)="onCell($event)">
+  </app-risk-matrix-grid>
+  
