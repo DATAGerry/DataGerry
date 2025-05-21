@@ -48,7 +48,7 @@ class GroupDeletionParameters(APIParameters):
 # --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
-    def from_http(cls, query_string: str, **optional) -> "GroupDeletionParameters":
+    def from_data(cls, query_string: str, **optional) -> "GroupDeletionParameters":
         """
         Creates GroupDeletionParameters from an HTTP query string
 

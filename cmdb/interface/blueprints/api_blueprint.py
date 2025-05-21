@@ -177,7 +177,7 @@ class APIBlueprint(Blueprint):
             @wraps(f)
             def _decorate(*args, **kwargs):
                 try:
-                    params = parameters_class.from_http(
+                    params = parameters_class.from_data(
                         str(request.query_string, 'utf-8'), **{**optional, **request.args.to_dict()}
                     )
                 except Exception as err:
@@ -237,7 +237,7 @@ class APIBlueprint(Blueprint):
             @wraps(f)
             def _decorate(*args, **kwargs):
                 try:
-                    params = CollectionParameters.from_http(
+                    params = CollectionParameters.from_data(
                         str(request.query_string, 'utf-8'), **{**optional, **request.args.to_dict()}
                     )
                 except Exception as err:
