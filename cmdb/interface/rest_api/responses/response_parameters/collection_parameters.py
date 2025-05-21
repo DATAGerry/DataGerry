@@ -63,7 +63,7 @@ class CollectionParameters(APIParameters):
 
 
     @classmethod
-    def from_http(cls, query_string: str, **optional) -> "CollectionParameters":
+    def from_data(cls, query_string: str, **optional) -> "CollectionParameters":
         """
         Create a collection parameter instance from a http query string
 
@@ -84,7 +84,9 @@ class CollectionParameters(APIParameters):
 
     @classmethod
     def to_dict(cls, parameters: "CollectionParameters") -> dict:
-        """Get the object as a dict"""
+        """
+        Get the object as a dict
+        """
         params: dict = {
             'limit': parameters.limit,
             'sort': parameters.sort,

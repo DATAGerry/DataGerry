@@ -347,6 +347,7 @@ def handle_risks_import(csv_file: FileStorage, request_user: CmdbUser) -> dict:
         "imported_objects": len(risks),
         "created_objects": created_risks,
         "existing_objects": existing_risks,
+        "invalid_objects": invalid_risks,
     }
 
 

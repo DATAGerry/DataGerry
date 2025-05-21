@@ -50,7 +50,7 @@ class APIParameters:
 # --------------------------------------------------- CLASS METHODS -------------------------------------------------- #
 
     @classmethod
-    def from_http(cls, query_string: str, **optional) -> "APIParameters":
+    def from_data(cls, query_string: str, **optional) -> "APIParameters":
         """
         Creates an instance of APIParameters from HTTP request parameters
 

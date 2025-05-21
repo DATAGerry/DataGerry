@@ -44,7 +44,7 @@ class TypeIterationParameters(CollectionParameters):
 
 
     @classmethod
-    def from_http(cls, query_string: str, **optional) -> "TypeIterationParameters":
+    def from_data(cls, query_string: str, **optional) -> "TypeIterationParameters":
         """Create a TypeIterationParameters instance from HTTP request parameters
 
         This method parses optional parameters like `active`, `filter`, and `projection` 
