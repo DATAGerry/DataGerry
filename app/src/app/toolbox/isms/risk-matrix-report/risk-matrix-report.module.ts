@@ -7,6 +7,8 @@ import { RiskMatrixReportComponent } from './risk-matrix-report.component';
 import { RiskMatrixGridComponent } from './risk-matrix-grid/risk-matrix-grid.component';
 import { RiskAssessmentDrilldownModalComponent } from './modal/risk-assessment-drilldown-modal.component';
 import { RiskAssessmentModule } from '../risk-assessment/risk-assesment.module';
+import { AuthModule } from 'src/app/modules/auth/auth.module';
+import { CoreModule } from 'src/app/core/core.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { RiskAssessmentModule } from '../risk-assessment/risk-assesment.module';
     CommonModule,
     FormsModule,
     NgbModalModule,
-    RiskAssessmentModule
+    RiskAssessmentModule,
+    AuthModule,
+    CoreModule
   ]
 })
 export class RiskMatrixReportModule { }

@@ -18,6 +18,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ISMSService } from '../services/isms.service';
 import { IsmsConfigValidation } from '../models/isms-config-validation.model';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { finalize } from 'rxjs';
+import { ToastService } from 'src/app/layout/toast/toast.service';
 
 @Component({
   selector: 'app-isms-overview',
@@ -27,6 +30,8 @@ import { IsmsConfigValidation } from '../models/isms-config-validation.model';
 export class OverviewComponent implements OnInit {
 
   public validationStatus: boolean = false;
+  public isLoading$ = this.loaderService.isLoading$;
+
 
   public cards = [
     {
@@ -78,27 +83,38 @@ export class OverviewComponent implements OnInit {
 
 
   constructor(private ismsService: ISMSService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private loaderService: LoaderService,
+    private toastService: ToastService,
 
   ) { }
 
   ngOnInit(): void {
-    this.ismsService.getIsmsValidationStatus().subscribe((status: IsmsConfigValidation) => {
-      const isValid =
-        status.risk_classes &&
-        status.likelihoods &&
-        status.impacts &&
-        status.impact_categories &&
-        status.risk_matrix;
-  
-      this.cards.forEach(card => {
-        if (card.hasOwnProperty('validationStatus')) {
-          card.validationStatus = isValid;
-        }
-      });
-  
-      // Trigger change detection
-      this.cdRef.detectChanges();
+    this.loaderService.show(); // Show loader
+    this.ismsService.getIsmsValidationStatus().subscribe({
+      next: (status: IsmsConfigValidation) => {
+        const isValid =
+          status.risk_classes &&
+          status.likelihoods &&
+          status.impacts &&
+          status.impact_categories &&
+          status.risk_matrix;
+
+        this.cards.forEach(card => {
+          if (card.hasOwnProperty('validationStatus')) {
+            card.validationStatus = isValid;
+          }
+        });
+
+        // Trigger change detection
+        this.cdRef.detectChanges();
+      },
+      error: (err) => {
+        this.toastService.error(err?.error?.message)
+      },
+      complete: () => {
+        this.loaderService.hide(); // Hide loader
+      }
     });
   }
   

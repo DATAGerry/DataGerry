@@ -79,6 +79,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     limit = 10;
     sort: Sort = { name: 'public_id', order: SortDirection.ASCENDING };
     loading = false;
+    isLoading$ = this.loader.isLoading$; 
+
 
     columns: Column[] = [];
     initialVisibleColumns: string[] = [];

@@ -36,6 +36,8 @@ export class ImpactCategoriesComponent implements OnInit {
   private orderChangeSubject = new Subject<ImpactCategory[]>();
   private impactMap = new Map<number, string>();
   public filter: string;
+  public isLoading$ = this.loaderService.isLoading$; 
+
 
   constructor(
     private impactCategoryService: ImpactCategoryService,

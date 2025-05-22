@@ -33,23 +33,10 @@ export class RiskMatrixReportService extends BaseApiService<ReportRiskMatrix> {
 
   constructor(protected override api: ApiCallService) { super(api); }
 
-  /** -> GET /isms/reports/risk_matrix */
-  getReport(params: CollectionParameters): Observable<ReportRiskMatrix> {
-    const httpParams = this.buildHttpParams(params);
-    return this.handleGetRequest<ReportRiskMatrix>(`${this.servicePrefix}/`, httpParams);
-  }
-
-
-    public options = {
-        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        params: {},
-        observe: resp
-      };
-
   /**
-   * Fetch the single RiskMatrix record (we assume only one).
+   * Fetch the single RiskMatrix record.
    */
-  getReport1(): Observable<ReportRiskMatrix> {
+  getReport(): Observable<ReportRiskMatrix> {
    
     return this.handleGetRequest<ReportRiskMatrix>(`${this.servicePrefix}`);
   }

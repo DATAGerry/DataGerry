@@ -53,7 +53,7 @@ export class RiskCalculationComponent implements OnInit {
   public orderedImpacts: Impact[] = [];
 
   public loading = false;
-
+  public isLoading$ = this.loaderService.isLoading$; 
   // Modal for assigning a risk class
   public showModal = false;
   public selectedCell: RiskMatrixCell | null = null;

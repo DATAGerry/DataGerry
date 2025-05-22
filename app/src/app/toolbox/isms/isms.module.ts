@@ -107,7 +107,6 @@ import { RiskMatrixReportModule } from './risk-matrix-report/risk-matrix-report.
     PersonRoutingModule,
     RiskAssessmentModule,
     ControlMeasureAssignmentModule,
-    RiskMatrixReportModule
-  ]
+    RiskMatrixReportModule  ]
 })
 export class ISMSModule {}
