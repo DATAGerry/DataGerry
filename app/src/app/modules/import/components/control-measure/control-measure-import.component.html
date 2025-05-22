@@ -1,35 +1,51 @@
 <div class="card">
-    <div class="card-header">
-        Quick Control/Measure Import
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Quick Controls/Measures Import</span>
+        <!-- Move the button to the top-right corner -->
+        <a class="btn btn-secondary btn-sm" routerLink="/isms/control-measures">
+            Go to Controls/Measures Page
+        </a>
     </div>
     <div class="card-body">
+
+        <button class="btn btn-link" (click)="showInstructions = !showInstructions">
+            {{ showInstructions ? 'Hide Instructions' : 'Show Import Instructions' }}
+        </button>
+        <ng-container *ngIf="showInstructions">
+            <app-import-instructions [title]="'Importing Controls/Measures via CSV'"
+                [description]="'You can import multiple Controls/Measures using a CSV file. Please follow the structure and guidelines below to ensure successful import.'"
+                [headers]="[
+                { header: 'title', type: 'string', required: 'Yes (*)', description: 'The title or name of the Control/Measure' },
+                { header: 'control_measure_type', type: 'string', required: 'Yes (*)', description: 'The type of The Control/Measure (Allowed values: CONTROL, REQUIREMENT, MEASURE)' },
+                { header: 'source', type: 'string', required: 'No', description: 'The source of the Control/Measure' },
+                { header: 'implementation_state', type: 'string', required: 'No', description: 'The current implementation status (e.g., Planned, In Progress, Implemented)' },
+                { header: 'identifier', type: 'string', required: 'No', description: 'An identifier for the Control/Measure' },
+                { header: 'chapter', type: 'string', required: 'No', description: 'A logical grouping or chapter reference, if applicable' },
+                { header: 'description', type: 'string', required: 'No', description: 'A detailed explanation of the Control/Measure' },
+                { header: 'is_applicable', type: 'boolean', required: 'No', description: 'Indicates if the Control is applicable (Allowed truthy values: True, true, Yes, yes and 1; Allowed falsy values: False, false, No, no, 0; Unknown values will be mapped to false)' },
+                { header: 'reason', type: 'string', required: 'No', description: 'Justification if the Control/Measure is marked as not applicable' }
+              ]"
+                [mappings]="'The source and implementation_state values are matched against existing ones by name. Case sensitive: &quot;Source&quot; is not equal to &quot;source&quot;. If a matching does not exist, it will be automatically created in the database.'"
+                [duplicates]="'The system checks for existing Controls/Measures using case-sensitive comparison across all fields. A Control/Measure is only created if there is no exact match already in the database. Re-importing the same CSV file will not result in duplicates.'"
+                [exampleCsv]="'title,control_measure_type,source,implementation_state,identifier,chapter,description,is_applicable,reason\nMC1,CONTROL,MC_SOURCE,In Progress,Identifier1,Chapter1Text,Description1,true,Reason1Text\nMC2,REQUIREMENT,MC_SOURCE2,In Progress,Identifier2,Chapter2Text,Description2,no,Reason2Text'"></app-import-instructions>
+        </ng-container>
+
+
         <form [formGroup]="fileForm">
             <div class="form-group">
                 <label for="file">Select CSV File:</label>
                 <div class="custom-file">
-                    <input
-                        type="file"
-                        class="custom-file-input"
-                        id="file"
-                        (change)="selectFile($event.target.files)"
-                        accept=".csv"
-                    />
+                    <input type="file" class="custom-file-input" id="file" (change)="selectFile($event.target.files)"
+                        accept=".csv" />
                     <label class="custom-file-label" for="file">{{ fileName }}</label>
                 </div>
             </div>
-            <button
-                type="button"
-                class="btn btn-primary"
-                [disabled]="fileForm.invalid"
-                (click)="importControlMeasures()"
-            >
-                Import Control/Measures
+            <button type="button" class="btn btn-primary" [disabled]="fileForm.invalid"
+                (click)="importControlMeasures()">
+                Import Controls/Measures
             </button>
         </form>
     </div>
 </div>
 
-<app-loading-popup
-    [isVisible]="isLoading$ | async"
-    message="Importing threat objects..."
-></app-loading-popup>
+<app-loading-popup [isVisible]="isLoading$ | async" message="Importing threat objects..."></app-loading-popup>

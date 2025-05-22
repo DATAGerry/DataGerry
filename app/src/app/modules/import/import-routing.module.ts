@@ -62,7 +62,7 @@ const routes: Routes = [
         path: 'threat',
         canActivate: [PermissionGuard, preCloudGuard],
         data: {
-            breadcrumb: 'Threat',
+            breadcrumb: 'Threats',
            
         },
         component: ImportThreatComponent
@@ -71,7 +71,7 @@ const routes: Routes = [
         path: 'vulnerability',
         canActivate: [PermissionGuard, preCloudGuard],
         data: {
-            breadcrumb: 'Vulnerability',
+            breadcrumb: 'Vulnerabilities',
            
         },
         component: ImportVulnerabilityComponent
@@ -80,7 +80,7 @@ const routes: Routes = [
         path: 'risk',
         canActivate: [PermissionGuard, preCloudGuard],
         data: {
-            breadcrumb: 'Risk',
+            breadcrumb: 'Risks',
            
         },
         component: ImportRiskComponent
@@ -89,7 +89,7 @@ const routes: Routes = [
         path: 'control-measure',
         canActivate: [PermissionGuard, preCloudGuard],
         data: {
-            breadcrumb: 'Control Measure',
+            breadcrumb: 'Controls/Measures',
            
         },
         component: ImportControlMeasureComponent

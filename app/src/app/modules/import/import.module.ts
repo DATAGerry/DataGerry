@@ -57,6 +57,8 @@ import { ImportThreatComponent } from './components/threat/threat-import.compone
 import { ImportVulnerabilityComponent } from './components/vulnerability/vulnerability-import.component';
 import { ImportControlMeasureComponent } from './components/control-measure/control-measure-import.component';
 import { ImportRiskComponent } from './components/risk/risk-import.component';
+import { ImportInstructionsComponent } from './components/import-instructions/import-instructions.component';
+import { ImportSummaryModalComponent } from './components/import-summary-dialog/import-summary-dialog.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -82,7 +84,9 @@ import { ImportRiskComponent } from './components/risk/risk-import.component';
         ImportThreatComponent,
         ImportVulnerabilityComponent,
         ImportRiskComponent,
-        ImportControlMeasureComponent
+        ImportControlMeasureComponent,
+        ImportInstructionsComponent,
+        ImportSummaryModalComponent
     ],
     imports: [
         CommonModule,

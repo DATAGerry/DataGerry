@@ -1,35 +1,45 @@
 <div class="card">
-    <div class="card-header">
-        Quick Threat Import
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Quick Threats Import</span>
+        <a class="btn btn-secondary btn-sm" routerLink="/isms/threats">
+            Go to Threats Page
+        </a>
     </div>
     <div class="card-body">
+        <button class="btn btn-link" (click)="showInstructions = !showInstructions">
+            {{ showInstructions ? 'Hide Instructions' : 'Show Import Instructions' }}
+        </button>
+
+        <ng-container *ngIf="showInstructions">
+            <app-import-instructions [title]="'Importing Threats via CSV'"
+                [description]="'You can import multiple Threats using a CSV file. Please follow the structure and guidelines below to ensure successful import.'"
+                [headers]="[
+                { header: 'name', type: 'string', required: 'Yes (*)', description: 'The name of the Threat' },
+                { header: 'source', type: 'string', required: 'No', description: 'The source of the Threat' },
+                { header: 'identifier', type: 'string', required: 'No', description: 'An identifier for the Threat' },
+                { header: 'description', type: 'string', required: 'No', description: 'A description of the Threat' }
+              ]"
+                [mappings]="'The source value is matched against existing Sources by name. Case sensitive: &quot;Source&quot; is not equal to &quot;source&quot;. If a matching Source does not exist, it will be automatically created in the database.'"
+                [duplicates]="'The system checks for existing Threats using case-sensitive comparison across all fields. A Threat is only created if there is no exact match already in the database. Re-importing the same CSV file will not result in duplicates.'"
+                [exampleCsv]="'name;source;identifier;description\nThreat1;Source1;Identifier1;Description1\nThreat2;Source2;Identifier2;Description2'"></app-import-instructions>
+        </ng-container>
+
+
+
         <form [formGroup]="fileForm">
             <div class="form-group">
                 <label for="file">Select CSV File:</label>
                 <div class="custom-file">
-                    <input
-                        type="file"
-                        class="custom-file-input"
-                        id="file"
-                        (change)="selectFile($event.target.files)"
-                        accept=".csv"
-                    />
+                    <input type="file" class="custom-file-input" id="file" (change)="selectFile($event.target.files)"
+                        accept=".csv" />
                     <label class="custom-file-label" for="file">{{ fileName }}</label>
                 </div>
             </div>
-            <button
-                type="button"
-                class="btn btn-primary"
-                [disabled]="fileForm.invalid"
-                (click)="importThreat()"
-            >
+            <button type="button" class="btn btn-primary mt-3" [disabled]="fileForm.invalid" (click)="importThreat()">
                 Import Threats
             </button>
         </form>
     </div>
 </div>
 
-<app-loading-popup
-    [isVisible]="isLoading$ | async"
-    message="Importing threat objects..."
-></app-loading-popup>
+<app-loading-popup [isVisible]="isLoading$ | async" message="Importing threat objects..."></app-loading-popup>

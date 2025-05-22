@@ -41,7 +41,7 @@ export class OverviewComponent implements OnInit {
       link: '/isms/risks'
     },
     {
-      title: 'Measures/Controls',
+      title: 'Control/Measures',
       icon: 'fas fa-shield-alt',
       link: '/isms/control-measures'
     },
