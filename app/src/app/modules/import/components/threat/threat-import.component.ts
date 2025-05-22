@@ -4,6 +4,8 @@ import { finalize } from 'rxjs';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ImportService } from '../../services/import.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ImportSummaryModalComponent } from '../import-summary-dialog/import-summary-dialog.component';
 
 @Component({
     selector: 'cmdb-threat-import',
@@ -13,11 +15,15 @@ export class ImportThreatComponent {
     public fileForm: UntypedFormGroup;
     public fileName: string = 'Choose CSV file';
     public isLoading$ = this.loaderService.isLoading$;
+    showInstructions = false;
+
 
     constructor(
         private importService: ImportService,
         private loaderService: LoaderService,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private modalService: NgbModal
+        
     ) {
         this.fileForm = new UntypedFormGroup({
             file: new UntypedFormControl(null, Validators.required)
@@ -49,9 +55,11 @@ export class ImportThreatComponent {
             .pipe(finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (response) => {
-                    this.toastService.success('Threat objects imported successfully!');
+                    const modalRef = this.modalService.open(ImportSummaryModalComponent, { size: 'lg' });
+                    modalRef.componentInstance.summary = response;
                 },
                 error: (error) => {
+                    console.error('Import error:', error);
                     this.toastService.error(error?.error?.message);
                 }
             });

@@ -186,10 +186,10 @@ const routes: Routes = [
   },
 
   /* ─── control / measures ─── */
-  { path: 'control-measures', component: ControlmeasuresListComponent, canActivate: [preCloudGuard] },
-  { path: 'control-measures/add', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] },
-  { path: 'control-measures/edit', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] },
-  { path: 'control-measures/view', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] },
+  // { path: 'control-measures', component: ControlmeasuresListComponent, canActivate: [preCloudGuard], data: { breadcrumb: 'Control Measures' } },
+  // { path: 'control-measures/add', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard], data: { breadcrumb: 'Add Control Measure' } },
+  // { path: 'control-measures/edit', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard], data: { breadcrumb: 'Edit Control Measure' } },
+  // { path: 'control-measures/view', component: ControlMeasuresAddComponent, canActivate: [preCloudGuard] , data: { breadcrumb: 'View Control Measure' } },
 
   /* ─── Control‑Measure Assignments (generic) ─── */
   /* ─── Control‑Measure Assignments ─── */
