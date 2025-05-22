@@ -73,3 +73,9 @@
   }
   .icon-margin{ cursor:pointer; margin:0 4px; }
 </style>
+
+
+<app-loading-popup 
+[isVisible]="isLoading$ | async"
+message="We're Processing the Data..."
+></app-loading-popup>
