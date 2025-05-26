@@ -29,7 +29,7 @@ from cmdb.manager.query_builder.builder_parameters import BuilderParameters
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.isms_model import IsmsReportBuilder
-from cmdb.models.extendable_option_model import OptionType
+from cmdb.models.extendable_option_model import OptionType, CmdbExtendableOption
 
 from cmdb.interface.blueprints import APIBlueprint
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
@@ -329,7 +329,7 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
 
         results = risk_assessment_manager.iterate_items(BuilderParameters(query_pipeline))
 
-        # TODO: Replace Object public_id with Summary line
+        # TODO: Replace Object public_id with Summary line (ObjectsManager)
 
         return DefaultResponse(results).make_response()
     except RiskAssessmentManagerIterationError as err:
@@ -365,9 +365,11 @@ def get_isms_soa_report(request_user: CmdbUser):
                                                                                 request_user)
 
         # Get all implementation states for IsmsControlMeasures
-        all_implementation_states = extendable_options_manager.get_many(
-                                                                filter={'option_type':OptionType.IMPLEMENTATION_STATE}
-                                                               )
+        implementation_states = extendable_options_manager.iterate_items(BuilderParameters(
+                                                                    {'option_type':OptionType.IMPLEMENTATION_STATE}
+                                                                ))
+        all_implementation_states = [CmdbExtendableOption.to_json(imp_state) for
+                                     imp_state in implementation_states.results]
 
         # Create a lookup map from public_id to value for implementation states
         implementation_state_lookup = {
@@ -382,9 +384,11 @@ def get_isms_soa_report(request_user: CmdbUser):
             if original_id in implementation_state_lookup:
                 cm['implementation_state'] = implementation_state_lookup[original_id]
 
-        all_sources = extendable_options_manager.get_many(
-                                                    filter={'option_type':OptionType.CONTROL_MEASURE}
-                                                 )
+
+        cm_sources = extendable_options_manager.iterate_items(BuilderParameters(
+                                                                    {'option_type':OptionType.CONTROL_MEASURE}
+                                                                ))
+        all_sources = [CmdbExtendableOption.to_json(source) for source in cm_sources.results]
 
         # Create a lookup map from public_id to value for sources
         source_lookup = {
@@ -877,16 +881,13 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                     # Risk calculations before and after (impacts + likelihood)
                     'risk_calculation_before': '$risk_calculation_before',
                     'risk_calculation_after': '$risk_calculation_after',
-
-                    # Add other fields as needed...
-
                 }
             }
         ]
 
         results = risk_assessment_manager.iterate_items(BuilderParameters(pipeline))
 
-        # TODO: Replace Object public_id with Summary line
+        # TODO: Replace Object public_id with Summary line (ObjectsManager)
 
         return DefaultResponse(results).make_response()
     except Exception as err:

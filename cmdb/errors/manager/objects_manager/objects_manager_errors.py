@@ -82,3 +82,9 @@ class ObjectsManagerCheckError(ObjectsManagerError):
     """
     Raised when ObjectsManager fails a class internal check
     """
+
+
+class ObjectsManagerSummaryLineError(ObjectsManagerError):
+    """
+    Raised when ObjectsManager fails to retrieve the summaryline of a CmdbObject
+    """
