@@ -778,8 +778,7 @@ class MongoDatabaseManager:
         Args:
             collection (str): Name of the database collection
             *args: Additional arguments for the aggregation pipeline
-            **kwargs: Additional keyword arguments for the aggregation operation (including allowDiskUse)
-
+            **kwargs: Additional keyword arguments for the aggregation operation
         Raises:
             DocumentAggregationError: If the aggregation operation fails
 
@@ -787,7 +786,7 @@ class MongoDatabaseManager:
             Cursor: The computed aggregation results as a cursor
         """
         try:
-            return self.get_collection(collection, db_name).aggregate(*args, **kwargs, allowDiskUse=True)
+            return self.get_collection(collection, db_name).aggregate(*args, **kwargs)
         except Exception as err:
             raise DocumentAggregationError(f"Aggregation operation failed: {err}") from err
 
