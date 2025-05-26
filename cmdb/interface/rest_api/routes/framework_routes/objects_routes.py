@@ -247,16 +247,15 @@ def get_cmdb_object(public_id, request_user: CmdbUser):
 
         try:
             render_result = CmdbRender(requested_object,
-                                    type_instance,
-                                    request_user,
-                                    True,
-                                    objects_manager.dbm).result()
+                                       type_instance,
+                                       request_user,
+                                       True,
+                                       objects_manager.dbm).result()
         except Exception as err:
             LOGGER.error("[get_cmdb_object] Error: %s , Type: %s", err, type(err), exc_info=True)
             abort(500, "Object could not be rendered!")
 
-        api_response = DefaultResponse(render_result)
-        return api_response.make_response()
+        return DefaultResponse(render_result).make_response()
     except HTTPException as http_err:
         raise http_err
     except ObjectsManagerGetError as err:

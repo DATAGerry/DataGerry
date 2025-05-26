@@ -53,6 +53,7 @@ from cmdb.errors.manager.objects_manager import (
     ObjectsManagerIterationError,
     ObjectsManagerMdsReferencesError,
     ObjectsManagerCheckError,
+    ObjectsManagerSummaryLineError,
 )
 from cmdb.errors.models.cmdb_object import (
     CmdbObjectInitFromDataError,
@@ -912,3 +913,66 @@ class ObjectsManager(BaseManager):
         except Exception as err:
             LOGGER.error("[__is_ref_field] Exception: %s, Type: %s", err, type(err))
             raise ObjectsManagerCheckError(err) from err
+
+
+    def get_summary_line(self, public_id: int) -> str:
+        """
+        Retrieves the summary line of an CmdbObject
+
+        Args:
+            public_id (int): public_id of the CmdbObject
+
+        Returns:
+            str: The summary line of the CmdbObject
+        """
+        try:
+            if not public_id:
+                return ""
+
+            target_object = self.get_object(public_id)
+
+            if not target_object:
+                return ""
+
+            object_type_id = target_object.get('type_id')
+
+            target_object_type = self.get_object_type(object_type_id)
+
+            if not target_object_type:
+                return ""
+
+            default_line = f"{target_object_type.label} #{target_object.get('public_id')}"
+
+            if not target_object_type.has_summaries():
+                return default_line
+
+            summary_line = default_line
+
+            try:
+                summary_fields = target_object_type.get_summary().fields
+                first = True
+
+                line:dict
+                for line in summary_fields:
+                    field_name = line.get('name')
+                    field_value = next(
+                        (field['value'] for field in target_object['fields'] if field['name'] == field_name), None
+                    )
+
+                    if first:
+                        summary_line += f' - {field_value}'
+                        first = False
+                    else:
+                        summary_line += f' | {field_value}'
+            except Exception as err:
+                LOGGER.debug(
+                    "Failed to build summary line for Object-ID: %s and Type-ID: %s. Error: %s!",
+                    target_object.get('public_id'),
+                    target_object_type.public_id,
+                    err
+                )
+                summary_line = default_line
+
+            return summary_line
+        except Exception as err:
+            raise ObjectsManagerSummaryLineError(err) from err

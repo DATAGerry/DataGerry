@@ -77,6 +77,8 @@ def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
                                                                             request_user
                                                                          )
 
+        cm_assignments = data.pop('control_measure_assignments', None)
+
         result_id = risk_assessment_manager.insert_item(data)
 
         created_risk_assessment = risk_assessment_manager.get_item(result_id, as_dict=True)
