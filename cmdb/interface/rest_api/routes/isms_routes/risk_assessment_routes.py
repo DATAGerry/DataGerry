@@ -20,7 +20,7 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import RiskAssessmentManager
+from cmdb.manager import RiskAssessmentManager, ControlMeasureAssignmentManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
@@ -76,10 +76,21 @@ def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
                                                                             ManagerType.RISK_ASSESSMENT,
                                                                             request_user
                                                                          )
+        cm_assignment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
+                                                                            ManagerType.CONTROL_MEASURE_ASSIGNMENT,
+                                                                            request_user
+                                                                       )
 
         cm_assignments = data.pop('control_measure_assignments', None)
 
         result_id = risk_assessment_manager.insert_item(data)
+
+        # Create all provided ControlMeasureAssignments if there are any
+        if cm_assignments:
+            for cma in cm_assignments:
+                cma['risk_assessment_id'] = result_id
+
+                cm_assignment_manager.insert_item(cma)
 
         created_risk_assessment = risk_assessment_manager.get_item(result_id, as_dict=True)
 
