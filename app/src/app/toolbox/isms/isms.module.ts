@@ -61,6 +61,7 @@ import { ControlMeasureFooterComponent } from './control-measure/control-measure
 import { ControlMeasureAssignmentModule } from './control‑measure‑assignment/control-measure-assignment.module';
 import { RiskMatrixReportModule } from './risk-matrix-report/risk-matrix-report.module';
 import { SoaComponent } from './reporting/soa/soa.component';
+import { RiskTreatmentPlanComponent } from './reporting/risk-treatment-plan/risk-treatment-plan.component';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,8 @@ import { SoaComponent } from './reporting/soa/soa.component';
     PersonListComponent,
     PersonAddEditComponent,
     ControlMeasureFooterComponent,
-    SoaComponent
+    SoaComponent,
+    RiskTreatmentPlanComponent
 
   ],
   imports: [
