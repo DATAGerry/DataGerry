@@ -20,7 +20,7 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import RiskAssessmentManager, ControlMeasureAssignmentManager
+from cmdb.manager import RiskAssessmentManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
