@@ -38,6 +38,7 @@ import { ControlMeasureAssignmentListComponent } from './control‑measure‑ass
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { RiskMatrixReportComponent } from './risk-matrix-report/risk-matrix-report.component';
 import { SoaComponent } from './reporting/soa/soa.component';
+import { RiskTreatmentPlanComponent } from './reporting/risk-treatment-plan/risk-treatment-plan.component';
 
 
 const routes: Routes = [
@@ -284,6 +285,12 @@ const routes: Routes = [
     path: 'reports/soa',
     component: SoaComponent,
     data: { breadcrumb: 'SOA' }
+  },
+
+  {
+    path: 'reports/risk_treatment_plan',
+    component: RiskTreatmentPlanComponent,
+    data: { breadcrumb: 'Risk Treatment Plan'}
   }
   
 ];
