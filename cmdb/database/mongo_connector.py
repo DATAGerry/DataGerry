@@ -23,7 +23,7 @@ from pymongo import MongoClient
 from pymongo.database import Database
 
 from cmdb.database.connection_status import ConnectionStatus
-# from cmdb.database.database_utils import retry_operation
+from cmdb.database.database_utils import retry_operation
 
 from cmdb.errors.database import DatabaseConnectionError
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -109,7 +109,7 @@ class MongoConnector:
 
 # -------------------------------------------------------------------------------------------------------------------- #
 
-    # @retry_operation
+    @retry_operation
     def get_database(self, db_name: str) -> Database:
         """
         Retrieves database from client
@@ -123,7 +123,7 @@ class MongoConnector:
         return self.client.get_database(db_name)
 
 
-    # @retry_operation
+    @retry_operation
     def connect(self) -> ConnectionStatus:
         """
         Checks if database is reachable
@@ -144,7 +144,7 @@ class MongoConnector:
             raise DatabaseConnectionError(err) from err
 
 
-    # @retry_operation
+    @retry_operation
     def disconnect(self) -> ConnectionStatus:
         """
         Closes the connection to the database
@@ -164,7 +164,7 @@ class MongoConnector:
             return ConnectionStatus(connected=False, message=f"Error while disconnecting: {err}")
 
 
-    # @retry_operation
+    @retry_operation
     def is_connected(self) -> bool:
         """
         Checks the current connection status to the database
