@@ -25,7 +25,7 @@ from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.isms_model import IsmsRiskAssessment
+from cmdb.models.isms_model import IsmsRiskAssessment, IsmsControlMeasureAssignment
 
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -217,12 +217,48 @@ def update_isms_risk_assessment(public_id: int, data: dict, request_user: CmdbUs
                                                                             ManagerType.RISK_ASSESSMENT,
                                                                             request_user
                                                                          )
+        cm_assignment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
+                                                                            ManagerType.CONTROL_MEASURE_ASSIGNMENT,
+                                                                            request_user
+                                                                       )
 
         to_update_risk_assessment = risk_assessment_manager.get_item(public_id)
 
         if not to_update_risk_assessment:
             abort(404, f"The RiskAssessment with ID:{public_id} was not found!")
 
+        # Handle ControlMeasureAssignments
+        cm_assignments: list[dict] = data.pop('control_measure_assignments', None)
+
+        linked_cm_assignments = risk_assessment_manager.get_many_from_other_collection(
+            IsmsControlMeasureAssignment.COLLECTION,
+            risk_assessment_id=public_id
+        )
+
+        # Index existing CMAs in DB by public_id
+        existing_cmas_by_id = {cma['public_id']: cma for cma in linked_cm_assignments if cma.get('public_id')}
+
+        # Index incoming CMAs that have a public_id
+        incoming_cmas_by_id = {cma['public_id']: cma for cma in cm_assignments if cma.get('public_id')}
+
+        existing_ids = set(existing_cmas_by_id.keys())
+        incoming_ids = set(incoming_cmas_by_id.keys())
+
+        # Create new CMAs
+        for cma_data in cm_assignments:
+            if not cma_data.get('public_id'):
+                cm_assignment_manager.insert_item(cma_data)
+
+        # Update existing CMAs
+        for cma_id, cma_data in incoming_cmas_by_id.items():
+            cm_assignment_manager.update_item(cma_id, IsmsControlMeasureAssignment.from_data(cma_data))
+
+        # --- Delete removed CMAs ---
+        cmas_to_delete = existing_ids - incoming_ids
+        for cma_id in cmas_to_delete:
+            cm_assignment_manager.delete_item(cma_id)
+
+        # Update the actual RiskAssessment
         risk_assessment_manager.update_item(public_id, IsmsRiskAssessment.from_data(data))
 
         return UpdateSingleResponse(data).make_response()
