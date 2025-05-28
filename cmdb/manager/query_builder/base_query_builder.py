@@ -144,7 +144,7 @@ class BaseQueryBuilder(Builder):
         if object_builder_mode:
             query = [
                 self.lookup_(_from='framework.types', _local='type_id', _foreign='public_id', _as='type'),
-                self.unwind_({'path': '$type'}),
+                self.unwind_({'path': '$type', 'preserveNullAndEmptyArrays': True}),
                 self.match_({'type': {'$ne': None}}),
                 self.lookup_(_from='management.users', _local='author_id', _foreign='public_id', _as='author'),
                 self.unwind_({'path': '$author', 'preserveNullAndEmptyArrays': True}),

@@ -91,7 +91,7 @@ class LookedAccessControlQueryBuilder(PipelineBuilder):
         Returns:
             dict: An `$unwind` stage for the aggregation pipeline
         """
-        unwind = self.unwind_(path='$type')
+        unwind = self.unwind_({'path': '$type', 'preserveNullAndEmptyArrays': True})
 
         return unwind
 
@@ -134,6 +134,7 @@ class AccessControlQueryBuilder(PipelineBuilder):
     associated with their types.
     """
 
+
     def __init__(self, pipeline: list[dict] = None):
         """
         Initialize the AccessControlQueryBuilder
@@ -142,6 +143,7 @@ class AccessControlQueryBuilder(PipelineBuilder):
             pipeline (list[dict], optional): An optional initial aggregation pipeline. Defaults to None
         """
         super().__init__(pipeline=pipeline)
+
 
     #TODO: REFACTOR-FIX (same method in LookedAccessControlQueryBuilder)
     def build(self, group_id: int, permission: AccessControlPermission, *args, **kwargs) -> list[dict]:
@@ -198,7 +200,7 @@ class AccessControlQueryBuilder(PipelineBuilder):
         Returns:
             dict: An `$unwind` stage for the aggregation pipeline
         """
-        unwind = self.unwind_(path='$type')
+        unwind = self.unwind_({'path': '$type', 'preserveNullAndEmptyArrays': True})
 
         return unwind
 

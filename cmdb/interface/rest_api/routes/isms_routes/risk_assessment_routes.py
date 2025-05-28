@@ -94,10 +94,10 @@ def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
 
         created_risk_assessment = risk_assessment_manager.get_item(result_id, as_dict=True)
 
-        if created_risk_assessment:
-            return InsertSingleResponse(created_risk_assessment, result_id).make_response()
+        if not created_risk_assessment:
+            abort(404, "Could not retrieve the created RiskAssessment from the database!")
 
-        abort(404, "Could not retrieve the created RiskAssessment from the database!")
+        return InsertSingleResponse(created_risk_assessment, result_id).make_response()
     except HTTPException as http_err:
         raise http_err
     except RiskAssessmentManagerInsertError as err:
