@@ -560,7 +560,7 @@ class ObjectsManager(BaseManager):
 
             # Lookup related types by joining with the 'framework.types' collection
             query.append(Builder.lookup_(_from='framework.types', _local='type_id', _foreign='public_id', _as='type'))
-            query.append(Builder.unwind_({'path': '$type'}))
+            query.append(Builder.unwind_({'path': '$type', 'preserveNullAndEmptyArrays': True}))
 
             # Define reference conditions for both field-based and section-based references
             field_ref_query = {

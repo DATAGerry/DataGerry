@@ -154,7 +154,7 @@ def get_isms_risk_assessment_schema() -> dict:
         'implementation_status': { # public_id of CmdbExtendableOption 'IMPLEMENTATION_STATE'
             'type': 'integer',
             'required': True,
-            'empty': False
+            'nullable': True,
         },
         'finished_implementation_date': { # Date of finished implementation
             'type': 'dict',
