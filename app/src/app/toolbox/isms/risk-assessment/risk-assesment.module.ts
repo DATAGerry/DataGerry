@@ -16,7 +16,7 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { TableModule } from 'src/app/layout/table/table.module';
 import { AuthModule } from 'src/app/modules/auth/auth.module';
@@ -31,8 +31,9 @@ import { RiskAssessmentFormTopComponent } from './risk-assessment-form-top/risk-
 import { RiskAssessmentTreatmentComponent } from './risk-assessment-treatment/risk-assessment-treatment.component';
 import { RiskAssessmentListComponent } from './risk-assesment-list/risk-assessment-list.component';
 import { RiskAssessmentFooterComponent } from './risk-assessment-footer/risk-assessment-footer.component';
-import { ISMSModule } from '../isms.module';
 import { ControlMeasureAssignmentModule } from '../control‑measure‑assignment/control-measure-assignment.module';
+import { RaCmAssignmentInlineComponent } from './risk-assessment-treatment/ control-measure-assignment-inline/ra-cm-assignment-inline.component';
+import { DateFormatterPipe } from 'src/app/layout/pipes/date-formatter.pipe';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,9 @@ import { ControlMeasureAssignmentModule } from '../control‑measure‑assignmen
     RiskAssessmentFormTopComponent,
     RiskAssessmentTreatmentComponent,
     RiskAssessmentListComponent,
-    RiskAssessmentFooterComponent,  ],
+    RiskAssessmentFooterComponent,
+    RaCmAssignmentInlineComponent,
+  ],
   imports: [
     CommonModule,
     RiskAssessmentRoutingModule,
@@ -57,6 +60,7 @@ import { ControlMeasureAssignmentModule } from '../control‑measure‑assignmen
   exports: [
     RiskAssessmentListComponent
   ],
+  providers: [DateFormatterPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class RiskAssessmentModule { }

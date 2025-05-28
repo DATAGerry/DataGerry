@@ -73,12 +73,29 @@ export class OverviewComponent implements OnInit {
       link: '/framework/person-groups'
     },
 
-        {
+    {
       title: 'Risk Matrix Report',
       icon: 'fas fa-table',
       link: '/isms/reports/risk_matrix'
     },
 
+    {
+      title: 'SOA Report',
+      icon: 'fas fa-table',
+      link: '/isms/reports/soa'
+    },
+
+    {
+      title: 'Risk treatment plan',
+      icon: 'fas fa-table',
+      link: '/isms/reports/risk_treatment_plan'
+    },
+
+    {
+      title: 'Risk Assesments',
+      icon: 'fas fa-table',
+      link: '/isms/reports/risk_assesments'
+    },
   ];
 
 
@@ -117,5 +134,5 @@ export class OverviewComponent implements OnInit {
       }
     });
   }
-  
+
 }
