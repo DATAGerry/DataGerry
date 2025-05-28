@@ -39,6 +39,7 @@ import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { RiskMatrixReportComponent } from './risk-matrix-report/risk-matrix-report.component';
 import { SoaComponent } from './reporting/soa/soa.component';
 import { RiskTreatmentPlanComponent } from './reporting/risk-treatment-plan/risk-treatment-plan.component';
+import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesments.component';
 
 
 const routes: Routes = [
@@ -291,6 +292,12 @@ const routes: Routes = [
     path: 'reports/risk_treatment_plan',
     component: RiskTreatmentPlanComponent,
     data: { breadcrumb: 'Risk Treatment Plan'}
+  },
+
+  {
+    path: 'reports/risk_assesments',
+    component: RiskAssesmentsComponent,
+    data: { breadcrumb: 'Risk Assesments' } 
   }
   
 ];
