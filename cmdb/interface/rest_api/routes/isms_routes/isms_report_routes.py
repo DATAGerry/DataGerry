@@ -20,6 +20,7 @@ import logging
 import re
 from flask import abort
 
+from cmdb.manager.objects_manager import ObjectsManager
 from cmdb.manager.extendable_options_manager import ExtendableOptionsManager
 from cmdb.manager.isms_manager.risk_matrix_manager import RiskMatrixManager
 from cmdb.manager.isms_manager.risk_assessment_manager import RiskAssessmentManager
@@ -103,6 +104,8 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
                                                                             ManagerType.RISK_ASSESSMENT,
                                                                             request_user)
 
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+
         query_pipeline = [
             # Step 0: Get all IsmsRiskAssessments
             {
@@ -130,16 +133,26 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
             },
             {"$unwind": {"path": "$implementation_status", "preserveNullAndEmptyArrays": True}},
 
-            # Step 3: Lookup risk treatment option (ExtendableOption)
+            # Step 3: Lookup risk category label (ExtendableOption)
             {
                 "$lookup": {
                     "from": "framework.extendableOptions",
-                    "localField": "treatment_option_id",
+                    "localField": "risk.category_id",
                     "foreignField": "public_id",
-                    "as": "treatment_option"
+                    "as": "risk_category"
                 }
             },
-            {"$unwind": {"path": "$treatment_option", "preserveNullAndEmptyArrays": True}},
+            {"$unwind": {"path": "$risk_category", "preserveNullAndEmptyArrays": True}},
+
+            # Lookup protection goals by IDs in risk.protection_goals
+            {
+                "$lookup": {
+                    "from": "isms.protectionGoal",
+                    "localField": "risk.protection_goals",
+                    "foreignField": "public_id",
+                    "as": "protection_goals"
+                }
+            },
 
             # Step 4: Lookup Object or ObjectGroup based on object_id_ref_type
             {
@@ -173,7 +186,7 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
             {
                 "$lookup": {
                     "from": "management.person",
-                    "localField": "responsible_for_implementation_id",
+                    "localField": "responsible_persons_id",
                     "foreignField": "public_id",
                     "as": "responsible_person"
                 }
@@ -181,38 +194,39 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
             {
                 "$lookup": {
                     "from": "management.personGroup",
-                    "localField": "responsible_for_implementation_id",
+                    "localField": "responsible_persons_id",
                     "foreignField": "public_id",
                     "as": "responsible_person_group"
                 }
             },
 
-            # Step 7: Lookup risk class matrix values
+            # Step 7: Lookup risk class matrix values for risk_before
             {
                 "$lookup": {
                     "from": "isms.riskMatrix",
                     "let": {
-                        "likelihood_id": "$likelihood_id",
-                        "impact_id": "$maximum_impact_id"
+                        "likelihood_id": "$risk_calculation_before.likelihood_id",
+                        "impact_id": "$risk_calculation_before.maximum_impact_id"
                     },
                     "pipeline": [
-                        {"$match": {"public_id": 1}},
-                        {"$unwind": "$risk_matrix"},
-                        {"$match": {
-                            "$expr": {
-                                "$and": [
-                                    {"$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"]},
-                                    {"$eq": ["$risk_matrix.impact_id", "$$impact_id"]}
-                                ]
+                        { "$match": { "public_id": 1 } },
+                        { "$unwind": "$risk_matrix" },
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$and": [
+                                        { "$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"] },
+                                        { "$eq": ["$risk_matrix.impact_id", "$$impact_id"] }
+                                    ]
+                                }
                             }
-                        }},
-                        {"$replaceRoot": {"newRoot": "$risk_matrix"}}
+                        },
+                        { "$replaceRoot": { "newRoot": "$risk_matrix" } }
                     ],
                     "as": "risk_before"
                 }
             },
-            {"$unwind": {"path": "$risk_before", "preserveNullAndEmptyArrays": True}},
-
+            { "$unwind": { "path": "$risk_before", "preserveNullAndEmptyArrays": True } },
             {
                 "$lookup": {
                     "from": "isms.riskClass",
@@ -221,34 +235,35 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
                     "as": "risk_before_class"
                 }
             },
-            {"$unwind": {"path": "$risk_before_class", "preserveNullAndEmptyArrays": True}},
+            { "$unwind": { "path": "$risk_before_class", "preserveNullAndEmptyArrays": True } },
 
             # Step 8: Repeat for risk after treatment
             {
                 "$lookup": {
                     "from": "isms.riskMatrix",
                     "let": {
-                        "likelihood_id": "$post_likelihood_id",
-                        "impact_id": "$post_impact_id"
+                        "likelihood_id": "$risk_calculation_after.likelihood_id",
+                        "impact_id": "$risk_calculation_after.maximum_impact_id"
                     },
                     "pipeline": [
-                        {"$match": {"public_id": 1}},
-                        {"$unwind": "$risk_matrix"},
-                        {"$match": {
-                            "$expr": {
-                                "$and": [
-                                    {"$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"]},
-                                    {"$eq": ["$risk_matrix.impact_id", "$$impact_id"]}
-                                ]
+                        { "$match": { "public_id": 1 } },
+                        { "$unwind": "$risk_matrix" },
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$and": [
+                                        { "$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"] },
+                                        { "$eq": ["$risk_matrix.impact_id", "$$impact_id"] }
+                                    ]
+                                }
                             }
-                        }},
-                        {"$replaceRoot": {"newRoot": "$risk_matrix"}}
+                        },
+                        { "$replaceRoot": { "newRoot": "$risk_matrix" } }
                     ],
                     "as": "risk_after"
                 }
             },
-            {"$unwind": {"path": "$risk_after", "preserveNullAndEmptyArrays": True}},
-
+            { "$unwind": { "path": "$risk_after", "preserveNullAndEmptyArrays": True } },
             {
                 "$lookup": {
                     "from": "isms.riskClass",
@@ -257,7 +272,7 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
                     "as": "risk_after_class"
                 }
             },
-            {"$unwind": {"path": "$risk_after_class", "preserveNullAndEmptyArrays": True}},
+            { "$unwind": { "path": "$risk_after_class", "preserveNullAndEmptyArrays": True } },
 
             # Step 9: Lookup assigned control measures
             {
@@ -283,8 +298,8 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
                     "_id": 0,
                     "risk_name": "$risk.name",
                     "risk_identifier": "$risk.identifier",
-                    "risk_category": "$risk.category_id",  # Optional: Join with ExtendableOption for name
-                    "protection_goals": "$risk.protection_goals",  # Could join for names
+                    "risk_category": "$risk_category.value",
+                    "protection_goals": "$protection_goals.name",
 
                     "object": {
                         "$cond": [
@@ -300,25 +315,41 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
                             {"$arrayElemAt": ["$object_type.label", 0]}
                         ]
                     },
-
+                    "object_id_ref_type": 1,
                     "risk_before": {
                         "value": "$risk_before.calculated_value",
                         "color": "$risk_before_class.color"
                     },
                     "risk_after": {
-                        "value": "$risk_after.calculated_value",
-                        "color": "$risk_after_class.color"
+                        "value": {
+                            "$ifNull": ["$risk_after.calculated_value", None]
+                        },
+                        "color": {
+                            "$ifNull": ["$risk_after_class.color", None]
+                        }
                     },
 
-                    "risk_treatment_option": "$treatment_option.value",
-                    "implementation_status": "$implementation_status.value",
+                    "risk_treatment_option": "$risk_treatment_option",
+                    "implementation_status": {
+                    "$ifNull": ["$implementation_status.value", None]
+                    },
                     "planned_implementation_date": 1,
 
                     "responsible_person": {
                         "$cond": [
-                            {"$eq": ["$responsible_for_implementation_id_ref_type", "PERSON"]},
-                            {"$arrayElemAt": ["$responsible_person.display_name", 0]},
-                            {"$arrayElemAt": ["$responsible_person_group.name", 0]}
+                            { "$eq": ["$responsible_persons_id_ref_type", "PERSON"] },
+                            {
+                                "$ifNull": [
+                                    { "$arrayElemAt": ["$responsible_person.display_name", 0] },
+                                    None
+                                ]
+                            },
+                            {
+                                "$ifNull": [
+                                    { "$arrayElemAt": ["$responsible_person_group.name", 0] },
+                                    None
+                                ]
+                            }
                         ]
                     },
 
@@ -327,11 +358,21 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
             }
         ]
 
-        results = risk_assessment_manager.iterate_items(BuilderParameters(query_pipeline))
+        query_result: list[dict] = list(risk_assessment_manager.aggregate(query_pipeline))
 
-        # TODO: Replace Object public_id with Summary line (ObjectsManager)
+        # Replace Object public_id with Summary line
+        for item in query_result:
+            if item.get("object") and item.get("object_id_ref_type") == "OBJECT":
+                try:
+                    object_summary = objects_manager.get_summary_line(item["object"])
+                    item["object"] = object_summary
+                except Exception:
+                    item["object"] = "Unknown object"
 
-        return DefaultResponse(results).make_response()
+            # Clean up unnecessary internal fields
+            item.pop("object_id_ref_type", None)
+
+        return DefaultResponse(query_result).make_response()
     except RiskAssessmentManagerIterationError as err:
         LOGGER.error(
             "[get_isms_risk_treatment_plan_report] RiskAssessmentManagerIterationError: %s. Type: %s", err, type(err)

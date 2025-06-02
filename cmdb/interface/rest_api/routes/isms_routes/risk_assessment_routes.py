@@ -228,7 +228,7 @@ def update_isms_risk_assessment(public_id: int, data: dict, request_user: CmdbUs
             abort(404, f"The RiskAssessment with ID:{public_id} was not found!")
 
         # Handle ControlMeasureAssignments
-        cm_assignments: list[dict] = data.pop('control_measure_assignments', None)
+        cm_assignments: list[dict] = data.pop('control_measure_assignments', [])
 
         linked_cm_assignments = risk_assessment_manager.get_many_from_other_collection(
             IsmsControlMeasureAssignment.COLLECTION,
