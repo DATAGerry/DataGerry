@@ -80,6 +80,10 @@ def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
                                                                             ManagerType.CONTROL_MEASURE_ASSIGNMENT,
                                                                             request_user
                                                                        )
+        try:
+            data['costs_for_implementation'] = float(f"{float(data['costs_for_implementation']):.2f}")
+        except Exception:
+            abort(400, "The 'Cost for Implementation' could not be converted to a float!")
 
         cm_assignments = data.pop('control_measure_assignments', None)
 
@@ -227,36 +231,35 @@ def update_isms_risk_assessment(public_id: int, data: dict, request_user: CmdbUs
         if not to_update_risk_assessment:
             abort(404, f"The RiskAssessment with ID:{public_id} was not found!")
 
+        try:
+            data['costs_for_implementation'] = float(f"{float(data['costs_for_implementation']):.2f}")
+        except Exception:
+            abort(400, "The 'Cost for Implementation' could not be converted to a float!")
+
         # Handle ControlMeasureAssignments
-        cm_assignments: list[dict] = data.pop('control_measure_assignments', [])
+        cm_assignments: dict = data.pop('control_measure_assignments', [])
 
-        linked_cm_assignments = risk_assessment_manager.get_many_from_other_collection(
-            IsmsControlMeasureAssignment.COLLECTION,
-            risk_assessment_id=public_id
-        )
+        # Handle created ControlMeasureAssignments
+        if cm_assignments.get('created'):
+            created_cm_assignments: list[dict] = cm_assignments.get('created')
 
-        # Index existing CMAs in DB by public_id
-        existing_cmas_by_id = {cma['public_id']: cma for cma in linked_cm_assignments if cma.get('public_id')}
+            for created_cma in created_cm_assignments:
+                cm_assignment_manager.insert_item(created_cma)
 
-        # Index incoming CMAs that have a public_id
-        incoming_cmas_by_id = {cma['public_id']: cma for cma in cm_assignments if cma.get('public_id')}
+        # Handle updated ControlMeasureAssignments
+        if cm_assignments.get('updated'):
+            update_cm_assignments: list[dict] = cm_assignments.get('updated')
 
-        existing_ids = set(existing_cmas_by_id.keys())
-        incoming_ids = set(incoming_cmas_by_id.keys())
+            for updated_cma in update_cm_assignments:
+                cm_assignment_manager.update_item(updated_cma.get('public_id'),
+                                                  IsmsControlMeasureAssignment.from_data(updated_cma))
 
-        # Create new CMAs
-        for cma_data in cm_assignments:
-            if not cma_data.get('public_id'):
-                cm_assignment_manager.insert_item(cma_data)
+        # Handle deleted ControlMeasureAssignments
+        if cm_assignments.get('deleted'):
+            deleted_cma_ids = cm_assignments.get('deleted')
 
-        # Update existing CMAs
-        for cma_id, cma_data in incoming_cmas_by_id.items():
-            cm_assignment_manager.update_item(cma_id, IsmsControlMeasureAssignment.from_data(cma_data))
-
-        # --- Delete removed CMAs ---
-        cmas_to_delete = existing_ids - incoming_ids
-        for cma_id in cmas_to_delete:
-            cm_assignment_manager.delete_item(cma_id)
+            for deleted_cma_id in deleted_cma_ids:
+                cm_assignment_manager.delete_item(deleted_cma_id)
 
         # Update the actual RiskAssessment
         risk_assessment_manager.update_item(public_id, IsmsRiskAssessment.from_data(data))

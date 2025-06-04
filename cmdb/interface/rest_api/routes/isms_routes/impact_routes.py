@@ -76,11 +76,11 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
         impact_manager: ImpactManager = ManagerProvider.get_manager(ManagerType.IMPACT, request_user)
         impact_category_manager: ImpactCategoryManager = ManagerProvider.get_manager(ManagerType.IMPACT_CATEGORY,
                                                                                      request_user)
-        # There is a Limit of 10 Impact classes
+        # There is a Limit of 6 Impact classes
         impact_count = impact_manager.count_items()
 
-        if impact_count >= 10:
-            abort(403, "Only a maximum of 10 Impacts can be created!")
+        if impact_count >= 6:
+            abort(403, "Only a maximum of 6 Impacts can be created!")
 
         try:
             data['calculation_basis'] = float(f"{float(data['calculation_basis']):.2f}")
