@@ -470,469 +470,407 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                                                                             ManagerType.RISK_ASSESSMENT,
                                                                             request_user)
 
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+
         pipeline = [
+            # Step 1: Get all RiskAssessments
+            {"$match": {}},
 
-            # 1. Lookup risk info
+            # Step 2: Lookup assigned Risk
+            {"$lookup": {
+                "from": "isms.risk",
+                "localField": "risk_id",
+                "foreignField": "public_id",
+                "as": "risk"
+            }},
+            {"$unwind": "$risk"},
+
+            # Step 3: Lookup risk category label (ExtendableOption)
             {
-                '$lookup': {
-                    'from': 'isms.risk',
-                    'localField': 'risk_id',
-                    'foreignField': 'public_id',
-                    'as': 'risk'
+                "$lookup": {
+                    "from": "framework.extendableOptions",
+                    "localField": "risk.category_id",
+                    "foreignField": "public_id",
+                    "as": "risk_category"
                 }
             },
-            {'$unwind': '$risk'},
+            {"$unwind": {"path": "$risk_category", "preserveNullAndEmptyArrays": True}},
 
-            # 2. Lookup risk category option
+            # Step 4: Lookup Protection Goals
+            {"$lookup": {
+                "from": "isms.protectionGoal",
+                "localField": "risk.protection_goals",
+                "foreignField": "public_id",
+                "as": "protection_goals"
+            }},
+
+            # Step 5: Lookup Implementation Status
             {
-                '$lookup': {
-                    'from': 'framework.extendableOptions',
-                    'let': {'cat_id': '$risk.category_id'},
-                    'pipeline': [
-                        {'$match': {'$expr': {'$and': [
-                            {'$eq': ['$public_id', '$$cat_id']},
-                            {'$eq': ['$optiontype', 'RISK']}
-                        ]}}}
-                    ],
-                    'as': 'risk_category'
+                "$lookup": {
+                    "from": "framework.extendableOptions",
+                    "localField": "implementation_status",
+                    "foreignField": "public_id",
+                    "as": "implementation_status"
                 }
             },
-            {'$unwind': {'path': '$risk_category', 'preserveNullAndEmptyArrays': True}},
+            {"$unwind": {"path": "$implementation_status", "preserveNullAndEmptyArrays": True}},
 
-            # 3. Lookup protection goals
+            # Step 6: Lookup Object or ObjectGroup based on object_id_ref_type
             {
-                '$lookup': {
-                    'from': 'isms.protectionGoal',
-                    'localField': 'risk.protection_goals',
-                    'foreignField': 'public_id',
-                    'as': 'protection_goals'
+                "$lookup": {
+                    "from": "framework.objects",
+                    "localField": "object_id",
+                    "foreignField": "public_id",
+                    "as": "object"
                 }
             },
-
-            # 4. Lookup implementation status
             {
-                '$lookup': {
-                    'from': 'framework.extendableOptions',
-                    'let': {'impl_id': '$implementation_status'},
-                    'pipeline': [
-                        {'$match': {'$expr': {'$and': [
-                            {'$eq': ['$public_id', '$$impl_id']},
-                            {'$eq': ['$optiontype', 'IMPLEMENTATION_STATE']}
-                        ]}}}
-                    ],
-                    'as': 'implementation_status_option'
+                "$lookup": {
+                    "from": "framework.objectGroups",
+                    "localField": "object_id",
+                    "foreignField": "public_id",
+                    "as": "object_group"
                 }
             },
-            {'$unwind': {'path': '$implementation_status_option', 'preserveNullAndEmptyArrays': True}},
-
-            # 5. Lookup impact categories (sorted)
             {
-                '$lookup': {
-                    'from': 'isms.impactCategory',
-                    'pipeline': [{'$sort': {'sort': 1}}],
-                    'as': 'impact_categories'
-                }
-            },
-
-            # 6. Lookup all impacts (for name and calculation_basis)
-            {
-                '$lookup': {
-                    'from': 'isms.impact',
-                    'as': 'all_impacts',
-                    'pipeline': []
+                "$lookup": {
+                    "from": "framework.types",
+                    "localField": "object.type_id",
+                    "foreignField": "public_id",
+                    "as": "object_type"
                 }
             },
 
-            # 7. Lookup all likelihoods
+            # Step 7: Lookup the Risk Assessor (P)
             {
-                '$lookup': {
-                    'from': 'isms.likelihood',
-                    'as': 'all_likelihoods',
-                    'pipeline': []
+                "$lookup": {
+                    "from": "management.person",
+                    "localField": "risk_assessor_id",
+                    "foreignField": "public_id",
+                    "as": "risk_assessor_person"
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$risk_assessor_person",
+                    "preserveNullAndEmptyArrays": True
                 }
             },
 
-            # 8. Persons & groups lookups (risk assessor, risk owner, interviewed, responsible, auditor)
-            # Risk assessor person
+            # Step 8: Lookup Risk Owner (P or PG)
             {
-                '$lookup': {
-                    'from': 'management.person',
-                    'localField': 'risk_assessor_id',
-                    'foreignField': 'public_id',
-                    'as': 'risk_assessor_person'
+                "$lookup": {
+                    "from": "management.person",
+                    "localField": "risk_owner_id",
+                    "foreignField": "public_id",
+                    "as": "risk_owner_person"
                 }
             },
-            {'$unwind': {'path': '$risk_assessor_person', 'preserveNullAndEmptyArrays': True}},
-
-            # Risk owner (person or group)
             {
-                '$facet': {
-                    'risk_owner_person': [
-                        {'$match': {'risk_owner_id_ref_type': 'person'}},
-                        {
-                            '$lookup': {
-                                'from': 'management.person',
-                                'localField': 'risk_owner_id',
-                                'foreignField': 'public_id',
-                                'as': 'risk_owner_person'
+                "$lookup": {
+                    "from": "management.personGroup",
+                    "localField": "risk_owner_id",
+                    "foreignField": "public_id",
+                    "as": "risk_owner_group"
+                }
+            },
+
+            # Step 9: Lookup Responsible Person (P or PG)
+            {
+                "$lookup": {
+                    "from": "management.person",
+                    "localField": "responsible_persons_id",
+                    "foreignField": "public_id",
+                    "as": "responsible_person"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "management.personGroup",
+                    "localField": "responsible_persons_id",
+                    "foreignField": "public_id",
+                    "as": "responsible_person_group"
+                }
+            },
+
+            # Step 10: Lookup Auditor (P or PG)
+            {
+                "$lookup": {
+                    "from": "management.person",
+                    "localField": "auditor_id",
+                    "foreignField": "public_id",
+                    "as": "auditor_person"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "management.personGroup",
+                    "localField": "auditor_id",
+                    "foreignField": "public_id",
+                    "as": "auditor_group"
+                }
+            },
+
+            # Step 11: Lookup Interviewed Persons (multiple P)
+            {"$lookup": {
+                "from": "management.person",
+                "localField": "interviewed_persons",
+                "foreignField": "public_id",
+                "as": "interviewed_persons_data"
+            }},
+
+            ####
+            {"$lookup": {
+                "from": "isms.impactCategory",
+                "pipeline": [{"$sort": {"sort": 1}}],
+                "as": "impact_categories"
+            }},
+
+            {"$lookup": {
+                "from": "isms.impact",
+                "as": "all_impacts",
+                "pipeline": []
+            }},
+
+            {"$lookup": {
+                "from": "isms.likelihood",
+                "as": "all_likelihoods",
+                "pipeline": []
+            }},
+
+            {"$lookup": {
+                "from": "isms.riskMatrix",
+                "pipeline": [],
+                "as": "risk_matrix"
+            }},
+
+            {"$addFields": {
+                "risk_calculation_before.risk_class_color": {
+                    "$let": {
+                        "vars": {
+                            "entry": {
+                                "$arrayElemAt": [
+                                    {"$filter": {
+                                        "input": {
+                                            "$reduce": {
+                                                "input": "$risk_matrix.entries",
+                                                "initialValue": [],
+                                                "in": {"$concatArrays": ["$$value", "$$this"]}
+                                            }
+                                        },
+                                        "cond": {
+                                            "$and": [
+                                                {"$eq": [
+                                                    "$$this.likelihood_id",
+                                                    "$risk_calculation_before.likelihood_id"
+                                                ]},
+                                                {"$eq": [
+                                                    "$$this.impact_id",
+                                                    "$risk_calculation_before.max_impact_id"
+                                                ]}
+                                            ]
+                                        }
+                                    }},
+                                    0
+                                ]
                             }
                         },
-                        {'$unwind': {'path': '$risk_owner_person', 'preserveNullAndEmptyArrays': True}},
-                    ],
-                    'risk_owner_group': [
-                        {'$match': {'risk_owner_id_ref_type': 'group'}},
-                        {
-                            '$lookup': {
-                                'from': 'management.personGroup',
-                                'localField': 'risk_owner_id',
-                                'foreignField': 'public_id',
-                                'as': 'risk_owner_group'
+                        "in": {
+                            "$cond": [
+                                {"$ifNull": ["$$entry", False]},
+                                "$$entry.color",
+                                "gray"
+                            ]
+                        }
+                    }
+                },
+                "risk_calculation_after.risk_class_color": {
+                    "$let": {
+                        "vars": {
+                            "entry": {
+                                "$arrayElemAt": [
+                                    {"$filter": {
+                                        "input": {
+                                            "$reduce": {
+                                                "input": "$risk_matrix.entries",
+                                                "initialValue": [],
+                                                "in": {"$concatArrays": ["$$value", "$$this"]}
+                                            }
+                                        },
+                                        "cond": {
+                                            "$and": [
+                                                {"$eq": [
+                                                    "$$this.likelihood_id",
+                                                    "$risk_calculation_after.likelihood_id"
+                                                ]},
+                                                {"$eq": [
+                                                    "$$this.impact_id",
+                                                    "$risk_calculation_after.max_impact_id"
+                                                ]}
+                                            ]
+                                        }
+                                    }},
+                                    0
+                                ]
                             }
                         },
-                        {'$unwind': {'path': '$risk_owner_group', 'preserveNullAndEmptyArrays': True}},
-                    ],
-                    'rest': [
-                        {'$match': {}}
-                    ]
-                }
-            },
-            # After facet, merge risk_owner_person or risk_owner_group into unified field later in code or client
-
-            # Interviewed persons lookup
-            {
-                '$lookup': {
-                    'from': 'management.person',
-                    'localField': 'interviewed_persons',
-                    'foreignField': 'public_id',
-                    'as': 'interviewed_persons_data'
-                }
-            },
-
-            # Responsible persons (person or group)
-            {
-                '$facet': {
-                    'responsible_persons_person': [
-                        {'$match': {'responsible_persons_id_ref_type': 'person'}},
-                        {
-                            '$lookup': {
-                                'from': 'management.person',
-                                'localField': 'responsible_persons_id',
-                                'foreignField': 'public_id',
-                                'as': 'responsible_persons_person'
-                            }
-                        },
-                        {'$unwind': {'path': '$responsible_persons_person', 'preserveNullAndEmptyArrays': True}},
-                    ],
-                    'responsible_persons_group': [
-                        {'$match': {'responsible_persons_id_ref_type': 'group'}},
-                        {
-                            '$lookup': {
-                                'from': 'management.personGroup',
-                                'localField': 'responsible_persons_id',
-                                'foreignField': 'public_id',
-                                'as': 'responsible_persons_group'
-                            }
-                        },
-                        {'$unwind': {'path': '$responsible_persons_group', 'preserveNullAndEmptyArrays': True}},
-                    ],
-                    'rest': [
-                        {'$match': {}}
-                    ]
-                }
-            },
-
-            # Auditor person or group
-            {
-                '$facet': {
-                    'auditor_person': [
-                        {'$match': {'auditor_id_ref_type': 'person'}},
-                        {
-                            '$lookup': {
-                                'from': 'management.person',
-                                'localField': 'auditor_id',
-                                'foreignField': 'public_id',
-                                'as': 'auditor_person'
-                            }
-                        },
-                        {'$unwind': {'path': '$auditor_person', 'preserveNullAndEmptyArrays': True}},
-                    ],
-                    'auditor_group': [
-                        {'$match': {'auditor_id_ref_type': 'group'}},
-                        {
-                            '$lookup': {
-                                'from': 'management.personGroup',
-                                'localField': 'auditor_id',
-                                'foreignField': 'public_id',
-                                'as': 'auditor_group'
-                            }
-                        },
-                        {'$unwind': {'path': '$auditor_group', 'preserveNullAndEmptyArrays': True}},
-                    ],
-                    'rest': [
-                        {'$match': {}}
-                    ]
-                }
-            },
-
-            # 9. Lookup assigned object and type label
-            {
-                '$lookup': {
-                    'from': 'framework.objects',
-                    'localField': 'object_id',
-                    'foreignField': 'public_id',
-                    'as': 'assigned_object'
-                }
-            },
-            {'$unwind': {'path': '$assigned_object', 'preserveNullAndEmptyArrays': True}},
-            {
-                '$lookup': {
-                    'from': 'framework.types',
-                    'localField': 'assigned_object.type_id',
-                    'foreignField': 'public_id',
-                    'as': 'assigned_object_type'
-                }
-            },
-            {'$unwind': {'path': '$assigned_object_type', 'preserveNullAndEmptyArrays': True}},
-
-            # 10. Map priority int to string
-            {
-                '$addFields': {
-                    'priority_str': {
-                        '$switch': {
-                            'branches': [
-                                {'case': {'$eq': ['$priority', 1]}, 'then': 'Low'},
-                                {'case': {'$eq': ['$priority', 2]}, 'then': 'Medium'},
-                                {'case': {'$eq': ['$priority', 3]}, 'then': 'High'},
-                                {'case': {'$eq': ['$priority', 4]}, 'then': 'Very High'},
-                            ],
-                            'default': 'Unknown'
+                        "in": {
+                            "$cond": [
+                                {"$ifNull": ["$$entry", False]},
+                                "$$entry.color",
+                                "gray"
+                            ]
                         }
                     }
                 }
-            },
+            }},
 
-            # 11. Process risk_calculation_before impacts: map impact_ids to names and set 'Unrated' if null
-            {
-                '$addFields': {
-                    'risk_calculation_before.impacts': {
-                        '$map': {
-                            'input': '$risk_calculation_before.impacts',
-                            'as': 'impact_item',
-                            'in': {
-                                'impact_category_id': '$$impact_item.impact_category_id',
-                                'impact_category_name': {
-                                    '$arrayElemAt': [
-                                        {
-                                            '$filter': {
-                                                'input': '$impact_categories',
-                                                'cond': {
-                                                    '$eq': [
-                                                        '$$this.public_id',
-                                                        '$$impact_item.impact_category_id'
-                                                    ]
-                                                }
-                                            }
-                                        }, 0, {}
-                                    ]
-                                }.get('name', 'Unknown'),
-                                'impact_name': {
-                                    '$let': {
-                                        'vars': {
-                                            'imp': {
-                                                '$arrayElemAt': [
-                                                    {
-                                                        '$filter': {
-                                                            'input': '$all_impacts',
-                                                            'cond': {
-                                                                '$eq': [
-                                                                    '$$this.public_id',
-                                                                    '$$impact_item.impact_id'
-                                                                ]
-                                                            }
-                                                        }
-                                                    }, 0
-                                                ]
-                                            }
-                                        },
-                                        'in': {
-                                            '$cond': [
-                                                {'$ifNull': ['$$imp', False]},
-                                                '$$imp.name',
-                                                'Unrated'
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
+            # Last Step: Project the Fields
+            {"$project": {
+                "_id": 0,
+                "risk_title": "$risk.name",
+                "risk_category": "$risk_category.value",
+                "protection_goals": {
+                    "$map": {
+                        "input": "$protection_goals",
+                        "as": "pg",
+                        "in": "$$pg.name"
+                    }
+                },
+                "risk_owner": {
+                    "$cond": [
+                        { "$eq": ["$risk_owner_id_ref_type", "PERSON"] },
+                        {
+                            "$ifNull": [
+                                { "$arrayElemAt": ["$risk_owner_person.display_name", 0] },
+                                None
+                            ]
+                        },
+                        {
+                            "$ifNull": [
+                                { "$arrayElemAt": ["$risk_owner_group.name", 0] },
+                                None
+                            ]
                         }
-                    },
-                    # Similar mapping for likelihood name before
-                    'risk_calculation_before.likelihood_name': {
-                        '$let': {
-                            'vars': {
-                                'likelihood_obj': {
-                                    '$arrayElemAt': [
-                                        {
-                                            '$filter': {
-                                                'input': '$all_likelihoods',
-                                                'cond': {
-                                                    '$eq': [
-                                                        '$$this.public_id',
-                                                        '$risk_calculation_before.likelihood_id'
-                                                    ]
-                                                }
-                                            }
-                                        }, 0
-                                    ]
-                                }
-                            },
-                            'in': {
-                                '$cond': [
-                                    {'$ifNull': ['$$likelihood_obj', False]},
-                                    '$$likelihood_obj.name',
-                                    'Unrated'
-                                ]
-                            }
+                    ]
+                },
+                "responsible_person": {
+                    "$cond": [
+                        { "$eq": ["$responsible_persons_id_ref_type", "PERSON"] },
+                        {
+                            "$ifNull": [
+                                { "$arrayElemAt": ["$responsible_person.display_name", 0] },
+                                None
+                            ]
+                        },
+                        {
+                            "$ifNull": [
+                                { "$arrayElemAt": ["$responsible_person_group.name", 0] },
+                                None
+                            ]
                         }
-                    },
-
-                    # Similarly for risk_calculation_after impacts
-                    'risk_calculation_after.impacts': {
-                        '$map': {
-                            'input': '$risk_calculation_after.impacts',
-                            'as': 'impact_item',
-                            'in': {
-                                'impact_category_id': '$$impact_item.impact_category_id',
-                                'impact_category_name': {
-                                    '$arrayElemAt': [
-                                        {
-                                            '$filter': {
-                                                'input': '$impact_categories',
-                                                'cond': {
-                                                    '$eq': [
-                                                        '$$this.public_id',
-                                                        '$$impact_item.impact_category_id'
-                                                    ]
-                                                }
-                                            }
-                                        }, 0, {}
-                                    ]
-                                }.get('name', 'Unknown'),
-                                'impact_name': {
-                                    '$let': {
-                                        'vars': {
-                                            'imp': {
-                                                '$arrayElemAt': [
-                                                    {
-                                                        '$filter': {
-                                                            'input': '$all_impacts',
-                                                            'cond': {
-                                                                '$eq': [
-                                                                    '$$this.public_id',
-                                                                    '$$impact_item.impact_id'
-                                                                ]
-                                                            }
-                                                        }
-                                                    }, 0
-                                                ]
-                                            }
-                                        },
-                                        'in': {
-                                            '$cond': [
-                                                {'$ifNull': ['$$imp', False]},
-                                                '$$imp.name',
-                                                'Unrated'
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
+                    ]
+                },
+                "auditor": {
+                    "$cond": [
+                        { "$eq": ["$auditor_id_ref_type", "PERSON"] },
+                        {
+                            "$ifNull": [
+                                { "$arrayElemAt": ["$auditor_person.display_name", 0] },
+                                None
+                            ]
+                        },
+                        {
+                            "$ifNull": [
+                                { "$arrayElemAt": ["$auditor_group.name", 0] },
+                                None
+                            ]
                         }
-                    },
-                    'risk_calculation_after.likelihood_name': {
-                        '$let': {
-                            'vars': {
-                                'likelihood_obj': {
-                                    '$arrayElemAt': [
-                                        {
-                                            '$filter': {
-                                                'input': '$all_likelihoods',
-                                                'cond': {
-                                                    '$eq': [
-                                                        '$$this.public_id',
-                                                        '$risk_calculation_after.likelihood_id'
-                                                    ]
-                                                }
-                                            }
-                                        }, 0
-                                    ]
-                                }
-                            },
-                            'in': {
-                                '$cond': [
-                                    {'$ifNull': ['$$likelihood_obj', False]},
-                                    '$$likelihood_obj.name',
-                                    'Unrated'
-                                ]
+                    ]
+                },
+                "implementation_status": {
+                    "$ifNull": ["$implementation_status.value", None]
+                },
+                "priority": {
+                    "$switch": {
+                        "branches": [
+                            {"case": {"$eq": ["$priority", 1]}, "then": "Low"},
+                            {"case": {"$eq": ["$priority", 2]}, "then": "Medium"},
+                            {"case": {"$eq": ["$priority", 3]}, "then": "High"},
+                            {"case": {"$eq": ["$priority", 4]}, "then": "Very High"}
+                        ],
+                        "default": None
+                    }
+                },
+                "assigned_object": {
+                    "$cond": [
+                        {"$eq": ["$object_id_ref_type", "OBJECT_GROUP"]},
+                        {"$arrayElemAt": ["$object_group.name", 0]},
+                        {"$arrayElemAt": ["$object.public_id", 0]}
+                    ]
+                },
+                "assigned_object_type": {
+                    "$cond": [
+                        {"$eq": ["$object_id_ref_type", "OBJECT_GROUP"]},
+                        "Object group",
+                        {"$arrayElemAt": ["$object_type.label", 0]}
+                    ]
+                },
+                "risk_assessor": {
+                    "$ifNull": ["$risk_assessor_person.display_name", None]
+                },
+                "interviewed_persons": {
+                    "$cond": {
+                        "if": { "$gt": [{ "$size": "$interviewed_persons_data" }, 0] },
+                        "then": {
+                            "$map": {
+                                "input": "$interviewed_persons_data",
+                                "as": "person",
+                                "in": "$$person.display_name"
                             }
-                        }
-                    },
-                }
-            },
-
-            # 12. Final project: select and rename all needed fields for the report
-            {
-                '$project': {
-                    '_id': 0,
-
-                    # Risk main info
-                    'risk_title': '$risk.name',
-                    'risk_category': '$risk_category.name',
-
-                    # Protection goals as list of names
-                    'protection_goals': {'$map': {
-                        'input': '$protection_goals',
-                        'as': 'pg',
-                        'in': '$$pg.name'
-                    }},
-
-                    # Implementation status label
-                    'implementation_status': '$implementation_status_option.name',
-
-                    # Priority string
-                    'priority': '$priority_str',
-
-                    # Assigned object & type
-                    'assigned_object': '$assigned_object.name',
-                    'assigned_object_type': '$assigned_object_type.label',
-
-                    # Risk assessor name
-                    'risk_assessor': '$risk_assessor_person.name',
-
-                    # Interviewed persons names
-                    'interviewed_persons': {'$map': {
-                        'input': '$interviewed_persons_data',
-                        'as': 'person',
-                        'in': '$$person.name'
-                    }},
-
-                    # Impact categories full list (optional)
-                    'impact_categories': '$impact_categories',
-
-                    # Risk calculations before and after (impacts + likelihood)
-                    'risk_calculation_before': '$risk_calculation_before',
-                    'risk_calculation_after': '$risk_calculation_after',
-                }
-            }
+                        },
+                        "else": None
+                    }
+                },
+                "risk_calculation_before": 1,
+                "risk_calculation_after": 1,
+                "additional_information": 1,
+                "risk_treatment_option": {
+                    "$ifNull": ["$risk_treatment_option", None]
+                },
+                "risk_treatment_description": 1,
+                "risk_assessment_date": 1,
+                "additional_info": 1,
+                "planned_implementation_date": 1,
+                "finished_implementation_date": 1,
+                "implementation_finished_on": 1,
+                "required_resources": 1,
+                "costs_for_implementation": 1,
+                "costs_for_implementation_currency": 1,
+                "audit_done_date": 1,
+                "audit_result": 1,
+                # Temporary required
+                "object_id_ref_type": 1,
+            }}
         ]
 
-        results = risk_assessment_manager.iterate_items(BuilderParameters(pipeline))
+        query_result: list[dict] = list(risk_assessment_manager.aggregate(pipeline))
 
-        # TODO: Replace Object public_id with Summary line (ObjectsManager)
+        # Replace Object public_id with Summary line
+        for item in query_result:
+            if item.get("object") and item.get("object_id_ref_type") == "OBJECT":
+                try:
+                    object_summary = objects_manager.get_summary_line(item["object"])
+                    item["object"] = object_summary
+                except Exception:
+                    item["object"] = "Unknown object"
 
-        return DefaultResponse(results).make_response()
+            # Clean up unnecessary internal fields
+            item.pop("object_id_ref_type", None)
+
+        return DefaultResponse(query_result).make_response()
     except Exception as err:
-        LOGGER.error("[get_isms_soa_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        LOGGER.error("[get_isms_risk_assessments_report] Exception: %s. Type: %s", err, type(err), exc_info=True)
         abort(500, "An internal server error occured while retrieving the RiskAssessment report!")
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #

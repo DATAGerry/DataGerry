@@ -141,6 +141,7 @@ class APIBlueprint(Blueprint):
             @wraps(f)
             def _decorate(*args, **kwargs):
                 data = request.get_json()
+                # LOGGER.debug("validation data: %s", data)
                 try:
                     validation_result = validator.validate(data)
                 except Exception as err:

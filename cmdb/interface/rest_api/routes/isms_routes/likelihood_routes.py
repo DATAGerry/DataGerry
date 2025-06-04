@@ -75,11 +75,11 @@ def insert_isms_likelihood(data: dict, request_user: CmdbUser):
     try:
         likelihood_manager: LikelihoodManager = ManagerProvider.get_manager(ManagerType.LIKELIHOOD, request_user)
 
-        # There is a Limit of 10 Likelihood classes
+        # There is a Limit of 6 Likelihood classes
         likelihood_count = likelihood_manager.count_items()
 
-        if likelihood_count >= 10:
-            abort(403, "Only a maximum of 10 Likelihoods can be created!")
+        if likelihood_count >= 6:
+            abort(403, "Only a maximum of 6 Likelihoods can be created!")
 
         try:
             data['calculation_basis'] = float(f"{float(data['calculation_basis']):.2f}")
