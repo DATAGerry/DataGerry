@@ -20,12 +20,13 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import RiskAssessmentManager
+from cmdb.manager import RiskAssessmentManager, ObjectGroupsManager, ObjectsManager
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.models.isms_model import IsmsRiskAssessment, IsmsControlMeasureAssignment
+from cmdb.models.object_group_model import ObjectGroupMode
 
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -134,14 +135,65 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
     """
     try:
         body = request.method == 'HEAD'
-
         risk_assessment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
                                                                             ManagerType.RISK_ASSESSMENT,
                                                                             request_user
                                                                          )
 
-        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
+        object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(
+                                                                            ManagerType.OBJECT_GROUP,
+                                                                            request_user
+                                                                         )
 
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(
+                                                            ManagerType.OBJECTS,
+                                                            request_user
+                                                          )
+
+        # Add RiskAssessments from ObjectGroups
+        # # STEP 1: Extract object_id from the fixed filter
+        original_filter = params.filter or {}
+        clauses = original_filter.get('$and', [])
+        object_id = None
+
+        for clause in clauses:
+            if 'object_id' in clause:
+                object_id = clause['object_id']
+                break
+
+        # STEP 2: Enhance the filter if object_id was found
+        if object_id is not None:
+            target_object = objects_manager.get_object(object_id)
+
+            if target_object is not None:
+                type_id = target_object['type_id']
+
+                # Find all STATIC groups containing this CmdbObject
+                static_groups = object_groups_manager.find(criteria={
+                    'group_type': ObjectGroupMode.STATIC,
+                    'assigned_ids': object_id
+                })
+
+                static_group_ids = [g['public_id'] for g in static_groups]
+
+                # Find all DYNAMIC groups that include this CmdbType
+                dynamic_groups = object_groups_manager.find(criteria={
+                    'group_type': ObjectGroupMode.DYNAMIC,
+                    'assigned_ids': type_id
+                })
+                dynamic_group_ids = [g['public_id'] for g in dynamic_groups]
+
+                all_group_ids = static_group_ids + dynamic_group_ids
+
+                # STEP 3: Build enhanced filter
+                params.filter = {
+                    '$or': [
+                        {'$and': [{'object_id_ref_type': 'OBJECT'}, {'object_id': object_id}]},
+                        {'$and': [{'object_id_ref_type': 'OBJECT_GROUP'}, {'object_id': {'$in': all_group_ids}}]}
+                    ]
+                }
+
+        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
         iteration_result: IterationResult[IsmsRiskAssessment] = risk_assessment_manager.iterate_items(builder_params)
         risk_assessments_list = [IsmsRiskAssessment.to_json(risk_assessment) for risk_assessment
                                  in iteration_result.results]
