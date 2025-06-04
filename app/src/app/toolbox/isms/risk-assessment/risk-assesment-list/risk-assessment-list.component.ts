@@ -261,7 +261,9 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         this.riskAssessmentService.getRiskAssessments(params)
             .pipe(finalize(() => { this.loader.hide(); this.loading = false; }))
             .subscribe({
-                next: res => { this.rows = res.results; this.total = res.total; },
+                next: res => { this.rows = res.results; this.total = res.total; 
+                    console.log('risk assesment list', res.results);
+                },
                 error: err => this.toast.error(err?.error?.message || 'Load failed')
             });
 
@@ -333,6 +335,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     //   }
 
     onEdit(row: RiskAssessment): void {
+        console.log('onEdit', row);
         this.activeModal.dismiss();
         switch (this.ctx()) {
             case 'RISK':

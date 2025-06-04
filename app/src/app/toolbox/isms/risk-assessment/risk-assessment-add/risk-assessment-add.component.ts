@@ -19,7 +19,8 @@ import {
   Component,
   inject,
   Input,
-  OnInit
+  OnInit,
+  ViewChild
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -55,6 +56,10 @@ import { RiskMatrixService } from '../../services/risk-matrix.service';
 import { RiskClassService } from '../../services/risk-class.service';
 import { RiskClass } from '../../models/risk-class.model';
 import { Location } from '@angular/common';
+import { ControlMeasureService } from '../../services/control-measure.service';
+import { RaCmAssignmentInlineComponent } from '../risk-assessment-treatment/ control-measure-assignment-inline/ra-cm-assignment-inline.component';
+import { RiskAssessmentTreatmentComponent } from '../risk-assessment-treatment/risk-assessment-treatment.component';
+import { ControlMeasureAssignmentService } from '../../services/control‑measure‑assignment.service';
 
 /* ------------------------------------------------------------------------------------ */
 /*  Small enum for string literals                                                      */
@@ -73,6 +78,11 @@ type Expanded = Record<'top' | 'before' | 'treatment' | 'after' | 'audit', boole
   styleUrls: ['./risk-assessment-add.component.scss'],
 })
 export class RiskAssessmentAddComponent implements OnInit {
+
+  @ViewChild('treatmentBlock')
+  private treatmentBlock!: RiskAssessmentTreatmentComponent;
+
+
   /* ──────────────────────────────────────────────────────────────────────────
    *  Dependencies – initialise FIRST so later properties may read them
    * ────────────────────────────────────────────────────────────────────────── */
@@ -94,6 +104,8 @@ export class RiskAssessmentAddComponent implements OnInit {
   private readonly extendableOptionSrv = inject(ExtendableOptionService);
   private readonly riskMatrixSrv = inject(RiskMatrixService);
   private readonly riskClassSrv = inject(RiskClassService);
+  private readonly controlMeasureSrv = inject(ControlMeasureService);
+  private readonly cmaSrv = inject(ControlMeasureAssignmentService);
 
   public loading = false;
   /* ──────────────────────────────────────────────────────────────────────────
@@ -128,6 +140,7 @@ export class RiskAssessmentAddComponent implements OnInit {
   implementationStates: any[] = [];
   riskMatrix: any;
   riskClasses: RiskClass[] = [];
+  allControlMeasures: { public_id: number; title: string }[] = [];
 
 
   @Input() objectSummary: string | null = null;
@@ -176,34 +189,84 @@ export class RiskAssessmentAddComponent implements OnInit {
   * Handles the save action.
   * @returns {void}
   */
+  // onSave(): void {
+
+  //   // Prevent saving in view mode
+  //   if (this.isView) return;
+
+  //   const payload = this.form.getRawValue() as RiskAssessment;
+
+
+  //   payload.control_measure_assignments =
+  //     this.treatmentBlock.buildAssignmentsPayload();
+  //   // Handle edit mode
+  //   if (this.isEditMode && this.riskAssessmentId) {
+  //     this
+  //       .doWithLoader(
+  //         this.riskAssessmentSrv.updateRiskAssessment(this.riskAssessmentId, payload)
+  //       )
+  //       .subscribe({
+  //         next: () => {
+  //           this.toast.success('Risk Assessment updated!');
+  //           // this.router.navigate(['/isms/risk-assessments']);
+
+  //           this.location.back();
+  //         },
+  //         error: this.handleError('Update error')
+  //       });
+  //   } else {
+  //     delete payload.public_id;
+  //     delete payload.risk_calculation_before.risk_level_value;
+  //     delete payload.risk_calculation_after.risk_level_value;
+  //     const parsedCost = parseFloat(String(payload.costs_for_implementation));
+  //     payload.costs_for_implementation = parsedCost;
+  //     this
+  //       .doWithLoader(this.riskAssessmentSrv.createRiskAssessment(payload))
+  //       .subscribe({
+  //         next: () => {
+  //           this.toast.success('Risk Assessment created!');
+  //           this.location.back();
+  //         },
+  //         error: this.handleError('Creation error')
+  //       });
+  //   }
+  // }
+
+
   onSave(): void {
 
     // Prevent saving in view mode
     if (this.isView) return;
-
+  
     const payload = this.form.getRawValue() as RiskAssessment;
-
-    // Handle edit mode
+  
     if (this.isEditMode && this.riskAssessmentId) {
+      // EDIT MODE → use diff
+      payload.control_measure_assignments =
+        this.treatmentBlock.buildAssignmentsPayload();
+  
       this
-        .doWithLoader(
-          this.riskAssessmentSrv.updateRiskAssessment(this.riskAssessmentId, payload)
-        )
+        .doWithLoader(this.riskAssessmentSrv.updateRiskAssessment(this.riskAssessmentId, payload))
         .subscribe({
           next: () => {
             this.toast.success('Risk Assessment updated!');
-            // this.router.navigate(['/isms/risk-assessments']);
-
             this.location.back();
           },
           error: this.handleError('Update error')
         });
+  
     } else {
+      // CREATE MODE → use raw form-array value (list of objects)
+      payload.control_measure_assignments =
+        this.form.get('control_measure_assignments')?.value ?? [];
+  
+      // Clean up extra fields
       delete payload.public_id;
       delete payload.risk_calculation_before.risk_level_value;
       delete payload.risk_calculation_after.risk_level_value;
       const parsedCost = parseFloat(String(payload.costs_for_implementation));
       payload.costs_for_implementation = parsedCost;
+  
       this
         .doWithLoader(this.riskAssessmentSrv.createRiskAssessment(payload))
         .subscribe({
@@ -215,6 +278,7 @@ export class RiskAssessmentAddComponent implements OnInit {
         });
     }
   }
+  
 
   /*
   * Handles the cancel action.
@@ -259,17 +323,19 @@ export class RiskAssessmentAddComponent implements OnInit {
       additional_info: '',
 
       /* ── TREATMENT ── */
-      risk_treatment_option: 'AVOID',
+      risk_treatment_option: null,
       responsible_persons_id_ref_type: [IdRefType.PERSON],
       responsible_persons_id: null,
       risk_treatment_description: '',
       planned_implementation_date: null,
-      implementation_status: [null, Validators.required],
+      implementation_status: [null],
       finished_implementation_date: null,
       required_resources: '',
       costs_for_implementation: 0,
       costs_for_implementation_currency: '',
       priority: [null],
+      control_measure_assignments: fb.array([]),
+      selected_cm_assignment_ids: [],
 
       /* ── AFTER ── */
       risk_calculation_after: riskCalcGroup(),
@@ -330,7 +396,8 @@ export class RiskAssessmentAddComponent implements OnInit {
           likelihoods: this.likelihoodSrv.getLikelihoods({ ...baseParams, sort: 'calculation_basis' }),
           implementationStates: this.extendableOptionSrv.getExtendableOptionsByType('IMPLEMENTATION_STATE'),
           riskMatrix: this.riskMatrixSrv.getRiskMatrix(1),
-          riskClasses: this.riskClassSrv.getRiskClasses(baseParams)
+          riskClasses: this.riskClassSrv.getRiskClasses(baseParams),
+          controlMeasures   : this.controlMeasureSrv.getControlMeasures(baseParams)
         })
       )
       .subscribe({
@@ -346,6 +413,10 @@ export class RiskAssessmentAddComponent implements OnInit {
           this.implementationStates = res.implementationStates.results;
           this.riskMatrix = res.riskMatrix;
           this.riskClasses = res.riskClasses.results;
+          this.allControlMeasures  = res.controlMeasures.results;
+
+          console.log(this.allControlMeasures);
+
 
           /* impact categories + build sliders */
           this.impactCategories = res.impactCategories.results;
@@ -358,6 +429,9 @@ export class RiskAssessmentAddComponent implements OnInit {
               this.patchFormWithData(state.riskAssessment);
               if (this.isView) {
                 this.form.disable({ emitEvent: false });
+              }
+              if (this.riskAssessmentId) {
+                this.loadCurrentAssignments(this.riskAssessmentId);
               }
             } else {
               this.router.navigate(['/isms/risk-assessments']);
@@ -444,4 +518,37 @@ export class RiskAssessmentAddComponent implements OnInit {
       return 'add';
     }
   }
+
+
+  /** EDIT / VIEW: download CM-assignments once reference data are loaded */
+  private loadCurrentAssignments(raId: number): void {
+    this.loader.show();
+    this.cmaSrv.getAssignments({
+      filter: { risk_assessment_id: raId },
+      limit : 0,
+      page  : 1,
+      sort  : 'public_id',
+      order : SortDirection.ASCENDING
+    })
+    .pipe(finalize(() => this.loader.hide()))
+    .subscribe({
+      next: (res: any) => {
+        // 1) Clear & populate the FormArray
+        const arr = this.form.get('control_measure_assignments') as FormArray;
+        arr.clear();
+        res.results.forEach((row: any) => arr.push(this.fb.group(row)));
+  
+        // 2) Tell the treatment block to enter “edit” mode
+        this.treatmentBlock.setInlineToEditMode();
+  
+        // 3) Recompute available‐CM in inline, passing each existing CM id
+        res.results.forEach((row: any) => {
+          this.treatmentBlock.updateInlineAvailableCMs(row.control_measure_id);
+        });
+      },
+      error: this.handleError('Failed to load control-measure assignments')
+    });
+  }
+  
+  
 }

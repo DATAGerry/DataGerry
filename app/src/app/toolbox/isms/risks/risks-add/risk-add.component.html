@@ -92,6 +92,7 @@
         <ng-container *ngFor="let pg of protectionGoalOptions">
           <app-checkbox [id]="'pg-' + pg.public_id" [label]="pg.name"
             [checked]="selectedProtectionGoals.includes(pg.public_id)"
+            [disabled]="isViewMode"
             (checkedChange)="onProtectionGoalChange(pg.public_id, $event)">
           </app-checkbox>
         </ng-container>

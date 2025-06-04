@@ -16,7 +16,7 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BaseSectionComponent } from '../base-section/base-section.component';
 import { TypeService } from '../../../services/type.service';
 import { CmdbMode } from '../../../modes.enum';
@@ -30,7 +30,7 @@ import { ToastService } from '../../../../layout/toast/toast.service';
   templateUrl: './reference-section.component.html',
   styleUrls: ['./reference-section.component.scss']
 })
-export class ReferenceSectionComponent extends BaseSectionComponent implements OnDestroy {
+export class ReferenceSectionComponent extends BaseSectionComponent implements OnDestroy, OnInit {
 
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
   public referencedType: CmdbType;
@@ -46,6 +46,11 @@ export class ReferenceSectionComponent extends BaseSectionComponent implements O
   constructor(private typeService: TypeService, private toast: ToastService) {
     super();
   }
+
+  public ngOnInit(): void {
+    console.log('section.fields', this.section.fields);
+    console.log('available field names', this.fields.map(f => f.name));  }
+
 
   public loadRefType(): void {
     if (this.mode === CmdbMode.View) {

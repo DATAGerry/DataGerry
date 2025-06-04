@@ -110,6 +110,8 @@ export class RenderComponent implements OnInit {
         if(this.renderResult){
             this.objectID = this.renderResult.object_information.object_id;
         }
+        console.log('RenderComponent initialized with mode:', this.mode);
+     console.log('RenderComponent initialized with renderResult:', this.renderResult);
     }
 
 /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
@@ -137,6 +139,7 @@ export class RenderComponent implements OnInit {
 
 
     public getValueByName(name: string) {
+        console.log('getValueByName called with name:', name)
         if (this.renderResult !== undefined) {
             const fieldFound = this.renderResult.fields.find(field => field.name === name);
 

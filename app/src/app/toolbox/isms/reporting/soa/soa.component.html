@@ -1,4 +1,4 @@
-<section class="soa-page flex flex-col gap-4">
+<!-- <section class="soa-page flex flex-col gap-4">
   <h1 class="text-2xl font-semibold">Statement of Applicability&nbsp;(SOA)</h1>
 
   <cmdb-table
@@ -7,4 +7,54 @@
     [loading]="loading"
 >
   </cmdb-table>
+</section> -->
+
+
+<section class="soa-page flex flex-col gap-4">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+    <h1 class="text-2xl font-semibold m-0">
+      Statement of Applicability&nbsp;(SOA)
+    </h1>
+
+    <div class="flex-shrink-0">
+      <ng-container *ngTemplateOutlet="exportTemplate"></ng-container>
+    </div>
+  </div>
+
+  <cmdb-table [columns]="columns" [items]="controls" [loading]="loading" [totalItems]="controls.length"
+    [paginationEnabled]="false" [searchEnabled]="false" [pageSizeEnabled]="false">
+  </cmdb-table>
 </section>
+
+<ng-template #exportTemplate>
+  <div class="btn-group" *permissionLink="'base.export.type.*'">
+    <button type="button" id="exportButton" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      <fa-icon icon="file-export"></fa-icon> Export
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="exportButton">
+      <li>
+        <button class="dropdown-item btn btn-outline-secondary" (click)="exportCsv()">
+          <i class="fas fa-file-csv me-1"></i> Export CSV
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item btn btn-outline-success" (click)="exportXlsx()">
+          <i class="fas fa-file-excel me-1"></i> Export XLSX
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item btn btn-outline-danger" (click)="exportPdf()">
+          <i class="fas fa-file-pdf me-1"></i> Export PDF
+        </button>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<ng-template #applicableTpl let-data="data">
+  <fa-icon
+    [icon]="data === true ? 'check' : 'times'"
+    [ngClass]="data === true ? 'text-success' : 'text-danger'">
+  </fa-icon>
+</ng-template>

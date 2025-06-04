@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { CmdbType, CmdbTypeSection } from '../../../models/cmdb-type';
 import { BaseSectionComponent } from '../base-section/base-section.component';
@@ -27,10 +27,22 @@ import { RenderResult } from 'src/app/framework/models/cmdb-render';
     templateUrl: './sections-factory.component.html',
     styleUrls: ['./sections-factory.component.scss']
 })
-export class SectionsFactoryComponent extends BaseSectionComponent {
+export class SectionsFactoryComponent extends BaseSectionComponent implements OnInit {
     @Input() public sections: Array<CmdbTypeSection> = [];
     @Input() objectID: number;
     @Input() public typeInstance: CmdbType;
     @Input() public renderResult: RenderResult;
+
+    constructor() {
+        super();
+
+    
+    }
+
+    ngOnInit(): void {
+        console.log('renderResult sectionfactory' , this.renderResult);
+        console.log('typeInstance sectionfactory' , this.typeInstance);
+
+    }
 
 }

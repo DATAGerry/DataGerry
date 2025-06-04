@@ -106,8 +106,9 @@
           <span class="toggle-icon">{{ expandedSections.treatment ? '▼' : '▶' }}</span>
         </div>
         <div class="section-content" [ngClass]="{'expanded': expandedSections.treatment}">
-          <app-risk-assessment-treatment [parentForm]="form" [allPersons]="allPersons"
-            [allPersonGroups]="allPersonGroups" [implementationStates]="implementationStates">
+          <app-risk-assessment-treatment #treatmentBlock  [parentForm]="form" [allPersons]="allPersons"
+            [allPersonGroups]="allPersonGroups" [implementationStates]="implementationStates" [createMode]="!isView"
+            [allControlMeasures]="allControlMeasures" >
           </app-risk-assessment-treatment>
         </div>
       </div>
