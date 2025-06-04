@@ -163,13 +163,12 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
 
         # STEP 2: Enhance the filter if object_id was found
         if object_id is not None:
-            # Get the object to find its type_id
-            obj = objects_manager.get_object(object_id)
+            target_object = objects_manager.get_object(object_id)
 
-            if obj is not None:
-                type_id = obj['type_id']
+            if target_object is not None:
+                type_id = target_object['type_id']
 
-                # Find all STATIC groups containing this object
+                # Find all STATIC groups containing this CmdbObject
                 static_groups = object_groups_manager.find(criteria={
                     'group_type': ObjectGroupMode.STATIC,
                     'assigned_ids': object_id
@@ -177,7 +176,7 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
 
                 static_group_ids = [g['public_id'] for g in static_groups]
 
-                # Find all DYNAMIC groups that include this type
+                # Find all DYNAMIC groups that include this CmdbType
                 dynamic_groups = object_groups_manager.find(criteria={
                     'group_type': ObjectGroupMode.DYNAMIC,
                     'assigned_ids': type_id
