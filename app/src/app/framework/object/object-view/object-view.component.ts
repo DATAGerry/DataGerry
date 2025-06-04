@@ -125,6 +125,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.objectViewSubject.pipe(takeUntil(this.unsubscribe)).subscribe({
       next: (result) => {
         this.renderResult = result;
+
         this.currentObjectID = result?.object_information?.object_id;
         this.activeRelationTabIndex = 0;
         if (this.currentObjectID) {

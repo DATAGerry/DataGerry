@@ -41,7 +41,15 @@ export interface RiskCalculationData {
     costs_for_implementation?: number;
     costs_for_implementation_currency?: string;
     priority?: number; // 1=Low,2=Med,3=High,4=VeryHigh
-  
+    // control_measure_assignments?: any[];
+
+    control_measure_assignments?:
+    any[]                                     /* create-mode  */
+  | {                                        /* edit-mode */
+      created: any[];
+      updated: any[];
+      deleted: number[];
+    };
     // After
     risk_calculation_after: RiskCalculationData;
   

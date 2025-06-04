@@ -27,10 +27,15 @@ import { RenderResult } from 'src/app/framework/models/cmdb-render';
     templateUrl: './sections-factory.component.html',
     styleUrls: ['./sections-factory.component.scss']
 })
-export class SectionsFactoryComponent extends BaseSectionComponent {
+export class SectionsFactoryComponent extends BaseSectionComponent  {
     @Input() public sections: Array<CmdbTypeSection> = [];
     @Input() objectID: number;
     @Input() public typeInstance: CmdbType;
     @Input() public renderResult: RenderResult;
 
+    constructor() {
+        super();
+
+    
+    }
 }

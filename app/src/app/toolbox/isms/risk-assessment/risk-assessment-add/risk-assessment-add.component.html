@@ -106,8 +106,9 @@
           <span class="toggle-icon">{{ expandedSections.treatment ? '▼' : '▶' }}</span>
         </div>
         <div class="section-content" [ngClass]="{'expanded': expandedSections.treatment}">
-          <app-risk-assessment-treatment [parentForm]="form" [allPersons]="allPersons"
-            [allPersonGroups]="allPersonGroups" [implementationStates]="implementationStates">
+          <app-risk-assessment-treatment #treatmentBlock  [parentForm]="form" [allPersons]="allPersons"
+            [allPersonGroups]="allPersonGroups" [implementationStates]="implementationStates" [createMode]="!isView"
+            [allControlMeasures]="allControlMeasures" [riskAssessmentId]="riskAssessmentId"  >
           </app-risk-assessment-treatment>
         </div>
       </div>
@@ -160,9 +161,9 @@
 
     </div>
 
-    <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId"
+    <!-- <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId"
       *ngIf="isView">
-    </cmdb-risk-assessment-footer>
+    </cmdb-risk-assessment-footer> -->
   </form>
 
 

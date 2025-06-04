@@ -47,6 +47,9 @@ export class ReferenceSectionComponent extends BaseSectionComponent implements O
     super();
   }
 
+
+
+
   public loadRefType(): void {
     if (this.mode === CmdbMode.View) {
       this.typeService.getType(this.section.reference.type_id).pipe(takeUntil(this.subscriber))
