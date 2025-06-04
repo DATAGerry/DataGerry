@@ -619,111 +619,167 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                 "as": "interviewed_persons_data"
             }},
 
-            ####
-            {"$lookup": {
+            # Step 12: Lookup risk class matrix values for risk_before
+            {
+                "$lookup": {
+                    "from": "isms.riskMatrix",
+                    "let": {
+                        "likelihood_id": "$risk_calculation_before.likelihood_id",
+                        "impact_id": "$risk_calculation_before.maximum_impact_id"
+                    },
+                    "pipeline": [
+                        { "$match": { "public_id": 1 } },
+                        { "$unwind": "$risk_matrix" },
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$and": [
+                                        { "$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"] },
+                                        { "$eq": ["$risk_matrix.impact_id", "$$impact_id"] }
+                                    ]
+                                }
+                            }
+                        },
+                        { "$replaceRoot": { "newRoot": "$risk_matrix" } }
+                    ],
+                    "as": "risk_before"
+                }
+            },
+            { "$unwind": { "path": "$risk_before", "preserveNullAndEmptyArrays": True } },
+            {
+                "$lookup": {
+                    "from": "isms.riskClass",
+                    "localField": "risk_before.risk_class_id",
+                    "foreignField": "public_id",
+                    "as": "risk_before_class"
+                }
+            },
+            { "$unwind": { "path": "$risk_before_class", "preserveNullAndEmptyArrays": True } },
+
+            # Step 13: Repeat for risk after treatment
+            {
+                "$lookup": {
+                    "from": "isms.riskMatrix",
+                    "let": {
+                        "likelihood_id": "$risk_calculation_after.likelihood_id",
+                        "impact_id": "$risk_calculation_after.maximum_impact_id"
+                    },
+                    "pipeline": [
+                        { "$match": { "public_id": 1 } },
+                        { "$unwind": "$risk_matrix" },
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$and": [
+                                        { "$eq": ["$risk_matrix.likelihood_id", "$$likelihood_id"] },
+                                        { "$eq": ["$risk_matrix.impact_id", "$$impact_id"] }
+                                    ]
+                                }
+                            }
+                        },
+                        { "$replaceRoot": { "newRoot": "$risk_matrix" } }
+                    ],
+                    "as": "risk_after"
+                }
+            },
+            { "$unwind": { "path": "$risk_after", "preserveNullAndEmptyArrays": True } },
+            {
+                "$lookup": {
+                    "from": "isms.riskClass",
+                    "localField": "risk_after.risk_class_id",
+                    "foreignField": "public_id",
+                    "as": "risk_after_class"
+                }
+            },
+            { "$unwind": { "path": "$risk_after_class", "preserveNullAndEmptyArrays": True } },
+
+            # Step 14: Create Impact categories before list
+            # Step A: Unwind before impacts
+            { "$unwind": { "path": "$risk_calculation_before.impacts", "preserveNullAndEmptyArrays": True } },
+
+            # Step B: Lookup impact category
+            {
+            "$lookup": {
                 "from": "isms.impactCategory",
-                "pipeline": [{"$sort": {"sort": 1}}],
-                "as": "impact_categories"
-            }},
+                "localField": "risk_calculation_before.impacts.impact_category_id",
+                "foreignField": "public_id",
+                "as": "impact_category_before"
+            }
+            },
+            { "$unwind": { "path": "$impact_category_before", "preserveNullAndEmptyArrays": True } },
 
-            {"$lookup": {
+            # Step C: Lookup impact
+            {
+            "$lookup": {
                 "from": "isms.impact",
-                "as": "all_impacts",
-                "pipeline": []
-            }},
+                "localField": "risk_calculation_before.impacts.impact_id",
+                "foreignField": "public_id",
+                "as": "impact_before"
+            }
+            },
+            { "$unwind": { "path": "$impact_before", "preserveNullAndEmptyArrays": True } },
 
-            {"$lookup": {
-                "from": "isms.likelihood",
-                "as": "all_likelihoods",
-                "pipeline": []
-            }},
-
-            {"$lookup": {
-                "from": "isms.riskMatrix",
-                "pipeline": [],
-                "as": "risk_matrix"
-            }},
-
-            {"$addFields": {
-                "risk_calculation_before.risk_class_color": {
-                    "$let": {
-                        "vars": {
-                            "entry": {
-                                "$arrayElemAt": [
-                                    {"$filter": {
-                                        "input": {
-                                            "$reduce": {
-                                                "input": "$risk_matrix.entries",
-                                                "initialValue": [],
-                                                "in": {"$concatArrays": ["$$value", "$$this"]}
-                                            }
-                                        },
-                                        "cond": {
-                                            "$and": [
-                                                {"$eq": [
-                                                    "$$this.likelihood_id",
-                                                    "$risk_calculation_before.likelihood_id"
-                                                ]},
-                                                {"$eq": [
-                                                    "$$this.impact_id",
-                                                    "$risk_calculation_before.max_impact_id"
-                                                ]}
-                                            ]
-                                        }
-                                    }},
-                                    0
-                                ]
-                            }
-                        },
-                        "in": {
-                            "$cond": [
-                                {"$ifNull": ["$$entry", False]},
-                                "$$entry.color",
-                                "gray"
-                            ]
-                        }
-                    }
-                },
-                "risk_calculation_after.risk_class_color": {
-                    "$let": {
-                        "vars": {
-                            "entry": {
-                                "$arrayElemAt": [
-                                    {"$filter": {
-                                        "input": {
-                                            "$reduce": {
-                                                "input": "$risk_matrix.entries",
-                                                "initialValue": [],
-                                                "in": {"$concatArrays": ["$$value", "$$this"]}
-                                            }
-                                        },
-                                        "cond": {
-                                            "$and": [
-                                                {"$eq": [
-                                                    "$$this.likelihood_id",
-                                                    "$risk_calculation_after.likelihood_id"
-                                                ]},
-                                                {"$eq": [
-                                                    "$$this.impact_id",
-                                                    "$risk_calculation_after.max_impact_id"
-                                                ]}
-                                            ]
-                                        }
-                                    }},
-                                    0
-                                ]
-                            }
-                        },
-                        "in": {
-                            "$cond": [
-                                {"$ifNull": ["$$entry", False]},
-                                "$$entry.color",
-                                "gray"
-                            ]
-                        }
+            # Step D: Group and build new array
+            {
+            "$group": {
+                "_id": "$_id",
+                "doc": { "$first": "$$ROOT" },
+                "impact_categories_before": {
+                "$push": {
+                    "impact_category": "$impact_category_before.name",
+                    "impact_value": {
+                    "$ifNull": ["$impact_before.calculation_basis", None]
                     }
                 }
-            }},
+                }
+            }
+            },
+            { "$replaceRoot": { "newRoot": { "$mergeObjects": ["$doc", {
+                                            "impact_categories_before": "$impact_categories_before" }] } } },
+
+            # Step 15: Create Impact categories after list
+            # Step A: Unwind after impacts
+            { "$unwind": { "path": "$risk_calculation_after.impacts", "preserveNullAndEmptyArrays": True } },
+
+            # Step B: Lookup impact category
+            {
+            "$lookup": {
+                "from": "isms.impactCategory",
+                "localField": "risk_calculation_after.impacts.impact_category_id",
+                "foreignField": "public_id",
+                "as": "impact_category_after"
+            }
+            },
+            { "$unwind": { "path": "$impact_category_after", "preserveNullAndEmptyArrays": True } },
+
+            # Step C: Lookup impact
+            {
+            "$lookup": {
+                "from": "isms.impact",
+                "localField": "risk_calculation_after.impacts.impact_id",
+                "foreignField": "public_id",
+                "as": "impact_after"
+            }
+            },
+            { "$unwind": { "path": "$impact_after", "preserveNullAndEmptyArrays": True } },
+
+            # Step D: Group and build new array
+            {
+            "$group": {
+                "_id": "$_id",
+                "doc": { "$first": "$$ROOT" },
+                "impact_categories_after": {
+                "$push": {
+                    "impact_category": "$impact_category_after.name",
+                    "impact_value": {
+                    "$ifNull": ["$impact_after.calculation_basis", None]
+                    }
+                }
+                }
+            }
+            },
+            { "$replaceRoot": { "newRoot": { "$mergeObjects": ["$doc", {
+                                            "impact_categories_after": "$impact_categories_after" }] } } },
 
             # Last Step: Project the Fields
             {"$project": {
@@ -832,8 +888,22 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                         "else": None
                     }
                 },
-                "risk_calculation_before": 1,
-                "risk_calculation_after": 1,
+                "risk_before": {
+                    "value": "$risk_before.calculated_value",
+                    "color": "$risk_before_class.color"
+                },
+                "risk_after": {
+                    "value": {
+                        "$ifNull": ["$risk_after.calculated_value", None]
+                    },
+                    "color": {
+                        "$ifNull": ["$risk_after_class.color", None]
+                    }
+                },
+                "impact_categories_before": 1,
+                "impact_categories_after": 1,
+                "likelihood_value_before": "$risk_calculation_before.likelihood_value",
+                "likelihood_value_after": "$risk_calculation_after.likelihood_value",
                 "additional_information": 1,
                 "risk_treatment_option": {
                     "$ifNull": ["$risk_treatment_option", None]
