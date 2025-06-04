@@ -533,15 +533,15 @@ export class RiskAssessmentAddComponent implements OnInit {
     .pipe(finalize(() => this.loader.hide()))
     .subscribe({
       next: (res: any) => {
-        // 1) Clear & populate the FormArray
+        console.log('control measure assignment',res);
+        
         const arr = this.form.get('control_measure_assignments') as FormArray;
         arr.clear();
         res.results.forEach((row: any) => arr.push(this.fb.group(row)));
   
-        // 2) Tell the treatment block to enter “edit” mode
         this.treatmentBlock.setInlineToEditMode();
   
-        // 3) Recompute available‐CM in inline, passing each existing CM id
+  
         res.results.forEach((row: any) => {
           this.treatmentBlock.updateInlineAvailableCMs(row.control_measure_id);
         });

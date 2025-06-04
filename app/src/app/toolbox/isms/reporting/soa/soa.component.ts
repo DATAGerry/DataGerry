@@ -54,7 +54,6 @@ export class SoaComponent implements OnInit {
       },
       { display: 'Reason', name: 'reason', data: 'reason', sortable: false, style: { 'text-align': 'center'} },
       { display: 'State', name: 'implementation_state', data: 'implementation_state', sortable: false, style: { 'text-align': 'center'} },
-      { display: 'Type', name: 'control_measure_type', data: 'control_measure_type', sortable: false, style: { 'text-align': 'center'} },
       { display: 'Source', name: 'source', data: 'source', sortable: false , style: { 'text-align': 'center'}}
     ];
     this.initialVisibleColumns = this.columns.map((c) => c.name);

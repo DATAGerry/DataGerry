@@ -126,7 +126,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (result) => {
         this.renderResult = result;
 
-        console.log('[DEBUG] ObjectViewComponent: renderResult', this.renderResult);
         this.currentObjectID = result?.object_information?.object_id;
         this.activeRelationTabIndex = 0;
         if (this.currentObjectID) {

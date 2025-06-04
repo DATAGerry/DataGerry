@@ -251,6 +251,6 @@ def get_isms_risk_assessment_schema() -> dict:
         },
         # optional control measure assignments
         'control_measure_assignments': { # list of control meassure assignments
-            'anyof_type': ['list', 'dict']
+            'type': 'list',
         }
     }

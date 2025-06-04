@@ -15,10 +15,8 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  Component, Input, OnInit, OnChanges, SimpleChanges, inject,
+  Component, Input, OnInit, OnChanges, SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -41,6 +39,7 @@ export class RiskAssessmentTreatmentComponent implements OnInit, OnChanges {
   @Input() allPersons:            any[] = [];
   @Input() allPersonGroups:       any[] = [];
   @Input() implementationStates:  any[] = [];
+  @Input() riskAssessmentId?: number;
 
   /* NEW: full list of control / measures comes from RA-Add component */
   @Input() allControlMeasures:    { public_id:number; title:string }[] = [];
@@ -121,8 +120,6 @@ public markInlineSnapshot(): void {
     //  this.cmInline.createMode = false;        // switch off “create” mode
      this.cmInline.refreshSnapshot();         // take a pristine snapshot
    }
-
-     /** Called by parent to switch inline into “edit” context */
 
 
   /** Called by parent to recalc “availableControlMeasures” inside inline */

@@ -528,7 +528,6 @@
 // }
 
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component, Input, ViewChild, TemplateRef,
   OnInit, OnChanges, SimpleChanges, inject,
@@ -570,6 +569,8 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges, AfterVi
   /** Person / group master data */
   @Input() allPersons      : any[] = [];
   @Input() allPersonGroups : any[] = [];
+  @Input() riskAssessmentId?: number;
+
 
   /* ───────── template refs ───────── */
   @ViewChild('modalTpl',     { static:true }) modalTpl!: TemplateRef<any>;
@@ -745,6 +746,10 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges, AfterVi
     const val = this.modalForm.getRawValue();
     val.responsible_for_implementation_id_ref_type =
       this.getRespType(val.responsible_for_implementation_id);
+
+      if (this.riskAssessmentId) {
+        (val as any).risk_assessment_id = this.riskAssessmentId;
+      }
 
     /* prevent duplicates */
     const dup = this.cmArray.controls.find((c,i)=>
