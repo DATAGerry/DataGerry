@@ -2,16 +2,16 @@
   <a *permissionLink="['base.framework.type.view', 'base.framework.type.edit']"
      [routerLink]="['/', 'framework', 'type', 'edit', publicID]"
      title="Edit type">
-    <i class="far fa-edit"></i>
+    <i class="far fa-edit spacing-right icon-edit"></i>
   </a>
   <a *permissionLink="['base.framework.type.view', 'base.framework.type.add']"
      [routerLink]="['/', 'framework', 'type', 'add']" [queryParams]="{copy: publicID}"
      title="Copy type">
-    <i class="far fa-clone"></i>
+    <i class="far fa-clone spacing-right icon-copy"></i>
   </a>
   <a *permissionLink="'base.framework.type.delete'"
      [routerLink]="['/', 'framework', 'type', 'delete', publicID]"
      title="Delete type">
-    <i class="far fa-trash-alt"></i>
+    <i class="far fa-trash-alt spacing-right icon-delete"></i>
   </a>
 </div>

@@ -2,14 +2,14 @@
 
 a {
   color: #000000;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
+  padding-left: 0.10rem;
+  padding-right: 0.10rem;
 
-  &:hover{
-    > i{
-      color: theme-color('primary');
-    }
-  }
+  // &:hover{
+  //   > i{
+  //     color: theme-color('primary');
+  //   }
+  // }
 }
 
 ::ng-deep ngb-modal-backdrop {

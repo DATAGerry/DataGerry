@@ -8,7 +8,7 @@
 <hr />
 
 <cmdb-table [items]="threats" [columns]="columns" [page]="page" [sort]="sort" [id]="'threats-table'"
-  [emptyMessage]="'No threats found.'" [totalItems]="totalThreats" [selectEnabled]="false" [loading]="loading"
+  [emptyMessage]="'No Vulnerabilities found.'" [totalItems]="totalThreats" [selectEnabled]="false" [loading]="loading"
   [pageSize]="limit" [toggleable]="true" [initialVisibleColumns]="initialVisibleColumns"
   (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
   (searchChange)="onSearchChange($event)">

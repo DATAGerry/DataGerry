@@ -3,6 +3,6 @@ export const environment = {
     cloudMode: true,
     preCloudMode: true,
     protocol: 'http',
-    apiUrl: 'localhost', // API URL
+    apiUrl: '192.168.64.2', // API URL
     apiPort: 4000 // Typically HTTPS
 };

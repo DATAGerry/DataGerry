@@ -1,71 +1,3 @@
-<!-- <div class="risk-assessment-add container" *ngIf="!loading">
-    <form [formGroup]="form">
-  
-      <div class="accordion" id="riskAssessmentAccordion">
-  
-        <app-risk-assessment-form-top
-          [parentForm]="form"
-          [fromRisk]="fromRisk"
-          [fromObject]="fromObject"
-          [fromObjectGroup]="fromObjectGroup"
-          [risks]="allRisks"
-          [objects]="allObjects"
-          [objectGroups]="allObjectGroups"
-        >
-        </app-risk-assessment-form-top>
-  
-        <app-risk-assessment-before
-          [parentForm]="form"
-          [impacts]="impacts"
-          [likelihoods]="likelihoods"
-          [allPersons]="allPersons"
-          [allPersonGroups]="allPersonGroups"
-          [impactCategories]="impactCategories"
-        >
-        </app-risk-assessment-before>
-  
-        <app-risk-assessment-treatment
-          [parentForm]="form"
-          [allPersons]="allPersons"
-          [allPersonGroups]="allPersonGroups"
-          [implementationStates]="implementationStates"
-        >
-        </app-risk-assessment-treatment>
-  
-        <app-risk-assessment-after
-          [parentForm]="form"
-          [impacts]="impacts"
-          [likelihoods]="likelihoods"
-          [impactCategories]="impactCategories"
-        >
-        </app-risk-assessment-after>
-  
-        <app-risk-assessment-audit
-          [parentForm]="form"
-          [allPersons]="allPersons"
-          [allPersonGroups]="allPersonGroups"
-        >
-        </app-risk-assessment-audit>
-  
-      </div>
-  
-      <div class="mt-4">
-        <button class="btn btn-primary me-2" type="button" (click)="onSave()">
-          {{ isEditMode ? 'Update' : 'Create' }}
-        </button>
-        <button class="btn btn-secondary" type="button" (click)="onCancel()">
-          Cancel
-        </button>
-      </div>
-  
-    </form>
-  </div>
-   -->
-
-
-
-
-
 <div class="risk-assessment-add container" *ngIf="!loading">
 
   <!-- Risk & Object Information Section -->
@@ -82,9 +14,6 @@
 
 
     <div class="risk-assessment-sections">
-
-
-
       <!-- Risk Assessment (Before Treatment) Section -->
       <div class="section-container">
         <div class="section-header" (click)="toggleSection('before')">
@@ -94,7 +23,7 @@
         <div class="section-content" [ngClass]="{'expanded': expandedSections.before}">
           <app-risk-assessment-before [parentForm]="form" [impacts]="impacts" [likelihoods]="likelihoods"
             [allPersons]="allPersons" [allPersonGroups]="allPersonGroups" [impactCategories]="impactCategories"
-            [riskMatrix]="riskMatrix" [riskClasses]="riskClasses">
+            [riskMatrix]="riskMatrix" [riskClasses]="riskClasses" [isView]="isView">
           </app-risk-assessment-before>
         </div>
       </div>
@@ -106,9 +35,9 @@
           <span class="toggle-icon">{{ expandedSections.treatment ? '▼' : '▶' }}</span>
         </div>
         <div class="section-content" [ngClass]="{'expanded': expandedSections.treatment}">
-          <app-risk-assessment-treatment #treatmentBlock  [parentForm]="form" [allPersons]="allPersons"
+          <app-risk-assessment-treatment #treatmentBlock [parentForm]="form" [allPersons]="allPersons"
             [allPersonGroups]="allPersonGroups" [implementationStates]="implementationStates" [createMode]="!isView"
-            [allControlMeasures]="allControlMeasures" [riskAssessmentId]="riskAssessmentId"  >
+            [allControlMeasures]="allControlMeasures" [riskAssessmentId]="riskAssessmentId">
           </app-risk-assessment-treatment>
         </div>
       </div>
@@ -157,8 +86,7 @@
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button label="Create" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()"></app-button>
-
+      <app-button label="{{ isEditMode ? 'Update' : 'Create' }}" type="submit" [bootstrapClass]="'btn-success'" (clicked)="onSave()"></app-button>
     </div>
 
     <!-- <cmdb-risk-assessment-footer [riskAssessmentName]="form.get('object_id')?.value" [currentID]="riskAssessmentId"

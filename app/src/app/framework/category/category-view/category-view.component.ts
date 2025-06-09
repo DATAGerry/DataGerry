@@ -52,7 +52,6 @@ export class CategoryViewComponent implements OnInit, OnDestroy {
       this.categoryService.getCategory(this.publicID).pipe(
         takeUntil(this.unSubscribe)).subscribe((category: CmdbCategory) => {
           this.category = category;
-          console.log(this.category);
         }
       );
     });

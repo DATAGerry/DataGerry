@@ -123,6 +123,8 @@ export class RiskAssessmentFormTopComponent implements OnInit {
     if (shouldRender && objectId) {
       this.loadSelectedObjectRenderResult(objectId);
     }
+
+    console.log( this.parentForm.get('object_id_ref_type')?.value)
   }
   
   

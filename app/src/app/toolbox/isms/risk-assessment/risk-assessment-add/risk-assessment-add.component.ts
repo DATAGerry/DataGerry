@@ -57,7 +57,6 @@ import { RiskClassService } from '../../services/risk-class.service';
 import { RiskClass } from '../../models/risk-class.model';
 import { Location } from '@angular/common';
 import { ControlMeasureService } from '../../services/control-measure.service';
-import { RaCmAssignmentInlineComponent } from '../risk-assessment-treatment/ control-measure-assignment-inline/ra-cm-assignment-inline.component';
 import { RiskAssessmentTreatmentComponent } from '../risk-assessment-treatment/risk-assessment-treatment.component';
 import { ControlMeasureAssignmentService } from '../../services/control‑measure‑assignment.service';
 
@@ -415,7 +414,6 @@ export class RiskAssessmentAddComponent implements OnInit {
           this.riskClasses = res.riskClasses.results;
           this.allControlMeasures  = res.controlMeasures.results;
 
-          console.log(this.allControlMeasures);
 
 
           /* impact categories + build sliders */
@@ -533,7 +531,6 @@ export class RiskAssessmentAddComponent implements OnInit {
     .pipe(finalize(() => this.loader.hide()))
     .subscribe({
       next: (res: any) => {
-        console.log('control measure assignment',res);
         
         const arr = this.form.get('control_measure_assignments') as FormArray;
         arr.clear();

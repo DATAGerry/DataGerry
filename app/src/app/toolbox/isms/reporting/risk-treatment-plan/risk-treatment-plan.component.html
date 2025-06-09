@@ -1,1 +1,103 @@
-<h1>Risk Treatment Plan</h1>
+<!-- ­───────── EXPORT BAR ───────── -->
+<!-- <div class="toolbar d-flex flex-wrap gap-2 mb-3">
+  <button type="button" class="btn btn-sm btn-outline-primary" (click)="exportCsv()">
+    <i class="fas fa-file-csv me-1"></i> CSV
+  </button>
+  <button type="button" class="btn btn-sm btn-outline-success" (click)="exportXlsx()">
+    <i class="fas fa-file-excel me-1"></i> Excel
+  </button>
+  <button type="button" class="btn btn-sm btn-outline-danger" (click)="exportPdf()">
+    <i class="fas fa-file-pdf me-1"></i> PDF
+  </button>
+</div> -->
+
+<ng-template #exportTemplate>
+  <div class="btn-group" *permissionLink="'base.export.type.*'">
+    <button type="button" id="exportButton" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      <fa-icon icon="file-export"></fa-icon> Export
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="exportButton">
+      <li>
+        <button class="dropdown-item btn btn-outline-secondary" (click)="exportCsv()">
+          <i class="fas fa-file-csv me-1"></i> Export CSV
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item btn btn-outline-success" (click)="exportXlsx()">
+          <i class="fas fa-file-excel me-1"></i> Export XLSX
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item btn btn-outline-danger" (click)="exportPdf()">
+          <i class="fas fa-file-pdf me-1"></i> Export PDF
+        </button>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<div class="d-flex flex-row justify-content-between align-items-center mb-3">
+  <h1 class="text-2xl font-semibold m-0">Risk Treatment Plan</h1>
+  <ng-container *ngTemplateOutlet="exportTemplate"></ng-container>
+</div>
+
+<!-- ­───────── TABLE ───────── -->
+<cmdb-table
+  [items]="viewRows"
+  [columns]="columns"
+  [initialVisibleColumns]="initialVisibleColumns"
+  [page]="page"
+  [pageSize]="limit"
+  [totalItems]="totalItems"
+  [loading]="loading"
+  (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)"
+  (sortChange)="onSortChange($event)">
+
+  <!-- templates -->
+  <ng-template #riskBox let-val="val" let-col="col">
+    <div class="risk-box"
+         [style.background-color]="val?.color || '#777'"
+         style="color:#fff">
+      {{ val?.value ?? '-' }}
+    </div>
+  </ng-template>
+
+  <ng-template #riskBeforeTpl let-item="item">
+    <ng-container *ngTemplateOutlet="riskBox; context:{ val:item.risk_before }"></ng-container>
+  </ng-template>
+
+  <ng-template #riskAfterTpl let-item="item">
+    <ng-container *ngTemplateOutlet="riskBox; context:{ val:item.risk_after }"></ng-container>
+  </ng-template>
+
+  <ng-template #dateTpl let-item="item">
+    {{ item.planned_date_str || '-' }}
+  </ng-template>
+
+  <ng-template #controlsTpl let-item="item">
+    <span *ngIf="item.control_measures?.length; else none">
+      <span *ngFor="let c of item.control_measures; index as i">
+        {{ c }}<ng-container *ngIf="i+1 < item.control_measures.length">, </ng-container>
+      </span>
+    </span>
+    <ng-template #none>-</ng-template>
+  </ng-template>
+</cmdb-table>
+
+<!-- ­───────── LOADER ───────── -->
+<app-loading-popup
+  [isVisible]="isLoading$ | async"
+  message="Loading risk-treatment data…">
+</app-loading-popup>
+
+<style>
+  .risk-box{
+    display:flex; justify-content:center; align-items:center;
+    height:26px; min-width:60px; padding:0 4px;
+    border-radius:4px; font-weight:600;
+  }
+  .gap-2{ gap:.5rem }
+  .toolbar .btn i{ pointer-events:none }
+</style>

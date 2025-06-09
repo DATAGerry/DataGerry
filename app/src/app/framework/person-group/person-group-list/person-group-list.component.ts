@@ -40,7 +40,7 @@ export class PersonGroupListComponent implements OnInit {
     private modalService: NgbModal,
     private filterBuilderService: FilterBuilderService,
     private personGroupService: PersonGroupService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.setupColumns();
@@ -66,14 +66,16 @@ export class PersonGroupListComponent implements OnInit {
         name: 'name',
         data: 'name',
         searchable: true,
-        sortable: true
+        sortable: true,
+        style: { 'text-align': 'center' }
       },
       {
         display: 'Email',
         name: 'email',
         data: 'email',
         searchable: true,
-        sortable: false
+        sortable: false,
+        style: { 'text-align': 'center' }
       },
       {
         display: 'Actions',

@@ -44,6 +44,7 @@ const FALLBACK_GREY = '#f5f5f5';
 })
 export class RiskAssessmentBeforeComponent implements OnInit, OnChanges {
   @Input({ required: true }) parentForm!: FormGroup;
+  @Input() isView = false;
 
   @Input() impacts: Impact[] = [];
   @Input() likelihoods: Likelihood[] = [];

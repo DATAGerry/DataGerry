@@ -1,0 +1,117 @@
+<ng-template #exportTemplate>
+  <div class="btn-group" *permissionLink="'base.export.type.*'">
+    <button type="button" id="exportButton" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      <fa-icon icon="file-export"></fa-icon> Export
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left" aria-labelledby="exportButton">
+      <li>
+        <button class="dropdown-item btn btn-outline-secondary" (click)="exportCsv()">
+          <i class="fas fa-file-csv me-1"></i> Export CSV
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item btn btn-outline-success" (click)="exportXlsx()">
+          <i class="fas fa-file-excel me-1"></i> Export XLSX
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item btn btn-outline-danger" (click)="exportPdf()">
+          <i class="fas fa-file-pdf me-1"></i> Export PDF
+        </button>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<div class="d-flex flex-row justify-content-between align-items-center mb-3">
+  <h1 class="text-2xl font-semibold m-0">Risk Assesments</h1>
+  <ng-container *ngTemplateOutlet="exportTemplate"></ng-container>
+</div>
+
+<!-- ­──────────────  FILTER-BAR  ──────────────── -->
+<div class="filter-bar card shadow-sm p-3 mb-3">
+  <div class="row g-2 align-items-end">
+
+    <!--  property to filter on -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <label class="form-label mb-1">Filter by …</label>
+      <select class="form-select form-select-sm" [(ngModel)]="ui.selectedProperty">
+        <option value="" disabled selected>select criterion</option>
+        <option *ngFor="let p of filterDefs" [value]="p.key">{{ p.label }}</option>
+      </select>
+    </div>
+
+    <!-- value multi-select -->
+    <div class="col-12 col-md-6 col-lg-5" *ngIf="ui.selectedProperty">
+      <label class="form-label mb-1">Value(s)</label>
+      <select class="form-select form-select-sm" multiple
+              [(ngModel)]="ui.selectedValues">
+        <option *ngFor="let v of getValues(ui.selectedProperty)" [value]="v">{{ v }}</option>
+      </select>
+    </div>
+
+    <!-- add / clear -->
+    <div class="col-auto">
+      <button class="btn btn-sm btn-primary"
+              [disabled]="!ui.selectedValues.length"
+              (click)="applyFilter()">
+        Add
+      </button>
+      <button class="btn btn-sm btn-outline-secondary"
+              [disabled]="!hasActiveFilters"
+              (click)="clearFilters()">
+        Clear&nbsp;All
+      </button>
+    </div>
+  </div>
+
+  <!-- active-filter chips -->
+  <div *ngIf="hasActiveFilters" class="mt-3 d-flex flex-wrap gap-1">
+    <span class="badge rounded-pill text-bg-light" *ngFor="let f of activeFilterChips; index as i">
+      {{ f }} &nbsp;
+      <i class="fas fa-times" role="button" (click)="removeFilter(i)"></i>
+    </span>
+  </div>
+</div>
+
+<!-- ­──────────────  TABLE  ─────────────── -->
+<cmdb-table
+[items]="pagedRows"
+  [columns]="columns"
+  [initialVisibleColumns]="initialVisibleColumns"
+  [page]="page"
+  [pageSize]="limit"
+  [totalItems]="totalItems"
+  [loading]="loading"
+
+  (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)"
+  (sortChange)="onSortChange($event)"
+  (searchChange)="onSearchChange($event)"
+>
+
+  <!-- templates reused by table -->
+  <ng-template #dateTpl let-item="item" let-col="column">
+    {{ item[col.name] || '-' }}
+  </ng-template>
+
+  <ng-template #riskBeforeTpl let-item="item">
+    <div class="risk-box" [style.background-color]="item.risk_before?.color || '#777'">
+      {{ item.risk_before?.value ?? '-' }}
+    </div>
+  </ng-template>
+
+  <ng-template #riskAfterTpl let-item="item">
+    <div class="risk-box" [style.background-color]="item.risk_after?.color || '#777'">
+      {{ item.risk_after?.value ?? '-' }}
+    </div>
+  </ng-template>
+
+</cmdb-table>
+
+<!-- ­──────────────  LOADER  ─────────────── -->
+<app-loading-popup
+  [isVisible]="isLoading$ | async"
+  message="We're processing the data…">
+</app-loading-popup>

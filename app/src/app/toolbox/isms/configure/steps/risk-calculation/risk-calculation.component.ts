@@ -112,7 +112,6 @@ export class RiskCalculationComponent implements OnInit {
             }).subscribe({
               next: (rcResp) => {
                 this.riskClasses = rcResp.results;
-                console.log('Risk Classes:', this.riskClasses);
                 // 4) Finally, load the matrix from the backend.
                 this.loadMatrixFromBackend();
               },

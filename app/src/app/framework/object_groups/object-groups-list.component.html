@@ -16,7 +16,7 @@
 
 <!-- Action Template for the table -->
 <ng-template #actionTemplate let-data="data" let-item="item">
-  <i class="fas fa-eye icon-margin icon-view spacing-right" (click)="onView(item)" title="View Object Group"
+  <i class="far fa-eye spacing-right icon-view spacing-right" (click)="onView(item)" title="View Object Group"
     *permissionLink="'base.framework.objectGroup.view'"></i>
   <i class="far fa-edit icon-margin icon-edit spacing-right" (click)="onEdit(item)" title="Edit Object Group"
     *permissionLink="'base.framework.objectGroup.edit'"></i>

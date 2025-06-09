@@ -36,6 +36,7 @@
              [min]="0" 
              [max]="sliderOptions.length - 1" 
              [value]="sliderValue" 
+             [disabled]="disabled"
              (input)="onSliderChange($event.target.value)">
       
       <!-- Dot indicators for each step -->
