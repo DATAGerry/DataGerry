@@ -100,7 +100,6 @@ export class SoaComponent implements OnInit {
       .subscribe({
         next: (resp) => {
           this.controls = resp;
-          console.log('Loaded SOA controls:', this.controls);
         },
         error: (err) => {
           this.toast.error(err?.error?.message);

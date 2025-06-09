@@ -173,9 +173,14 @@ $dg-error-message-color: #dc3545;
 ::ng-deep .modal-dialog {
   max-width: 95vw;
   width: 1200px;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
 
   .modal-content {
-    max-height: 85vh;
+    height: 70%;
+    max-height: 70%;
     display: flex;
     flex-direction: column;
   }

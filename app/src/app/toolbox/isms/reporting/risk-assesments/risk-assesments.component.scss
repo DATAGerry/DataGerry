@@ -1,0 +1,13 @@
+.risk-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 26px;
+    min-width: 60px;
+    padding: 0 4px;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 600;
+  }
+  .toolbar .btn i { pointer-events: none; }
+  .gap-2 { gap: .5rem; }

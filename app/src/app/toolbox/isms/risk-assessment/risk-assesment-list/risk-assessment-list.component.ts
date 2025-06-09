@@ -42,6 +42,7 @@ import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
+import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
 
 const GREY = '#f5f5f5';
 
@@ -79,7 +80,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     limit = 10;
     sort: Sort = { name: 'public_id', order: SortDirection.ASCENDING };
     loading = false;
-    isLoading$ = this.loader.isLoading$; 
+    isLoading$ = this.loader.isLoading$;
 
 
     columns: Column[] = [];
@@ -145,7 +146,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
     private buildColumns(): Column[] {
         return [
-            { display: 'Public ID', name: 'public_id', data: 'public_id', style: { width: '100px', 'text-align': 'center' } },
+            // { display: 'Public ID', name: 'public_id', data: 'public_id', style: { width: '100px', 'text-align': 'center' } },
             { display: 'Risk', name: 'risk', data: 'risk_id', template: this.riskTpl, style: { 'text-align': 'center' } },
             {
                 display: 'Risk before treatment',
@@ -261,7 +262,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         this.riskAssessmentService.getRiskAssessments(params)
             .pipe(finalize(() => { this.loader.hide(); this.loading = false; }))
             .subscribe({
-                next: res => { this.rows = res.results; this.total = res.total; 
+                next: res => {
+                    this.rows = res.results; this.total = res.total;
                 },
                 error: err => this.toast.error(err?.error?.message || 'Load failed')
             });
@@ -482,4 +484,26 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
             this.router.navigate(['/isms/risk-assessments/add']);
         }
     }
+
+    isEditable(item: RiskAssessment): boolean {
+        // If viewing from Group then always editable
+        if (this.groupId) return true;
+
+        // If not OBJECT_GROUP then editable
+        return item?.object_id_ref_type !== 'OBJECT_GROUP' && this.objectId !== undefined;
+    }
+
+    showInheritedBadge(item: RiskAssessment): boolean {
+        // Show badge only if OBJECT_GROUP and NOT coming from Group context
+        return item?.object_id_ref_type === 'OBJECT_GROUP' && !this.groupId && this.objectId !== undefined;
+    }
+
+
+    /**
+     * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
+     */
+    public getTextColor(color: string): string {
+        return getTextColorBasedOnBackground(color);
+    }
+
 }

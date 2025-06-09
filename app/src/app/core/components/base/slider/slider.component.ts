@@ -66,6 +66,7 @@ export class SliderComponent implements OnChanges {
   @Input() selectedId: number | null = null;
   @Input() showChosenText = false;
   @Input() primaryColor = '#4171f6'; 
+  @Input() disabled = false;
 
   public sliderOptions: Array<{ id: number | null; label: string }> = [];
   public sliderValue = 0;

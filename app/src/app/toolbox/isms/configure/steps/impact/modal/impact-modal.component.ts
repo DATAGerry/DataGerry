@@ -151,7 +151,6 @@ export class ImpactModalComponent implements OnInit {
 
                         // If calculation_basis was changed, show the warning dialog
                         if (calculationBasisChanged) {
-                            console.log('Calculation basis changed, checking risk matrix...');
                             this.ismsService.getIsmsValidationStatus().subscribe({
                                 next: (status) => {
                                     if (status?.risk_matrix) {

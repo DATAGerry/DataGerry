@@ -56,7 +56,6 @@ export class RiskAssessmentAuditComponent {
   
     
     onAuditorSelected(item: any): void {
-      console.log('Selected Auditor:', item);
       if (!item) return;
     
       this.parentForm.patchValue({

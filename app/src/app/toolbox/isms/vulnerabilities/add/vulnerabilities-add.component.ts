@@ -47,7 +47,6 @@ export class VulnerabilitiesAddComponent implements OnInit {
       this.vulnerability = navState['vulnerability'] as Vulnerability;
     }
 
-    console.log('Vulnerability:', this.vulnerability);
   }
 
   ngOnInit(): void {

@@ -195,7 +195,6 @@ export class RiskClassesComponent implements OnInit {
     modalRef.componentInstance.item = item;
     modalRef.componentInstance.itemType = 'Risk Class';
     modalRef.componentInstance.itemName = item.name;
-    console.log('risk delete clicked')
 
     modalRef.result.then(
       (result) => {
@@ -208,12 +207,10 @@ export class RiskClassesComponent implements OnInit {
             }))
             .subscribe({
               next: () => {
-                console.log('risk delete success')
                 this.toast.success('Risk Class deleted successfully.');
                 this.loadRiskClasses();
               },
               error: (err) => {
-                console.log('risk delete error')
                 this.toast.error(err?.error?.message);
               }
             });

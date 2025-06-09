@@ -165,7 +165,6 @@ export class WebhookLogViewerComponent implements OnInit {
      * @param description - The description to display in the modal (currently unused in the code).
      */
     public openDeleteModal(item: any, title: string, description: string): void {
-        console.log('item', item)
         const modalRef = this.modalService.open(DeleteConfirmationModalComponent, { size: 'lg' });
         modalRef.componentInstance.title = title;
         modalRef.componentInstance.item = item;
