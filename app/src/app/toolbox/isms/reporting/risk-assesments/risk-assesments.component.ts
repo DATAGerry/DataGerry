@@ -77,7 +77,11 @@ export class RiskAssesmentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildStaticColumns();              // columns that are always present
-    this.loadPage();                        // fetch & render first page
+    this.loadPage();    
+    
+    
+    // fetch & render first page
+    
   }
 
   /* =====================================================================
@@ -365,6 +369,8 @@ export class RiskAssesmentsComponent implements OnInit {
     });
     return out;
   }
+
+
 
   applyFilter() {
     const { selectedProperty: p, selectedValues: vals } = this.ui;

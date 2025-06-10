@@ -116,9 +116,14 @@ export class ControlMeasureAssignmentListComponent
       { display: 'ID', name: 'public_id', data: 'public_id',
         searchable: false, sortable: true,
         style: { width: '80px', 'text-align': 'center' } },
-
-      { display: 'Control / Measure', name: 'cmLabel', data: 'cmLabel',
-        searchable: true, sortable: false },
+        
+        ...(!this.controlMeasureId ? [{
+          display: 'Control / Measure',
+          name: 'cmLabel',
+          data: 'cmLabel',
+          searchable: true,
+          sortable: false
+        }] : []),
 
       { display: 'Risk Assessment', name: 'raLabel', data: 'raLabel',
         searchable: true, sortable: false },
@@ -260,8 +265,10 @@ onView(item: any): void {
 }
 
 onEdit(item: any): void {
+
   this.router.navigate(
     ['/isms/control-measure-assignments/edit'],
+
     {
       state: {
         assignment: item,

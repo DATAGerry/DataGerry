@@ -27,6 +27,7 @@ import { ControlMeasureService } from '../../services/control-measure.service';
 })
 export class ControlmeasuresListComponent implements OnInit {
     @ViewChild('actionTemplate', { static: true }) actionTemplate: TemplateRef<any>;
+    @ViewChild('sourceTemplate', { static: true }) sourceTemplate: TemplateRef<any>;
 
     public controlMeasures: ControlMeasure[] = [];
     public totalControlMeasures = 0;
@@ -89,6 +90,7 @@ export class ControlmeasuresListComponent implements OnInit {
                 data: 'source',
                 searchable: false,
                 sortable: false,
+                template: this.sourceTemplate,
                 style: { width: '100px', 'text-align': 'center' }
             },
             {

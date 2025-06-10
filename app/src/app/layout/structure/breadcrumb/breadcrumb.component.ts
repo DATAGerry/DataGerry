@@ -64,36 +64,74 @@ export class BreadcrumbComponent implements OnInit {
     this.isChecked = this.readCookies(COOCKIENAME) === 'true';
   }
 
-  private getBreadcrumbs(route: ActivatedRoute, url: string= '', breadcrumbs: BreadcrumbItem[]= []): BreadcrumbItem[] {
-    const ROUTE_DATA_BREADCRUMB: string = 'breadcrumb';
-    const currentRoute: ActivatedRoute[] = route.children;
+  // private getBreadcrumbs(route: ActivatedRoute, url: string= '', breadcrumbs: BreadcrumbItem[]= []): BreadcrumbItem[] {
+  //   const ROUTE_DATA_BREADCRUMB: string = 'breadcrumb';
+  //   const currentRoute: ActivatedRoute[] = route.children;
 
-    if (currentRoute.length === 0) {
+  //   if (currentRoute.length === 0) {
+  //     return breadcrumbs;
+  //   }
+
+  //   for (const child of currentRoute) {
+  //     if (child.outlet !== PRIMARY_OUTLET) {
+  //       continue;
+  //     }
+
+  //     if (!child.snapshot.data.hasOwnProperty(ROUTE_DATA_BREADCRUMB)) {
+  //       return this.getBreadcrumbs(child, url, breadcrumbs);
+  //     }
+
+  //     const routeURL: string = child.snapshot.url.map(segment => segment.path).join('/');
+  //     url += `/${routeURL}`;
+
+  //     const breadcrumb: BreadcrumbItem = {
+  //       label: child.snapshot.data[ROUTE_DATA_BREADCRUMB],
+  //       params: child.snapshot.params,
+  //       queryParams: child.snapshot.queryParams,
+  //       url
+  //     };
+  //     breadcrumbs.push(breadcrumb);
+
+  //     return this.getBreadcrumbs(child, url, breadcrumbs);
+  //   }
+  // }
+
+  private getBreadcrumbs(route: ActivatedRoute, url: string = '', breadcrumbs: BreadcrumbItem[] = []): BreadcrumbItem[] {
+    const ROUTE_DATA_BREADCRUMB = 'breadcrumb';
+    const children: ActivatedRoute[] = route.children;
+  
+    if (children.length === 0) {
       return breadcrumbs;
     }
-
-    for (const child of currentRoute) {
+  
+    for (const child of children) {
       if (child.outlet !== PRIMARY_OUTLET) {
         continue;
       }
-
-      if (!child.snapshot.data.hasOwnProperty(ROUTE_DATA_BREADCRUMB)) {
-        return this.getBreadcrumbs(child, url, breadcrumbs);
-      }
-
+  
       const routeURL: string = child.snapshot.url.map(segment => segment.path).join('/');
-      url += `/${routeURL}`;
-
-      const breadcrumb: BreadcrumbItem = {
-        label: child.snapshot.data[ROUTE_DATA_BREADCRUMB],
-        params: child.snapshot.params,
-        queryParams: child.snapshot.queryParams,
-        url
-      };
-      breadcrumbs.push(breadcrumb);
-
-      return this.getBreadcrumbs(child, url, breadcrumbs);
+      const nextUrl = routeURL ? `${url}/${routeURL}` : url;
+  
+      const breadcrumbLabel = child.snapshot.data[ROUTE_DATA_BREADCRUMB];
+  
+      //  Only push if breadcrumb exists and is different from the last label
+      if (
+        typeof breadcrumbLabel === 'string' &&
+        breadcrumbLabel.trim() !== '' &&
+        (breadcrumbs.length === 0 || breadcrumbs[breadcrumbs.length - 1].label !== breadcrumbLabel)
+      ) {
+        breadcrumbs.push({
+          label: breadcrumbLabel,
+          params: child.snapshot.params,
+          queryParams: child.snapshot.queryParams,
+          url: nextUrl
+        });
+      }
+  
+      return this.getBreadcrumbs(child, nextUrl, breadcrumbs);
     }
+  
+    return breadcrumbs;
   }
 
   public checkState(event: any) {
