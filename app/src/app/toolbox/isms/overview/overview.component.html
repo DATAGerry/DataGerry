@@ -1,4 +1,4 @@
-<app-loading-popup [isVisible]="isLoading$ | async" message="Loading ISMS Overview..."></app-loading-popup>
+<!-- <app-loading-popup [isVisible]="isLoading$ | async" message="Loading ISMS Overview..."></app-loading-popup>
 
 <div class="container">
   <div class="row">
@@ -14,6 +14,59 @@
             <span class="text-title">{{ card.title }}</span>
           </div>
         </a>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<app-loading-popup [isVisible]="isLoading$ | async" message="Loading ISMS Overview..."></app-loading-popup>
+
+<div class="container">
+  <div class="row">
+    <!-- Back button when in Reports mode -->
+    <div class="col-12" *ngIf="isReportsMode">
+      <button class="btn btn-secondary mb-4" (click)="toggleReportsMode()">
+        <i class="fas fa-arrow-left"></i> Back to Overview
+      </button>
+    </div>
+
+    <!-- Cards -->
+    <div class="col-md-3 mb-4" *ngFor="let card of cards">
+      <div
+        class="card"
+        [ngClass]="{ 'clickable': card.isReportsCard }"
+        (click)="card.isReportsCard ? toggleReportsMode() : null"
+      >
+        <!-- If the card has a link, use routerLink -->
+        <a *ngIf="card.link; else noLink" [routerLink]="card.link">
+          <div
+            class="dash-card primary"
+            [ngClass]="{
+              'greyish': card.validationStatus === false,
+              'pointer': card.isReportsCard
+            }"
+            [attr.title]="
+              card.validationStatus === false
+                ? 'Some error in configuration. Please validate.'
+                : null
+            "
+          >
+            <i [class]="card.icon"></i>
+            <span class="text-title">{{ card.title }}</span>
+          </div>
+        </a>
+
+        <!-- Fallback if no link (e.g. for Reports card) -->
+        <ng-template #noLink>
+          <div
+            class="dash-card primary pointer"
+            [attr.title]="'Click to view reports'"
+          >
+            <i [class]="card.icon"></i>
+            <span class="text-title">{{ card.title }}</span>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

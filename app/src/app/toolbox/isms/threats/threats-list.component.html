@@ -45,3 +45,7 @@
     title="Delete Threat"
   ></i>
 </ng-template>
+
+<ng-template #sourceTemplate let-data="data" let-item="item">
+  <span style="font-weight: 600;">{{ getSourceNames(data) }}</span>
+</ng-template>

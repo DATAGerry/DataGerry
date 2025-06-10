@@ -11,3 +11,10 @@
   }
   .toolbar .btn i { pointer-events: none; }
   .gap-2 { gap: .5rem; }
+
+  ::ng-deep .ng-select.ng-select-sm .ng-select-container {
+    min-height: 30px;
+    font-size: 0.85rem;
+    padding: 2px 6px;
+  }
+  

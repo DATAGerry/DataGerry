@@ -248,7 +248,7 @@ export class ThreatsListComponent implements OnInit {
   * Get the source name by its public_id
   */
   getSourceNames(sourceIds: number): string {
-    const option = this.sourceOptions.find(opt => opt.public_id === sourceIds);
+    const option = this.sourceOptions.find(opt => opt?.public_id === sourceIds);
     return option?.value;
   }
 }
