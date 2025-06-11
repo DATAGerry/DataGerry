@@ -20,7 +20,12 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import RiskAssessmentManager, ObjectGroupsManager, ObjectsManager
+from cmdb.manager import (
+    RiskAssessmentManager,
+    ObjectGroupsManager,
+    ObjectsManager,
+    ControlMeasureAssignmentManager,
+)
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
@@ -39,6 +44,7 @@ from cmdb.interface.rest_api.responses import (
     GetSingleResponse,
     UpdateSingleResponse,
     DeleteSingleResponse,
+    DefaultResponse,
 )
 
 from cmdb.errors.manager.risk_assessment_manager import (
@@ -115,6 +121,97 @@ def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
         LOGGER.error("[insert_isms_risk_assessment] Exception: %s. Type: %s", err, type(err), exc_info=True)
         abort(500, "An internal server error occured while creating the RiskAssessment!")
 
+
+@risk_assessment_blueprint.route('/duplicate/<string:duplicate_mode>/<string:public_ids>', methods=['POST'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.add')
+@risk_assessment_blueprint.validate(IsmsRiskAssessment.SCHEMA)
+def duplicate_isms_risk_assessment(data: dict, request_user: CmdbUser, duplicate_mode: str, public_ids: str):
+    """
+    HTTP `POST` route to duplicate an IsmsRiskAssessment into the database
+
+    Args:
+        data (IsmsRiskAssessment.SCHEMA): Data of the IsmsRiskAssessment which should be inserted
+        request_user (CmdbUser): User requesting this data
+        duplicate_mode (str): Three possible cases: risk, object or object_group
+        public_ids (str): The comma separated public_ids of the IsmsRisks, CmdbObjects or CmdbObjectGroups
+                          referenced in `duplicate_mode` which should be duplicated. Example '1,3,4,5'
+
+    Returns:
+        DefaultResponse: All created public_ids of IsmsRiskAssessments
+    """
+    try:
+        duplicate_modes = ('object','risk', 'object_group')
+
+        if duplicate_mode not in duplicate_modes:
+            abort(400, f"Invalid duplication target: {duplicate_mode}. Allowed: {', '.join(duplicate_modes)}!")
+
+        copy_cma = request.args.get('copy_cma', 'true').lower() == 'true'
+
+        # Extract the public_id
+        initial_risk_assessment_id = data.pop('public_id', None)
+
+        if not initial_risk_assessment_id:
+            abort(400, "Missing 'public_id' of the source RiskAssessment in request body!")
+
+        target_ids = [int(pid.strip()) for pid in public_ids.split(',') if pid.strip().isdigit()]
+
+        if not target_ids:
+            abort(400, "No valid public_ids were provided for duplication.")
+
+        risk_assessment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
+            ManagerType.RISK_ASSESSMENT, request_user
+        )
+
+        if copy_cma:
+            original_assignments = risk_assessment_manager.get_many_from_other_collection(
+                                                                IsmsControlMeasureAssignment.COLLECTION,
+                                                                risk_assessment_id=initial_risk_assessment_id
+                                                            )
+        else:
+            original_assignments = []
+
+        created_risk_assessment_ids = []
+
+        for target_id in target_ids:
+            new_data = data.copy()
+
+            if duplicate_mode == "risk":
+                new_data['risk_id'] = target_id
+            elif duplicate_mode == "object":
+                if new_data.get('object_id_ref_type') != "OBJECT":
+                    abort(400, "object_id_ref_type must be 'OBJECT' to duplicate in object mode.")
+                new_data['object_id'] = target_id
+            elif duplicate_mode == "object_group":
+                if new_data.get('object_id_ref_type') != "OBJECT_GROUP":
+                    abort(400, "object_id_ref_type must be 'OBJECT_GROUP' to duplicate in object_group mode.")
+                new_data['object_id'] = target_id
+
+            new_risk_assessment_id = risk_assessment_manager.insert_item(new_data)
+            created_risk_assessment_ids.append(new_risk_assessment_id)
+
+            if copy_cma:
+                cma_manager: ControlMeasureAssignmentManager = ManagerProvider.get_manager(
+                    ManagerType.CONTROL_MEASURE_ASSIGNMENT, request_user
+                )
+
+                for assignment in original_assignments:
+                    new_assignment = assignment.copy()
+                    new_assignment.pop('public_id', None)
+                    new_assignment['risk_assessment_id'] = new_risk_assessment_id
+                    cma_manager.insert_item(new_assignment)
+
+        return DefaultResponse(created_risk_assessment_ids).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except RiskAssessmentManagerInsertError as err:
+        LOGGER.error("[duplicate_isms_risk_assessment] RiskAssessmentManagerInsertError: %s", err, exc_info=True)
+        abort(400, "Failed to insert the duplicated RiskAssessment in the database!")
+    except Exception as err:
+        LOGGER.error("[duplicate_isms_risk_assessment] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while duplicating the RiskAssessment!")
+
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
 @risk_assessment_blueprint.route('/', methods=['GET', 'HEAD'])
@@ -139,55 +236,55 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                                                                             ManagerType.RISK_ASSESSMENT,
                                                                             request_user
                                                                          )
- 
+
         object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(
                                                                             ManagerType.OBJECT_GROUP,
                                                                             request_user
                                                                          )
- 
+
         objects_manager: ObjectsManager = ManagerProvider.get_manager(
                                                             ManagerType.OBJECTS,
                                                             request_user
                                                           )
- 
+
         # Add RiskAssessments from ObjectGroups
         # # STEP 1: Extract object_id from the fixed filter
         original_filter = params.filter or {}
         clauses = original_filter.get('$and', [])
         object_id = None
         ref_type = None
- 
+
         for clause in clauses:
             if 'object_id' in clause:
                 object_id = clause['object_id']
- 
+
             if 'object_id_ref_type' in clause:
                 ref_type = clause['object_id_ref_type']
- 
+
         # STEP 2: Enhance the filter if object_id was found
         if object_id is not None:
             target_object = objects_manager.get_object(object_id)
- 
+
             if target_object is not None:
                 type_id = target_object['type_id']
- 
+
                 # Find all STATIC groups containing this CmdbObject
                 static_groups = object_groups_manager.find(criteria={
                     'group_type': ObjectGroupMode.STATIC,
                     'assigned_ids': object_id
                 })
- 
+
                 static_group_ids = [g['public_id'] for g in static_groups]
- 
+
                 # Find all DYNAMIC groups that include this CmdbType
                 dynamic_groups = object_groups_manager.find(criteria={
                     'group_type': ObjectGroupMode.DYNAMIC,
                     'assigned_ids': type_id
                 })
                 dynamic_group_ids = [g['public_id'] for g in dynamic_groups]
- 
+
                 all_group_ids = static_group_ids + dynamic_group_ids
- 
+
                 # STEP 3: Build enhanced filter
                 params.filter = {
                     '$or': [
@@ -195,7 +292,7 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                         {'$and': [{'object_id_ref_type': 'OBJECT_GROUP'}, {'object_id': {'$in': all_group_ids}}]}
                     ]
                 }
- 
+
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
         iteration_result: IterationResult[IsmsRiskAssessment] = risk_assessment_manager.iterate_items(builder_params)
         risk_assessments_list = [IsmsRiskAssessment.to_json(risk_assessment) for risk_assessment

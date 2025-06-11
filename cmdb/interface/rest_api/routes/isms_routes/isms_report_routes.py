@@ -318,11 +318,15 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
                     "object_id_ref_type": 1,
                     "risk_before": {
                         "value": "$risk_before.calculated_value",
+                        "risk_class_id": "$risk_before_class.public_id",
                         "color": "$risk_before_class.color"
                     },
                     "risk_after": {
                         "value": {
                             "$ifNull": ["$risk_after.calculated_value", None]
+                        },
+                        "risk_class_id": {
+                            "$ifNull": ["$risk_after_class.public_id", None]
                         },
                         "color": {
                             "$ifNull": ["$risk_after_class.color", None]
@@ -364,7 +368,7 @@ def get_isms_risk_treatment_plan_report(request_user: CmdbUser):
         for item in query_result:
             if item.get("object") and item.get("object_id_ref_type") == "OBJECT":
                 try:
-                    object_summary = objects_manager.get_summary_line(item["object"])
+                    object_summary = objects_manager.get_summary_line(item["object"], with_type=False)
                     item["object"] = object_summary
                 except Exception:
                     item["object"] = "Unknown object"
@@ -890,11 +894,15 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                 },
                 "risk_before": {
                     "value": "$risk_before.calculated_value",
+                    "risk_class_id": "$risk_before_class.public_id",
                     "color": "$risk_before_class.color"
                 },
                 "risk_after": {
                     "value": {
                         "$ifNull": ["$risk_after.calculated_value", None]
+                    },
+                    "risk_class_id": {
+                        "$ifNull": ["$risk_after_class.public_id", None]
                     },
                     "color": {
                         "$ifNull": ["$risk_after_class.color", None]
@@ -930,7 +938,7 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
         for item in query_result:
             if item.get("object") and item.get("object_id_ref_type") == "OBJECT":
                 try:
-                    object_summary = objects_manager.get_summary_line(item["object"])
+                    object_summary = objects_manager.get_summary_line(item["object"], with_type=False)
                     item["object"] = object_summary
                 except Exception:
                     item["object"] = "Unknown object"
