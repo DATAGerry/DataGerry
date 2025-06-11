@@ -264,6 +264,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
             .subscribe({
                 next: res => {
                     this.rows = res.results; this.total = res.total;
+                    console.log('risk assesment', res.results)
                 },
                 error: err => this.toast.error(err?.error?.message || 'Load failed')
             });
@@ -488,6 +489,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     isEditable(item: RiskAssessment): boolean {
         // If viewing from Group then always editable
         if (this.groupId) return true;
+
+        if (this.riskId) return true;
 
         // If not OBJECT_GROUP then editable
         return item?.object_id_ref_type !== 'OBJECT_GROUP' && this.objectId !== undefined;

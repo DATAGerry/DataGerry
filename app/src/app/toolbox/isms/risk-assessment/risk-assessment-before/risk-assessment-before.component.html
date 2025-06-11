@@ -8,7 +8,8 @@
     <label class="cat-name">{{ impactCategories[i]?.name }}</label>
 
     <app-form-slider [items]="impacts" [allowNotRated]="true" [selectedId]="catCtrl.get('impact_id')?.value"
-      (selectedIdChange)="catCtrl.get('impact_id')?.setValue($event)" [showChosenText]="false" [disabled]="isView">
+      (selectedIdChange)="catCtrl.get('impact_id')?.setValue($event)" [showChosenText]="false" [disabled]="isView"
+      [showLabels]="i === 0">
     </app-form-slider>
   </div>
 
@@ -19,25 +20,40 @@
     <label class="cat-name">Likelihood</label>
 
     <app-form-slider [items]="likelihoods" [allowNotRated]="true" [selectedId]="beforeGroup.get('likelihood_id')?.value"
-      (selectedIdChange)="beforeGroup.get('likelihood_id')?.setValue($event)" [showChosenText]="false" [disabled]="isView">
+      (selectedIdChange)="beforeGroup.get('likelihood_id')?.setValue($event)" [showChosenText]="false"
+      [disabled]="isView">
     </app-form-slider>
   </div>
 
   <hr>
   <!-- Calculated risk output -->
-  <div class="row g-3">
+  <div class="row g-3 ml-2">
     <div class="row g-3">
       <div class="col-md-4">
         <label class="form-label fw-semibold mb-2" style="white-space: nowrap;">Calculated Risk</label>
-        <div class="calculated-risk readonly" [style.background-color]="calcRiskBgColor" style="display: flex; justify-content: center; align-items: center; 
-                          height: 60px; width: 60px; 
-                          border-radius: 1px;
-                          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                          font-size: 1.75rem; 
-                          font-weight: 500;
-                          color: #fff;">
-          {{ beforeGroup.get('risk_level_value')?.value }}
+        <div class="calculated-risk readonly" [style.background-color]="calcRiskBgColor"
+          [style.color]="getTextColor(calcRiskBgColor)" style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 70px;
+          width: 70px;
+          border-radius: 4px;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          font-size: 1.25rem;
+          font-weight: 500;
+          color: #fff;
+          text-align: center;
+          padding: 4px;
+          overflow: hidden;
+          word-wrap: break-word;
+          line-height: 1.1;
+        ">
+          <span style="display: block; width: 100%; overflow: hidden; text-overflow: ellipsis;">
+            {{ beforeGroup.get('risk_level_value')?.value }}
+          </span>
         </div>
+
       </div>
     </div>
   </div>
@@ -53,21 +69,15 @@
   </div>
 
 
-<!-- Risk Owner -->
-<div class="form-block mt-4">
-  <label>Risk Owner<span class="required">*</span></label>
+  <!-- Risk Owner -->
+  <div class="form-block mt-4">
+    <label>Risk Owner<span class="required">*</span></label>
 
-  <app-form-select
-      class="w-100"
-      [items]="ownerOptions"
-      bindLabel="display_name"
-      bindValue="public_id"
-      groupBy="group"
-      placeholder="Select owner…"
-      [formControl]="parentForm.get('risk_owner_id')"
+    <app-form-select class="w-100" [items]="ownerOptions" bindLabel="display_name" bindValue="public_id" groupBy="group"
+      placeholder="Select owner…" [formControl]="parentForm.get('risk_owner_id')"
       (selectedItemChange)="onOwnerSelected($event)">
-  </app-form-select>
-</div>
+    </app-form-select>
+  </div>
 
 
   <!-- Interviewed Persons -->
@@ -81,12 +91,12 @@
   <!-- Date of Assessment -->
   <div class="form-block">
     <label>Date of Assessment <span class="required">*</span></label>
-    <app-form-date class="w-100" [formControl]="parentForm.get('risk_assessment_date')">
+    <app-form-date class="w-100" [formControl]="parentForm.get('risk_assessment_date')" [defaultToCurrent]="true">
     </app-form-date>
   </div>
 
   <!-- Additional Information -->
-  <div class="form-block">
+  <div class="form-block mt-3">
     <label>Additional Information</label>
     <app-form-textarea class="w-100" [formControl]="parentForm.get('additional_info')">
     </app-form-textarea>

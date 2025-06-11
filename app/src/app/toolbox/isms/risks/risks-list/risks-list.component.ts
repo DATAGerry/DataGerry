@@ -74,7 +74,8 @@ export class RisksListComponent implements OnInit {
         data: 'name',
         searchable: true,
         sortable: true,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto' },
+        cssClasses: ['text-center'],
       },
       {
         display: 'Identifier',

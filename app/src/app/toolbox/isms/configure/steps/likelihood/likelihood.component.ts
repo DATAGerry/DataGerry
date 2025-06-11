@@ -62,20 +62,22 @@ export class LikelihoodsComponent implements OnInit {
 
   ngOnInit(): void {
     this.columns = [
-      {
-        display: 'Public ID',
-        name: 'publicId',
-        data: 'public_id',
-        searchable: false,
-        sortable: false,
-        style: { width: '90px', 'text-align': 'center' }
-      },
+      // {
+      //   display: 'Public ID',
+      //   name: 'publicId',
+      //   data: 'public_id',
+      //   searchable: false,
+      //   sortable: false,
+      //   style: { width: '90px', 'text-align': 'center' }
+      // },
       {
         display: 'Name',
         name: 'name',
         data: 'name',
         sortable: false,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto'},
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Calculation Basis',
@@ -89,7 +91,9 @@ export class LikelihoodsComponent implements OnInit {
         name: 'description',
         data: 'description',
         sortable: false,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto' },
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Actions',

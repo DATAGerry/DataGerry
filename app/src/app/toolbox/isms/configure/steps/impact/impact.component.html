@@ -17,7 +17,7 @@
     <!-- Table (cmdb-table) -->
     <cmdb-table [items]="impacts" [columns]="columns" [totalItems]="totalImpacts" [pageSize]="limit" [page]="page"
         [loading]="loading" [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false"
-        [searchEnabled]="false" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+        [searchEnabled]="false" [infoEnabled]="false" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
     </cmdb-table>
 
 </div>

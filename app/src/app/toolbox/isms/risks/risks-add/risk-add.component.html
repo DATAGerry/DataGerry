@@ -25,8 +25,8 @@
           placeholder="Select category..." formControlName="category_id" class="flex-grow-1">
         </ng-select>
 
-        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openCategoryManager()"
-          [disabled]="isViewMode">
+        <button type="button" class="btn btn-outline-secondary btn-sm" style="padding: 7px;" (click)="openCategoryManager()"
+          *ngIf="!isViewMode">
           Manage Categories
         </button>
       </div>

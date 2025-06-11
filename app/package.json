@@ -47,6 +47,7 @@
     "jquery": "^3.7.1",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
+    "xlsx": "^0.18.5",
     "jszip": "^3.10.1",
     "moment-timezone": "^0.5.45",
     "ngx-color": "^9.0.0",

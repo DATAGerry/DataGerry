@@ -372,6 +372,7 @@ const routes: Routes = [
       /* ─────────── Threats ─────────── */
       {
         path: 'threats',
+        data: { breadcrumb: 'Threats' },
         children: [
           { path: '', component: ThreatsListComponent, data: { breadcrumb: 'Threats' } },
           { path: 'add', component: ThreatsAddComponent, data: { breadcrumb: 'Add Threat' } },
@@ -383,6 +384,7 @@ const routes: Routes = [
       /* ─────────── Vulnerabilities ─────────── */
       {
         path: 'vulnerabilities',
+        data: { breadcrumb: 'Vulnerabilities' },
         children: [
           { path: '', component: VulnerabilitiesListComponent, data: { breadcrumb: 'Vulnerabilities' } },
           { path: 'add', component: VulnerabilitiesAddComponent, data: { breadcrumb: 'Add Vulnerability' } },
@@ -394,6 +396,7 @@ const routes: Routes = [
       /* ─────────── Risks ─────────── */
       {
         path: 'risks',
+        data: { breadcrumb: 'Risks' },
         children: [
           { path: '', component: RisksListComponent, data: { breadcrumb: 'Risks' } },
           { path: 'add', component: RiskAddComponent, data: { breadcrumb: 'Add Risk' } },
@@ -405,6 +408,7 @@ const routes: Routes = [
       /* ─────────── Control Measures ─────────── */
       {
         path: 'control-measures',
+        data: { breadcrumb: 'Control Measures' },
         children: [
           { path: '', component: ControlmeasuresListComponent, data: { breadcrumb: 'Control Measures' } },
           { path: 'add', component: ControlMeasuresAddComponent, data: { breadcrumb: 'Add Control Measure' } },
@@ -416,6 +420,7 @@ const routes: Routes = [
       /* ─────────── Control Measure Assignments ─────────── */
       {
         path: 'control-measure-assignments',
+        data: { breadcrumb: 'Control Measure Assignments' },
         children: [
           { path: 'view', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'View Assignment' } },
           { path: 'edit', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'Edit Assignment' } }

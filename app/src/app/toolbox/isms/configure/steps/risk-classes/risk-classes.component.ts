@@ -58,14 +58,14 @@ export class RiskClassesComponent implements OnInit {
 
 
     this.columns = [
-      {
-        display: 'Public ID',
-        name: 'publicId',
-        data: 'public_id',
-        searchable: false,
-        sortable: false,
-        style: { width: '90px', 'text-align': 'center' }
-      },
+      // {
+      //   display: 'Public ID',
+      //   name: 'publicId',
+      //   data: 'public_id',
+      //   searchable: false,
+      //   sortable: false,
+      //   style: { width: '90px', 'text-align': 'center' }
+      // },
       {
         display: 'Color',
         name: 'color',
@@ -75,18 +75,21 @@ export class RiskClassesComponent implements OnInit {
         style: { width: '120px', 'text-align': 'center' }
       },
       {
-        display: 'Label',
+        display: 'Name',
         name: 'label',
         data: 'name',
         sortable: false,
-        style: { 'text-align': 'center' }
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Description',
         name: 'description',
         data: 'description',
         sortable: false,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto' },
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Actions',

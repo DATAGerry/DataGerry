@@ -61,7 +61,7 @@ export class ControlmeasuresListComponent implements OnInit {
     private setupColumns(): void {
         this.columns = [
             {
-                display: 'ID',
+                display: 'Public ID',
                 name: 'public_id',
                 data: 'public_id',
                 searchable: false,
@@ -69,7 +69,7 @@ export class ControlmeasuresListComponent implements OnInit {
                 style: { width: '80px', 'text-align': 'center' }
             },
             {
-                display: 'Title',
+                display: 'Name',
                 name: 'title',
                 data: 'title',
                 searchable: true,

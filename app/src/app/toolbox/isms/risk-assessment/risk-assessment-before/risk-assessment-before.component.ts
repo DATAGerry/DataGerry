@@ -34,6 +34,7 @@ import { RiskClass } from '../../models/risk-class.model';
 import { Impact } from '../../models/impact.model';
 import { Likelihood } from '../../models/likelihood.model';
 import { RiskMatrixCell } from '../../models/risk-matrix.model';
+import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
 
 const FALLBACK_GREY = '#f5f5f5';
 
@@ -211,4 +212,8 @@ export class RiskAssessmentBeforeComponent implements OnInit, OnChanges {
 
   }
 
+
+  public getTextColor(color: string): string {
+    return getTextColorBasedOnBackground(color);
+  }
 }

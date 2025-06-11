@@ -15,17 +15,39 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class FormDateComponent implements ControlValueAccessor {
   @Input() disabled = false;
+  @Input() defaultToCurrent: boolean = false;
 
   private internalValue: any;
   public displayedValue = '';
 
-  onChange = (_: any) => {};
-  onTouch = () => {};
+  onChange = (_: any) => { };
+  onTouch = () => { };
+
+  // writeValue(value: any): void {
+  //   this.internalValue = value;
+  //   this.displayedValue = this.dateObjToString(value);
+  // }
 
   writeValue(value: any): void {
-    this.internalValue = value;
-    this.displayedValue = this.dateObjToString(value);
+    if (value == null && this.defaultToCurrent) {
+      const now = new Date();
+      const defaultDate = {
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+        day: now.getDate()
+      };
+      this.internalValue = defaultDate;
+      this.displayedValue = this.dateObjToString(defaultDate);
+      // Propagate the default value asynchronously
+      setTimeout(() => {
+        this.onChange(defaultDate);
+      }, 0);
+    } else {
+      this.internalValue = value;
+      this.displayedValue = this.dateObjToString(value);
+    }
   }
+
   registerOnChange(fn: any): void { this.onChange = fn; }
   registerOnTouched(fn: any): void { this.onTouch = fn; }
   setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }

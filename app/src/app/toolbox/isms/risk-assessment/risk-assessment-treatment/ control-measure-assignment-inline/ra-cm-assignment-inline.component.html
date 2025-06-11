@@ -31,7 +31,7 @@
   <div class="modal-header">
     <h4 class="modal-title">
       {{ modalMode==='add' ? 'Add' : modalMode==='edit' ? 'Edit' : 'View' }}
-      Control / Measure Assignment
+      control
     </h4>
     <button type="button" class="close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
@@ -43,7 +43,7 @@
       <div class="row g-3">
 
         <div class="col-md-6">
-          <label>Control / Measure <span class="required">*</span></label>
+          <label>Control <span class="required">*</span></label>
           <!-- <app-form-select class="w-100" [items]="availableControlMeasures" bindLabel="title" bindValue="public_id"
             formControlName="control_measure_id">
           </app-form-select> -->
@@ -92,7 +92,7 @@
   <div class="modal-footer" *ngIf="modalMode!=='view'">
     <button class="btn btn-secondary" (click)="closeModal()">Close</button>
     <button class="btn btn-primary" [disabled]="modalForm.invalid" (click)="saveAssignment()">
-      {{ modalMode==='edit' ? 'Save Changes' : 'Add Assignment' }}
+      {{ modalMode==='edit' ? 'Save Changes' : 'Add control' }}
     </button>
   </div>
 

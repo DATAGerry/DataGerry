@@ -33,25 +33,32 @@
     </button>
   </div> -->
 
-  <div class="navigation-buttons d-flex justify-content-between mt-3">
-    <button *ngIf="wizard.currentStepIndex > 0" class="btn btn-secondary" (click)="previousStep()">Previous Step</button>
-    
-    <!-- Conditionally render the Save Configurations button on the last step -->
-    <ng-container *ngIf="wizard.currentStepIndex === totalSteps - 1">
-      <button class="btn btn-success" 
-              (click)="onSaveConfigurations()" 
-              *permissionLink="'base.isms.riskMatrix.edit'">
-        Save Configurations
-      </button>
-    </ng-container>
-    
-    <!-- Render the Next Step button for all steps except the last one -->
-    <ng-container *ngIf="wizard.currentStepIndex < totalSteps - 1">
-      <button class="btn btn-primary" 
-              [disabled]="!isStepValid()" 
-              (click)="nextStep()">
-        Next Step
-      </button>
-    </ng-container>
-  </div>
+  <!-- Navigation Buttons with dynamic classes -->
+  <div class="navigation-buttons d-flex mt-3"
+     [ngClass]="{
+       'justify-content-between': wizard.currentStepIndex > 0 && wizard.currentStepIndex < totalSteps,
+       'justify-content-end': wizard.currentStepIndex === 0 || wizard.currentStepIndex === totalSteps - 1
+     }">
+  
+  <button *ngIf="wizard.currentStepIndex > 0" 
+          class="btn btn-secondary" 
+          (click)="previousStep()">Previous Step</button>
+
+  <ng-container *ngIf="wizard.currentStepIndex === totalSteps - 1">
+    <button class="btn btn-success" 
+            (click)="onSaveConfigurations()" 
+            *permissionLink="'base.isms.riskMatrix.edit'"
+            [disabled]="!riskCalculationComponent?.isMatrixComplete()">
+      Save Configuration
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="wizard.currentStepIndex < totalSteps - 1">
+    <button class="btn btn-primary" 
+            [disabled]="!isStepValid()" 
+            (click)="nextStep()">
+      Next Step
+    </button>
+  </ng-container>
+</div>
 </div>

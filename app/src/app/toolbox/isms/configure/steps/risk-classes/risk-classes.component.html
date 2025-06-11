@@ -14,13 +14,13 @@
   </app-warning-alert>
 
   <app-warning-alert *ngIf="this.riskClasses.length >= 3" iconClass="fas fa-sort-amount-down warning-icon"
-    title="Structural Advisory:" message="Please ensure your risk classes are sorted from High to Low priority.">
+    title="Structural Advisory:" message="Please ensure your risk classes are sorted from high to low risk height.">
   </app-warning-alert>
 
   <!-- (cmdb-table) -->
   <cmdb-table [items]="riskClasses" [columns]="columns" [totalItems]="totalRiskClasses" [pageSize]="limit" [page]="page"
     [loading]="loading" [paginationEnabled]="false" [pageSizeEnabled]="false" [searchEnabled]="false"
-    [draggableEnabled]="true" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"
+    [draggableEnabled]="true" [pageSizeEnabled]="false" [infoEnabled]="false"  (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"
     (orderChange)="onOrderChange($event)">
   </cmdb-table>
 </div>
