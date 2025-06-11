@@ -151,7 +151,7 @@ export class OverviewComponent implements OnInit {
 
   private allCards = [
     {
-      title: 'Configure ISMS Settings',
+      title: 'Configuration',
       icon: 'fas fa-cogs',
       link: '/isms/configure',
       validationStatus: false
@@ -162,11 +162,6 @@ export class OverviewComponent implements OnInit {
       link: '/isms/risks'
     },
     {
-      title: 'Control/Measures',
-      icon: 'fas fa-shield-alt',
-      link: '/isms/control-measures'
-    },
-    {
       title: 'Threats',
       icon: 'fas fa-bolt',
       link: '/isms/threats'
@@ -175,6 +170,11 @@ export class OverviewComponent implements OnInit {
       title: 'Vulnerabilities',
       icon: 'fas fa-bug',
       link: '/isms/vulnerabilities'
+    },
+    {
+      title: 'Controls',
+      icon: 'fas fa-shield-alt',
+      link: '/isms/control-measures'
     },
     {
       title: 'Persons',

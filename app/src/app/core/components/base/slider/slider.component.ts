@@ -1,58 +1,3 @@
-// import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
-
-
-
-// import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
-
-// @Component({
-//   selector: 'app-form-slider',
-//   templateUrl: './slider.component.html',
-//   styleUrls: ['./slider.component.scss']
-// })
-// export class SliderComponent implements OnChanges {
-//   @Input() items: any[] = [];
-//   @Input() allowNotRated = true;
-//   @Input() selectedId: number | null = null;
-
-//   /** ← NEW: enable/disable “Chosen …” line (default off) */
-//   @Input() showChosenText = false;
-
-//   public sliderOptions: Array<{ id: number | null; label: string }> = [];
-//   public sliderValue = 0;
-
-//   @Output() selectedIdChange = new EventEmitter<number | null>();
-
-//   ngOnChanges(): void {
-//     this.buildSliderOptions();
-//     this.syncSliderValue();
-//   }
-
-//   private buildSliderOptions(): void {
-//     this.sliderOptions = [];
-//     if (this.allowNotRated) {
-//       this.sliderOptions.push({ id: null, label: 'Not rated' });
-//     }
-//     for (const it of this.items) {
-//       this.sliderOptions.push({
-//         id: it.public_id,
-//         label: it.name || `Item ${it.public_id}`
-//       });
-//     }
-//   }
-
-//   private syncSliderValue(): void {
-//     const idx = this.sliderOptions.findIndex(o => o.id === this.selectedId);
-//     this.sliderValue = idx >= 0 ? idx : 0;
-//   }
-
-//   onSliderChange(v: string): void {
-//     const idx = +v;
-//     const opt = this.sliderOptions[idx];
-//     this.selectedIdChange.emit(opt ? opt.id : null);
-//   }
-// }
-
-
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
@@ -65,6 +10,7 @@ export class SliderComponent implements OnChanges {
   @Input() allowNotRated = true;
   @Input() selectedId: number | null = null;
   @Input() showChosenText = false;
+  @Input() showLabels = true; 
   @Input() primaryColor = '#4171f6'; 
   @Input() disabled = false;
 

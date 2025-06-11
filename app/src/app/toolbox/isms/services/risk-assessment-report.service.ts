@@ -12,7 +12,7 @@ export class RiskAssesmentsReportService extends BaseApiService<any> {
   }
 
   /**
-   * Fetch the full Risk assesments reportlist from the backend.
+   * Fetch the full Risk assessments reportlist from the backend.
    */
   getRiskAssesmentsReportList(): Observable<any[]> {
     return this.handleGetRequest<any[]>(`${this.servicePrefix}`);

@@ -50,27 +50,31 @@ export class ImpactCategoriesComponent implements OnInit {
 
   ngOnInit(): void {
     this.columns = [
-      {
-        display: 'Public ID',
-        name: 'publicId',
-        data: 'public_id',
-        searchable: false,
-        sortable: false,
-        style: { width: '90px', 'text-align': 'center' }
-      },
+      // {
+      //   display: 'Public ID',
+      //   name: 'publicId',
+      //   data: 'public_id',
+      //   searchable: false,
+      //   sortable: false,
+      //   style: { width: '90px', 'text-align': 'center' }
+      // },
       {
         display: 'Name',
         name: 'name',
         data: 'name',
         sortable: false,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto' },
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Impact level descriptions',
         name: 'impact_descriptions',
         template: this.impactDescriptionsTemplate,
         sortable: false,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto'},
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Actions',

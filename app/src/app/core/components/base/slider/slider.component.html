@@ -16,7 +16,7 @@
 
    <div class="slider-container">
     <!-- Labels positioned above slider steps -->
-    <div class="slider-labels">
+    <div class="slider-labels" *ngIf="showLabels">
       <ng-container *ngFor="let option of sliderOptions; let i = index">
         <span class="slider-label" 
               [class.active]="sliderValue === i"

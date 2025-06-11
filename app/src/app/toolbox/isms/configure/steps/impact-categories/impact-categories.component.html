@@ -16,9 +16,10 @@
 
   <!--  table component -->
   <cmdb-table [items]="impactCategories" [columns]="columns" [totalItems]="totalImpactCategories" [pageSize]="limit"
-    [page]="page" [loading]="loading" [draggableEnabled]="true" [searchEnabled]="true"
-    (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"
-    (orderChange)="onOrderChange($event)" (searchChange)="onSearchChange($event)">
+    [page]="page" [loading]="loading" [draggableEnabled]="true" [searchEnabled]="true" [infoEnabled]="false"
+    [pageSizeEnabled]="false" [searchEnabled]="false" [paginationEnabled]="false" (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)" (orderChange)="onOrderChange($event)"
+    (searchChange)="onSearchChange($event)">
   </cmdb-table>
 </div>
 
@@ -66,7 +67,4 @@
 
 </ng-template>
 
-<app-loading-popup 
-  [isVisible]="isLoading$ | async"
-  message="We're Processing the Data..."
-></app-loading-popup>
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>

@@ -53,7 +53,7 @@ export class RiskCalculationComponent implements OnInit {
   public orderedImpacts: Impact[] = [];
 
   public loading = false;
-  public isLoading$ = this.loaderService.isLoading$; 
+  public isLoading$ = this.loaderService.isLoading$;
   // Modal for assigning a risk class
   public showModal = false;
   public selectedCell: RiskMatrixCell | null = null;
@@ -190,7 +190,7 @@ export class RiskCalculationComponent implements OnInit {
 
     // Build distinct row indices and sort descending (so the lowest row number is at the bottom).
     const rowIndices = Array.from(new Set(this.riskMatrix.risk_matrix.map(c => c.row)));
-     rowIndices.sort((a, b) => b - a);
+    rowIndices.sort((a, b) => b - a);
     this.orderedLikelihoods = rowIndices.map(rIndex => {
       // Use the cell with column=0 to identify the Likelihood.
       const rowCell = this.riskMatrix!.risk_matrix.find(c => c.row === rIndex && c.column === 0);
@@ -351,7 +351,7 @@ export class RiskCalculationComponent implements OnInit {
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
-          this.toast.success('Matrix saved successfully!');
+          this.toast.success('Risk calculation settings saved successfully');
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
@@ -376,10 +376,19 @@ export class RiskCalculationComponent implements OnInit {
     return { backgroundColor, color: textColor };
   }
 
-    /**
-     * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
-     */
-    public getTextColor(color: string): string {
-      return getTextColorBasedOnBackground(color);
-    }
+  /**
+ * isMatrixComplete: Returns true if every cell in the risk matrix
+ * has a risk_class_id different than 0.
+ */
+  public isMatrixComplete(): boolean {
+    if (!this.riskMatrix || !this.riskMatrix.risk_matrix.length) return false;
+    return this.riskMatrix.risk_matrix.every(cell => cell.risk_class_id !== 0);
+  }
+
+  /**
+   * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
+   */
+  public getTextColor(color: string): string {
+    return getTextColorBasedOnBackground(color);
+  }
 }

@@ -36,21 +36,21 @@ export class ProtectionGoalsComponent implements OnInit {
 
   ngOnInit(): void {
     this.columns = [
-      {
-        display: 'Public ID',
-        name: 'public_id',
-        data: 'public_id',
-        searchable: true,
-        sortable: false,
-        style: { width: '120px', 'text-align': 'center' }
-      },
+      // {
+      //   display: 'Public ID',
+      //   name: 'public_id',
+      //   data: 'public_id',
+      //   searchable: true,
+      //   sortable: false,
+      //   style: { width: '120px', 'text-align': 'center' }
+      // },
       {
         display: 'Name',
         name: 'name',
         data: 'name',
         searchable: true,
         sortable: false,
-        style: { 'text-align': 'center' }
+        cssClasses: ['text-center'],
       },
       {
         display: 'Actions',
