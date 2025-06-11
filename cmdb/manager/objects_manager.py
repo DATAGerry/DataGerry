@@ -915,33 +915,39 @@ class ObjectsManager(BaseManager):
             raise ObjectsManagerCheckError(err) from err
 
 
-    def get_summary_line(self, public_id: int) -> str:
+    def get_summary_line(self, public_id: int, with_type: bool = True) -> str:
         """
         Retrieves the summary line of an CmdbObject
 
         Args:
             public_id (int): public_id of the CmdbObject
+            with_type (bool): If True then the Type label should be part of the summary line
 
         Returns:
             str: The summary line of the CmdbObject
         """
         try:
+            default_line = ""
+
             if not public_id:
-                return ""
+                return default_line
 
             target_object = self.get_object(public_id)
 
             if not target_object:
-                return ""
+                return default_line
 
             object_type_id = target_object.get('type_id')
 
             target_object_type = self.get_object_type(object_type_id)
 
             if not target_object_type:
-                return ""
+                return default_line
 
-            default_line = f"{target_object_type.label} #{target_object.get('public_id')}"
+            if with_type:
+                default_line = f"{target_object_type.label} #{target_object.get('public_id')}"
+            else:
+                default_line = f"#{target_object.get('public_id')}"
 
             if not target_object_type.has_summaries():
                 return default_line

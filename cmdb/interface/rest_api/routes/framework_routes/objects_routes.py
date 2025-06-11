@@ -1470,7 +1470,7 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.delete')
-def delete_many_cmdb_objects(public_ids, request_user: CmdbUser):
+def delete_many_cmdb_objects(public_ids: str, request_user: CmdbUser):
     """
     Deletes multiple CmdbObjects by their public_ids
 
