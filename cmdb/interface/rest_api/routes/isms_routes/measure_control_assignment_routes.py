@@ -20,12 +20,19 @@ import logging
 from flask import request, abort
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import ControlMeasureAssignmentManager
+from cmdb.manager import (
+    ControlMeasureAssignmentManager,
+    RiskManager,
+    ObjectGroupsManager,
+    ObjectsManager,
+    RiskAssessmentManager,
+    TypesManager,
+)
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.isms_model import IsmsControlMeasureAssignment
+from cmdb.models.isms_model import IsmsControlMeasureAssignment, IsmsRisk
 
 from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
@@ -124,20 +131,125 @@ def get_isms_control_measure_assignments(params: CollectionParameters, request_u
     try:
         body = request.method == 'HEAD'
 
-        c_m_assignment_manager: ControlMeasureAssignmentManager = ManagerProvider.get_manager(
-                                                                            ManagerType.CONTROL_MEASURE_ASSIGNMENT,
-                                                                            request_user
-                                                                         )
+        cma_manager: ControlMeasureAssignmentManager = ManagerProvider.get_manager(
+            ManagerType.CONTROL_MEASURE_ASSIGNMENT,
+            request_user
+        )
+        risk_assessment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
+            ManagerType.RISK_ASSESSMENT,
+            request_user
+        )
+        risk_manager: RiskManager = ManagerProvider.get_manager(
+            ManagerType.RISK,
+            request_user
+        )
+        object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(
+            ManagerType.OBJECT_GROUP,
+            request_user
+        )
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(
+            ManagerType.OBJECTS,
+            request_user
+        )
+        types_manager: TypesManager = ManagerProvider.get_manager(
+            ManagerType.TYPES,
+            request_user
+        )
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
+        iteration_result: IterationResult[IsmsControlMeasureAssignment] = cma_manager.iterate_items(
+                                                                            builder_params
+                                                                          )
 
-        iteration_result: IterationResult[IsmsControlMeasureAssignment] = c_m_assignment_manager.iterate_items(
-                                                                                                    builder_params
-                                                                                                  )
-        control_measure_assignments_list = [IsmsControlMeasureAssignment.to_json(control_measure_assignment) for
-                                             control_measure_assignment in iteration_result.results]
+        cmas = iteration_result.results
+        ra_ids = {cma.risk_assessment_id for cma in cmas if hasattr(cma, 'risk_assessment_id')}
 
-        api_response = GetMultiResponse(control_measure_assignments_list,
+        # Fetch Risk Assessments in bulk
+        ra_map = {
+            ra['public_id']: ra for ra in risk_assessment_manager.find_all(
+                criteria={'public_id': {'$in': list(ra_ids)}}
+            )
+        }
+
+        # Extract all risk_ids and object/object_group ids
+        risk_ids = set()
+        object_ids = set()
+        object_group_ids = set()
+        type_ids = set()
+
+        for ra in ra_map.values():
+            if ra.get('risk_id'):
+                risk_ids.add(ra['risk_id'])
+            if ra.get('object_id_ref_type') == 'OBJECT':
+                object_ids.add(ra.get('object_id'))
+            elif ra.get('object_id_ref_type') == 'OBJECT_GROUP':
+                object_group_ids.add(ra.get('object_id'))
+
+        # Fetch required details
+        risks = {
+            risk['public_id']: risk
+            for risk in risk_manager.get_many_from_other_collection(
+                IsmsRisk.COLLECTION,
+                public_id={'$in': list(risk_ids)}
+            )
+        }
+        # Fetch objects
+        object_map = {
+            obj_id: objects_manager.get_object(obj_id) for obj_id in object_ids
+        }
+        object_summaries = {
+            obj_id: objects_manager.get_summary_line(obj_id) for obj_id in object_ids
+        }
+
+        # Collect type_ids from object_map
+        type_ids = {obj.get('type_id') for obj in object_map.values() if obj and obj.get('type_id')}
+
+        # Fetch types
+        types_map = {
+            t['public_id']: t
+            for t in types_manager.find_all(criteria={'public_id': {'$in': list(type_ids)}})
+        }
+
+        # Fetch object groups
+        object_groups = {
+            og['public_id']: og['name']
+            for og in object_groups_manager.find_all(criteria={'public_id': {'$in': list(object_group_ids)}})
+        }
+
+        # Build enriched CMA list
+        cma_list = []
+        for cma in cmas:
+            risk_assessment = ra_map.get(cma.risk_assessment_id)
+            summary = None
+
+            if risk_assessment:
+                ra_id = risk_assessment.get('public_id', '')
+                risk_name = risks.get(risk_assessment.get('risk_id'), {}).get('name', '')
+
+                obj_summary = ''
+                if risk_assessment.get('object_id_ref_type') == 'OBJECT':
+                    obj_id = risk_assessment.get('object_id')
+                    summary_line = object_summaries.get(obj_id, '')
+                    obj = object_map.get(obj_id)
+                    type_label = ''
+
+                    if obj and obj.get('type_id'):
+                        type_obj = types_map.get(obj['type_id'])
+                        type_label = f"{type_obj['label']}" if type_obj and 'label' in type_obj else ''
+
+                    obj_summary = f"{summary_line} ({type_label})"
+
+                elif risk_assessment.get('object_id_ref_type') == 'OBJECT_GROUP':
+                    obj_summary = object_groups.get(risk_assessment.get('object_id'), '')
+
+                summary = f"#{ra_id} - {risk_name} @ {obj_summary}"
+
+            cma_dict = IsmsControlMeasureAssignment.to_json(cma)
+            cma_dict['naming'] = {'cma_summary': summary or None}
+            cma_list.append(cma_dict)
+
+        LOGGER.debug(f"cma_list: {cma_list}")
+        api_response = GetMultiResponse(cma_list,
                                         iteration_result.total,
                                         params,
                                         request.url,
