@@ -78,7 +78,7 @@ export class DuplicateRiskAssessmentModalComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       ).subscribe({
         next : opts => this.options = opts,
-        error: err  => this.toast.error(err?.error?.message || 'Load failed')
+        error: err  => this.toast.error(err?.error?.message)
       });
       return;
     }
@@ -143,11 +143,11 @@ export class DuplicateRiskAssessmentModalComponent implements OnInit {
         ? (this.item.object_id_ref_type === 'OBJECT' ? 'object' : 'object_group')
         : 'risk';
 
-    const payload = this.buildPayload();
+    // const payload = this.buildPayload();
 
     this.loader.show(); this.loading = true;
 
-    this.raService.duplicateRiskAssessments(targets, refType, copyCma, payload)
+    this.raService.duplicateRiskAssessments(targets, refType, copyCma, this.item)
       .pipe(
         finalize(() => { this.loader.hide(); this.loading = false; }),
         takeUntilDestroyed(this.destroyRef)

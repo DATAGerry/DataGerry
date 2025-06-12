@@ -39,7 +39,8 @@ $dg-error-message-color: #dc3545 !default;
 .modal-body {
   background: #fff;
   padding: 1.5rem 2rem;
-  max-height: 90vh;
+  min-height: 50vh;
+  max-height: 60vh;
   overflow: hidden;        // global – inside elements handle their own scroll
 }
 

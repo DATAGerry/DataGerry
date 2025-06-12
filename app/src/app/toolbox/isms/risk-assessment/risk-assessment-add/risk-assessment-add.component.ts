@@ -238,6 +238,7 @@ export class RiskAssessmentAddComponent implements OnInit {
     if (this.isView) return;
   
     const payload = this.form.getRawValue() as RiskAssessment;
+    delete payload.naming; // Remove naming object from payload
   
     if (this.isEditMode && this.riskAssessmentId) {
       // EDIT MODE → use diff
@@ -343,8 +344,17 @@ export class RiskAssessmentAddComponent implements OnInit {
       audit_done_date: null,
       auditor_id_ref_type: [IdRefType.PERSON],
       auditor_id: null,
-      audit_result: ''
+      audit_result: '',
+
+      naming: this.fb.group({
+        risk_id_name: [{ value: '', disabled: true }],
+        object_group_id_name: [{ value: '', disabled: true }],
+        object_id_name: [{ value: '', disabled: false }],
+        interviewed_persons_names: [{ value: '', disabled: true }],
+        responsible_persons_id_names: [{ value: '', disabled: true }]
+      })
     });
+
   }
 
   /*

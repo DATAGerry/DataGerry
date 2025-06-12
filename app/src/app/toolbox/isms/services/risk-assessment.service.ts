@@ -51,20 +51,18 @@ export class RiskAssessmentService extends BaseApiService<RiskAssessment> {
  *  `ids` – array of risk-assessment `public_id`s to duplicate (will be comma-joined)  
  *  `refType` – context path segment (`risk|object|object_group`)  
  *  `copyCma` – whether control-measure assignments should also be cloned  */
-/* risk-assessment.service.ts */
-/* ADD / REPLACE this method */
-duplicateRiskAssessments(
-  targetIds: number[],
-  refType: 'risk' | 'object' | 'object_group',
-  copyCma = false,
-  payload: any = {}
-) {
-  // URL must contain IDs wrapped in quotes:  "1,2,3"
-  const idSegment = `"${targetIds.join(',')}"`;
-  const url = `${this.servicePrefix}/duplicate/${refType}/${idSegment}?copy_cma=${copyCma}`;
-
-  return this.handlePostRequest(url, payload);
-}
+  duplicateRiskAssessments(
+    targetIds: number[],
+    refType: 'risk' | 'object' | 'object_group',
+    copyCma = false,
+    payload: any = {}
+  ) {
+    const idSegment = targetIds.join(',');
+  
+    const url = `${this.servicePrefix}/duplicate/${refType}/${idSegment}?copy_cma=${copyCma}`;
+    return this.handlePostRequest(url, payload);
+  }
+  
 
 
 }

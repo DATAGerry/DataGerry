@@ -103,7 +103,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
         /* services (full names!) */
         private readonly riskAssessmentService: RiskAssessmentService,
-        private readonly riskService: RiskService,
+        // private readonly riskService: RiskService,
         private readonly personService: PersonService,
         private readonly personGroupService: PersonGroupService,
         private readonly optionService: ExtendableOptionService,
@@ -220,7 +220,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         };
 
         return forkJoin({
-            risks: this.riskService.getRisks(base),
+            // risks: this.riskService.getRisks(base),
             persons: this.personService.getPersons(base),
             groups: this.personGroupService.getPersonGroups(base),
             implOpt: this.optionService.getExtendableOptionsByType('IMPLEMENTATION_STATE'),
@@ -235,7 +235,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
             classes: this.riskClassService.getRiskClasses(base)
         }).pipe(
             map(res => {
-                res.risks.results.forEach((r: any) => this.riskNameMap.set(r.public_id, r.name));
+                // res.risks.results.forEach((r: any) => this.riskNameMap.set(r.public_id, r.name));
                 res.persons.results.forEach((p: any) => this.personNameMap.set(p.public_id, p.display_name));
                 res.groups.results.forEach((g: any) => this.groupNameMap.set(g.public_id, g.name));
                 res.implOpt.results.forEach((o: any) => this.implStateMap.set(o.public_id, o.value));
@@ -278,20 +278,22 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     onSortChange(s: Sort) { this.sort = s; this.loadRows(); }
 
     /* ───── look-ups ───── */
-    riskName(id: number) { return this.riskNameMap.get(id) ?? '–'; }
+    riskName(row: RiskAssessment): string {
+        return row.naming?.risk_id_name || '–';
+    }
     implState(id: number) { return this.implStateMap.get(id) ?? id; }
 
     responsible(row: RiskAssessment): string {
-        const id = row.responsible_persons_id;
-        if (!id) { return '–'; }
+        // const id = row.responsible_persons_id;
+        // if (!id) { return '–'; }
 
-        if (row.responsible_persons_id_ref_type === 'PERSON') {
-            return this.personNameMap.get(id) ?? '–';
-        }
-        if (row.responsible_persons_id_ref_type === 'PERSON_GROUP') {
-            return this.groupNameMap.get(id) ?? '–';
-        }
-        return '–';
+        // if (row.responsible_persons_id_ref_type === 'PERSON') {
+        //     return this.personNameMap.get(id) ?? '–';
+        // }
+        // if (row.responsible_persons_id_ref_type === 'PERSON_GROUP') {
+        //     return this.groupNameMap.get(id) ?? '–';
+        // }
+        return row.naming?.responsible_persons_id_names || '–';
     }
 
     /* ───── colour helpers ───── */
@@ -382,7 +384,7 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         const ref = this.modal.open(DuplicateRiskAssessmentModalComponent, { size: 'lg' });
         ref.componentInstance.ctx               = this.ctx();    // OBJECT | GROUP | RISK
         ref.componentInstance.item              = row;
-        ref.componentInstance.objectSummaryLine =  '';
+        ref.componentInstance.objectSummaryLine =  row.naming?.object_id_name ?? '';
         ref.componentInstance.objectGroupName   = this.objectGroupName ?? '';
         ref.componentInstance.riskSummaryLine   = this.riskSummaryLine ?? '';
       

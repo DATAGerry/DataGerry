@@ -77,6 +77,7 @@ export class RiskAssessmentFormTopComponent implements OnInit {
 
 
   ngOnInit(): void {
+    console.log('RiskAssessmentFormTopComponent initialized', this.parentForm.value);
     const objectId = this.parentForm.get('object_id')?.value;
     const riskId = this.parentForm.get('risk_id')?.value;
   
