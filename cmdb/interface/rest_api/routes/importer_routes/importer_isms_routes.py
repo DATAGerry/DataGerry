@@ -144,7 +144,11 @@ def handle_threats_import(
 
     threats = []
     for row in reader:
-        source = handle_extendable_option(row.get("source"), extendable_options_manager, OptionType.THREAT)
+        source = handle_extendable_option(
+                    row.get("source"),
+                    extendable_options_manager,
+                    OptionType.THREAT_VULNERABILITY
+                )
 
         threat = {
             "name": row["name"].strip() if row.get("name") else None,
@@ -206,7 +210,11 @@ def handle_vulnerabilities_import(
 
     vulerabilities = []
     for row in reader:
-        source = handle_extendable_option(row.get("source"), extendable_options_manager, OptionType.VULNERABILITY)
+        source = handle_extendable_option(
+            row.get("source"),
+            extendable_options_manager,
+            OptionType.THREAT_VULNERABILITY
+        )
 
         vulnerability = {
             "name": row["name"].strip() if row.get("name") else None,
