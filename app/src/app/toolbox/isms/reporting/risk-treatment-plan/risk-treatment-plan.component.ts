@@ -103,7 +103,7 @@ export class RiskTreatmentPlanComponent implements OnInit {
       { display: 'Risk After', name: 'risk_after', data: 'risk_after', template: this.riskAfterTpl },
       { display: 'Impl. Status', name: 'implementation_status', data: 'implementation_status' },
 
-      { display: 'Control Measures', name: 'controls_str', data: 'controls_str', template: this.controlsTpl }
+      { display: 'Assigned Controls', name: 'controls_str', data: 'controls_str', template: this.controlsTpl }
     ];
     this.initialVisibleColumns = this.columns.map(c => c.name);
   }

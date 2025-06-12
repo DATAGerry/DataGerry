@@ -20,6 +20,7 @@ import { OptionType } from 'src/app/toolbox/isms/models/option-type.enum';
 })
 export class ThreatsAddComponent implements OnInit {
   public isEditMode = false;
+  public isViewMode = false;
   public threatId?: number;
   public isLoading$ = this.loaderService.isLoading$;
 
@@ -44,22 +45,35 @@ export class ThreatsAddComponent implements OnInit {
     private loaderService: LoaderService,
     private toast: ToastService,
     private extendableOptionService: ExtendableOptionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.threatId = +this.route.snapshot.paramMap.get('id');
+    const threatFromState = (history.state as { threat?: Threat }).threat;
+  
+    if (threatFromState && this.router.url.includes('/view')) {
+      this.isViewMode = true;
+      this.threat = threatFromState;
+  
+      this.initForm();
+      this.threatForm.patchValue(this.threat);   // name, identifier, source, description
+      this.threatForm.disable();                 // make everything read-only
+      this.loadSourceOptions();
+      return;
+    }
+  
+    /* ---- fallback: add / edit modes ---- */
+    this.threatId   = +this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.threatId;
-
+  
     this.initForm();
-
-    // Load the dropdown options
     this.loadSourceOptions();
-
-    // If editing, fetch data from the server and patch the form
+  
     if (this.isEditMode && this.threatId) {
       this.loadThreatToEdit(this.threatId);
     }
   }
+  
+  
 
   /** Create the FormGroup with default values and validators */
   private initForm(): void {
@@ -145,7 +159,7 @@ export class ThreatsAddComponent implements OnInit {
           this.toast.error(err?.error?.message);
         }
       });
-  }x
+  } x
 
   private updateThreat(id: number, updatedThreat: Threat): void {
     this.loaderService.show();

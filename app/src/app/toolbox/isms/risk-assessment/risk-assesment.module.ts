@@ -34,6 +34,7 @@ import { RiskAssessmentFooterComponent } from './risk-assessment-footer/risk-ass
 import { ControlMeasureAssignmentModule } from '../control‑measure‑assignment/control-measure-assignment.module';
 import { RaCmAssignmentInlineComponent } from './risk-assessment-treatment/ control-measure-assignment-inline/ra-cm-assignment-inline.component';
 import { DateFormatterPipe } from 'src/app/layout/pipes/date-formatter.pipe';
+import { DuplicateRiskAssessmentModalComponent } from './risk-assesment-list/duplicate-risk-assessment-modal/duplicate-risk-assessment.modal';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { DateFormatterPipe } from 'src/app/layout/pipes/date-formatter.pipe';
     RiskAssessmentListComponent,
     RiskAssessmentFooterComponent,
     RaCmAssignmentInlineComponent,
+    DuplicateRiskAssessmentModalComponent
   ],
   imports: [
     CommonModule,

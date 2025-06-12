@@ -63,6 +63,7 @@ import { RiskMatrixReportModule } from './risk-matrix-report/risk-matrix-report.
 import { SoaComponent } from './reporting/soa/soa.component';
 import { RiskTreatmentPlanComponent } from './reporting/risk-treatment-plan/risk-treatment-plan.component';
 import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesments.component';
+import { ReportsOverviewComponent } from './reporting/overview/reports-overview.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesm
     ControlMeasureFooterComponent,
     SoaComponent,
     RiskTreatmentPlanComponent,
-    RiskAssesmentsComponent
+    RiskAssesmentsComponent,
+    ReportsOverviewComponent
 
   ],
   imports: [

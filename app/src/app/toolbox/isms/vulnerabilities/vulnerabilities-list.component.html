@@ -16,6 +16,10 @@
 
 <!-- Action Template -->
 <ng-template #actionTemplate let-data="data" let-item="item">
+    <!-- View button -->
+    <a (click)="onView(item)" title="View Vulnerability" *permissionLink="'base.isms.vulnerability.view'">
+      <i class="far fa-eye icon-margin icon-view spacing-right"></i>
+    </a>
   <!-- Edit button -->
   <a (click)="onEdit(item)" title="Edit Vulnerability" *permissionLink="'base.isms.vulnerability.edit'">
     <i class="far fa-edit icon-margin icon-edit spacing-right"></i>

@@ -27,131 +27,22 @@ import { LoaderService } from "src/app/core/services/loader.service";
 import { ToastService } from "src/app/layout/toast/toast.service";
 import { IsmsConfigValidation } from "../models/isms-config-validation.model";
 import { ISMSService } from "../services/isms.service";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: 'app-isms-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss']
 })
-// export class OverviewComponent implements OnInit {
-
-//   public validationStatus: boolean = false;
-//   public isLoading$ = this.loaderService.isLoading$;
-
-
-//   public cards = [
-//     {
-//       title: 'Configure ISMS Settings',
-//       icon: 'fas fa-cogs',
-//       link: '/isms/configure',
-//       validationStatus: false
-//     },
-//     {
-//       title: 'Risks',
-//       icon: 'fas fa-exclamation-triangle',
-//       link: '/isms/risks'
-//     },
-//     {
-//       title: 'Control/Measures',
-//       icon: 'fas fa-shield-alt',
-//       link: '/isms/control-measures'
-//     },
-//     {
-//       title: 'Threats',
-//       icon: 'fas fa-bolt',
-//       link: '/isms/threats'
-//     },
-//     {
-//       title: 'Vulnerabilities',
-//       icon: 'fas fa-bug',
-//       link: '/isms/vulnerabilities'
-//     },
-
-//     {
-//       title: 'Persons',
-//       icon: 'fas fa-user-friends',
-//       link: '/isms/persons'
-//     },
-
-//     {
-//       title: 'Person Groups',
-//       icon: 'fas fa-users',
-//       link: '/framework/person-groups'
-//     },
-
-//     {
-//       title: 'Risk Matrix Report',
-//       icon: 'fas fa-table',
-//       link: '/isms/reports/risk_matrix'
-//     },
-
-//     {
-//       title: 'SOA Report',
-//       icon: 'fas fa-table',
-//       link: '/isms/reports/soa'
-//     },
-
-//     {
-//       title: 'Risk treatment plan',
-//       icon: 'fas fa-table',
-//       link: '/isms/reports/risk_treatment_plan'
-//     },
-
-//     {
-//       title: 'Risk Assesments',
-//       icon: 'fas fa-table',
-//       link: '/isms/reports/risk_assesments'
-//     },
-//   ];
-
-
-//   constructor(private ismsService: ISMSService,
-//     private cdRef: ChangeDetectorRef,
-//     private loaderService: LoaderService,
-//     private toastService: ToastService,
-
-//   ) { }
-
-//   ngOnInit(): void {
-//     this.loaderService.show(); // Show loader
-//     this.ismsService.getIsmsValidationStatus().subscribe({
-//       next: (status: IsmsConfigValidation) => {
-//         const isValid =
-//           status.risk_classes &&
-//           status.likelihoods &&
-//           status.impacts &&
-//           status.impact_categories &&
-//           status.risk_matrix;
-
-//         this.cards.forEach(card => {
-//           if (card.hasOwnProperty('validationStatus')) {
-//             card.validationStatus = isValid;
-//           }
-//         });
-
-//         // Trigger change detection
-//         this.cdRef.detectChanges();
-//       },
-//       error: (err) => {
-//         this.toastService.error(err?.error?.message)
-//       },
-//       complete: () => {
-//         this.loaderService.hide(); // Hide loader
-//       }
-//     });
-//   }
-
-// }
-
-
-
 export class OverviewComponent implements OnInit {
-  public isReportsMode = false;
+
+  public validationStatus: boolean = false;
   public isLoading$ = this.loaderService.isLoading$;
 
-  private allCards = [
+
+  public cards = [
     {
-      title: 'Configuration',
+      title: 'Configure ISMS Settings',
       icon: 'fas fa-cogs',
       link: '/isms/configure',
       validationStatus: false
@@ -160,6 +51,11 @@ export class OverviewComponent implements OnInit {
       title: 'Risks',
       icon: 'fas fa-exclamation-triangle',
       link: '/isms/risks'
+    },
+    {
+      title: 'Control/Measures',
+      icon: 'fas fa-shield-alt',
+      link: '/isms/control-measures'
     },
     {
       title: 'Threats',
@@ -172,64 +68,22 @@ export class OverviewComponent implements OnInit {
       link: '/isms/vulnerabilities'
     },
     {
-      title: 'Controls',
-      icon: 'fas fa-shield-alt',
-      link: '/isms/control-measures'
-    },
-    {
-      title: 'Persons',
-      icon: 'fas fa-user-friends',
-      link: '/isms/persons'
-    },
-    {
-      title: 'Person Groups',
-      icon: 'fas fa-users',
-      link: '/framework/person-groups'
-    },
-    {
       title: 'Reports',
       icon: 'fas fa-file-alt',
-      link: null,
-      isReportsCard: true
-    },
-    {
-      title: 'Risk Matrix Report',
-      icon: 'fas fa-th-large',
-      link: '/isms/reports/risk_matrix',
-      isReport: true
-    },
-    {
-      title: 'SOA Report',
-      icon: 'fas fa-shield-alt', // Safe fallback icon
-      link: '/isms/reports/soa',
-      isReport: true
-    },
-    {
-      title: 'Risk treatment plan',
-      icon: 'fas fa-clipboard-check',
-      link: '/isms/reports/risk_treatment_plan',
-      isReport: true
-    },
-    {
-      title: 'Risk Assessments',
-      icon: 'fas fa-file-alt',
-      link: '/isms/reports/risk_assesments',
-      isReport: true
-    }    
+      link: '/isms/reports'
+    }
   ];
 
-  public cards = this.allCards.filter(card => !card.isReport);
 
-  constructor(
-    private ismsService: ISMSService,
+  constructor(private ismsService: ISMSService,
     private cdRef: ChangeDetectorRef,
     private loaderService: LoaderService,
-    private toastService: ToastService
-  ) {}
+    private toastService: ToastService,
+
+  ) { }
 
   ngOnInit(): void {
-    this.loaderService.show();
-
+    this.loaderService.show(); // Show loader
     this.ismsService.getIsmsValidationStatus().subscribe({
       next: (status: IsmsConfigValidation) => {
         const isValid =
@@ -239,23 +93,22 @@ export class OverviewComponent implements OnInit {
           status.impact_categories &&
           status.risk_matrix;
 
-        this.allCards.forEach(card => {
+        this.cards.forEach(card => {
           if (card.hasOwnProperty('validationStatus')) {
             card.validationStatus = isValid;
           }
         });
 
+        // Trigger change detection
         this.cdRef.detectChanges();
       },
-      error: (err) => this.toastService.error(err?.error?.message),
-      complete: () => this.loaderService.hide()
+      error: (err) => {
+        this.toastService.error(err?.error?.message)
+      },
+      complete: () => {
+        this.loaderService.hide(); // Hide loader
+      }
     });
   }
 
-  toggleReportsMode(): void {
-    this.isReportsMode = !this.isReportsMode;
-    this.cards = this.isReportsMode
-      ? this.allCards.filter(card => card.isReport)
-      : this.allCards.filter(card => !card.isReport);
-  }
 }

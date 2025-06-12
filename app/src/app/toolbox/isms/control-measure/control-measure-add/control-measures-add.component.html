@@ -39,7 +39,7 @@
           </button> -->
 
           <!-- Source Manage Button -->
-          <app-button [bootstrapClass]="'btn-outline-secondary'" size="sm" label="Manage Sources"
+          <app-button [bootstrapClass]="'btn-outline-secondary'" [padding]="'4.5px'" size="sm" label="Manage Sources"
             (clicked)="openSourceManager()" type="button" *ngIf="!isViewMode">
           </app-button>
         </div>
@@ -83,7 +83,7 @@
           </button> -->
 
           <!-- Implementation State Manage Button -->
-          <app-button [bootstrapClass]="'btn-outline-secondary'" size="sm" label="Manage Implementation States"
+          <app-button [bootstrapClass]="'btn-outline-secondary'" size="sm" label="Manage Implementation States" [padding]="'4.5px'"
             (clicked)="openImplementationStateManager()" type="button" *ngIf="!isViewMode">
           </app-button>
         </div>

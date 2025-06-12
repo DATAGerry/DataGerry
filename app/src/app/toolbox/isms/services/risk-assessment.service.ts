@@ -13,6 +13,9 @@ import { ApiCallService } from 'src/app/services/api-call.service';
 import { BaseApiService } from 'src/app/core/services/base-api.service';
 import { RiskAssessment } from '../models/risk-assessment.model';
 
+type DuplicateRefType = 'risk' | 'object' | 'object_group';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -43,4 +46,25 @@ export class RiskAssessmentService extends BaseApiService<RiskAssessment> {
   deleteRiskAssessment(id: number): Observable<APIDeleteSingleResponse<RiskAssessment>> {
     return this.handleDeleteRequest<APIDeleteSingleResponse<RiskAssessment>>(`${this.servicePrefix}/${id}`);
   }
+
+  /** Duplicate one or more risk-assessments.  
+ *  `ids` – array of risk-assessment `public_id`s to duplicate (will be comma-joined)  
+ *  `refType` – context path segment (`risk|object|object_group`)  
+ *  `copyCma` – whether control-measure assignments should also be cloned  */
+/* risk-assessment.service.ts */
+/* ADD / REPLACE this method */
+duplicateRiskAssessments(
+  targetIds: number[],
+  refType: 'risk' | 'object' | 'object_group',
+  copyCma = false,
+  payload: any = {}
+) {
+  // URL must contain IDs wrapped in quotes:  "1,2,3"
+  const idSegment = `"${targetIds.join(',')}"`;
+  const url = `${this.servicePrefix}/duplicate/${refType}/${idSegment}?copy_cma=${copyCma}`;
+
+  return this.handlePostRequest(url, payload);
+}
+
+
 }

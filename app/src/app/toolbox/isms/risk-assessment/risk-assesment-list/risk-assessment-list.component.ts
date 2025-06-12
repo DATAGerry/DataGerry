@@ -43,6 +43,7 @@ import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/dialog/delete-dialog/core-delete-confirmation-modal.component';
 import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
+import { DuplicateRiskAssessmentModalComponent } from './duplicate-risk-assessment-modal/duplicate-risk-assessment.modal';
 
 const GREY = '#f5f5f5';
 
@@ -371,11 +372,22 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         }
     }
 
-    onDuplicate(row: any) {
-        // this.router.navigate(['/isms/risk-assessments/add'], {
-        //     state: { riskAssessment: row }
-        // });
-    }
+    // onDuplicate(row: any) {
+    //     // this.router.navigate(['/isms/risk-assessments/add'], {
+    //     //     state: { riskAssessment: row }
+    //     // });
+    // }
+
+    onDuplicate(row: RiskAssessment): void {
+        const ref = this.modal.open(DuplicateRiskAssessmentModalComponent, { size: 'lg' });
+        ref.componentInstance.ctx               = this.ctx();    // OBJECT | GROUP | RISK
+        ref.componentInstance.item              = row;
+        ref.componentInstance.objectSummaryLine =  '';
+        ref.componentInstance.objectGroupName   = this.objectGroupName ?? '';
+        ref.componentInstance.riskSummaryLine   = this.riskSummaryLine ?? '';
+      
+        ref.result.then(() => this.loadRows()).catch(() => {/* dismissed */});
+      }
 
     //   onView(row: any) {
     //     this.router.navigate(['/isms/risk-assessments/view', row.public_id], {

@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Control/Measures</h2>
+  <h2>Controls</h2>
   <button
     class="btn btn-sm btn-success"
     *permissionLink="['base.isms.controlMeasure.add']"
@@ -50,4 +50,10 @@
     (click)="onDelete(item)"
     title="Delete Control/Measure"
   ></i>
+</ng-template>
+
+
+<!-- Source Template (to display the source names) -->
+<ng-template #sourceTemplate let-data="data" let-item="item">
+  <span>{{ getSourceNames(data) }}</span>
 </ng-template>

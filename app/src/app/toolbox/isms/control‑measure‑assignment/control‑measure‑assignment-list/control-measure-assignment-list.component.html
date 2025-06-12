@@ -1,5 +1,4 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Control / Measure Assignments</h2>
   <button class="btn btn-sm btn-success" (click)="onAddNew()">
     <i class="fas fa-plus"></i> Add
   </button>
@@ -17,12 +16,13 @@
   [selectEnabled]="false"
   [loading]="loading"
   [pageSize]="limit"
-  [toggleable]="true"
+  [toggleable]="false"
   [initialVisibleColumns]="initialVisibleColumns"
-  (pageChange)="onPageChange($event)"
-  (pageSizeChange)="onPageSizeChange($event)"
-  (sortChange)="onSortChange($event)"
-  (searchChange)="onSearchChange($event)">
+  [searchEnabled]="false" 
+  [infoEnabled]="false"
+  [paginationEnabled]="false" 
+  [pageSizeEnabled]="false"
+  >
 </cmdb-table>
 
 

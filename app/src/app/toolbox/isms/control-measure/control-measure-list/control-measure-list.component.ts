@@ -20,6 +20,9 @@ import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { ControlMeasure } from '../../models/control-measure.model';
 import { ControlMeasureService } from '../../services/control-measure.service';
+import { OptionType } from '../../models/option-type.enum';
+import { ExtendableOptionService } from '../../services/extendable-option.service';
+import { ExtendableOption } from 'src/app/framework/models/object-group.model';
 @Component({
     selector: 'app-control-measures-list',
     templateUrl: './control-measures-list.component.html',
@@ -41,17 +44,22 @@ export class ControlmeasuresListComponent implements OnInit {
     public columns: Column[] = [];
     public initialVisibleColumns: string[] = [];
 
+    // For showing source names
+    public sourceOptions: ExtendableOption[] = [];
     constructor(
         private router: Router,
         private toast: ToastService,
         private loaderService: LoaderService,
         private modalService: NgbModal,
         private filterBuilderService: FilterBuilderService,
-        private controlmeasureservice: ControlMeasureService
+        private controlmeasureservice: ControlMeasureService,
+        private extendableOptionService: ExtendableOptionService
+
     ) { }
 
     ngOnInit(): void {
         this.setupColumns();
+        this.loadSourceOptions();
         this.loadControlMeasures();
     }
 
@@ -101,7 +109,7 @@ export class ControlmeasuresListComponent implements OnInit {
                 sortable: false,
                 fixed: true,
                 template: this.actionTemplate,
-                style: { width: '100px', 'text-align': 'center' }
+                style: { width: '80px', 'text-align': 'center' }
             }
         ];
         this.initialVisibleColumns = this.columns.map((c) => c.name);
@@ -145,6 +153,26 @@ export class ControlmeasuresListComponent implements OnInit {
                 }
             });
     }
+
+
+    /*
+    * Load the source options
+    */
+    loadSourceOptions(): void {
+        this.loaderService.show();
+        this.extendableOptionService.getExtendableOptionsByType(OptionType.CONTROL_MEASURE)
+            .pipe(finalize(() => this.loaderService.hide()))
+            .subscribe({
+                next: (res) => {
+                    this.sourceOptions = res.results;
+                    console.log('sourceOptions', this.sourceOptions);
+                },
+                error: (err) => this.toast.error(err?.error?.message)
+            });
+    }
+
+
+
 
 
     /**
@@ -198,7 +226,7 @@ export class ControlmeasuresListComponent implements OnInit {
                         .pipe(finalize(() => this.loaderService.hide()))
                         .subscribe({
                             next: () => {
-                                this.toast.success('Control/Measure deleted successfully.');
+                                this.toast.success('Control deleted successfully.');
                                 this.loadControlMeasures();
                             },
                             error: (err) => {
@@ -235,5 +263,18 @@ export class ControlmeasuresListComponent implements OnInit {
         this.filter = search;
         this.page = 1;
         this.loadControlMeasures();
+    }
+
+    /* ------------------------------------------------------------------
+    * Helper methods
+    * ------------------------------------------------------------------ */
+
+    /*
+    * Get the source name by its public_id
+    */
+    getSourceNames(sourceIds: number): string {
+        const option = this.sourceOptions.find(opt => opt.public_id === sourceIds);
+        console.log('option', option?.value);
+        return option?.value;
     }
 }

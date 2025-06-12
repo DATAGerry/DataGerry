@@ -1,11 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-button',
   templateUrl: './app-button.component.html',
   styleUrls: ['./app-button.component.scss']
 })
-export class ButtonComponent {
+export class ButtonComponent implements OnInit {
   /**
    * Text shown on the button.
    */
@@ -29,6 +29,12 @@ export class ButtonComponent {
   @Input() disabled: boolean = false;
 
   /**
+   * If true, button is disabled.
+   */
+  @Input() padding: string = '';
+
+
+  /**
    * Emitted when the button is clicked (unless disabled).
    */
   @Output() clicked = new EventEmitter<void>();
@@ -37,5 +43,10 @@ export class ButtonComponent {
     if (!this.disabled) {
       this.clicked.emit();
     }
+  }
+
+  ngOnInit(): void {
+    // Ensure the button has the 'btn' class by default
+    console.log('padding', this.padding);
   }
 }

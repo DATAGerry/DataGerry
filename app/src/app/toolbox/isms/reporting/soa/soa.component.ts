@@ -7,6 +7,7 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 import { SoaService } from '../../services/soa.service';
 import { ControlMeasure } from '../../models/control-measure.model';
 import { FileExportService } from 'src/app/core/services/file-export.service';
+import { getCurrentDate } from 'src/app/core/utils/date.utils';
 
 @Component({
   selector: 'app-soa',
@@ -16,7 +17,7 @@ export class SoaComponent implements OnInit {
 
   @ViewChild('applicableTpl', { static: true })
   applicableTpl: TemplateRef<any>;
-  
+
   public controls: ControlMeasure[] = [];
   public loading = false;
 
@@ -41,20 +42,20 @@ export class SoaComponent implements OnInit {
    */
   private setupColumns(): void {
     this.columns = [
-      { display: 'Identifier', name: 'identifier', data: 'identifier', sortable: false, style: { 'text-align': 'center'} },
-      { display: 'Title', name: 'title', data: 'title', sortable: false , style: { 'text-align': 'center'}},
-      { display: 'Chapter', name: 'chapter', data: 'chapter', sortable: false , style: { 'text-align': 'center'}},
+      { display: 'Identifier', name: 'identifier', data: 'identifier', sortable: false, style: { 'text-align': 'center' } },
+      { display: 'Name', name: 'title', data: 'title', sortable: false, cssClasses: ['text-center'], },
+      { display: 'Chapter', name: 'chapter', data: 'chapter', sortable: false, cssClasses: ['text-center'], },
       {
-        display    : 'Applicable',
-        name       : 'is_applicable',
-        data       : 'is_applicable',
-        sortable   : false,
+        display: 'Applicable',
+        name: 'is_applicable',
+        data: 'is_applicable',
+        sortable: false,
         template: this.applicableTpl,
-        style: { 'text-align': 'center'}
+        style: { 'text-align': 'center' }
       },
-      { display: 'Reason', name: 'reason', data: 'reason', sortable: false, style: { 'text-align': 'center'} },
-      { display: 'State', name: 'implementation_state', data: 'implementation_state', sortable: false, style: { 'text-align': 'center'} },
-      { display: 'Source', name: 'source', data: 'source', sortable: false , style: { 'text-align': 'center'}}
+      { display: 'Reason', name: 'reason', data: 'reason', sortable: false, cssClasses: ['text-center'], },
+      { display: 'State', name: 'implementation_state', data: 'implementation_state', sortable: false, style: { 'text-align': 'center' } },
+      { display: 'Source', name: 'source', data: 'source', sortable: false, cssClasses: ['text-center'], }
     ];
     this.initialVisibleColumns = this.columns.map((c) => c.name);
   }
@@ -112,22 +113,61 @@ export class SoaComponent implements OnInit {
    * Export the current controls to CSV
    */
   exportCsv(): void {
-    this.fileExportService.exportCsv('soa', this.controls, this.columnsForExport, this.columnHeaders);
+    this.fileExportService.exportCsv(
+      `soa_${getCurrentDate()}`,
+      this.getTransformedControls(),
+      this.columnsForExport,
+      this.columnHeaders
+    );
   }
+
 
 
   /**
    * Export the current controls to XLSX
    */
   exportXlsx(): void {
-    this.fileExportService.exportXlsx('soa', this.controls, this.columnsForExport, this.columnHeaders);
+    this.fileExportService.exportXlsx(
+      `soa_${getCurrentDate()}`,
+      this.getTransformedControls(),
+      this.columnsForExport,
+      this.columnHeaders
+    );
   }
+
 
 
   /**
    * Export the current controls to PDF
    */
   exportPdf(): void {
-    this.fileExportService.exportPdf('soa', this.controls, this.columnsForExport, this.columnHeaders, true); // true = landscape
+    const filteredColumns = this.columnsForExport.filter(col => col !== 'control_measure_type');
+    const filteredHeaders = { ...this.columnHeaders };
+    delete filteredHeaders['control_measure_type'];
+  
+    this.fileExportService.exportPdf(
+      `soa_${getCurrentDate()}`,
+      this.getTransformedControls(),
+      filteredColumns,
+      filteredHeaders,
+      true
+    );
   }
+
+
+
+  /**
+   *  Transform the controls to match the export format.
+   */
+  private getTransformedControls(): any[] {
+    return this.controls.map(control => ({
+      ...control,
+      is_applicable:
+        control.is_applicable === true ? 'Yes' :
+          control.is_applicable === false ? 'No' :
+            ''
+    }));
+  }
+
+
 }

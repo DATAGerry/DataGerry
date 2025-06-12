@@ -82,7 +82,8 @@ export class VulnerabilitiesListComponent implements OnInit {
                 data: 'name',
                 searchable: true,
                 sortable: true,
-                style: { width: 'auto', 'text-align': 'center' }
+                style: { width: 'auto'},
+                cssClasses: ['text-center'],
             },
             {
                 display: 'Identifier',
@@ -99,7 +100,8 @@ export class VulnerabilitiesListComponent implements OnInit {
                 searchable: true,
                 sortable: false,
                 template: this.sourceTemplate,
-                style: { width: 'auto', 'text-align': 'center' }
+                style: { width: 'auto'},
+                cssClasses: ['text-center'],
             },
             {
                 display: 'Actions',
@@ -123,7 +125,7 @@ export class VulnerabilitiesListComponent implements OnInit {
     */
     loadSourceOptions(): void {
         this.loaderService.show();
-        this.extendableOptionService.getExtendableOptionsByType(OptionType.VULNERABILITY)
+        this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
             .pipe(finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (res) => {
@@ -189,6 +191,18 @@ export class VulnerabilitiesListComponent implements OnInit {
             { state: { vulnerability } }
         );
     }
+
+
+    /*
+    * View a vulnerability
+    */
+    public onView(vulnerability: Vulnerability): void {
+        this.router.navigate(
+          ['/isms/vulnerabilities/view'],
+          { state: { vulnerability } }
+        );
+      }
+      
 
 
     /*

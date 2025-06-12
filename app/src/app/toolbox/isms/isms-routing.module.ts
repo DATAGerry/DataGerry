@@ -357,6 +357,7 @@ import { RiskMatrixReportComponent } from './risk-matrix-report/risk-matrix-repo
 import { SoaComponent } from './reporting/soa/soa.component';
 import { RiskTreatmentPlanComponent } from './reporting/risk-treatment-plan/risk-treatment-plan.component';
 import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesments.component';
+import { ReportsOverviewComponent } from './reporting/overview/reports-overview.component';
 
 const routes: Routes = [
   {
@@ -372,7 +373,6 @@ const routes: Routes = [
       /* ─────────── Threats ─────────── */
       {
         path: 'threats',
-        data: { breadcrumb: 'Threats' },
         children: [
           { path: '', component: ThreatsListComponent, data: { breadcrumb: 'Threats' } },
           { path: 'add', component: ThreatsAddComponent, data: { breadcrumb: 'Add Threat' } },
@@ -384,7 +384,6 @@ const routes: Routes = [
       /* ─────────── Vulnerabilities ─────────── */
       {
         path: 'vulnerabilities',
-        data: { breadcrumb: 'Vulnerabilities' },
         children: [
           { path: '', component: VulnerabilitiesListComponent, data: { breadcrumb: 'Vulnerabilities' } },
           { path: 'add', component: VulnerabilitiesAddComponent, data: { breadcrumb: 'Add Vulnerability' } },
@@ -420,7 +419,6 @@ const routes: Routes = [
       /* ─────────── Control Measure Assignments ─────────── */
       {
         path: 'control-measure-assignments',
-        data: { breadcrumb: 'Control Measure Assignments' },
         children: [
           { path: 'view', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'View Assignment' } },
           { path: 'edit', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'Edit Assignment' } }
@@ -450,29 +448,16 @@ const routes: Routes = [
       /* ─────────── Reports ─────────── */
       {
         path: 'reports',
+        data: { breadcrumb: 'Reports' },
         children: [
-          {
-            path: 'risk_matrix',
-            component: RiskMatrixReportComponent,
-            data: { breadcrumb: 'Risk Matrix Report' }
-          },
-          {
-            path: 'soa',
-            component: SoaComponent,
-            data: { breadcrumb: 'SOA Report' }
-          },
-          {
-            path: 'risk_treatment_plan',
-            component: RiskTreatmentPlanComponent,
-            data: { breadcrumb: 'Risk Treatment Plan' }
-          },
-          {
-            path: 'risk_assesments',
-            component: RiskAssesmentsComponent,
-            data: { breadcrumb: 'Risk Assessments' }
-          }
+          { path: '', component: ReportsOverviewComponent, data: { breadcrumb: null } }, // <- prevents duplicate "Reports / Reports"
+          { path: 'risk_matrix', component: RiskMatrixReportComponent, data: { breadcrumb: 'Risk Matrix Report' } },
+          { path: 'soa', component: SoaComponent, data: { breadcrumb: 'Statement of Applicability' } },
+          { path: 'risk_treatment_plan', component: RiskTreatmentPlanComponent, data: { breadcrumb: 'Risk Treatment Plan' } },
+          { path: 'risk_assesments', component: RiskAssesmentsComponent, data: { breadcrumb: 'Risk Assessments' } }
         ]
       }
+      
     ]
   }
 ];

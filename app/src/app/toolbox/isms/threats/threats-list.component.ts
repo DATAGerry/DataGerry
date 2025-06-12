@@ -73,33 +73,36 @@ export class ThreatsListComponent implements OnInit {
         name: 'public_id',
         data: 'public_id',
         searchable: false,
-        sortable: true,
+        sortable: false,
         style: { width: '120px', 'text-align': 'center' }
       },
       {
         display: 'Name',
         name: 'name',
         data: 'name',
-        searchable: true,
-        sortable: true,
-        style: { width: 'auto', 'text-align': 'center' }
+        searchable: false,
+        sortable: false,
+        style: { width: 'auto' },
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Identifier',
         name: 'identifier',
         data: 'identifier',
-        searchable: true,
-        sortable: true,
+        searchable: false,
+        sortable: false,
         style: { width: '180px', 'text-align': 'center' }
       },
       {
         display: 'Source',
         name: 'source',
         data: 'source',
-        searchable: true,
+        searchable: false,
         sortable: false,
         template: this.sourceTemplate,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto' },
+        cssClasses: ['text-center']
       },
       {
         display: 'Actions',
@@ -188,6 +191,16 @@ export class ThreatsListComponent implements OnInit {
   }
 
   /*
+* View a new threat
+*/
+  onView(threat: Threat): void {
+    this.router.navigate(
+      ['/isms/threats/view'],
+      { state: { threat } }
+    );
+  }
+
+  /*
   * Delete a threat
   */
   onDelete(threat: Threat): void {
@@ -244,9 +257,9 @@ export class ThreatsListComponent implements OnInit {
     this.loadThreats();
   }
 
-    /*
-  * Get the source name by its public_id
-  */
+  /*
+* Get the source name by its public_id
+*/
   getSourceNames(sourceIds: number): string {
     const option = this.sourceOptions.find(opt => opt?.public_id === sourceIds);
     return option?.value;

@@ -19,6 +19,8 @@ import { VulnerabilityService } from '../../services/vulnerability.service';
 })
 export class VulnerabilitiesAddComponent implements OnInit {
   public isEditMode = false;
+  public isViewMode = false;
+
   public isLoading$ = this.loaderService.isLoading$;
 
   public sourceOptions: ExtendableOption[] = [];
@@ -42,9 +44,19 @@ export class VulnerabilitiesAddComponent implements OnInit {
   ) {
     // Retrieve the navigation state in the constructor
     const navState = this.router.getCurrentNavigation()?.extras?.state;
-    if (navState && navState['vulnerability']) {
-      this.isEditMode = true;
-      this.vulnerability = navState['vulnerability'] as Vulnerability;
+    // if (navState && navState['vulnerability']) {
+    //   this.isEditMode = true;
+    //   this.vulnerability = navState['vulnerability'] as Vulnerability;
+    // }
+
+    const vulnerabilityFromState = (history.state as { vulnerability?: Vulnerability }).vulnerability;
+    if (vulnerabilityFromState) {
+      this.vulnerability = vulnerabilityFromState;
+      if (this.router.url.includes('/view')) {
+        this.isViewMode = true;
+      } else {
+        this.isEditMode = true;
+      }
     }
 
   }
@@ -52,6 +64,14 @@ export class VulnerabilitiesAddComponent implements OnInit {
   ngOnInit(): void {
 
     this.initForm();
+
+    if (this.vulnerability.public_id) {
+      this.patchVulnerabilityForm(this.vulnerability);
+      if (this.isViewMode) {
+        this.vulnerabilityForm.disable();
+      }
+    }
+    
 
     // If we already have vulnerability data, patch the form
     if (this.isEditMode && this.vulnerability.public_id) {
@@ -85,7 +105,7 @@ export class VulnerabilitiesAddComponent implements OnInit {
   /** Load "source" (extendable options) from the server */
   private loadSourceOptions(): void {
     this.loaderService.show();
-    this.extendableOptionService.getExtendableOptionsByType(OptionType.VULNERABILITY)
+    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {

@@ -307,7 +307,7 @@ export class RiskAddComponent implements OnInit {
      * -------------------------------------------------------------- */
 
     private loadCategories(): void {
-        this.extendableOptionService.getExtendableOptionsByType(OptionType.RISK)
+        this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
             .subscribe({
                 next: (res) => {
                     this.categoryOptions = res.results;
