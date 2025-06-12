@@ -349,10 +349,10 @@ def is_extendable_option_used(extendable_option: dict, request_user: CmdbUser) -
                                                                                 request_user
                                                                             )
 
-    if extendable_option.get('option_type') == OptionType.THREAT:
+    if extendable_option.get('option_type') == OptionType.THREAT_VULNERABILITY:
         return threat_manager.count_items({"source": extendable_option.get('public_id')}) > 0
 
-    if extendable_option.get('option_type') == OptionType.VULNERABILITY:
+    if extendable_option.get('option_type') == OptionType.THREAT_VULNERABILITY:
         return vulnerability_manager.count_items({"source": extendable_option.get('public_id')}) > 0
 
     if extendable_option.get('option_type') == OptionType.OBJECT_GROUP:
