@@ -27,6 +27,7 @@ from cmdb.manager import (
     ControlMeasureAssignmentManager,
     RiskManager,
     PersonsManager,
+    PersonGroupsManager,
 )
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -234,28 +235,28 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
     """
     try:
         body = request.method == 'HEAD'
+
         risk_assessment_manager: RiskAssessmentManager = ManagerProvider.get_manager(
-                                                                            ManagerType.RISK_ASSESSMENT,
-                                                                            request_user
-                                                                         )
-
+            ManagerType.RISK_ASSESSMENT,
+            request_user
+        )
         object_groups_manager: ObjectGroupsManager = ManagerProvider.get_manager(
-                                                                            ManagerType.OBJECT_GROUP,
-                                                                            request_user
-                                                                         )
-
+            ManagerType.OBJECT_GROUP,
+            request_user
+        )
         objects_manager: ObjectsManager = ManagerProvider.get_manager(
                                                             ManagerType.OBJECTS,
                                                             request_user
                                                           )
-
-        risk_manager: RiskManager = ManagerProvider.get_manager(
-            ManagerType.RISK, request_user
-        )
-
+        risk_manager: RiskManager = ManagerProvider.get_manager(ManagerType.RISK, request_user)
         persons_manager: PersonsManager = ManagerProvider.get_manager(
             ManagerType.PERSON, request_user
         )
+        person_groups_manager: PersonGroupsManager = ManagerProvider.get_manager(
+            ManagerType.PERSON_GROUP,
+            request_user
+        )
+
         # Add RiskAssessments from ObjectGroups
         # # STEP 1: Extract object_id from the fixed filter
         original_filter = params.filter or {}
@@ -311,6 +312,8 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
         object_group_ids = set()
         object_ids = set()
         person_ids = set()
+        responsible_person_ids = set()
+        responsible_person_group_ids = set()
 
         for ra in risk_assessments:
             if ra.risk_id:
@@ -321,17 +324,39 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                 object_ids.add(ra.object_id)
             if isinstance(ra.interviewed_persons, list) and len(ra.interviewed_persons) > 0:
                 person_ids.update(ra.interviewed_persons)
+            if ra.responsible_persons_id:
+                if ra.responsible_persons_id_ref_type == 'PERSON':
+                    responsible_person_ids.add(ra.responsible_persons_id)
+                elif ra.responsible_persons_id_ref_type == 'PERSON_GROUP':
+                    responsible_person_group_ids.add(ra.responsible_persons_id)
 
         # Bulk fetch metadata
-        risks = {r['public_id']: r['name'] for r in
-                 risk_manager.find_all(criteria={'public_id': {'$in': list(risk_ids)}})}
-        object_groups = {g['public_id']: g['name'] for g in
-                         object_groups_manager.find_all(criteria={'public_id': {'$in': list(object_group_ids)}})}
+        risks = {
+            r['public_id']: r['name'] for r in
+            risk_manager.find_all(criteria={'public_id': {'$in': list(risk_ids)}})
+        }
+        object_groups = {
+            g['public_id']: g['name'] for g in
+            object_groups_manager.find_all(criteria={'public_id': {'$in': list(object_group_ids)}})
+        }
         persons = {}
         if person_ids:
             persons = {
-                p['public_id']: p['display_name']
-                for p in persons_manager.find_all(criteria={'public_id': {'$in': list(person_ids)}})
+                p['public_id']: p['display_name'] for p in
+                persons_manager.find_all(criteria={'public_id': {'$in': list(person_ids)}})
+            }
+
+        responsible_persons = {}
+        if responsible_person_ids:
+            responsible_persons = {
+                p['public_id']: p['display_name'] for p in
+                persons_manager.find_all(criteria={'public_id': {'$in': list(responsible_person_ids)}})
+            }
+        responsible_person_groups = {}
+        if responsible_person_group_ids:
+            responsible_person_groups = {
+                g['public_id']: g['name'] for g in
+                person_groups_manager.find_all(criteria={'public_id': {'$in': list(responsible_person_group_ids)}})
             }
 
         # Add naming info
@@ -341,7 +366,8 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                 'risk_id_name': risks.get(ra.risk_id),
                 'object_group_id_name': None,
                 'object_id_name': None,
-                'interviewed_persons_names': None
+                'interviewed_persons_names': None,
+                'responsible_persons_id_name': None,
             }
 
             if ra.object_id_ref_type == 'OBJECT_GROUP':
@@ -354,6 +380,12 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                 naming['interviewed_persons_names'] = [
                     persons[pid] for pid in ra.interviewed_persons if pid in persons
                 ] or None
+
+            if ra.responsible_persons_id:
+                if ra.responsible_persons_id_ref_type == 'PERSON':
+                    naming['responsible_persons_id_name'] = responsible_persons.get(ra.responsible_persons_id)
+                elif ra.responsible_persons_id_ref_type == 'PERSON_GROUP':
+                    naming['responsible_persons_id_name'] = responsible_person_groups.get(ra.responsible_persons_id)
 
             ra_json = IsmsRiskAssessment.to_json(ra)
             ra_json['naming'] = naming

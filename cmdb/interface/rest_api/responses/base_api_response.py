@@ -17,7 +17,7 @@
 Implementation of BaseAPIResponse
 """
 import logging
-import html
+# import html
 from json import dumps
 from datetime import datetime, timezone
 from flask import abort, make_response as flask_response
