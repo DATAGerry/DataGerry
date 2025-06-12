@@ -25,6 +25,8 @@ from cmdb.manager import (
     ObjectGroupsManager,
     ObjectsManager,
     ControlMeasureAssignmentManager,
+    RiskManager,
+    PersonsManager,
 )
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -247,6 +249,13 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                                                             request_user
                                                           )
 
+        risk_manager: RiskManager = ManagerProvider.get_manager(
+            ManagerType.RISK, request_user
+        )
+
+        persons_manager: PersonsManager = ManagerProvider.get_manager(
+            ManagerType.PERSON, request_user
+        )
         # Add RiskAssessments from ObjectGroups
         # # STEP 1: Extract object_id from the fixed filter
         original_filter = params.filter or {}
@@ -295,8 +304,60 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
 
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
         iteration_result: IterationResult[IsmsRiskAssessment] = risk_assessment_manager.iterate_items(builder_params)
-        risk_assessments_list = [IsmsRiskAssessment.to_json(risk_assessment) for risk_assessment
-                                 in iteration_result.results]
+        risk_assessments = iteration_result.results
+
+        # Prepare bulk fetch mappings
+        risk_ids = set()
+        object_group_ids = set()
+        object_ids = set()
+        person_ids = set()
+
+        for ra in risk_assessments:
+            if ra.risk_id:
+                risk_ids.add(ra.risk_id)
+            if ra.object_id_ref_type == 'OBJECT_GROUP':
+                object_group_ids.add(ra.object_id)
+            if ra.object_id_ref_type == 'OBJECT':
+                object_ids.add(ra.object_id)
+            if isinstance(ra.interviewed_persons, list) and len(ra.interviewed_persons) > 0:
+                person_ids.update(ra.interviewed_persons)
+
+        # Bulk fetch metadata
+        risks = {r['public_id']: r['name'] for r in
+                 risk_manager.find_all(criteria={'public_id': {'$in': list(risk_ids)}})}
+        object_groups = {g['public_id']: g['name'] for g in
+                         object_groups_manager.find_all(criteria={'public_id': {'$in': list(object_group_ids)}})}
+        persons = {}
+        if person_ids:
+            persons = {
+                p['public_id']: p['display_name']
+                for p in persons_manager.find_all(criteria={'public_id': {'$in': list(person_ids)}})
+            }
+
+        # Add naming info
+        risk_assessments_list = []
+        for ra in risk_assessments:
+            naming = {
+                'risk_id_name': risks.get(ra.risk_id),
+                'object_group_id_name': None,
+                'object_id_name': None,
+                'interviewed_persons_names': None
+            }
+
+            if ra.object_id_ref_type == 'OBJECT_GROUP':
+                naming['object_group_id_name'] = object_groups.get(ra.object_id)
+
+            if ra.object_id_ref_type == 'OBJECT':
+                naming['object_id_name'] = objects_manager.get_summary_line(ra.object_id)
+
+            if ra.interviewed_persons:
+                naming['interviewed_persons_names'] = [
+                    persons[pid] for pid in ra.interviewed_persons if pid in persons
+                ] or None
+
+            ra_json = IsmsRiskAssessment.to_json(ra)
+            ra_json['naming'] = naming
+            risk_assessments_list.append(ra_json)
 
         api_response = GetMultiResponse(risk_assessments_list,
                                         iteration_result.total,
