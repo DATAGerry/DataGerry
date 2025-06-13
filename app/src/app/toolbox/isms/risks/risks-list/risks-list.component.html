@@ -6,7 +6,7 @@
 </div>
 <hr />
 
-<cmdb-table [items]="risks" [columns]="columns" [page]="page" [sort]="sort" [id]="'risks-table'"
+<cmdb-table  *permissionLink="['base.isms.risk.view']" [items]="risks" [columns]="columns" [page]="page" [sort]="sort" [id]="'risks-table'"
   [emptyMessage]="'No risks found.'" [totalItems]="totalRisks" [selectEnabled]="false" [loading]="loading"
   [pageSize]="limit" [toggleable]="true" [initialVisibleColumns]="initialVisibleColumns"
   (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"

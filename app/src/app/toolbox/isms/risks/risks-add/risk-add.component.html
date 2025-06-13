@@ -107,9 +107,10 @@
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
+       <div *permissionLink="['base.isms.risk.add', 'base.isms.risk.edit']">
+        <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
         *ngIf="!isViewMode" [disabled]="riskForm.invalid"></app-button>
-
+       </div>
     </div>
   </form>
 

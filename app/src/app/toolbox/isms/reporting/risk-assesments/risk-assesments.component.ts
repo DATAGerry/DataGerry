@@ -9,7 +9,10 @@ import { RiskAssesmentsReportService } from '../../services/risk-assessment-repo
 import { FilterBuilderService } from 'src/app/core/services/filter-builder.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
+import { getTextColorBasedOnBackground, hexToRgb } from 'src/app/core/utils/color-utils';
+import { getCurrentDate } from 'src/app/core/utils/date.utils';
+import { forkJoin } from 'rxjs';
+import { RiskClassService } from '../../services/risk-class.service';
 
 /* helper ───────────────────────────────────────────────────────── */
 type RiskRow = any;
@@ -36,6 +39,18 @@ export class RiskAssesmentsComponent implements OnInit {
   totalItems = 0;
   pagedRows: ProcRow[] = [];
 
+/* ─ Risk-class lookup ─ */
+private riskClassLookup = new Map<number, { name: string; color: string }>();
+
+private rcName = (id?: number | null) =>
+  id == null ? '' : this.riskClassLookup.get(id)?.name ?? '';
+
+private rcId = (name: string) => {
+  for (const [id, obj] of this.riskClassLookup) if (obj.name === name) return id;
+  return null;
+};
+
+
 
   loading = false;
   isLoading$ = this.loader.isLoading$;
@@ -54,14 +69,14 @@ export class RiskAssesmentsComponent implements OnInit {
   filterDefs = [
     { label: 'Affected protection goals', key: 'prot_goals_arr' },
     { label: 'Risk category', key: 'risk_category' },
-    { label: 'Risk class before treatment', key: 'risk_class_before' },
+    { label: 'Risk class before treatment', key: 'risk_class_before_id' },
     { label: 'Risk assessor', key: 'risk_assessor' },
     { label: 'Risk owner', key: 'risk_owner' },
     { label: 'Risk treatment option', key: 'risk_treatment_option' },
     { label: 'Responsible person', key: 'responsible_person' },
     { label: 'Implementation status', key: 'implementation_status' },
     { label: 'Priority', key: 'priority' },
-    { label: 'Risk class after treatment', key: 'risk_class_after' },
+    { label: 'Risk class after treatment', key: 'risk_class_after_id' },
   ];
 
   /* ───────── exports ───────── */
@@ -71,6 +86,7 @@ export class RiskAssesmentsComponent implements OnInit {
   /* ───────── ctor ───────── */
   constructor(
     private readonly api: RiskAssesmentsReportService,
+    private readonly rcSvc: RiskClassService,
     private readonly fileExp: FileExportService,
     private readonly loader: LoaderService,
     private readonly toast: ToastService,
@@ -309,13 +325,22 @@ export class RiskAssesmentsComponent implements OnInit {
     this.loading = true;
     this.loader.show();
 
-    this.api.getRiskAssesmentsReportList()
+    forkJoin({
+            assessments: this.api.getRiskAssesmentsReportList(),
+            classesRes:  this.rcSvc.getRiskClasses()
+          })
       .pipe(finalize(() => {
         this.loading = false;
         this.loader.hide();
       }))
       .subscribe({
-        next: (list: RiskRow[]) => {
+        next: ({ assessments: list, classesRes }) => {
+
+
+          this.riskClassLookup.clear();
+    (classesRes.results || []).forEach(c =>
+      this.riskClassLookup.set(c.public_id, { name: c.name, color: c.color })
+    );
 
           /* ── gather the distinct impact-category names ─────────── */
           const catSet = new Set<string>();
@@ -329,6 +354,9 @@ export class RiskAssesmentsComponent implements OnInit {
           /* ── flatten every row + fill per-category cells ───────── */
           this.rawRows = list.map((r: RiskRow): ProcRow => {
 
+            const beforeId = r.risk_before?.risk_class_id ?? null;
+            const afterId  = r.risk_after ?.risk_class_id ?? null;
+
             const row: ProcRow = {
               ...r,
               ass_date: this.fmtDate(r.risk_assessment_date),
@@ -338,8 +366,13 @@ export class RiskAssesmentsComponent implements OnInit {
               prot_goals: (r.protection_goals ?? []).join(', '),
               prot_goals_arr: r.protection_goals ?? [],
               interviewed: (r.interviewed_persons ?? []).join(', '),
-              risk_class_before: r.risk_before?.risk_class?.label ?? '',
-              risk_class_after: r.risk_after?.risk_class?.label ?? '',
+              // risk_class_before: r.risk_before?.risk_class?.label ?? '',
+              // risk_class_after: r.risk_after?.risk_class?.label ?? '',
+              risk_class_before: this.rcName(beforeId),
+              risk_class_after : this.rcName(afterId),
+
+              risk_class_before_id: beforeId,
+              risk_class_after_id : afterId,
 
 
             };
@@ -442,51 +475,121 @@ export class RiskAssesmentsComponent implements OnInit {
   /* =====================================================================
    *  CHIP-FILTER UI 
    * ===================================================================*/
-  getValues(prop: string) {
-    const s = new Set<string>();
+  // getValues(prop: string) {
+  //   const s = new Set<string>();
 
-    // Always take from rawRows (not viewRows), to see full possible values
+  //   // Always take from rawRows (not viewRows), to see full possible values
+  //   this.rawRows.forEach(r => {
+  //     const v = r[prop];
+  //     if (Array.isArray(v)) v.forEach(x => s.add(String(x)));
+  //     else if (v != null && v !== '') s.add(String(v));
+  //   });
+
+  //   // Remove already selected values for this property (if any)
+  //   const selectedSet = this.activeFilters.get(prop);
+  //   if (selectedSet) {
+  //     selectedSet.forEach(val => s.delete(val));
+  //   }
+
+  //   return [...s].sort();
+  // }
+
+  getValues(prop: string) {
+    if (prop === 'risk_class_before_id' || prop === 'risk_class_after_id') {
+      const names = new Set<string>();
+      this.rawRows.forEach(r => names.add(this.rcName(r[prop])));
+      this.activeFilters.get(prop)?.forEach(id => names.delete(this.rcName(+id)));
+      return [...names].filter(Boolean).sort();
+    }
+  
+    /* default logic (unchanged) */
+    const s = new Set<string>();
     this.rawRows.forEach(r => {
       const v = r[prop];
       if (Array.isArray(v)) v.forEach(x => s.add(String(x)));
       else if (v != null && v !== '') s.add(String(v));
     });
-
-    // Remove already selected values for this property (if any)
-    const selectedSet = this.activeFilters.get(prop);
-    if (selectedSet) {
-      selectedSet.forEach(val => s.delete(val));
-    }
-
+    this.activeFilters.get(prop)?.forEach(val => s.delete(val));
     return [...s].sort();
   }
+  
 
   get hasActiveFilters() { return this.activeFilters.size > 0; }
+  // get activeFilterChips() {
+  //   const out: string[] = [];
+  //   this.activeFilters.forEach((set, k) => {
+  //     const lbl = this.filterDefs.find(f => f.key === k)?.label;
+  //     out.push(...Array.from(set).map(v => `${lbl}: ${v}`));
+  //   });
+  //   return out;
+  // }
+
   get activeFilterChips() {
     const out: string[] = [];
     this.activeFilters.forEach((set, k) => {
       const lbl = this.filterDefs.find(f => f.key === k)?.label;
-      out.push(...Array.from(set).map(v => `${lbl}: ${v}`));
+      set.forEach(v => {
+        const display = (k === 'risk_class_before_id' || k === 'risk_class_after_id')
+          ? this.rcName(+v)
+          : v;
+        out.push(`${lbl}: ${display}`);
+      });
     });
     return out;
   }
 
 
 
+  // applyFilter() {
+  //   const { selectedProperty: p, selectedValues: vals } = this.ui;
+  //   if (!p || !vals.length) return;
+  //   const set = this.activeFilters.get(p) ?? new Set<string>();
+  //   vals.forEach(v => set.add(v));
+  //   this.activeFilters.set(p, set);
+  //   this.ui.selectedProperty = ''; this.ui.selectedValues = [];
+  //   this.page = 1; this.loadPage();
+  // }
+
   applyFilter() {
     const { selectedProperty: p, selectedValues: vals } = this.ui;
     if (!p || !vals.length) return;
+  
     const set = this.activeFilters.get(p) ?? new Set<string>();
-    vals.forEach(v => set.add(v));
+  
+    if (p === 'risk_class_before_id' || p === 'risk_class_after_id') {
+      vals.forEach(name => {
+        const id = this.rcId(name);
+        if (id != null) set.add(String(id));
+      });
+    } else {
+      vals.forEach(v => set.add(v));
+    }
+  
     this.activeFilters.set(p, set);
     this.ui.selectedProperty = ''; this.ui.selectedValues = [];
     this.page = 1; this.loadPage();
   }
+  
+  // removeFilter(i: number) {
+  //   const [lbl, val] = this.activeFilterChips[i].split(':').map(s => s.trim());
+  //   const k = this.filterDefs.find(f => f.label === lbl)?.key; if (!k) return;
+  //   const set = this.activeFilters.get(k); if (!set) return;
+  //   set.delete(val); if (!set.size) this.activeFilters.delete(k);
+  //   this.page = 1; this.loadPage();
+  // }
   removeFilter(i: number) {
     const [lbl, val] = this.activeFilterChips[i].split(':').map(s => s.trim());
     const k = this.filterDefs.find(f => f.label === lbl)?.key; if (!k) return;
+  
     const set = this.activeFilters.get(k); if (!set) return;
-    set.delete(val); if (!set.size) this.activeFilters.delete(k);
+  
+    const keyVal =
+      (k === 'risk_class_before_id' || k === 'risk_class_after_id')
+        ? String(this.rcId(val))
+        : val;
+  
+    set.delete(keyVal);
+    if (!set.size) this.activeFilters.delete(k);
     this.page = 1; this.loadPage();
   }
   clearFilters() { this.activeFilters.clear(); this.page = 1; this.loadPage(); }
@@ -528,19 +631,9 @@ export class RiskAssesmentsComponent implements OnInit {
   }
 
 
-  private hexToRgb(hex: string): [number, number, number] {
-    if (!hex.startsWith('#')) return [119, 119, 119];  // fallback grey
-    const bigint = parseInt(hex.substring(1), 16);
-    const r = (bigint >> 16) & 255;
-    const g = (bigint >> 8) & 255;
-    const b = bigint & 255;
-    return [r, g, b];
-  }
 
-
-
-  exportCsv() { this.fileExp.exportCsv('risk-assessments', this.exportRows(), this.exportCols, this.headerMap); }
-  exportXlsx() { this.fileExp.exportXlsx('risk-assessments', this.exportRows(), this.exportCols, this.headerMap); }
+  exportCsv() { this.fileExp.exportCsv(`risk-assessments_${getCurrentDate()}`, this.exportRows(), this.exportCols, this.headerMap); }
+  exportXlsx() { this.fileExp.exportXlsx(`risk-assessments_${getCurrentDate()}`, this.exportRows(), this.exportCols, this.headerMap); }
   exportPdf(): void {
 
     /* calculate required width */
@@ -590,7 +683,7 @@ export class RiskAssesmentsComponent implements OnInit {
             const riskObj = colName === 'risk_before' ? rowData.risk_before : rowData.risk_after;
             const colorHex = riskObj?.color || '#f5f5f5';
             const value = riskObj?.value ?? '0';
-            const rgb = this.hexToRgb(colorHex);
+            const rgb = hexToRgb(colorHex);
             data.cell.styles.fillColor = rgb;
             data.cell.text = [String(value)];
           }
@@ -608,7 +701,7 @@ export class RiskAssesmentsComponent implements OnInit {
       }
     });
 
-    pdf.save('risk-assessments.pdf');
+    pdf.save(`risk-assessments_${getCurrentDate()}`);
   }
 
   /**
@@ -617,5 +710,7 @@ export class RiskAssesmentsComponent implements OnInit {
   public getTextColor(color: string): string {
     return getTextColorBasedOnBackground(color);
   }
+
+
 
 }

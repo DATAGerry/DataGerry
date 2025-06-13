@@ -6,43 +6,27 @@
   <!-- On submit => call onSave() -->
   <form autocomplete="off" class="needs-validation" (ngSubmit)="onSave()" [formGroup]="personGroupForm">
     <!-- Name (Required) -->
-    <app-form-input
-      formControlName="name"
-      label="Name"
-      [required]="true"
-      [errorMessage]="
+    <app-form-input formControlName="name" label="Name" [required]="true" [errorMessage]="
         hasError('name', 'required')
           ? 'Name is required'
           : ''
-      "
-    >
+      ">
     </app-form-input>
 
     <!-- Email (Required + Pattern) -->
-    <app-form-input
-      formControlName="email"
-      label="Email"
-      [required]="false"
-      [errorMessage]="
+    <app-form-input formControlName="email" label="Email" [required]="false" [errorMessage]="
         hasError('email', 'required')
           ? 'Email is required'
           : hasError('email', 'pattern')
           ? 'Invalid email format'
           : ''
-      "
-    >
+      ">
     </app-form-input>
 
     <!-- Group Members (Optional) -->
     <label class="mt-3">Group Members</label>
-    <app-form-select
-      formControlName="group_members"
-      [items]="allPersons"
-      bindLabel="display_name"
-      bindValue="public_id"
-      [multiple]="true"
-      placeholder="Select Person(s)"
-    >
+    <app-form-select formControlName="group_members" [items]="allPersons" bindLabel="display_name" bindValue="public_id"
+      [multiple]="true" placeholder="Select Person(s)">
     </app-form-select>
 
     <!-- Footer -->
@@ -50,7 +34,8 @@
       <button class="btn btn-secondary" type="button" (click)="onCancel()">
         Cancel
       </button>
-      <button class="btn btn-success" type="submit" [disabled]="personGroupForm.invalid || isViewMode">
+      <button *permissionLink="['base.user-management.personGroup.add', 'base.user-management.personGroup.edit']"
+        class="btn btn-success" type="submit" [disabled]="personGroupForm.invalid || isViewMode">
         {{ isEditMode ? 'Save Changes' : 'Create Person Group' }}
       </button>
     </div>
@@ -58,8 +43,5 @@
 </div>
 
 <!-- Loading Popup -->
-<app-loading-popup
-  [isVisible]="isLoading$ | async"
-  message="We're Processing the Data..."
->
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data...">
 </app-loading-popup>

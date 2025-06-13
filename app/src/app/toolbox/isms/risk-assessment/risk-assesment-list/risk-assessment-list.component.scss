@@ -1,0 +1,15 @@
+.risk-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    min-width: 60px;
+    border-radius: 3px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .icon-margin {
+    cursor: pointer;
+    margin: 0 4px;
+  }

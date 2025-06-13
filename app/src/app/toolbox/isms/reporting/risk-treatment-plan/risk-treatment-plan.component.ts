@@ -14,7 +14,8 @@ import { ToastService } from 'src/app/layout/toast/toast.service';
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
+import { getTextColorBasedOnBackground, hexToRgb } from 'src/app/core/utils/color-utils';
+import { getCurrentDate } from 'src/app/core/utils/date.utils';
 
 type ApiRow = any;             // raw row from the API
 type ViewRow = Record<string, any>; // flattened for table / export
@@ -173,12 +174,35 @@ export class RiskTreatmentPlanComponent implements OnInit {
     }));
   }
 
-  exportCsv() { this.fileExp.exportCsv('risk-treatment-plan', this.exportRows(), this.exportCols); }
-  exportXlsx() { this.fileExp.exportXlsx('risk-treatment-plan', this.exportRows(), this.exportCols); }
+  exportCsv() { this.fileExp.exportCsv(`risk-treatment-plan_${getCurrentDate()}`, this.exportRows(), this.exportCols); }
+  exportXlsx() { this.fileExp.exportXlsx(`risk-treatment-plan_${getCurrentDate()}`, this.exportRows(), this.exportCols); }
+
+  // exportPdf(): void {
+  //   const pdf = new jsPDF({ orientation: 'l', unit: 'pt', format: 'a4' });
+  //   const rows = this.exportRows();
+  //   autoTable(pdf, {
+  //     head: [this.exportCols],
+  //     body: rows.map(r => this.exportCols.map(k => r[k])),
+  //     startY: 30,
+  //     margin: { top: 30, bottom: 20, left: 20, right: 20 },
+  //     styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+  //     headStyles: { fontSize: 8, fillColor: [47, 102, 153], textColor: 255 },
+  //     didDrawPage: ({ pageNumber }) => {
+  //       pdf.setFontSize(9);
+  //       pdf.text(
+  //         `Page ${pageNumber} / ${pdf.getNumberOfPages()}`,
+  //         pdf.internal.pageSize.getWidth() - 60,
+  //         pdf.internal.pageSize.getHeight() - 10
+  //       );
+  //     }
+  //   });
+  //   pdf.save('risk-treatment-plan.pdf');
+  // }
 
   exportPdf(): void {
     const pdf = new jsPDF({ orientation: 'l', unit: 'pt', format: 'a4' });
     const rows = this.exportRows();
+  
     autoTable(pdf, {
       head: [this.exportCols],
       body: rows.map(r => this.exportCols.map(k => r[k])),
@@ -186,6 +210,33 @@ export class RiskTreatmentPlanComponent implements OnInit {
       margin: { top: 30, bottom: 20, left: 20, right: 20 },
       styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
       headStyles: { fontSize: 8, fillColor: [47, 102, 153], textColor: 255 },
+      didParseCell: data => {
+        if (data.row.section === 'body') {
+          const colName = this.exportCols[data.column.index];
+          const rowIndex = data.row.index;
+          const rowData = this.rawRows[rowIndex]; // Get raw row
+  
+          // For 'Risk Before'
+          if (colName === 'Risk Before') {
+            const riskObj = rowData.risk_before;
+            if (riskObj?.color && riskObj?.value !== undefined) {
+              const rgb = hexToRgb(riskObj.color);
+              data.cell.styles.fillColor = rgb;
+              data.cell.text = [String(riskObj.value)];
+            }
+          }
+  
+          // For 'Risk After'
+          if (colName === 'Risk After') {
+            const riskObj = rowData.risk_after;
+            if (riskObj?.color && riskObj?.value !== undefined) {
+              const rgb = hexToRgb(riskObj.color);
+              data.cell.styles.fillColor = rgb;
+              data.cell.text = [String(riskObj.value)];
+            }
+          }
+        }
+      },
       didDrawPage: ({ pageNumber }) => {
         pdf.setFontSize(9);
         pdf.text(
@@ -195,8 +246,10 @@ export class RiskTreatmentPlanComponent implements OnInit {
         );
       }
     });
-    pdf.save('risk-treatment-plan.pdf');
+  
+    pdf.save(`risk-treatment-plan_${getCurrentDate()}`);
   }
+  
 
 
   /* ================================================================

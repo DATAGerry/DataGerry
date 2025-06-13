@@ -1,6 +1,6 @@
 <cmdb-table [items]="rows" [columns]="columns" [page]="page" [pageSize]="limit" [totalItems]="total"
-  [customButtons]="[addButtonTemplate]" [initialVisibleColumns]="initialVisibleColumns" [loading]="loading"
-  (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)">
+  [customButtons]="[addButtonTemplate]" [initialVisibleColumns]="initialVisibleColumns" [loading]="loading" [searchEnabled]="false"
+  (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)" (searchChange)="onSearchChange($event)">
 
   <!-- Risk name -->
   <ng-template #riskTpl let-item="item">
@@ -68,24 +68,6 @@
 
 </cmdb-table>
 
-<!-- tiny helper style -->
-<style>
-  .risk-box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 28px;
-    min-width: 60px;
-    border-radius: 3px;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  .icon-margin {
-    cursor: pointer;
-    margin: 0 4px;
-  }
-</style>
 
 
 <app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>

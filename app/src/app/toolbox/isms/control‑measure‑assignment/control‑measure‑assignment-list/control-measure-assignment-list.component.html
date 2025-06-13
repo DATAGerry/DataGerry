@@ -1,28 +1,16 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <button class="btn btn-sm btn-success" (click)="onAddNew()">
+  <button *permissionLink="['base.isms.controlMeasureAssignment.add']" class="btn btn-sm btn-success"
+    (click)="onAddNew()">
     <i class="fas fa-plus"></i> Add
   </button>
 </div>
 <hr />
 
-<cmdb-table
-  [items]="assignments"
-  [columns]="columns"
-  [page]="page"
-  [sort]="sort"
-  [id]="'control-measure-assignments-table'"
-  [emptyMessage]="'No assignments found.'"
-  [totalItems]="totalAssignments"
-  [selectEnabled]="false"
-  [loading]="loading"
-  [pageSize]="limit"
-  [toggleable]="false"
-  [initialVisibleColumns]="initialVisibleColumns"
-  [searchEnabled]="false" 
-  [infoEnabled]="false"
-  [paginationEnabled]="false" 
-  [pageSizeEnabled]="false"
-  >
+<cmdb-table *permissionLink="['base.isms.controlMeasureAssignment.view']" [items]="assignments" [columns]="columns"
+  [page]="page" [sort]="sort" [id]="'control-measure-assignments-table'" [emptyMessage]="'No assignments found.'"
+  [totalItems]="totalAssignments" [selectEnabled]="false" [loading]="loading" [pageSize]="limit" [toggleable]="false"
+  [initialVisibleColumns]="initialVisibleColumns" [searchEnabled]="false" [infoEnabled]="false"
+  [paginationEnabled]="false" [pageSizeEnabled]="false">
 </cmdb-table>
 
 
