@@ -732,7 +732,20 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                 "$push": {
                     "impact_category": "$impact_category_before.name",
                     "impact_value": {
-                    "$ifNull": ["$impact_before.calculation_basis", None]
+                    "$cond": {
+                        "if": { "$and": [
+                            { "$ne": ["$impact_before.calculation_basis", None] },
+                            { "$ne": ["$impact_before.name", None]}]
+                        },
+                        "then": {
+                        "$concat": [
+                            { "$toString": "$impact_before.calculation_basis" },
+                            " - ",
+                            "$impact_before.name"
+                        ]
+                        },
+                        "else": None
+                    }
                     }
                 }
                 }
@@ -776,7 +789,20 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                 "$push": {
                     "impact_category": "$impact_category_after.name",
                     "impact_value": {
-                    "$ifNull": ["$impact_after.calculation_basis", None]
+                    "$cond": {
+                        "if": { "$and": [
+                            { "$ne": ["$impact_after.calculation_basis", None] },
+                            { "$ne": ["$impact_after.name", None]}]
+                        },
+                        "then": {
+                        "$concat": [
+                            { "$toString": "$impact_after.calculation_basis" },
+                            " - ",
+                            "$impact_after.name"
+                        ]
+                        },
+                        "else": None
+                    }
                     }
                 }
                 }
@@ -784,6 +810,28 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
             },
             { "$replaceRoot": { "newRoot": { "$mergeObjects": ["$doc", {
                                             "impact_categories_after": "$impact_categories_after" }] } } },
+
+            # Lookup Likelihood before
+            {
+            "$lookup": {
+                "from": "isms.likelihood",
+                "localField": "risk_calculation_before.likelihood_id",
+                "foreignField": "public_id",
+                "as": "likelihood_before"
+            }
+            },
+            { "$unwind": { "path": "$likelihood_before", "preserveNullAndEmptyArrays": True } },
+
+            # Lookup Likelihood after
+            {
+            "$lookup": {
+                "from": "isms.likelihood",
+                "localField": "risk_calculation_after.likelihood_id",
+                "foreignField": "public_id",
+                "as": "likelihood_after"
+            }
+            },
+            { "$unwind": { "path": "$likelihood_after", "preserveNullAndEmptyArrays": True } },
 
             # Last Step: Project the Fields
             {"$project": {
@@ -910,8 +958,42 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                 },
                 "impact_categories_before": 1,
                 "impact_categories_after": 1,
-                "likelihood_value_before": "$risk_calculation_before.likelihood_value",
-                "likelihood_value_after": "$risk_calculation_after.likelihood_value",
+                "likelihood_value_before": {
+                    "$cond": {
+                        "if": {
+                        "$and": [
+                            { "$ne": ["$likelihood_before.calculation_basis", None] },
+                            { "$ne": ["$likelihood_before.name", None] }
+                        ]
+                        },
+                        "then": {
+                        "$concat": [
+                            { "$toString": "$likelihood_before.calculation_basis" },
+                            " - ",
+                            "$likelihood_before.name"
+                        ]
+                        },
+                        "else": None
+                    }
+                },
+                "likelihood_value_after": {
+                    "$cond": {
+                        "if": {
+                        "$and": [
+                            { "$ne": ["$likelihood_after.calculation_basis", None] },
+                            { "$ne": ["$likelihood_after.name", None] }
+                        ]
+                        },
+                        "then": {
+                        "$concat": [
+                            { "$toString": "$likelihood_after.calculation_basis" },
+                            " - ",
+                            "$likelihood_after.name"
+                        ]
+                        },
+                        "else": None
+                    }
+                },
                 "additional_information": 1,
                 "risk_treatment_option": {
                     "$ifNull": ["$risk_treatment_option", None]
