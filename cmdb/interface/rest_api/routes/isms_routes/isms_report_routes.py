@@ -927,7 +927,6 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
                 "costs_for_implementation_currency": 1,
                 "audit_done_date": 1,
                 "audit_result": 1,
-                # Temporary required
                 "object_id_ref_type": 1,
             }}
         ]
@@ -936,15 +935,13 @@ def get_isms_risk_assessments_report(request_user: CmdbUser):
 
         # Replace Object public_id with Summary line
         for item in query_result:
-            if item.get("object") and item.get("object_id_ref_type") == "OBJECT":
+            if item.get("assigned_object") and item.get("object_id_ref_type") == "OBJECT":
                 try:
-                    object_summary = objects_manager.get_summary_line(item["object"], with_type=False)
-                    item["object"] = object_summary
+                    object_summary = objects_manager.get_summary_line(item["assigned_object"], with_type=False)
+                    item["assigned_object"] = object_summary
                 except Exception:
-                    item["object"] = "Unknown object"
+                    item["assigned_object"] = "Unknown object"
 
-            # Clean up unnecessary internal fields
-            item.pop("object_id_ref_type", None)
 
         return DefaultResponse(query_result).make_response()
     except Exception as err:
