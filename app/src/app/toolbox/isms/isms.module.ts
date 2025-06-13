@@ -49,9 +49,6 @@ import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-
 import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { RisksListComponent } from './risks/risks-list/risks-list.component';
-import { PersonListComponent } from './person/person-list/person-list.component';
-import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
-import { PersonRoutingModule } from './person/person-routing.module';
 import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
@@ -63,6 +60,7 @@ import { RiskMatrixReportModule } from './risk-matrix-report/risk-matrix-report.
 import { SoaComponent } from './reporting/soa/soa.component';
 import { RiskTreatmentPlanComponent } from './reporting/risk-treatment-plan/risk-treatment-plan.component';
 import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesments.component';
+import { ReportsOverviewComponent } from './reporting/overview/reports-overview.component';
 
 @NgModule({
   declarations: [
@@ -89,12 +87,11 @@ import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesm
     RisksFooterComponent,
     ControlmeasuresListComponent,
     ControlMeasuresAddComponent,
-    PersonListComponent,
-    PersonAddEditComponent,
     ControlMeasureFooterComponent,
     SoaComponent,
     RiskTreatmentPlanComponent,
-    RiskAssesmentsComponent
+    RiskAssesmentsComponent,
+    ReportsOverviewComponent
 
   ],
   imports: [
@@ -110,7 +107,7 @@ import { RiskAssesmentsComponent } from './reporting/risk-assesments/risk-assesm
     FormsModule,
     NgbModule,
     IsmsRoutingModule,
-    PersonRoutingModule,
+    
     RiskAssessmentModule,
     ControlMeasureAssignmentModule,
     RiskMatrixReportModule  ]

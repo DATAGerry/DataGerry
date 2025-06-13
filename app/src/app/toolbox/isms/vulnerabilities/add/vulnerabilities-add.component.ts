@@ -1,3 +1,20 @@
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -19,6 +36,8 @@ import { VulnerabilityService } from '../../services/vulnerability.service';
 })
 export class VulnerabilitiesAddComponent implements OnInit {
   public isEditMode = false;
+  public isViewMode = false;
+
   public isLoading$ = this.loaderService.isLoading$;
 
   public sourceOptions: ExtendableOption[] = [];
@@ -42,9 +61,19 @@ export class VulnerabilitiesAddComponent implements OnInit {
   ) {
     // Retrieve the navigation state in the constructor
     const navState = this.router.getCurrentNavigation()?.extras?.state;
-    if (navState && navState['vulnerability']) {
-      this.isEditMode = true;
-      this.vulnerability = navState['vulnerability'] as Vulnerability;
+    // if (navState && navState['vulnerability']) {
+    //   this.isEditMode = true;
+    //   this.vulnerability = navState['vulnerability'] as Vulnerability;
+    // }
+
+    const vulnerabilityFromState = (history.state as { vulnerability?: Vulnerability }).vulnerability;
+    if (vulnerabilityFromState) {
+      this.vulnerability = vulnerabilityFromState;
+      if (this.router.url.includes('/view')) {
+        this.isViewMode = true;
+      } else {
+        this.isEditMode = true;
+      }
     }
 
   }
@@ -52,6 +81,14 @@ export class VulnerabilitiesAddComponent implements OnInit {
   ngOnInit(): void {
 
     this.initForm();
+
+    if (this.vulnerability.public_id) {
+      this.patchVulnerabilityForm(this.vulnerability);
+      if (this.isViewMode) {
+        this.vulnerabilityForm.disable();
+      }
+    }
+    
 
     // If we already have vulnerability data, patch the form
     if (this.isEditMode && this.vulnerability.public_id) {
@@ -85,7 +122,7 @@ export class VulnerabilitiesAddComponent implements OnInit {
   /** Load "source" (extendable options) from the server */
   private loadSourceOptions(): void {
     this.loaderService.show();
-    this.extendableOptionService.getExtendableOptionsByType(OptionType.VULNERABILITY)
+    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {

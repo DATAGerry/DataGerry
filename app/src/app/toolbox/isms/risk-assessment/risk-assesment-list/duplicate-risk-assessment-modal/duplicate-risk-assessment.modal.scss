@@ -1,0 +1,113 @@
+/* ---------------------------------------------------------------------
+   duplicate-risk-assessment.modal.scss  (self-contained)
+   ------------------------------------------------------------------ */
+
+/* ---------- ᴠᴀʀɪᴀʙʟᴇꜱ (fallback if not defined globally) ---------- */
+$dg-primary-color: #e94d18 !default;
+$dg-border-color : rgba(#dee2e6, 0.5) !default;
+$dg-error-message-color: #dc3545 !default;
+
+/* ═════════════════ MODAL HEADER ═════════════════ */
+.modal-header {
+  background: linear-gradient(195deg, darken($dg-primary-color, 5%), $dg-primary-color);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.25px;
+  }
+
+  .close {
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: rgba(#fff, .9);
+    cursor: pointer;
+    transition: opacity .2s ease;
+
+    &:hover { opacity: .8; }
+  }
+}
+
+/* ═════════════════ MODAL BODY ═════════════════ */
+.modal-body {
+  background: #fff;
+  padding: 1.5rem 2rem;
+  min-height: 50vh;
+  max-height: 60vh;
+  overflow: hidden;        // global – inside elements handle their own scroll
+}
+
+/* Scroll helper for long option lists */
+.modal-body .ng-dropdown-panel-items {      // <ng-select> internal panel
+  max-height: 70vh;
+}
+
+/* ═════════════════ MODAL FOOTER ═════════════════ */
+.modal-footer {
+  border-top: 1px solid rgba(#dee2e6, .3);
+  padding: 1.25rem 2rem;
+  background: #fff;
+  display: flex;
+  justify-content: flex-end;
+
+  .btn {
+    font-size: .9rem;
+    padding: .5rem 1.5rem;
+    font-weight: 500;
+  }
+}
+
+/* ═════════════════ DIALOG SIZE OVERRIDE ═════════════════ */
+::ng-deep .modal-dialog {
+  max-width: 90vw;
+  width: 800px;
+
+  .modal-content {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 1260px) {
+  ::ng-deep .modal-dialog { max-width: 95vw; }
+}
+
+/* ═════════════════ EXTRA for duplicate modal ═════════════════ */
+
+/* summary line (“Risk #32 – Unauthorized Access…”) */
+.summary {
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.25;
+  word-break: break-word;
+
+  strong { color: $dg-primary-color; }
+}
+
+/* space below <app-form-select> */
+app-form-select,
+app-object-selector {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* Checkbox spacing */
+.dg-checkbox,
+dg-checkbox {
+  margin-top: .25rem;
+  display: block;
+}
+
+/* Spinner (dg-spinner) center helper */
+.dg-spinner, dg-spinner {
+  width: 48px;
+  height: 48px;
+}

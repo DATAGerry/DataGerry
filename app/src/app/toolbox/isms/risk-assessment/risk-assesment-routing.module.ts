@@ -61,7 +61,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RiskAssessmentAddComponent } from './risk-assessment-add/risk-assessment-add.component';
-import { preCloudGuard } from 'src/app/modules/auth/guards/pre-cloud.guard';
 import { RiskAssessmentListComponent } from './risk-assesment-list/risk-assessment-list.component';
 
 const routes: Routes = [
@@ -69,19 +68,16 @@ const routes: Routes = [
   {
     path: 'risks/:riskId/risk-assessments/add',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Add Risk Assessment (Risk)' }
   },
   {
     path: 'objects/:objectId/risk-assessments/add',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Add Risk Assessment (Object)' }
   },
   {
     path: 'object-groups/:groupId/risk-assessments/add',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Add Risk Assessment (Group)' }
   },
 
@@ -89,19 +85,16 @@ const routes: Routes = [
   {
     path: 'risks/:riskId/risk-assessments',
     component: RiskAssessmentListComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Risk Assessments (Risk)' }
   },
   {
     path: 'objects/:objectId/risk-assessments',
     component: RiskAssessmentListComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Risk Assessments (Object)' }
   },
   {
     path: 'object-groups/:groupId/risk-assessments',
     component: RiskAssessmentListComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Risk Assessments (Group)' }
   },
 
@@ -109,19 +102,16 @@ const routes: Routes = [
   {
     path: 'risks/:riskId/risk-assessments/edit/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Edit Risk Assessment (Risk)' }
   },
   {
     path: 'objects/:objectId/risk-assessments/edit/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Edit Risk Assessment (Object)' }
   },
   {
     path: 'object-groups/:groupId/risk-assessments/edit/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Edit Risk Assessment (Group)' }
   },
 
@@ -129,19 +119,16 @@ const routes: Routes = [
   {
     path: 'risks/:riskId/risk-assessments/view/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'View Risk Assessment (Risk)' }
   },
   {
     path: 'objects/:objectId/risk-assessments/view/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'View Risk Assessment (Object)' }
   },
   {
     path: 'object-groups/:groupId/risk-assessments/view/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'View Risk Assessment (Group)' }
   },
 
@@ -149,19 +136,16 @@ const routes: Routes = [
   {
     path: 'risk-assessments/edit/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Edit Risk Assessment' }
   },
   {
     path: 'risk-assessments/view/:id',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'View Risk Assessment' }
   },
   {
     path: 'risk-assessments/add',
     component: RiskAssessmentAddComponent,
-    canActivate: [preCloudGuard],
     data: { breadcrumb: 'Add Risk Assessment' }
   }
 ];

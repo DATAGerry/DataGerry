@@ -90,10 +90,20 @@ const routes: Routes = [
         path: 'person-groups',
         canActivateChild: [PermissionGuard],
         data: {
-            breadcrumb: 'Persons',
+            breadcrumb: 'Person Groups',
             right: 'base.framework.relation.view'
         },
         loadChildren: () => import('./person-group/person-group.module').then(m => m.PersonGroupModule),
+    },
+
+    {
+        path: 'persons',
+        canActivateChild: [PermissionGuard],
+        data: {
+            breadcrumb: 'Persons',
+            right: 'base.framework.relation.view'
+        },
+        loadChildren: () => import('../toolbox/isms/person/person.module').then(m => m.PersonModule),
     },
 ];
 

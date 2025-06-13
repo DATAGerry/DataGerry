@@ -17,29 +17,27 @@
 */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { RiskMatrixReportComponent } from './risk-matrix-report.component';
-import { RiskMatrixGridComponent } from './risk-matrix-grid/risk-matrix-grid.component';
-import { RiskAssessmentDrilldownModalComponent } from './modal/risk-assessment-drilldown-modal.component';
-import { RiskAssessmentModule } from '../risk-assessment/risk-assesment.module';
+import { TableModule } from 'src/app/layout/table/table.module';
 import { AuthModule } from 'src/app/modules/auth/auth.module';
 import { CoreModule } from 'src/app/core/core.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { PersonRoutingModule } from './person-routing.module';
+import { PersonAddEditComponent } from './person-add/person-add-edit.component';
+import { PersonListComponent } from './person-list/person-list.component';
 
 @NgModule({
   declarations: [
-    RiskMatrixReportComponent,
-    RiskMatrixGridComponent,
-    RiskAssessmentDrilldownModalComponent
+    PersonAddEditComponent,
+    PersonListComponent
   ],
   imports: [
     CommonModule,
-    FormsModule,
-    NgbModalModule,
-    RiskAssessmentModule,
+    PersonRoutingModule,
+    TableModule,
     AuthModule,
-    CoreModule
+    CoreModule,
+    ReactiveFormsModule
   ]
 })
-export class RiskMatrixReportModule { }
+export class PersonModule { }

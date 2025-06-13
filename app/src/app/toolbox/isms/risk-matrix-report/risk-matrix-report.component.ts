@@ -40,6 +40,7 @@ import { RiskMatrixReportService } from '../services/risk-matrix-report.service'
 
 import { RiskAssessmentDrilldownModalComponent }
     from './modal/risk-assessment-drilldown-modal.component';
+import { getCurrentDate } from 'src/app/core/utils/date.utils';
 
 @Component({
     selector: 'app-risk-matrix-report',
@@ -176,10 +177,9 @@ export class RiskMatrixReportComponent implements OnInit {
                 }
             }
 
-            pdf.save('risk-matrix-report.pdf');
+            pdf.save(`risk-matrix-report_${getCurrentDate()}`);
 
         } catch (err) {
-            console.error(err);
             this.toast.error('PDF export failed');
         } finally {
             this.loader.hide();

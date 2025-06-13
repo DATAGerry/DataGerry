@@ -27,7 +27,6 @@ import { ImportThreatComponent } from './components/threat/threat-import.compone
 import { ImportVulnerabilityComponent } from './components/vulnerability/vulnerability-import.component';
 import { ImportRiskComponent } from './components/risk/risk-import.component';
 import { ImportControlMeasureComponent } from './components/control-measure/control-measure-import.component';
-import { preCloudGuard } from '../auth/guards/pre-cloud.guard';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 const routes: Routes = [
@@ -60,7 +59,7 @@ const routes: Routes = [
     },
     {
         path: 'threat',
-        canActivate: [PermissionGuard, preCloudGuard],
+        canActivate: [PermissionGuard],
         data: {
             breadcrumb: 'Threats',
            
@@ -69,7 +68,7 @@ const routes: Routes = [
     },
     {
         path: 'vulnerability',
-        canActivate: [PermissionGuard, preCloudGuard],
+        canActivate: [PermissionGuard],
         data: {
             breadcrumb: 'Vulnerabilities',
            
@@ -78,7 +77,7 @@ const routes: Routes = [
     },
     {
         path: 'risk',
-        canActivate: [PermissionGuard, preCloudGuard],
+        canActivate: [PermissionGuard],
         data: {
             breadcrumb: 'Risks',
            
@@ -87,7 +86,7 @@ const routes: Routes = [
     },
     {
         path: 'control-measure',
-        canActivate: [PermissionGuard, preCloudGuard],
+        canActivate: [PermissionGuard],
         data: {
             breadcrumb: 'Controls/Measures',
            

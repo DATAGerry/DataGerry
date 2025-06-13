@@ -1,13 +1,29 @@
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PersonListComponent } from './person-list/person-list.component';
 import { PersonAddEditComponent } from './person-add/person-add-edit.component';
-import { preCloudGuard } from 'src/app/modules/auth/guards/pre-cloud.guard';
 
 const routes: Routes = [
 
     {
-        path: 'persons',
+        path: '',
         children: [
             {
                 path: '', component: PersonListComponent,
@@ -15,7 +31,6 @@ const routes: Routes = [
                     breadcrumb: 'Persons',
                     right: 'base.user-management.person.view'
                 },
-                canActivate: [preCloudGuard]
             },
             {
                 path: 'add', component: PersonAddEditComponent,
@@ -23,7 +38,6 @@ const routes: Routes = [
                     breadcrumb: 'Add Person',
                     right: 'base.user-management.person.add'
                 },
-                canActivate: [preCloudGuard]
             },
             {
                 path: 'edit', component: PersonAddEditComponent,
@@ -31,7 +45,6 @@ const routes: Routes = [
                     breadcrumb: 'Edit Person',
                     right: 'base.user-management.person.edit'
                 },
-                canActivate: [preCloudGuard]
             }
         ]
     },

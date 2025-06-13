@@ -1,5 +1,20 @@
-// src/app/toolbox/isms/control-measures/control-measures-list.component.ts
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
 
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import {
     Component,
     OnInit,
@@ -20,6 +35,10 @@ import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
 import { ControlMeasure } from '../../models/control-measure.model';
 import { ControlMeasureService } from '../../services/control-measure.service';
+import { OptionType } from '../../models/option-type.enum';
+import { ExtendableOptionService } from '../../services/extendable-option.service';
+import { ExtendableOption } from 'src/app/framework/models/object-group.model';
+import { state } from '@angular/animations';
 @Component({
     selector: 'app-control-measures-list',
     templateUrl: './control-measures-list.component.html',
@@ -28,6 +47,7 @@ import { ControlMeasureService } from '../../services/control-measure.service';
 export class ControlmeasuresListComponent implements OnInit {
     @ViewChild('actionTemplate', { static: true }) actionTemplate: TemplateRef<any>;
     @ViewChild('sourceTemplate', { static: true }) sourceTemplate: TemplateRef<any>;
+    @ViewChild('implementationStateTemplate', { static: true }) implementationStateTemplate: TemplateRef<any>;
 
     public controlMeasures: ControlMeasure[] = [];
     public totalControlMeasures = 0;
@@ -41,17 +61,25 @@ export class ControlmeasuresListComponent implements OnInit {
     public columns: Column[] = [];
     public initialVisibleColumns: string[] = [];
 
+    // For showing source names
+    public sourceOptions: ExtendableOption[] = [];
+    public implementationStateOptions: ExtendableOption[] = [];
+
     constructor(
         private router: Router,
         private toast: ToastService,
         private loaderService: LoaderService,
         private modalService: NgbModal,
         private filterBuilderService: FilterBuilderService,
-        private controlmeasureservice: ControlMeasureService
+        private controlmeasureservice: ControlMeasureService,
+        private extendableOptionService: ExtendableOptionService
+
     ) { }
 
     ngOnInit(): void {
         this.setupColumns();
+        this.loadSourceOptions();
+        this.loadImplementationStateOptions(); 
         this.loadControlMeasures();
     }
 
@@ -76,23 +104,40 @@ export class ControlmeasuresListComponent implements OnInit {
                 sortable: true,
                 style: { width: '200px' }
             },
+            // {
+            //     display: 'Type',
+            //     name: 'control_measure_type',
+            //     data: 'control_measure_type',
+            //     searchable: true,
+            //     sortable: true,
+            //     style: { width: '150px', 'text-align': 'center' }
+            // },
             {
-                display: 'Type',
-                name: 'control_measure_type',
-                data: 'control_measure_type',
+                display: 'Identifier',
+                name: 'identifier',
+                data: 'identifier',
                 searchable: true,
-                sortable: true,
+                sortable: false,
                 style: { width: '150px', 'text-align': 'center' }
             },
             {
-                display: 'Source',
-                name: 'source',
-                data: 'source',
-                searchable: false,
+                display: 'Implementation State',
+                name: 'implementation_state',
+                data: 'implementation_state',
+                searchable: true,
                 sortable: false,
-                template: this.sourceTemplate,
-                style: { width: '100px', 'text-align': 'center' }
+                template: this.implementationStateTemplate, 
+                style: { width: '150px', 'text-align': 'center' }
             },
+            // {
+            //     display: 'Source',
+            //     name: 'source',
+            //     data: 'source',
+            //     searchable: false,
+            //     sortable: false,
+            //     template: this.sourceTemplate,
+            //     style: { width: '100px', 'text-align': 'center' }
+            // },
             {
                 display: 'Actions',
                 name: 'actions',
@@ -101,7 +146,7 @@ export class ControlmeasuresListComponent implements OnInit {
                 sortable: false,
                 fixed: true,
                 template: this.actionTemplate,
-                style: { width: '100px', 'text-align': 'center' }
+                style: { width: '80px', 'text-align': 'center' }
             }
         ];
         this.initialVisibleColumns = this.columns.map((c) => c.name);
@@ -147,6 +192,23 @@ export class ControlmeasuresListComponent implements OnInit {
     }
 
 
+    /*
+    * Load the source options
+    */
+    loadSourceOptions(): void {
+        this.loaderService.show();
+        this.extendableOptionService.getExtendableOptionsByType(OptionType.CONTROL_MEASURE)
+            .pipe(finalize(() => this.loaderService.hide()))
+            .subscribe({
+                next: (res) => {
+                    this.sourceOptions = res.results;
+                    console.log('sourceOptions', this.sourceOptions);
+                },
+                error: (err) => this.toast.error(err?.error?.message)
+            });
+    }
+
+
     /**
      * Navigate to add new control/measure page
      * @returns {void}
@@ -185,9 +247,9 @@ export class ControlmeasuresListComponent implements OnInit {
             return;
         }
         const modalRef = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
-        modalRef.componentInstance.title = 'Delete Control/Measure';
+        modalRef.componentInstance.title = 'Delete Control';
         modalRef.componentInstance.item = item;
-        modalRef.componentInstance.itemType = 'Control/Measure';
+        modalRef.componentInstance.itemType = 'Control';
         modalRef.componentInstance.itemName = item.title;
 
         modalRef.result.then(
@@ -198,7 +260,7 @@ export class ControlmeasuresListComponent implements OnInit {
                         .pipe(finalize(() => this.loaderService.hide()))
                         .subscribe({
                             next: () => {
-                                this.toast.success('Control/Measure deleted successfully.');
+                                this.toast.success('Control deleted successfully.');
                                 this.loadControlMeasures();
                             },
                             error: (err) => {
@@ -235,5 +297,36 @@ export class ControlmeasuresListComponent implements OnInit {
         this.filter = search;
         this.page = 1;
         this.loadControlMeasures();
+    }
+
+    /* ------------------------------------------------------------------
+    * Helper methods
+    * ------------------------------------------------------------------ */
+
+    /*
+    * Get the source name by its public_id
+    */
+    getSourceNames(sourceIds: number): string {
+        const option = this.sourceOptions.find(opt => opt.public_id === sourceIds);
+        console.log('option', option?.value);
+        return option?.value;
+    }
+
+    private loadImplementationStateOptions(): void {
+        this.loaderService.show();
+        this.extendableOptionService.getExtendableOptionsByType('IMPLEMENTATION_STATE')
+            .pipe(finalize(() => this.loaderService.hide()))
+            .subscribe({
+                next: (res) => {
+                    this.implementationStateOptions = res.results || [];
+                },
+                error: (err) => this.toast.error(err?.error?.message)
+            });
+    }
+
+    // New method to display implementation state name instead of its ID
+    getImplementationStateName(stateId: number): string {
+        const option = this.implementationStateOptions.find(opt => opt.public_id === stateId);
+        return option?.value;
     }
 }

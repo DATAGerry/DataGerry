@@ -107,9 +107,10 @@
         (clicked)="onCancel()"></app-button>
 
       <!-- Submit Button -->
-      <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
+       <div *permissionLink="['base.isms.risk.add', 'base.isms.risk.edit']">
+        <app-button [label]="isEditMode ? 'Save Changes' : 'Create Risk'" type="submit" [bootstrapClass]="'btn-success'"
         *ngIf="!isViewMode" [disabled]="riskForm.invalid"></app-button>
-
+       </div>
     </div>
   </form>
 
@@ -119,7 +120,7 @@
 </div>
 
 
-<app-extendable-option-manager *ngIf="showCategoryManager" [options]="categoryOptions" [optionType]="'RISK'"
+<app-extendable-option-manager *ngIf="showCategoryManager" [options]="categoryOptions" [optionType]="'THREAT'"
   [modalTitle]="'Manage Categories'" [itemLabel]="'Category'" [itemLabelPlural]="'Categories'"
   (close)="closeCategoryManager()">
 </app-extendable-option-manager>

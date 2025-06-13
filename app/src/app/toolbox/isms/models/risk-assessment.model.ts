@@ -58,5 +58,14 @@ export interface RiskCalculationData {
     auditor_id_ref_type?: 'PERSON' | 'PERSON_GROUP';
     auditor_id?: number;
     audit_result?: string;
+
+
+    naming?: {
+      risk_id_name?: string;
+      object_group_id_name?: string | null;
+      object_id_name?: string | null;
+      interviewed_persons_names?: string | null;
+      responsible_persons_id_names?: string | null;
+  };
   }
   

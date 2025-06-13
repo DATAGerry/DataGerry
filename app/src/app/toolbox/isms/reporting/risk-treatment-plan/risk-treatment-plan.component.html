@@ -59,7 +59,7 @@
   <ng-template #riskBox let-val="val" let-col="col">
     <div class="risk-box"
          [style.background-color]="val?.color || '#777'"
-         style="color:#fff">
+         [style.color]="getTextColor(val?.color || '#777')">
       {{ val?.value ?? '-' }}
     </div>
   </ng-template>
@@ -72,18 +72,35 @@
     <ng-container *ngTemplateOutlet="riskBox; context:{ val:item.risk_after }"></ng-container>
   </ng-template>
 
+
+  <ng-template #treatmentOptionTpl let-item="item">
+    {{ item.risk_treatment_option === 'TRANSFER_SHARE' ? 'Transfer/Share' : item.risk_treatment_option }}
+  </ng-template>
+
   <ng-template #dateTpl let-item="item">
     {{ item.planned_date_str || '-' }}
   </ng-template>
 
-  <ng-template #controlsTpl let-item="item">
+  <!-- <ng-template #controlsTpl let-item="item">
     <span *ngIf="item.control_measures?.length; else none">
       <span *ngFor="let c of item.control_measures; index as i">
         {{ c }}<ng-container *ngIf="i+1 < item.control_measures.length">, </ng-container>
       </span>
     </span>
     <ng-template #none>-</ng-template>
+  </ng-template> -->
+
+  <ng-template #controlsTpl let-item="item">
+    <ng-container *ngIf="item.control_measures?.length; else none">
+      <ul class="mb-0">
+        <li *ngFor="let c of item.control_measures">
+          {{ c }}
+        </li>
+      </ul>
+    </ng-container>
+    <ng-template #none>-</ng-template>
   </ng-template>
+  
 </cmdb-table>
 
 <!-- ­───────── LOADER ───────── -->
@@ -95,8 +112,8 @@
 <style>
   .risk-box{
     display:flex; justify-content:center; align-items:center;
-    height:26px; min-width:60px; padding:0 4px;
-    border-radius:4px; font-weight:600;
+    height:26px; min-width:60px; padding:0 1px;
+    border-radius:2px; font-weight:600;
   }
   .gap-2{ gap:.5rem }
   .toolbar .btn i{ pointer-events:none }

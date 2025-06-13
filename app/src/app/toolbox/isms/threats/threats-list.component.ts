@@ -1,3 +1,20 @@
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -73,33 +90,36 @@ export class ThreatsListComponent implements OnInit {
         name: 'public_id',
         data: 'public_id',
         searchable: false,
-        sortable: true,
+        sortable: false,
         style: { width: '120px', 'text-align': 'center' }
       },
       {
         display: 'Name',
         name: 'name',
         data: 'name',
-        searchable: true,
-        sortable: true,
-        style: { width: 'auto', 'text-align': 'center' }
+        searchable: false,
+        sortable: false,
+        style: { width: 'auto' },
+        cssClasses: ['text-center'],
+
       },
       {
         display: 'Identifier',
         name: 'identifier',
         data: 'identifier',
-        searchable: true,
-        sortable: true,
+        searchable: false,
+        sortable: false,
         style: { width: '180px', 'text-align': 'center' }
       },
       {
         display: 'Source',
         name: 'source',
         data: 'source',
-        searchable: true,
+        searchable: false,
         sortable: false,
         template: this.sourceTemplate,
-        style: { width: 'auto', 'text-align': 'center' }
+        style: { width: 'auto' },
+        cssClasses: ['text-center']
       },
       {
         display: 'Actions',
@@ -123,7 +143,7 @@ export class ThreatsListComponent implements OnInit {
   */
   loadSourceOptions(): void {
     this.loaderService.show();
-    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT)
+    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {
@@ -188,6 +208,16 @@ export class ThreatsListComponent implements OnInit {
   }
 
   /*
+* View a new threat
+*/
+  onView(threat: Threat): void {
+    this.router.navigate(
+      ['/isms/threats/view'],
+      { state: { threat } }
+    );
+  }
+
+  /*
   * Delete a threat
   */
   onDelete(threat: Threat): void {
@@ -244,9 +274,9 @@ export class ThreatsListComponent implements OnInit {
     this.loadThreats();
   }
 
-    /*
-  * Get the source name by its public_id
-  */
+  /*
+* Get the source name by its public_id
+*/
   getSourceNames(sourceIds: number): string {
     const option = this.sourceOptions.find(opt => opt?.public_id === sourceIds);
     return option?.value;

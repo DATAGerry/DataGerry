@@ -8,6 +8,10 @@ export interface ControlMeasureAssignment {
     priority?: number; // 1‑Low,2‑Med,3‑High,4‑VeryHigh
     responsible_for_implementation_id_ref_type?: 'PERSON' | 'PERSON_GROUP';
     responsible_for_implementation_id?: number;
+
+    naming?: {
+      cma_summary?: string | null;
+  };
   }
 
   export interface SelectOption<T = any> {

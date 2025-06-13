@@ -60,7 +60,7 @@ export class ControlMeasureAssignmentListComponent
   assignments: any[] = [];
   totalAssignments = 0;
   page = 1;
-  limit = 10;
+  limit = 0;
   loading = false;
   filter = '';
   sort: Sort = { name: 'public_id', order: SortDirection.DESCENDING };
@@ -114,29 +114,29 @@ export class ControlMeasureAssignmentListComponent
   private setupColumns(): void {
     this.columns = [
       { display: 'ID', name: 'public_id', data: 'public_id',
-        searchable: false, sortable: true,
+        searchable: false, sortable: false,
         style: { width: '80px', 'text-align': 'center' } },
         
         ...(!this.controlMeasureId ? [{
           display: 'Control / Measure',
           name: 'cmLabel',
           data: 'cmLabel',
-          searchable: true,
+          searchable: false,
           sortable: false
         }] : []),
 
       { display: 'Risk Assessment', name: 'raLabel', data: 'raLabel',
-        searchable: true, sortable: false },
+        searchable: false, sortable: false },
 
       { display: 'Responsible', name: 'responsibleName', data: 'responsibleName',
-        searchable: true, sortable: false },
+        searchable: false, sortable: false },
 
       { display: 'Priority', name: 'priorityLabel', data: 'priorityLabel',
-        searchable: false, sortable: true,
+        searchable: false, sortable: false,
         style: { width: '120px', 'text-align': 'center' } },
 
       { display: 'Implementation Status', name: 'statusLabel', data: 'statusLabel',
-        searchable: false, sortable: true,
+        searchable: false, sortable: false,
         style: { width: '160px' } },
 
       { display: 'Actions', name: 'actions', data: 'public_id',
@@ -212,10 +212,13 @@ export class ControlMeasureAssignmentListComponent
       .pipe(finalize(() => { this.loading = false; this.loader.hide(); }))
       .subscribe({
         next: resp => {
+          
+          console.log('Assignments response:', resp.results);
           this.assignments = (resp.results ?? []).map(a => ({
             ...a,
             cmLabel       : `${this.cmMap.get(a.control_measure_id) ?? 'CM'} (#${a.control_measure_id})`,
-            raLabel       : this.raMap.get(a.risk_assessment_id) ?? `RA #${a.risk_assessment_id}`,
+            // raLabel       : this.raMap.get(a.risk_assessment_id) ?? `RA #${a.risk_assessment_id}`,
+            raLabel: a.naming?.cma_summary,
             responsibleName : this.respMap.get(a.responsible_for_implementation_id)
                               ?? a.responsible_for_implementation_id,
             priorityLabel : ({ 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Very High' } as any)[a.priority] ?? '',

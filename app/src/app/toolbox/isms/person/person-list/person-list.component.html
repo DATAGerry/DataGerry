@@ -6,7 +6,7 @@
 </div>
 <hr />
 
-<cmdb-table [items]="persons" [columns]="columns" [page]="page" [sort]="sort" [id]="'persons-table'"
+<cmdb-table *permissionLink="['base.user-management.person.view']" [items]="persons" [columns]="columns" [page]="page" [sort]="sort" [id]="'persons-table'"
   [emptyMessage]="'No Persons found.'" [totalItems]="totalPersons" [selectEnabled]="false" [loading]="loading"
   [pageSize]="limit" [toggleable]="true" [initialVisibleColumns]="initialVisibleColumns"
   (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"

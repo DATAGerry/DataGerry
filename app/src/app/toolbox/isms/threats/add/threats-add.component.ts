@@ -1,3 +1,20 @@
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -20,6 +37,7 @@ import { OptionType } from 'src/app/toolbox/isms/models/option-type.enum';
 })
 export class ThreatsAddComponent implements OnInit {
   public isEditMode = false;
+  public isViewMode = false;
   public threatId?: number;
   public isLoading$ = this.loaderService.isLoading$;
 
@@ -44,22 +62,35 @@ export class ThreatsAddComponent implements OnInit {
     private loaderService: LoaderService,
     private toast: ToastService,
     private extendableOptionService: ExtendableOptionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.threatId = +this.route.snapshot.paramMap.get('id');
+    const threatFromState = (history.state as { threat?: Threat }).threat;
+  
+    if (threatFromState && this.router.url.includes('/view')) {
+      this.isViewMode = true;
+      this.threat = threatFromState;
+  
+      this.initForm();
+      this.threatForm.patchValue(this.threat);   // name, identifier, source, description
+      this.threatForm.disable();                 // make everything read-only
+      this.loadSourceOptions();
+      return;
+    }
+  
+    /* ---- fallback: add / edit modes ---- */
+    this.threatId   = +this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.threatId;
-
+  
     this.initForm();
-
-    // Load the dropdown options
     this.loadSourceOptions();
-
-    // If editing, fetch data from the server and patch the form
+  
     if (this.isEditMode && this.threatId) {
       this.loadThreatToEdit(this.threatId);
     }
   }
+  
+  
 
   /** Create the FormGroup with default values and validators */
   private initForm(): void {
@@ -74,7 +105,7 @@ export class ThreatsAddComponent implements OnInit {
   /** Load the source (extendable options) data */
   private loadSourceOptions(): void {
     this.loaderService.show();
-    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT)
+    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {
@@ -145,7 +176,7 @@ export class ThreatsAddComponent implements OnInit {
           this.toast.error(err?.error?.message);
         }
       });
-  }x
+  } x
 
   private updateThreat(id: number, updatedThreat: Threat): void {
     this.loaderService.show();

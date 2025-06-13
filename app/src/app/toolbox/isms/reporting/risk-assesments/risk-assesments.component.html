@@ -26,10 +26,9 @@
 
 <div class="d-flex flex-row justify-content-between align-items-center mb-3">
   <h1 class="text-2xl font-semibold m-0">Risk Assessments</h1>
-  <ng-container *ngTemplateOutlet="exportTemplate"></ng-container>
+  <!-- <ng-container *ngTemplateOutlet="exportTemplate"></ng-container> -->
 </div>
-
-<!-- ­──────────────  FILTER-BAR  ──────────────── -->
+<!-- 
 <div class="filter-bar card shadow-sm p-3 mb-3">
   <div class="row g-2 align-items-end">
 
@@ -43,21 +42,16 @@
 
     <div class="col-12 col-md-6 col-lg-5" *ngIf="ui.selectedProperty">
       <label class="form-label mb-1">Value(s)</label>
-      <select class="form-select form-select-sm" multiple
-              [(ngModel)]="ui.selectedValues">
+      <select class="form-select form-select-sm" multiple [(ngModel)]="ui.selectedValues">
         <option *ngFor="let v of getValues(ui.selectedProperty)" [value]="v">{{ v }}</option>
       </select>
     </div>
 
     <div class="col-auto">
-      <button class="btn btn-sm btn-primary"
-              [disabled]="!ui.selectedValues.length"
-              (click)="applyFilter()">
+      <button class="btn btn-sm btn-primary" [disabled]="!ui.selectedValues.length" (click)="applyFilter()">
         Add
       </button>
-      <button class="btn btn-sm btn-outline-secondary"
-              [disabled]="!hasActiveFilters"
-              (click)="clearFilters()">
+      <button class="btn btn-sm btn-outline-secondary" [disabled]="!hasActiveFilters" (click)="clearFilters()">
         Clear&nbsp;All
       </button>
     </div>
@@ -69,48 +63,105 @@
       <i class="fas fa-times" role="button" (click)="removeFilter(i)"></i>
     </span>
   </div>
+</div> -->
+
+<!-- ───────────────── HEADER: filter card + export ───────────────── -->
+<div class="container-fluid p-0 mt-5">
+  <div class="d-flex align-items-start gap-3 px-3 py-3 border-bottom bg-white flex-wrap">
+
+    <!-- FILTER CARD -->
+    <div class="filter-card card shadow-sm p-3">
+
+      <div class="row g-3">
+
+        <!-- Criterion (always shown) -->
+        <div class="col-12 col-lg-4">
+          <label class="form-label mb-1">Filter by …</label>
+          <select class="form-select form-select-sm"
+                  [(ngModel)]="ui.selectedProperty">
+            <option value="" disabled selected>select criterion</option>
+            <option *ngFor="let p of filterDefs" [value]="p.key">{{ p.label }}</option>
+          </select>
+        </div>
+
+        <!-- Value(s) – rendered only when criterion chosen -->
+        <ng-container *ngIf="ui.selectedProperty">
+          <div class="col-12 col-lg-4">
+            <label class="form-label mb-1">Value(s)</label>
+            <select class="form-select form-select-sm"
+                    multiple
+                    [(ngModel)]="ui.selectedValues">
+              <option *ngFor="let v of getValues(ui.selectedProperty)"
+                      [value]="v">{{ v }}</option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- Buttons (slot always present → width never shifts) -->
+        <div class="col-12 col-lg-4 d-flex gap-2 align-items-end">
+          <button class="btn btn-sm btn-primary flex-grow-1 flex-lg-unset"
+                  [disabled]="!ui.selectedProperty || !ui.selectedValues.length"
+                  (click)="applyFilter()">
+            Add
+          </button>
+
+          <button class="btn btn-sm btn-outline-secondary flex-grow-1 flex-lg-unset"
+                  [disabled]="!hasActiveFilters"
+                  (click)="clearFilters()">
+            Clear&nbsp;All
+          </button>
+        </div>
+      </div>
+
+      <!-- Active-filter chips -->
+      <div *ngIf="hasActiveFilters" class="d-flex flex-wrap gap-1 mt-2">
+        <span class="badge rounded-pill text-bg-light"
+              *ngFor="let f of activeFilterChips; index as i">
+          {{ f }}&nbsp;
+          <i class="fas fa-times" role="button" (click)="removeFilter(i)"></i>
+        </span>
+      </div>
+    </div>
+
+    <!-- ▸ EXPORT BUTTON (template) -->
+    <ng-container *ngTemplateOutlet="exportTemplate"></ng-container>
+  </div>
 </div>
 
 
 
 
-<!-- ­──────────────  TABLE  ─────────────── -->
-<cmdb-table
-[items]="pagedRows"
-  [columns]="columns"
-  [initialVisibleColumns]="initialVisibleColumns"
-  [page]="page"
-  [pageSize]="limit"
-  [totalItems]="totalItems"
-  [loading]="loading"
 
-  (pageChange)="onPageChange($event)"
-  (pageSizeChange)="onPageSizeChange($event)"
-  (sortChange)="onSortChange($event)"
-  (searchChange)="onSearchChange($event)"
->
+<cmdb-table [items]="pagedRows" [columns]="columns" [initialVisibleColumns]="initialVisibleColumns" [page]="page"
+  [pageSize]="limit" [totalItems]="totalItems" [loading]="loading" (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
+  (searchChange)="onSearchChange($event)">
 
-  <!-- templates reused by table -->
   <ng-template #dateTpl let-item="item" let-col="column">
     {{ item[col.name] || '-' }}
   </ng-template>
 
+
+
   <ng-template #riskBeforeTpl let-item="item">
-    <div class="risk-box" [style.background-color]="item.risk_before?.color || '#777'">
+    <div class="risk-box" [style.background-color]="item.risk_before?.color || '#777'"
+      [style.color]="getTextColor(item.risk_before?.color || '#777')">
       {{ item.risk_before?.value ?? '-' }}
     </div>
   </ng-template>
 
   <ng-template #riskAfterTpl let-item="item">
-    <div class="risk-box" [style.background-color]="item.risk_after?.color || '#777'">
+    <div class="risk-box" [style.background-color]="item.risk_after?.color || '#777'"
+      [style.color]="getTextColor(item.risk_after?.color || '#777')">
       {{ item.risk_after?.value ?? '-' }}
     </div>
   </ng-template>
 
+  <ng-template #treatmentOptionTpl let-item="item">
+    {{ item.risk_treatment_option === 'TRANSFER_SHARE' ? 'Transfer/Share' : item.risk_treatment_option }}
+  </ng-template>
+
 </cmdb-table>
 
-<!-- ­──────────────  LOADER  ─────────────── -->
-<app-loading-popup
-  [isVisible]="isLoading$ | async"
-  message="We're processing the data…">
+<app-loading-popup [isVisible]="isLoading$ | async" message="We're processing the data…">
 </app-loading-popup>

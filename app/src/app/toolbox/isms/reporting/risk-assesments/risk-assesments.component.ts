@@ -9,6 +9,10 @@ import { RiskAssesmentsReportService } from '../../services/risk-assessment-repo
 import { FilterBuilderService } from 'src/app/core/services/filter-builder.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { getTextColorBasedOnBackground, hexToRgb } from 'src/app/core/utils/color-utils';
+import { getCurrentDate } from 'src/app/core/utils/date.utils';
+import { forkJoin } from 'rxjs';
+import { RiskClassService } from '../../services/risk-class.service';
 
 /* helper ───────────────────────────────────────────────────────── */
 type RiskRow = any;
@@ -27,12 +31,25 @@ export class RiskAssesmentsComponent implements OnInit {
   /* ───────── templates for coloured boxes ───────── */
   @ViewChild('riskBeforeTpl', { static: true }) riskBeforeTpl!: TemplateRef<any>;
   @ViewChild('riskAfterTpl', { static: true }) riskAfterTpl!: TemplateRef<any>;
+  @ViewChild('treatmentOptionTpl', { static: true }) treatmentOptionTpl!: TemplateRef<any>;
 
   /* ───────── data/state ───────── */
   private rawRows: ProcRow[] = [];
   viewRows: ProcRow[] = [];
   totalItems = 0;
   pagedRows: ProcRow[] = [];
+
+/* ─ Risk-class lookup ─ */
+private riskClassLookup = new Map<number, { name: string; color: string }>();
+
+private rcName = (id?: number | null) =>
+  id == null ? '' : this.riskClassLookup.get(id)?.name ?? '';
+
+private rcId = (name: string) => {
+  for (const [id, obj] of this.riskClassLookup) if (obj.name === name) return id;
+  return null;
+};
+
 
 
   loading = false;
@@ -52,14 +69,14 @@ export class RiskAssesmentsComponent implements OnInit {
   filterDefs = [
     { label: 'Affected protection goals', key: 'prot_goals_arr' },
     { label: 'Risk category', key: 'risk_category' },
-    { label: 'Risk class before treatment', key: 'risk_class_before' },
+    { label: 'Risk class before treatment', key: 'risk_class_before_id' },
     { label: 'Risk assessor', key: 'risk_assessor' },
     { label: 'Risk owner', key: 'risk_owner' },
     { label: 'Risk treatment option', key: 'risk_treatment_option' },
     { label: 'Responsible person', key: 'responsible_person' },
     { label: 'Implementation status', key: 'implementation_status' },
     { label: 'Priority', key: 'priority' },
-    { label: 'Risk class after treatment', key: 'risk_class_after' },
+    { label: 'Risk class after treatment', key: 'risk_class_after_id' },
   ];
 
   /* ───────── exports ───────── */
@@ -69,6 +86,7 @@ export class RiskAssesmentsComponent implements OnInit {
   /* ───────── ctor ───────── */
   constructor(
     private readonly api: RiskAssesmentsReportService,
+    private readonly rcSvc: RiskClassService,
     private readonly fileExp: FileExportService,
     private readonly loader: LoaderService,
     private readonly toast: ToastService,
@@ -77,105 +95,204 @@ export class RiskAssesmentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildStaticColumns();              // columns that are always present
-    this.loadPage();    
-    
-    
+    this.loadPage();
+
+
     // fetch & render first page
-    
+
   }
 
   /* =====================================================================
    *  STATIC COLUMNS  (always visible)
    * ===================================================================*/
+  // private buildStaticColumns(): void {
+  //   this.columns = [
+  //     {
+  //       display: 'Risk Title', name: 'risk_title', data: 'risk_title',
+  //       searchable: true, sortable: true
+  //     },
+  //     { display: 'Protection Goals', name: 'prot_goals', data: 'prot_goals' },
+
+  //     {
+  //       display: 'Category', name: 'risk_category', data: 'risk_category',
+  //       searchable: true, sortable: true
+  //     },
+
+  //     {
+  //       display: 'Object', name: 'assigned_object', data: 'assigned_object',
+  //       searchable: true
+  //     },
+
+  //     {
+  //       display: 'Object Type', name: 'assigned_object_type', data: 'assigned_object_type',
+  //       searchable: true
+  //     },
+
+  //     { display: 'LH Before', name: 'likelihood_value_before', data: 'likelihood_value_before' },
+  //     {
+  //       display: 'Risk Before', name: 'risk_before', data: 'risk_before',
+  //       template: this.riskBeforeTpl
+  //     },
+  //     { display: 'Risk Owner', name: 'risk_owner', data: 'risk_owner' },
+
+
+  //     { display: 'Assessment Date', name: 'ass_date', data: 'ass_date', sortable: true },
+  //     { display: 'Planned Impl. Date', name: 'plan_date', data: 'plan_date' },
+  //     { display: 'Finished Impl. Date', name: 'fin_date', data: 'fin_date' },
+  //     { display: 'Audit Date', name: 'audit_date', data: 'audit_date' },
+
+  //     {
+  //       display: 'Risk After', name: 'risk_after', data: 'risk_after',
+  //       template: this.riskAfterTpl
+  //     },
+
+  //     { display: 'LH After', name: 'likelihood_value_after', data: 'likelihood_value_after' },
+
+  //     { display: 'Treatment Option', name: 'risk_treatment_option', data: 'risk_treatment_option' },
+  //     { display: 'Impl. Status', name: 'implementation_status', data: 'implementation_status' },
+  //     { display: 'Priority', name: 'priority', data: 'priority' },
+
+  //     { display: 'Responsible', name: 'responsible_person', data: 'responsible_person' },
+  //     { display: 'Auditor', name: 'auditor', data: 'auditor' },
+
+  //     { display: 'Additional Info', name: 'additional_info', data: 'additional_info' },
+  //     { display: 'Treatment Desc.', name: 'risk_treatment_description', data: 'risk_treatment_description' },
+  //     { display: 'Resources', name: 'required_resources', data: 'required_resources' },
+  //     { display: 'Cost', name: 'costs_for_implementation', data: 'costs_for_implementation' },
+  //     { display: 'Currency', name: 'costs_for_implementation_currency', data: 'costs_for_implementation_currency' },
+  //   ];
+  //   this.initialVisibleColumns = this.columns.map(c => c.name);
+  // }
+
+  /* =====================================================================
+ *  STATIC COLUMNS  (always visible, ordered as in spec)
+ * ===================================================================*/
   private buildStaticColumns(): void {
     this.columns = [
-      {
-        display: 'Risk Title', name: 'risk_title', data: 'risk_title',
-        searchable: true, sortable: true
-      },
+      /* ───────── Risk attributes ───────── */
+      { display: 'Risk Title', name: 'risk_title', data: 'risk_title', searchable: true, sortable: true },
       { display: 'Protection Goals', name: 'prot_goals', data: 'prot_goals' },
+      { display: 'Risk Category', name: 'risk_category', data: 'risk_category', searchable: true, sortable: true },
 
-      {
-        display: 'Category', name: 'risk_category', data: 'risk_category',
-        searchable: true, sortable: true
-      },
+      /* ───────── Assigned object / group ───────── */
+      { display: 'Object / Group', name: 'assigned_object', data: 'assigned_object', searchable: true },
+      { display: 'Object Type', name: 'assigned_object_type', data: 'assigned_object_type' },
 
-      {
-        display: 'Object', name: 'assigned_object', data: 'assigned_object',
-        searchable: true
-      },
-
-      {
-        display: 'Object Type', name: 'assigned_object_type', data: 'assigned_object_type',
-        searchable: true
-      },
+      /* ── «before» impact-category columns will be spliced in here ── */
 
       { display: 'LH Before', name: 'likelihood_value_before', data: 'likelihood_value_before' },
-      {
-        display: 'Risk Before', name: 'risk_before', data: 'risk_before',
-        template: this.riskBeforeTpl
-      },
+      { display: 'Risk Before', name: 'risk_before', data: 'risk_before', template: this.riskBeforeTpl },
+
+      /* ───────── Personnel & dates (before) ───────── */
+      { display: 'Risk Assessor', name: 'risk_assessor', data: 'risk_assessor' },
       { display: 'Risk Owner', name: 'risk_owner', data: 'risk_owner' },
-
-
+      { display: 'Interviewed', name: 'interviewed', data: 'interviewed' },
       { display: 'Assessment Date', name: 'ass_date', data: 'ass_date', sortable: true },
-      { display: 'Planned Impl. Date', name: 'plan_date', data: 'plan_date' },
-      { display: 'Finished Impl. Date', name: 'fin_date', data: 'fin_date' },
-      { display: 'Audit Date', name: 'audit_date', data: 'audit_date' },
-
-      {
-        display: 'Risk After', name: 'risk_after', data: 'risk_after',
-        template: this.riskAfterTpl
-      },
-
-      { display: 'LH After', name: 'likelihood_value_after', data: 'likelihood_value_after' },
-
-      { display: 'Treatment Option', name: 'risk_treatment_option', data: 'risk_treatment_option' },
-      { display: 'Impl. Status', name: 'implementation_status', data: 'implementation_status' },
-      { display: 'Priority', name: 'priority', data: 'priority' },
-
-      { display: 'Responsible', name: 'responsible_person', data: 'responsible_person' },
-      { display: 'Auditor', name: 'auditor', data: 'auditor' },
-
       { display: 'Additional Info', name: 'additional_info', data: 'additional_info' },
+
+      /* ───────── Treatment ───────── */
+      { display: 'Treatment Option', name: 'risk_treatment_option', data: 'risk_treatment_option', template: this.treatmentOptionTpl },
+      { display: 'Responsible', name: 'responsible_person', data: 'responsible_person' },
       { display: 'Treatment Desc.', name: 'risk_treatment_description', data: 'risk_treatment_description' },
+      { display: 'Planned Impl. Date', name: 'plan_date', data: 'plan_date' },
+      { display: 'Impl. Status', name: 'implementation_status', data: 'implementation_status' },
+      { display: 'Finished Impl. Date', name: 'fin_date', data: 'fin_date' },
       { display: 'Resources', name: 'required_resources', data: 'required_resources' },
       { display: 'Cost', name: 'costs_for_implementation', data: 'costs_for_implementation' },
-      { display: 'Currency', name: 'costs_for_implementation_currency', data: 'costs_for_implementation_currency' },
+      { display: 'Priority', name: 'priority', data: 'priority' },
+
+      /* ── «after» impact-category columns will be spliced in here ── */
+
+      { display: 'LH After', name: 'likelihood_value_after', data: 'likelihood_value_after' },
+      { display: 'Risk After', name: 'risk_after', data: 'risk_after', template: this.riskAfterTpl },
+
+      /* ───────── Audit ───────── */
+      { display: 'Audit Date', name: 'audit_date', data: 'audit_date' },
+      { display: 'Auditor', name: 'auditor', data: 'auditor' },
+      { display: 'Audit Result', name: 'audit_result', data: 'audit_result' },
     ];
+
     this.initialVisibleColumns = this.columns.map(c => c.name);
   }
+
 
   /* =====================================================================
    *  DYNAMIC IMPACT-CATEGORY COLUMNS
    * ===================================================================*/
 
+  // private addImpactColumns(categories: string[]): void {
+  //   const already = new Set(this.columns.map(c => c.name));
+
+  //   // First add all (Before) columns
+  //   categories.forEach(cat => {
+  //     const keyB = `before_${slug(cat)}`;
+  //     if (!already.has(keyB)) {
+  //       this.columns.push({ display: `${cat} (Before)`, name: keyB, data: keyB });
+  //       this.initialVisibleColumns.push(keyB);
+  //     }
+  //   });
+
+  //   // Then add all (After) columns
+  //   categories.forEach(cat => {
+  //     const keyA = `after_${slug(cat)}`;
+  //     if (!already.has(keyA)) {
+  //       this.columns.push({ display: `${cat} (After)`, name: keyA, data: keyA });
+  //       this.initialVisibleColumns.push(keyA);
+  //     }
+  //   });
+
+  //   /* update export columns */
+  //   this.exportCols = this.columns.map(c => c.display);
+  //   this.headerMap = this.exportCols.reduce(
+  //     (m, c) => { m[c] = c; return m; }, {} as Record<string, string>);
+  // }
+
+  /* =====================================================================
+ *  DYNAMIC IMPACT-CATEGORY COLUMNS  (clean two-step version)
+ * ===================================================================*/
   private addImpactColumns(categories: string[]): void {
-    const already = new Set(this.columns.map(c => c.name));
+    this.clearImpactColumns();
+    this.addBeforeImpactColumns(categories);
+    this.addAfterImpactColumns(categories);
 
-    // First add all (Before) columns
-    categories.forEach(cat => {
-      const keyB = `before_${slug(cat)}`;
-      if (!already.has(keyB)) {
-        this.columns.push({ display: `${cat} (Before)`, name: keyB, data: keyB });
-        this.initialVisibleColumns.push(keyB);
-      }
-    });
-
-    // Then add all (After) columns
-    categories.forEach(cat => {
-      const keyA = `after_${slug(cat)}`;
-      if (!already.has(keyA)) {
-        this.columns.push({ display: `${cat} (After)`, name: keyA, data: keyA });
-        this.initialVisibleColumns.push(keyA);
-      }
-    });
-
-    /* update export columns */
+    /* refresh export metadata once, after both inserts */
     this.exportCols = this.columns.map(c => c.display);
-    this.headerMap = this.exportCols.reduce(
-      (m, c) => { m[c] = c; return m; }, {} as Record<string, string>);
+    this.headerMap = Object.fromEntries(this.exportCols.map(c => [c, c]));
   }
+
+  /* ---------- helpers ---------- */
+  private addBeforeImpactColumns(categories: string[]): void {
+    const anchor = this.columns.findIndex(c => c.name === 'likelihood_value_before');
+    const cols = categories.map(cat => this.makeImpactCol(cat, 'before'));
+    this.columns.splice(anchor, 0, ...cols);
+  }
+
+  private addAfterImpactColumns(categories: string[]): void {
+    const anchor = this.columns.findIndex(c => c.name === 'likelihood_value_after');
+    const cols = categories.map(cat => this.makeImpactCol(cat, 'after'));
+    this.columns.splice(anchor, 0, ...cols);
+  }
+
+  private makeImpactCol(cat: string, phase: 'before' | 'after'): Column {
+    const key = `${phase}_${slug(cat)}`;
+    return {
+      display: `${cat} (${phase === 'before' ? 'Before' : 'After'})`,
+      name: key,
+      data: key
+    };
+  }
+
+  private clearImpactColumns(): void {
+    const dynamic = (name: string) => name.startsWith('before_') || name.startsWith('after_');
+
+    /* strip from columns */
+    this.columns = this.columns.filter(c => !dynamic(c.name));
+
+    /* strip from visible-columns cache */
+    this.initialVisibleColumns =
+      this.initialVisibleColumns.filter(name => !dynamic(name));
+  }
+
 
 
   /* =====================================================================
@@ -208,13 +325,22 @@ export class RiskAssesmentsComponent implements OnInit {
     this.loading = true;
     this.loader.show();
 
-    this.api.getRiskAssesmentsReportList()
+    forkJoin({
+            assessments: this.api.getRiskAssesmentsReportList(),
+            classesRes:  this.rcSvc.getRiskClasses()
+          })
       .pipe(finalize(() => {
         this.loading = false;
         this.loader.hide();
       }))
       .subscribe({
-        next: (list: RiskRow[]) => {
+        next: ({ assessments: list, classesRes }) => {
+
+
+          this.riskClassLookup.clear();
+    (classesRes.results || []).forEach(c =>
+      this.riskClassLookup.set(c.public_id, { name: c.name, color: c.color })
+    );
 
           /* ── gather the distinct impact-category names ─────────── */
           const catSet = new Set<string>();
@@ -228,6 +354,9 @@ export class RiskAssesmentsComponent implements OnInit {
           /* ── flatten every row + fill per-category cells ───────── */
           this.rawRows = list.map((r: RiskRow): ProcRow => {
 
+            const beforeId = r.risk_before?.risk_class_id ?? null;
+            const afterId  = r.risk_after ?.risk_class_id ?? null;
+
             const row: ProcRow = {
               ...r,
               ass_date: this.fmtDate(r.risk_assessment_date),
@@ -237,8 +366,13 @@ export class RiskAssesmentsComponent implements OnInit {
               prot_goals: (r.protection_goals ?? []).join(', '),
               prot_goals_arr: r.protection_goals ?? [],
               interviewed: (r.interviewed_persons ?? []).join(', '),
-              risk_class_before: r.risk_before?.risk_class?.label ?? '',
-              risk_class_after: r.risk_after?.risk_class?.label ?? '',
+              // risk_class_before: r.risk_before?.risk_class?.label ?? '',
+              // risk_class_after: r.risk_after?.risk_class?.label ?? '',
+              risk_class_before: this.rcName(beforeId),
+              risk_class_after : this.rcName(afterId),
+
+              risk_class_before_id: beforeId,
+              risk_class_after_id : afterId,
 
 
             };
@@ -341,51 +475,121 @@ export class RiskAssesmentsComponent implements OnInit {
   /* =====================================================================
    *  CHIP-FILTER UI 
    * ===================================================================*/
-  getValues(prop: string) {
-    const s = new Set<string>();
+  // getValues(prop: string) {
+  //   const s = new Set<string>();
 
-    // Always take from rawRows (not viewRows), to see full possible values
+  //   // Always take from rawRows (not viewRows), to see full possible values
+  //   this.rawRows.forEach(r => {
+  //     const v = r[prop];
+  //     if (Array.isArray(v)) v.forEach(x => s.add(String(x)));
+  //     else if (v != null && v !== '') s.add(String(v));
+  //   });
+
+  //   // Remove already selected values for this property (if any)
+  //   const selectedSet = this.activeFilters.get(prop);
+  //   if (selectedSet) {
+  //     selectedSet.forEach(val => s.delete(val));
+  //   }
+
+  //   return [...s].sort();
+  // }
+
+  getValues(prop: string) {
+    if (prop === 'risk_class_before_id' || prop === 'risk_class_after_id') {
+      const names = new Set<string>();
+      this.rawRows.forEach(r => names.add(this.rcName(r[prop])));
+      this.activeFilters.get(prop)?.forEach(id => names.delete(this.rcName(+id)));
+      return [...names].filter(Boolean).sort();
+    }
+  
+    /* default logic (unchanged) */
+    const s = new Set<string>();
     this.rawRows.forEach(r => {
       const v = r[prop];
       if (Array.isArray(v)) v.forEach(x => s.add(String(x)));
       else if (v != null && v !== '') s.add(String(v));
     });
-
-    // Remove already selected values for this property (if any)
-    const selectedSet = this.activeFilters.get(prop);
-    if (selectedSet) {
-      selectedSet.forEach(val => s.delete(val));
-    }
-
+    this.activeFilters.get(prop)?.forEach(val => s.delete(val));
     return [...s].sort();
   }
+  
 
   get hasActiveFilters() { return this.activeFilters.size > 0; }
+  // get activeFilterChips() {
+  //   const out: string[] = [];
+  //   this.activeFilters.forEach((set, k) => {
+  //     const lbl = this.filterDefs.find(f => f.key === k)?.label;
+  //     out.push(...Array.from(set).map(v => `${lbl}: ${v}`));
+  //   });
+  //   return out;
+  // }
+
   get activeFilterChips() {
     const out: string[] = [];
     this.activeFilters.forEach((set, k) => {
       const lbl = this.filterDefs.find(f => f.key === k)?.label;
-      out.push(...Array.from(set).map(v => `${lbl}: ${v}`));
+      set.forEach(v => {
+        const display = (k === 'risk_class_before_id' || k === 'risk_class_after_id')
+          ? this.rcName(+v)
+          : v;
+        out.push(`${lbl}: ${display}`);
+      });
     });
     return out;
   }
 
 
 
+  // applyFilter() {
+  //   const { selectedProperty: p, selectedValues: vals } = this.ui;
+  //   if (!p || !vals.length) return;
+  //   const set = this.activeFilters.get(p) ?? new Set<string>();
+  //   vals.forEach(v => set.add(v));
+  //   this.activeFilters.set(p, set);
+  //   this.ui.selectedProperty = ''; this.ui.selectedValues = [];
+  //   this.page = 1; this.loadPage();
+  // }
+
   applyFilter() {
     const { selectedProperty: p, selectedValues: vals } = this.ui;
     if (!p || !vals.length) return;
+  
     const set = this.activeFilters.get(p) ?? new Set<string>();
-    vals.forEach(v => set.add(v));
+  
+    if (p === 'risk_class_before_id' || p === 'risk_class_after_id') {
+      vals.forEach(name => {
+        const id = this.rcId(name);
+        if (id != null) set.add(String(id));
+      });
+    } else {
+      vals.forEach(v => set.add(v));
+    }
+  
     this.activeFilters.set(p, set);
     this.ui.selectedProperty = ''; this.ui.selectedValues = [];
     this.page = 1; this.loadPage();
   }
+  
+  // removeFilter(i: number) {
+  //   const [lbl, val] = this.activeFilterChips[i].split(':').map(s => s.trim());
+  //   const k = this.filterDefs.find(f => f.label === lbl)?.key; if (!k) return;
+  //   const set = this.activeFilters.get(k); if (!set) return;
+  //   set.delete(val); if (!set.size) this.activeFilters.delete(k);
+  //   this.page = 1; this.loadPage();
+  // }
   removeFilter(i: number) {
     const [lbl, val] = this.activeFilterChips[i].split(':').map(s => s.trim());
     const k = this.filterDefs.find(f => f.label === lbl)?.key; if (!k) return;
+  
     const set = this.activeFilters.get(k); if (!set) return;
-    set.delete(val); if (!set.size) this.activeFilters.delete(k);
+  
+    const keyVal =
+      (k === 'risk_class_before_id' || k === 'risk_class_after_id')
+        ? String(this.rcId(val))
+        : val;
+  
+    set.delete(keyVal);
+    if (!set.size) this.activeFilters.delete(k);
     this.page = 1; this.loadPage();
   }
   clearFilters() { this.activeFilters.clear(); this.page = 1; this.loadPage(); }
@@ -427,19 +631,9 @@ export class RiskAssesmentsComponent implements OnInit {
   }
 
 
-  private hexToRgb(hex: string): [number, number, number] {
-    if (!hex.startsWith('#')) return [119, 119, 119];  // fallback grey
-    const bigint = parseInt(hex.substring(1), 16);
-    const r = (bigint >> 16) & 255;
-    const g = (bigint >> 8) & 255;
-    const b = bigint & 255;
-    return [r, g, b];
-  }
 
-
-
-  exportCsv() { this.fileExp.exportCsv('risk-assessments', this.exportRows(), this.exportCols, this.headerMap); }
-  exportXlsx() { this.fileExp.exportXlsx('risk-assessments', this.exportRows(), this.exportCols, this.headerMap); }
+  exportCsv() { this.fileExp.exportCsv(`risk-assessments_${getCurrentDate()}`, this.exportRows(), this.exportCols, this.headerMap); }
+  exportXlsx() { this.fileExp.exportXlsx(`risk-assessments_${getCurrentDate()}`, this.exportRows(), this.exportCols, this.headerMap); }
   exportPdf(): void {
 
     /* calculate required width */
@@ -489,7 +683,7 @@ export class RiskAssesmentsComponent implements OnInit {
             const riskObj = colName === 'risk_before' ? rowData.risk_before : rowData.risk_after;
             const colorHex = riskObj?.color || '#f5f5f5';
             const value = riskObj?.value ?? '0';
-            const rgb = this.hexToRgb(colorHex);
+            const rgb = hexToRgb(colorHex);
             data.cell.styles.fillColor = rgb;
             data.cell.text = [String(value)];
           }
@@ -507,7 +701,16 @@ export class RiskAssesmentsComponent implements OnInit {
       }
     });
 
-    pdf.save('risk-assessments.pdf');
+    pdf.save(`risk-assessments_${getCurrentDate()}`);
   }
+
+  /**
+   * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
+   */
+  public getTextColor(color: string): string {
+    return getTextColorBasedOnBackground(color);
+  }
+
+
 
 }

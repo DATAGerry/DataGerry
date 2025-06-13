@@ -18,3 +18,13 @@ export function getTextColorBasedOnBackground(hexColor: string): string {
     // Return black for light backgrounds and white for dark backgrounds
     return luminance > 0.5 ? 'black' : 'white';
   }
+
+
+  export function hexToRgb(hex: string): [number, number, number] {
+    if (!hex.startsWith('#')) return [119, 119, 119];  // fallback grey
+    const bigint = parseInt(hex.substring(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return [r, g, b];
+  }

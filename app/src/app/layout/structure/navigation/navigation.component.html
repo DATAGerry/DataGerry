@@ -87,22 +87,22 @@
                   </a>
                   <!-- <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
                     [routerLink]="['/framework/object_groups']" *ngIf="isPreCloudMode">
-                    <i class="fas fa-layer-group"></i> Object Groups
-                  </a>
+                    <i class="fas fa-layer-group"></i> Object Groups -->
+                  <!-- </a> -->
 
                   <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
-                    [routerLink]="['/isms/persons']" *ngIf="isPreCloudMode">
+                    [routerLink]="['/framework/persons']">
                     <i class="fas fa-user-friends"></i> Persons
                   </a>
 
                   <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
-                    [routerLink]="['/framework/person-groups']" *ngIf="isPreCloudMode">
+                    [routerLink]="['/framework/person-groups']">
                     <i class="fas fa-users"></i> Person Groups
-                  </a> -->
+                  </a>
 
                   <ng-container *ngIf="isPreCloudMode">
                     <a class="dropdown-item" *permissionLink="'base.framework.objectGroup.view'"
-                       [routerLink]="['/framework/object_groups']">
+                      [routerLink]="['/framework/object_groups']">
                       <i class="fas fa-layer-group"></i> Object Groups
                     </a>
                   </ng-container>

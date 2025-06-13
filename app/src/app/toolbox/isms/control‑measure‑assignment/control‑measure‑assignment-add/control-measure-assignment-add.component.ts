@@ -209,13 +209,24 @@ export class ControlMeasureAssignmentAddComponent implements OnInit {
             });
           }
 
-          /* ----- Risk Assessment options ----- */
+          // if (res.ras) {
+          //   this.raOptions = res.ras.results
+          //     .map((ra: any) => ({
+          //       public_id: ra.public_id,
+          //       label: `#${ra.public_id} – ${(ra.risk_name || ra.risk_title || ra.name || 'Risk')}`
+          //     }));
+          // }
+
           if (res.ras) {
-            this.raOptions = res.ras.results
-              .map((ra: any) => ({
-                public_id: ra.public_id,
-                label: `#${ra.public_id} – ${(ra.risk_name || ra.risk_title || ra.name || 'Risk')}`
-              }));
+            this.raOptions = res.ras.results.map((ra: any) => {
+              const riskName = ra.naming?.risk_id_name || (ra.risk_name || ra.risk_title || ra.name || 'Risk');
+              const objectSummary = ra.naming?.object_id_name;
+              let label = `#${ra.public_id} - ${riskName}`;
+              if (objectSummary) {
+                label += ` @ ${objectSummary}`;
+              }
+              return { public_id: ra.public_id, label };
+            });
           }
           if (this.ctx.raId &&
             !this.raOptions.some(o => o.public_id === this.ctx.raId)) {
