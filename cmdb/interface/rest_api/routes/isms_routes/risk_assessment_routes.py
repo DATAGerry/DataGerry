@@ -272,7 +272,7 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
                 ref_type = clause['object_id_ref_type']
 
         # STEP 2: Enhance the filter if object_id was found
-        if object_id is not None:
+        if object_id is not None and ref_type == 'OBJECT':
             target_object = objects_manager.get_object(object_id)
 
             if target_object is not None:
