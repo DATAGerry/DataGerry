@@ -1,3 +1,8 @@
+<div *ngIf="!configurationIsValid" class="alert alert-warning">
+  ISMS configuration is incomplete. Please configure your settings first.
+</div>
+
+<div *ngIf="configurationIsValid">
 <div class="risk-assessment-add container" *ngIf="!loading">
 
   <!-- Risk & Object Information Section -->
@@ -94,7 +99,8 @@
     </cmdb-risk-assessment-footer> -->
   </form>
 
-
 </div>
+</div>
+
 
 <app-loading-popup [isVisible]="loading$ | async" message="Loading Dashboard..."></app-loading-popup>

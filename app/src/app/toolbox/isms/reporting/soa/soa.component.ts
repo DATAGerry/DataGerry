@@ -8,6 +8,7 @@ import { SoaService } from '../../services/soa.service';
 import { ControlMeasure } from '../../models/control-measure.model';
 import { FileExportService } from 'src/app/core/services/file-export.service';
 import { getCurrentDate } from 'src/app/core/utils/date.utils';
+import { IsmsValidationService } from '../../services/isms-validation.service';
 
 @Component({
   selector: 'app-soa',
@@ -29,11 +30,21 @@ export class SoaComponent implements OnInit {
     private readonly loader: LoaderService,
     private readonly toast: ToastService,
     private readonly fileExportService: FileExportService,
+    private readonly ismsValidationService: IsmsValidationService
   ) { }
 
   ngOnInit(): void {
-    this.setupColumns();
-    this.loadControls();
+    this.ismsValidationService.checkAndHandleInvalidConfig().subscribe({
+      next: (isValid) => {
+        if (!isValid) return;
+        this.setupColumns();
+        this.loadControls();
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message);
+      }
+    })
+
   }
 
 

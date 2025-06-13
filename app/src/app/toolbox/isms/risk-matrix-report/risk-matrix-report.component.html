@@ -1,4 +1,4 @@
-<!-- risk-matrix-report.component.html -->
+<div *ngIf="configurationIsValid">
 
 <div class="header d-flex align-items-center justify-content-between" *permissionLink="'base.isms.riskMatrix.view'">
   <h1>Risk Matrix</h1>
@@ -29,6 +29,6 @@
   </app-risk-matrix-grid>
 
 </div>
-
+</div>
 
 <app-loading-popup [isVisible]="isLoading$ | async" message="We're Processing the Data..."></app-loading-popup>

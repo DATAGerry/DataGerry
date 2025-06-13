@@ -41,6 +41,7 @@ import { RiskMatrixReportService } from '../services/risk-matrix-report.service'
 import { RiskAssessmentDrilldownModalComponent }
     from './modal/risk-assessment-drilldown-modal.component';
 import { getCurrentDate } from 'src/app/core/utils/date.utils';
+import { IsmsValidationService } from '../services/isms-validation.service';
 
 @Component({
     selector: 'app-risk-matrix-report',
@@ -64,6 +65,7 @@ export class RiskMatrixReportComponent implements OnInit {
 
 
     loading = false;
+    public configurationIsValid: boolean = false; 
 
     constructor(
         private readonly reportSrv: RiskMatrixReportService,
@@ -72,11 +74,25 @@ export class RiskMatrixReportComponent implements OnInit {
         private readonly rcSrv: RiskClassService,
         private readonly loader: LoaderService,
         private readonly toast: ToastService,
-        private readonly modal: NgbModal
+        private readonly modal: NgbModal,
+        private readonly ismsValidationService: IsmsValidationService
+        
     ) { }
 
     /* ─────────────────────────────── */
-    ngOnInit(): void { this.loadAll(); }
+    ngOnInit(): void { 
+        
+        this.ismsValidationService.checkAndHandleInvalidConfig().subscribe({
+            next: (isValid) => {
+             this.configurationIsValid = isValid;
+              if (!isValid) return;
+              this.loadAll();
+            },
+            error: (err) => {
+              this.toast.error(err?.error?.message);
+            }
+          })
+         }
 
     /* data fetch -------------------------------------------------------------- */
     private loadAll(): void {

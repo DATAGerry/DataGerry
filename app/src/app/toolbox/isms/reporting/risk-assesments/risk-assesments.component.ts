@@ -13,6 +13,7 @@ import { getTextColorBasedOnBackground, hexToRgb } from 'src/app/core/utils/colo
 import { getCurrentDate } from 'src/app/core/utils/date.utils';
 import { forkJoin } from 'rxjs';
 import { RiskClassService } from '../../services/risk-class.service';
+import { IsmsValidationService } from '../../services/isms-validation.service';
 
 /* helper ───────────────────────────────────────────────────────── */
 type RiskRow = any;
@@ -39,16 +40,16 @@ export class RiskAssesmentsComponent implements OnInit {
   totalItems = 0;
   pagedRows: ProcRow[] = [];
 
-/* ─ Risk-class lookup ─ */
-private riskClassLookup = new Map<number, { name: string; color: string }>();
+  /* ─ Risk-class lookup ─ */
+  private riskClassLookup = new Map<number, { name: string; color: string }>();
 
-private rcName = (id?: number | null) =>
-  id == null ? '' : this.riskClassLookup.get(id)?.name ?? '';
+  private rcName = (id?: number | null) =>
+    id == null ? '' : this.riskClassLookup.get(id)?.name ?? '';
 
-private rcId = (name: string) => {
-  for (const [id, obj] of this.riskClassLookup) if (obj.name === name) return id;
-  return null;
-};
+  private rcId = (name: string) => {
+    for (const [id, obj] of this.riskClassLookup) if (obj.name === name) return id;
+    return null;
+  };
 
 
 
@@ -91,14 +92,21 @@ private rcId = (name: string) => {
     private readonly loader: LoaderService,
     private readonly toast: ToastService,
     private readonly fb: FilterBuilderService,
+    private readonly ismsValidationService: IsmsValidationService
+
   ) { }
 
   ngOnInit(): void {
-    this.buildStaticColumns();              // columns that are always present
-    this.loadPage();
-
-
-    // fetch & render first page
+    this.ismsValidationService.checkAndHandleInvalidConfig().subscribe({
+      next: (isValid) => {
+        if (!isValid) return;
+        this.buildStaticColumns(); // build static columns
+        this.loadPage();
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message);
+      }
+    })
 
   }
 
@@ -326,9 +334,9 @@ private rcId = (name: string) => {
     this.loader.show();
 
     forkJoin({
-            assessments: this.api.getRiskAssesmentsReportList(),
-            classesRes:  this.rcSvc.getRiskClasses()
-          })
+      assessments: this.api.getRiskAssesmentsReportList(),
+      classesRes: this.rcSvc.getRiskClasses()
+    })
       .pipe(finalize(() => {
         this.loading = false;
         this.loader.hide();
@@ -338,9 +346,9 @@ private rcId = (name: string) => {
 
 
           this.riskClassLookup.clear();
-    (classesRes.results || []).forEach(c =>
-      this.riskClassLookup.set(c.public_id, { name: c.name, color: c.color })
-    );
+          (classesRes.results || []).forEach(c =>
+            this.riskClassLookup.set(c.public_id, { name: c.name, color: c.color })
+          );
 
           /* ── gather the distinct impact-category names ─────────── */
           const catSet = new Set<string>();
@@ -355,7 +363,7 @@ private rcId = (name: string) => {
           this.rawRows = list.map((r: RiskRow): ProcRow => {
 
             const beforeId = r.risk_before?.risk_class_id ?? null;
-            const afterId  = r.risk_after ?.risk_class_id ?? null;
+            const afterId = r.risk_after?.risk_class_id ?? null;
 
             const row: ProcRow = {
               ...r,
@@ -369,10 +377,10 @@ private rcId = (name: string) => {
               // risk_class_before: r.risk_before?.risk_class?.label ?? '',
               // risk_class_after: r.risk_after?.risk_class?.label ?? '',
               risk_class_before: this.rcName(beforeId),
-              risk_class_after : this.rcName(afterId),
+              risk_class_after: this.rcName(afterId),
 
               risk_class_before_id: beforeId,
-              risk_class_after_id : afterId,
+              risk_class_after_id: afterId,
 
 
             };
@@ -501,7 +509,7 @@ private rcId = (name: string) => {
       this.activeFilters.get(prop)?.forEach(id => names.delete(this.rcName(+id)));
       return [...names].filter(Boolean).sort();
     }
-  
+
     /* default logic (unchanged) */
     const s = new Set<string>();
     this.rawRows.forEach(r => {
@@ -512,7 +520,7 @@ private rcId = (name: string) => {
     this.activeFilters.get(prop)?.forEach(val => s.delete(val));
     return [...s].sort();
   }
-  
+
 
   get hasActiveFilters() { return this.activeFilters.size > 0; }
   // get activeFilterChips() {
@@ -553,9 +561,9 @@ private rcId = (name: string) => {
   applyFilter() {
     const { selectedProperty: p, selectedValues: vals } = this.ui;
     if (!p || !vals.length) return;
-  
+
     const set = this.activeFilters.get(p) ?? new Set<string>();
-  
+
     if (p === 'risk_class_before_id' || p === 'risk_class_after_id') {
       vals.forEach(name => {
         const id = this.rcId(name);
@@ -564,12 +572,12 @@ private rcId = (name: string) => {
     } else {
       vals.forEach(v => set.add(v));
     }
-  
+
     this.activeFilters.set(p, set);
     this.ui.selectedProperty = ''; this.ui.selectedValues = [];
     this.page = 1; this.loadPage();
   }
-  
+
   // removeFilter(i: number) {
   //   const [lbl, val] = this.activeFilterChips[i].split(':').map(s => s.trim());
   //   const k = this.filterDefs.find(f => f.label === lbl)?.key; if (!k) return;
@@ -580,14 +588,14 @@ private rcId = (name: string) => {
   removeFilter(i: number) {
     const [lbl, val] = this.activeFilterChips[i].split(':').map(s => s.trim());
     const k = this.filterDefs.find(f => f.label === lbl)?.key; if (!k) return;
-  
+
     const set = this.activeFilters.get(k); if (!set) return;
-  
+
     const keyVal =
       (k === 'risk_class_before_id' || k === 'risk_class_after_id')
         ? String(this.rcId(val))
         : val;
-  
+
     set.delete(keyVal);
     if (!set.size) this.activeFilters.delete(k);
     this.page = 1; this.loadPage();

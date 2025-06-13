@@ -28,7 +28,6 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 import { ToastService } from 'src/app/layout/toast/toast.service';
 
 import { RiskAssessmentService } from '../../services/risk-assessment.service';
-import { RiskService } from 'src/app/toolbox/isms/services/risk.service';
 import { PersonService } from '../../services/person.service';
 import { PersonGroupService } from '../../services/person-group.service';
 import { ExtendableOptionService } from 'src/app/toolbox/isms/services/extendable-option.service';
@@ -45,6 +44,7 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
 import { DuplicateRiskAssessmentModalComponent } from './duplicate-risk-assessment-modal/duplicate-risk-assessment.modal';
 import { FilterBuilderService } from 'src/app/core/services/filter-builder.service';
+import { IsmsValidationService } from '../../services/isms-validation.service';
 
 const GREY = '#f5f5f5';
 
@@ -84,6 +84,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
     loading = false;
     isLoading$ = this.loader.isLoading$;
     public filter = ''; 
+    public configurationIsValid: boolean = false; 
+
 
 
 
@@ -113,6 +115,8 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
         private readonly riskMatrixService: RiskMatrixService,
         private readonly riskClassService: RiskClassService,
         private readonly filterBuilder: FilterBuilderService, 
+        private readonly ismsValidationService: IsmsValidationService,
+        
 
         private readonly loader: LoaderService,
         private readonly toast: ToastService,
@@ -123,14 +127,26 @@ export class RiskAssessmentListComponent implements OnInit, OnChanges {
 
     /* ══════════════════ life-cycle ══════════════════ */
     ngOnInit(): void {
-        this.readFiltersFromRoute();
-        this.columns = this.buildColumns();
-        this.initialVisibleColumns = this.columns.filter(c => !c.hidden)
-            .map(c => c.name);
 
-        /* first load dictionaries ➜ then rows */
-        this.loadReferenceData()
-            .subscribe({ next: () => this.loadRows() });
+        this.ismsValidationService.checkConfigSilently().subscribe({
+            next: (isValid) => {
+             this.configurationIsValid = isValid;
+              if (!isValid) return;
+              this.readFiltersFromRoute();
+              this.columns = this.buildColumns();
+              this.initialVisibleColumns = this.columns.filter(c => !c.hidden)
+                  .map(c => c.name);
+      
+              /* first load dictionaries ➜ then rows */
+              this.loadReferenceData()
+                  .subscribe({ next: () => this.loadRows() });
+            },
+            error: (err) => {
+              this.toast.error(err?.error?.message);
+            }
+          })
+
+
     }
 
     ngOnChanges(ch: SimpleChanges): void {
