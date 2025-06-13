@@ -126,7 +126,7 @@ export class ThreatsListComponent implements OnInit {
   */
   loadSourceOptions(): void {
     this.loaderService.show();
-    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT)
+    this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: (res) => {

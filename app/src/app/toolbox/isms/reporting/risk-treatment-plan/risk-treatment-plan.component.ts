@@ -30,6 +30,7 @@ export class RiskTreatmentPlanComponent implements OnInit {
   @ViewChild('riskAfterTpl', { static: true }) riskAfterTpl!: TemplateRef<any>;
   @ViewChild('dateTpl', { static: true }) dateTpl!: TemplateRef<any>;
   @ViewChild('controlsTpl', { static: true }) controlsTpl!: TemplateRef<any>;
+  @ViewChild('treatmentOptionTpl', { static: true }) treatmentOptionTpl!: TemplateRef<any>;
 
   /* --------- data --------- */
   rawRows: ViewRow[] = [];   // whole list
@@ -95,7 +96,7 @@ export class RiskTreatmentPlanComponent implements OnInit {
       { display: 'Object Type', name: 'object_type', data: 'object_type', sortable: true },
 
       { display: 'Risk Before', name: 'risk_before', data: 'risk_before', template: this.riskBeforeTpl },
-      { display: 'Treatment Option', name: 'risk_treatment_option', data: 'risk_treatment_option' },
+      { display: 'Treatment Option', name: 'risk_treatment_option', data: 'risk_treatment_option', template: this.treatmentOptionTpl },
       { display: 'Responsible', name: 'responsible_person', data: 'responsible_person' },
 
       { display: 'Planned Impl. Date', name: 'planned_date_str', data: 'planned_date_str', template: this.dateTpl },
@@ -103,7 +104,8 @@ export class RiskTreatmentPlanComponent implements OnInit {
       { display: 'Risk After', name: 'risk_after', data: 'risk_after', template: this.riskAfterTpl },
       { display: 'Impl. Status', name: 'implementation_status', data: 'implementation_status' },
 
-      { display: 'Assigned Controls', name: 'controls_str', data: 'controls_str', template: this.controlsTpl }
+      { display: 'Assigned Controls', name: 'controls_str', data: 'controls_str', template: this.controlsTpl, cssClasses: ['text-center'],
+      }
     ];
     this.initialVisibleColumns = this.columns.map(c => c.name);
   }

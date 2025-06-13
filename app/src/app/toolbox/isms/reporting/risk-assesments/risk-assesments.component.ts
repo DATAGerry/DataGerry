@@ -28,6 +28,7 @@ export class RiskAssesmentsComponent implements OnInit {
   /* ───────── templates for coloured boxes ───────── */
   @ViewChild('riskBeforeTpl', { static: true }) riskBeforeTpl!: TemplateRef<any>;
   @ViewChild('riskAfterTpl', { static: true }) riskAfterTpl!: TemplateRef<any>;
+  @ViewChild('treatmentOptionTpl', { static: true }) treatmentOptionTpl!: TemplateRef<any>;
 
   /* ───────── data/state ───────── */
   private rawRows: ProcRow[] = [];
@@ -78,11 +79,11 @@ export class RiskAssesmentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildStaticColumns();              // columns that are always present
-    this.loadPage();    
-    
-    
+    this.loadPage();
+
+
     // fetch & render first page
-    
+
   }
 
   /* =====================================================================
@@ -150,53 +151,53 @@ export class RiskAssesmentsComponent implements OnInit {
   /* =====================================================================
  *  STATIC COLUMNS  (always visible, ordered as in spec)
  * ===================================================================*/
-private buildStaticColumns(): void {
-  this.columns = [
-    /* ───────── Risk attributes ───────── */
-    { display: 'Risk Title',              name: 'risk_title',             data: 'risk_title',             searchable: true,  sortable: true },
-    { display: 'Protection Goals',        name: 'prot_goals',             data: 'prot_goals'                                    },
-    { display: 'Risk Category',           name: 'risk_category',          data: 'risk_category',          searchable: true,  sortable: true },
+  private buildStaticColumns(): void {
+    this.columns = [
+      /* ───────── Risk attributes ───────── */
+      { display: 'Risk Title', name: 'risk_title', data: 'risk_title', searchable: true, sortable: true },
+      { display: 'Protection Goals', name: 'prot_goals', data: 'prot_goals' },
+      { display: 'Risk Category', name: 'risk_category', data: 'risk_category', searchable: true, sortable: true },
 
-    /* ───────── Assigned object / group ───────── */
-    { display: 'Object / Group',          name: 'assigned_object',        data: 'assigned_object',        searchable: true                     },
-    { display: 'Object Type',             name: 'assigned_object_type',   data: 'assigned_object_type'                                          },
+      /* ───────── Assigned object / group ───────── */
+      { display: 'Object / Group', name: 'assigned_object', data: 'assigned_object', searchable: true },
+      { display: 'Object Type', name: 'assigned_object_type', data: 'assigned_object_type' },
 
-    /* ── «before» impact-category columns will be spliced in here ── */
+      /* ── «before» impact-category columns will be spliced in here ── */
 
-    { display: 'LH Before',               name: 'likelihood_value_before',data: 'likelihood_value_before'                               },
-    { display: 'Risk Before',             name: 'risk_before',            data: 'risk_before',            template: this.riskBeforeTpl         },
+      { display: 'LH Before', name: 'likelihood_value_before', data: 'likelihood_value_before' },
+      { display: 'Risk Before', name: 'risk_before', data: 'risk_before', template: this.riskBeforeTpl },
 
-    /* ───────── Personnel & dates (before) ───────── */
-    { display: 'Risk Assessor',           name: 'risk_assessor',          data: 'risk_assessor'                                         },
-    { display: 'Risk Owner',              name: 'risk_owner',             data: 'risk_owner'                                            },
-    { display: 'Interviewed',             name: 'interviewed',            data: 'interviewed'                                           },
-    { display: 'Assessment Date',         name: 'ass_date',               data: 'ass_date',               sortable: true                    },
-    { display: 'Additional Info',         name: 'additional_info',        data: 'additional_info'                                       },
+      /* ───────── Personnel & dates (before) ───────── */
+      { display: 'Risk Assessor', name: 'risk_assessor', data: 'risk_assessor' },
+      { display: 'Risk Owner', name: 'risk_owner', data: 'risk_owner' },
+      { display: 'Interviewed', name: 'interviewed', data: 'interviewed' },
+      { display: 'Assessment Date', name: 'ass_date', data: 'ass_date', sortable: true },
+      { display: 'Additional Info', name: 'additional_info', data: 'additional_info' },
 
-    /* ───────── Treatment ───────── */
-    { display: 'Treatment Option',        name: 'risk_treatment_option',  data: 'risk_treatment_option'                                 },
-    { display: 'Responsible',             name: 'responsible_person',     data: 'responsible_person'                                    },
-    { display: 'Treatment Desc.',         name: 'risk_treatment_description', data: 'risk_treatment_description'                      },
-    { display: 'Planned Impl. Date',      name: 'plan_date',              data: 'plan_date'                                             },
-    { display: 'Impl. Status',            name: 'implementation_status',  data: 'implementation_status'                                 },
-    { display: 'Finished Impl. Date',     name: 'fin_date',               data: 'fin_date'                                              },
-    { display: 'Resources',               name: 'required_resources',     data: 'required_resources'                                    },
-    { display: 'Cost',                    name: 'costs_for_implementation', data: 'costs_for_implementation'                           },
-    { display: 'Priority',                name: 'priority',               data: 'priority'                                              },
+      /* ───────── Treatment ───────── */
+      { display: 'Treatment Option', name: 'risk_treatment_option', data: 'risk_treatment_option', template: this.treatmentOptionTpl },
+      { display: 'Responsible', name: 'responsible_person', data: 'responsible_person' },
+      { display: 'Treatment Desc.', name: 'risk_treatment_description', data: 'risk_treatment_description' },
+      { display: 'Planned Impl. Date', name: 'plan_date', data: 'plan_date' },
+      { display: 'Impl. Status', name: 'implementation_status', data: 'implementation_status' },
+      { display: 'Finished Impl. Date', name: 'fin_date', data: 'fin_date' },
+      { display: 'Resources', name: 'required_resources', data: 'required_resources' },
+      { display: 'Cost', name: 'costs_for_implementation', data: 'costs_for_implementation' },
+      { display: 'Priority', name: 'priority', data: 'priority' },
 
-    /* ── «after» impact-category columns will be spliced in here ── */
+      /* ── «after» impact-category columns will be spliced in here ── */
 
-    { display: 'LH After',                name: 'likelihood_value_after', data: 'likelihood_value_after'                               },
-    { display: 'Risk After',              name: 'risk_after',             data: 'risk_after',             template: this.riskAfterTpl         },
+      { display: 'LH After', name: 'likelihood_value_after', data: 'likelihood_value_after' },
+      { display: 'Risk After', name: 'risk_after', data: 'risk_after', template: this.riskAfterTpl },
 
-    /* ───────── Audit ───────── */
-    { display: 'Audit Date',              name: 'audit_date',             data: 'audit_date'                                            },
-    { display: 'Auditor',                 name: 'auditor',                data: 'auditor'                                               },
-    { display: 'Audit Result',            name: 'audit_result',           data: 'audit_result'                                          },
-  ];
+      /* ───────── Audit ───────── */
+      { display: 'Audit Date', name: 'audit_date', data: 'audit_date' },
+      { display: 'Auditor', name: 'auditor', data: 'auditor' },
+      { display: 'Audit Result', name: 'audit_result', data: 'audit_result' },
+    ];
 
-  this.initialVisibleColumns = this.columns.map(c => c.name);
-}
+    this.initialVisibleColumns = this.columns.map(c => c.name);
+  }
 
 
   /* =====================================================================
@@ -233,36 +234,48 @@ private buildStaticColumns(): void {
   /* =====================================================================
  *  DYNAMIC IMPACT-CATEGORY COLUMNS  (clean two-step version)
  * ===================================================================*/
-private addImpactColumns(categories: string[]): void {
-  this.addBeforeImpactColumns(categories);
-  this.addAfterImpactColumns(categories);
+  private addImpactColumns(categories: string[]): void {
+    this.clearImpactColumns();
+    this.addBeforeImpactColumns(categories);
+    this.addAfterImpactColumns(categories);
 
-  /* refresh export metadata once, after both inserts */
-  this.exportCols = this.columns.map(c => c.display);
-  this.headerMap  = Object.fromEntries(this.exportCols.map(c => [c, c]));
-}
+    /* refresh export metadata once, after both inserts */
+    this.exportCols = this.columns.map(c => c.display);
+    this.headerMap = Object.fromEntries(this.exportCols.map(c => [c, c]));
+  }
 
-/* ---------- helpers ---------- */
-private addBeforeImpactColumns(categories: string[]): void {
-  const anchor = this.columns.findIndex(c => c.name === 'likelihood_value_before');
-  const cols   = categories.map(cat => this.makeImpactCol(cat, 'before'));
-  this.columns.splice(anchor, 0, ...cols);
-}
+  /* ---------- helpers ---------- */
+  private addBeforeImpactColumns(categories: string[]): void {
+    const anchor = this.columns.findIndex(c => c.name === 'likelihood_value_before');
+    const cols = categories.map(cat => this.makeImpactCol(cat, 'before'));
+    this.columns.splice(anchor, 0, ...cols);
+  }
 
-private addAfterImpactColumns(categories: string[]): void {
-  const anchor = this.columns.findIndex(c => c.name === 'likelihood_value_after');
-  const cols   = categories.map(cat => this.makeImpactCol(cat, 'after'));
-  this.columns.splice(anchor, 0, ...cols);
-}
+  private addAfterImpactColumns(categories: string[]): void {
+    const anchor = this.columns.findIndex(c => c.name === 'likelihood_value_after');
+    const cols = categories.map(cat => this.makeImpactCol(cat, 'after'));
+    this.columns.splice(anchor, 0, ...cols);
+  }
 
-private makeImpactCol(cat: string, phase: 'before' | 'after'): Column {
-  const key = `${phase}_${slug(cat)}`;
-  return {
-    display: `${cat} (${phase === 'before' ? 'Before' : 'After'})`,
-    name: key,
-    data: key
-  };
-}
+  private makeImpactCol(cat: string, phase: 'before' | 'after'): Column {
+    const key = `${phase}_${slug(cat)}`;
+    return {
+      display: `${cat} (${phase === 'before' ? 'Before' : 'After'})`,
+      name: key,
+      data: key
+    };
+  }
+
+  private clearImpactColumns(): void {
+    const dynamic = (name: string) => name.startsWith('before_') || name.startsWith('after_');
+
+    /* strip from columns */
+    this.columns = this.columns.filter(c => !dynamic(c.name));
+
+    /* strip from visible-columns cache */
+    this.initialVisibleColumns =
+      this.initialVisibleColumns.filter(name => !dynamic(name));
+  }
 
 
 
@@ -598,11 +611,11 @@ private makeImpactCol(cat: string, phase: 'before' | 'after'): Column {
     pdf.save('risk-assessments.pdf');
   }
 
-      /**
-       * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
-       */
-      public getTextColor(color: string): string {
-          return getTextColorBasedOnBackground(color);
-      }
+  /**
+   * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.
+   */
+  public getTextColor(color: string): string {
+    return getTextColorBasedOnBackground(color);
+  }
 
 }

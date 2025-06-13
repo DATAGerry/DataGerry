@@ -80,6 +80,7 @@
         Cancel
       </button>
       <button
+      *ngIf="!isViewMode"
         class="btn btn-success"
         type="submit"
         [disabled]="personForm.invalid || isViewMode"

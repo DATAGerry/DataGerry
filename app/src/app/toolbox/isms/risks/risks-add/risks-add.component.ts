@@ -307,7 +307,7 @@ export class RiskAddComponent implements OnInit {
      * -------------------------------------------------------------- */
 
     private loadCategories(): void {
-        this.extendableOptionService.getExtendableOptionsByType(OptionType.THREAT_VULNERABILITY)
+        this.extendableOptionService.getExtendableOptionsByType(OptionType.RISK)
             .subscribe({
                 next: (res) => {
                     this.categoryOptions = res.results;
@@ -321,7 +321,6 @@ export class RiskAddComponent implements OnInit {
                     // Clear the selection if the category no longer exists
                     if (currentCategoryId && !categoryExists) {
                         this.riskForm.get('category_id')?.setValue(null);
-                        this.toast.info('Selected category was removed.');
                     }
                 },
                 error: (err) => this.toast.error(err?.error?.message)

@@ -192,7 +192,7 @@ export class ControlMeasuresAddComponent implements OnInit {
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
-          this.toast.success('Control/Measure created successfully');
+          this.toast.success('Control created successfully');
           this.router.navigate(['/isms/control-measures']);
         },
         error: (err) => {
@@ -215,7 +215,7 @@ export class ControlMeasuresAddComponent implements OnInit {
       .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
-          this.toast.success('Control/Measure updated successfully');
+          this.toast.success('Control updated successfully');
           this.router.navigate(['/isms/control-measures']);
         },
         error: (err) => {

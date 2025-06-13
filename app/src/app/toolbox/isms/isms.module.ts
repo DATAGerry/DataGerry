@@ -49,9 +49,6 @@ import { VulnerabilitiesListComponent } from './vulnerabilities/vulnerabilities-
 import { VulnerabilitiesAddComponent } from './vulnerabilities/add/vulnerabilities-add.component';
 import { RiskAddComponent } from './risks/risks-add/risks-add.component';
 import { RisksListComponent } from './risks/risks-list/risks-list.component';
-import { PersonListComponent } from './person/person-list/person-list.component';
-import { PersonAddEditComponent } from './person/person-add/person-add-edit.component';
-import { PersonRoutingModule } from './person/person-routing.module';
 import { RiskAssessmentModule } from './risk-assessment/risk-assesment.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ControlmeasuresListComponent } from './control-measure/control-measure-list/control-measure-list.component';
@@ -90,8 +87,6 @@ import { ReportsOverviewComponent } from './reporting/overview/reports-overview.
     RisksFooterComponent,
     ControlmeasuresListComponent,
     ControlMeasuresAddComponent,
-    PersonListComponent,
-    PersonAddEditComponent,
     ControlMeasureFooterComponent,
     SoaComponent,
     RiskTreatmentPlanComponent,
@@ -112,7 +107,7 @@ import { ReportsOverviewComponent } from './reporting/overview/reports-overview.
     FormsModule,
     NgbModule,
     IsmsRoutingModule,
-    PersonRoutingModule,
+    
     RiskAssessmentModule,
     ControlMeasureAssignmentModule,
     RiskMatrixReportModule  ]

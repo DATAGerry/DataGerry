@@ -1,6 +1,6 @@
 <div class="container" *ngIf="controlMeasureForm" [formGroup]="controlMeasureForm">
   <h2 class="mb-3">
-    {{ isViewMode ? 'View Control/Measure' : isEditMode ? 'Edit Control/Measure' : 'Add Control/Measure' }}  </h2>
+    {{ isViewMode ? 'View Controls' : isEditMode ? 'Edit Control' : 'Add Control' }}  </h2>
 
   <form autocomplete="off" class="needs-validation" [formGroup]="controlMeasureForm" (ngSubmit)="onSave()">
     <!-- Title (Required) -->
@@ -104,7 +104,7 @@
       </app-button>
       <!-- Submit Button -->
       <app-button [bootstrapClass]="'btn-success'" [disabled]="controlMeasureForm.invalid" *ngIf="!isViewMode"
-        [label]="isEditMode ? 'Save Changes' : 'Create Control/Measure'" type="submit">
+        [label]="isEditMode ? 'Save Changes' : 'Create Control'" type="submit">
       </app-button>
     </div>
   </form>

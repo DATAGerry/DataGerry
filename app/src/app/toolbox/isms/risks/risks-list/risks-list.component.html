@@ -29,3 +29,9 @@
   <i *permissionLink="['base.isms.risk.delete']" class="far fa-trash-alt icon-delete" (click)="onDelete(item)"
     title="Delete Risk"></i>
 </ng-template>
+
+
+<!-- Category Template -->
+<ng-template #categoryTemplate let-data="data" let-item="item">
+  <span>{{ getCategoryName(data) }}</span>
+</ng-template>

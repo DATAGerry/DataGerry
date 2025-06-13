@@ -195,7 +195,7 @@ export class PersonAddEditComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Person created successfully');
-          this.router.navigate(['/isms/persons']);
+          this.router.navigate(['/framework/persons']);
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
@@ -217,7 +217,7 @@ export class PersonAddEditComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Person updated successfully');
-          this.router.navigate(['/isms/persons']);
+          this.router.navigate(['/framework/persons']);
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
@@ -231,7 +231,7 @@ export class PersonAddEditComponent implements OnInit {
    * @returns void
    */
   public onCancel(): void {
-    this.router.navigate(['/isms/persons']);
+    this.router.navigate(['/framework/persons']);
   }
 
 

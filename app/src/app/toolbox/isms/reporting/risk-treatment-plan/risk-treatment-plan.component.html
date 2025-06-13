@@ -72,6 +72,11 @@
     <ng-container *ngTemplateOutlet="riskBox; context:{ val:item.risk_after }"></ng-container>
   </ng-template>
 
+
+  <ng-template #treatmentOptionTpl let-item="item">
+    {{ item.risk_treatment_option === 'TRANSFER_SHARE' ? 'Transfer/Share' : item.risk_treatment_option }}
+  </ng-template>
+
   <ng-template #dateTpl let-item="item">
     {{ item.planned_date_str || '-' }}
   </ng-template>

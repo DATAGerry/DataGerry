@@ -17,6 +17,9 @@ import { Risk } from 'src/app/toolbox/isms/models/risk.model';
 import { RiskService } from 'src/app/toolbox/isms/services/risk.service';
 import { CollectionParameters } from 'src/app/services/models/api-parameter';
 import { Column, Sort, SortDirection } from 'src/app/layout/table/table.types';
+import { ExtendableOptionService } from '../../services/extendable-option.service';
+import { OptionType } from '../../models/option-type.enum';
+import { ExtendableOption } from 'src/app/framework/models/object-group.model';
 
 @Component({
   selector: 'app-risks-list',
@@ -27,10 +30,14 @@ export class RisksListComponent implements OnInit {
   // Template references for the cmdb-table
   @ViewChild('actionTemplate', { static: true }) actionTemplate: TemplateRef<any>;
   @ViewChild('riskTypeTemplate', { static: true }) riskTypeTemplate: TemplateRef<any>;
+  @ViewChild('categoryTemplate', { static: true }) categoryTemplate: TemplateRef<any>;
 
   // Data
   public risks: Risk[] = [];
   public totalRisks = 0;
+
+  public categoryOptions: ExtendableOption[] = [];
+
 
   // Table options
   public page = 1;
@@ -47,11 +54,13 @@ export class RisksListComponent implements OnInit {
     private loaderService: LoaderService,
     private modalService: NgbModal,
     private filterBuilderService: FilterBuilderService,
-    private riskService: RiskService
+    private riskService: RiskService,
+    private extendableOptionService: ExtendableOptionService
   ) { }
 
   ngOnInit(): void {
     this.setupColumns();
+    this.loadCategoryOptions();
     this.loadRisks();
   }
 
@@ -85,13 +94,22 @@ export class RisksListComponent implements OnInit {
         sortable: true,
         style: { width: '150px', 'text-align': 'center' }
       },
+      // {
+      //   display: 'Risk Type',
+      //   name: 'risk_type',
+      //   data: 'risk_type',
+      //   searchable: true,
+      //   sortable: true,
+      //   template: this.riskTypeTemplate,
+      //   style: { width: '150px', 'text-align': 'center' }
+      // },
       {
-        display: 'Risk Type',
-        name: 'risk_type',
-        data: 'risk_type',
+        display: 'Category',
+        name: 'category_id',
+        data: 'category_id',
         searchable: true,
-        sortable: true,
-        template: this.riskTypeTemplate,
+        sortable: false,
+        template: this.categoryTemplate,
         style: { width: '150px', 'text-align': 'center' }
       },
       {
@@ -144,6 +162,24 @@ export class RisksListComponent implements OnInit {
         }
       });
   }
+
+
+  /**
+ * Load category options from backend
+ */
+  private loadCategoryOptions(): void {
+    this.extendableOptionService.getExtendableOptionsByType(OptionType.RISK)
+      .subscribe({
+        next: (res) => {
+          this.categoryOptions = res.results || [];
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message);
+        }
+      });
+  }
+
+
 
 
   /**
@@ -210,6 +246,14 @@ export class RisksListComponent implements OnInit {
       },
       () => { }
     );
+  }
+
+  /**
+ * Returns category name from its id.
+ */
+  getCategoryName(categoryId: number): string {
+    const option = this.categoryOptions.find(opt => opt.public_id === categoryId);
+    return option?.value || '';
   }
 
 

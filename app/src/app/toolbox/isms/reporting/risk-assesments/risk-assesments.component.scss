@@ -18,3 +18,16 @@
     padding: 2px 6px;
   }
   
+/* Fixed size for stable layout */
+.filter-card {
+  width: 900px;         /* horizontal footprint */
+  max-width: 100%;      /* still shrinks on tiny screens */
+  min-height: 160px;    /* enough space even when Value(s) appears */
+}
+
+/* Keep Add / Clear buttons same width on large screens */
+@media (min-width: 992px) {
+  .filter-card .btn {
+    width: 90px;
+  }
+}

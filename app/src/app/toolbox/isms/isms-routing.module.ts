@@ -332,7 +332,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { preCloudGuard } from 'src/app/modules/auth/guards/pre-cloud.guard';
 
 import { IsmsComponent } from './isms.component';
 import { OverviewComponent } from './overview/overview.component';
@@ -363,7 +362,6 @@ const routes: Routes = [
   {
     path: '',
     component: IsmsComponent,
-    canActivate: [preCloudGuard],
     // data: { breadcrumb: 'ISMS' },
     children: [
       { path: '', component: OverviewComponent, data: { breadcrumb: 'Overview' } },

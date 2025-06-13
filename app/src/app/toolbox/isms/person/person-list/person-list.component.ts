@@ -147,7 +147,7 @@ export class PersonListComponent implements OnInit {
   * @returns void
   */
   public onAddNew(): void {
-    this.router.navigate(['/isms/persons/add']);
+    this.router.navigate(['/framework/persons/add']);
   }
 
 
@@ -157,7 +157,7 @@ export class PersonListComponent implements OnInit {
    * @returns void
    */
   public onEdit(item: CmdbPerson): void {
-    this.router.navigate(['/isms/persons/edit'], { state: { person: item } });
+    this.router.navigate(['/framework/persons/edit'], { state: { person: item } });
   }
 
 
@@ -167,7 +167,7 @@ export class PersonListComponent implements OnInit {
    * @returns void
    */
   public onView(item: CmdbPerson): void {
-    this.router.navigate(['/isms/persons/edit'], {
+    this.router.navigate(['/framework/persons/edit'], {
       state: { person: item, mode: 'view' }
     });
   }

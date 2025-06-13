@@ -217,7 +217,8 @@ export class ControlMeasureAssignmentListComponent
           this.assignments = (resp.results ?? []).map(a => ({
             ...a,
             cmLabel       : `${this.cmMap.get(a.control_measure_id) ?? 'CM'} (#${a.control_measure_id})`,
-            raLabel       : this.raMap.get(a.risk_assessment_id) ?? `RA #${a.risk_assessment_id}`,
+            // raLabel       : this.raMap.get(a.risk_assessment_id) ?? `RA #${a.risk_assessment_id}`,
+            raLabel: a.naming?.cma_summary,
             responsibleName : this.respMap.get(a.responsible_for_implementation_id)
                               ?? a.responsible_for_implementation_id,
             priorityLabel : ({ 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Very High' } as any)[a.priority] ?? '',
