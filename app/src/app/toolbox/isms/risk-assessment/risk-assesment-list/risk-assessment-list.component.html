@@ -1,6 +1,15 @@
-<cmdb-table [items]="rows" [columns]="columns" [page]="page" [pageSize]="limit" [totalItems]="total"
+<div *ngIf="!configurationIsValid" class="alert alert-warning">
+  ISMS configuration is incomplete. Please configure your settings to view the risk assessments.
+</div>
+
+
+<div *ngIf="configurationIsValid">
+
+<cmdb-table  [items]="rows" [columns]="columns" [page]="page" [pageSize]="limit" [totalItems]="total"
   [customButtons]="[addButtonTemplate]" [initialVisibleColumns]="initialVisibleColumns" [loading]="loading" [searchEnabled]="false"
   (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)" (searchChange)="onSearchChange($event)">
+</cmdb-table>
+</div>
 
   <!-- Risk name -->
   <ng-template #riskTpl let-item="item">
@@ -65,8 +74,6 @@
       class="btn btn-success btn-sm"><i class="fas fa-plus-circle"></i> Add
     </button>
   </ng-template>
-
-</cmdb-table>
 
 
 

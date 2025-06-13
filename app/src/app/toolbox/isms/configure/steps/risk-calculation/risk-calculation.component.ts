@@ -46,6 +46,7 @@ export class RiskCalculationComponent implements OnInit {
   // The risk matrix from the backend.
   public riskMatrix: IsmsRiskMatrix | null = null;
   public selectedMatrixUnit = '';
+  public hasChanges: boolean = false;
 
 
   // Ordered arrays to map rows to Likelihoods and columns to Impacts.
@@ -335,6 +336,7 @@ export class RiskCalculationComponent implements OnInit {
   public assignRiskClass(riskClass: RiskClass): void {
     if (!this.selectedCell) return;
     this.selectedCell.risk_class_id = riskClass.public_id;
+    this.hasChanges = true;
     this.closeModal();
   }
 
@@ -352,6 +354,7 @@ export class RiskCalculationComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Risk calculation settings saved successfully');
+          this.hasChanges = false;
         },
         error: (err) => {
           this.toast.error(err?.error?.message);
@@ -384,6 +387,13 @@ export class RiskCalculationComponent implements OnInit {
     if (!this.riskMatrix || !this.riskMatrix.risk_matrix.length) return false;
     return this.riskMatrix.risk_matrix.every(cell => cell.risk_class_id !== 0);
   }
+
+    /**
+     * Called when the matrix unit is changed.
+     */
+    public onMatrixUnitChange(value: string): void {
+      this.hasChanges = true;
+    }
 
   /**
    * Wrapper for getTextColorBasedOnBackground to make it accessible in the template.

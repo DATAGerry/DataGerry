@@ -48,7 +48,7 @@
     <button class="btn btn-success" 
             (click)="onSaveConfigurations()" 
             *permissionLink="'base.isms.riskMatrix.edit'"
-            [disabled]="!riskCalculationComponent?.isMatrixComplete()">
+            [disabled]=" !riskCalculationComponent?.hasChanges || !riskCalculationComponent?.isMatrixComplete()">
       Save Configuration
     </button>
   </ng-container>

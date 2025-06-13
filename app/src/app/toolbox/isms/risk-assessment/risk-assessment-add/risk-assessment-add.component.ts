@@ -59,6 +59,7 @@ import { Location } from '@angular/common';
 import { ControlMeasureService } from '../../services/control-measure.service';
 import { RiskAssessmentTreatmentComponent } from '../risk-assessment-treatment/risk-assessment-treatment.component';
 import { ControlMeasureAssignmentService } from '../../services/control‑measure‑assignment.service';
+import { IsmsValidationService } from '../../services/isms-validation.service';
 
 /* ------------------------------------------------------------------------------------ */
 /*  Small enum for string literals                                                      */
@@ -105,8 +106,11 @@ export class RiskAssessmentAddComponent implements OnInit {
   private readonly riskClassSrv = inject(RiskClassService);
   private readonly controlMeasureSrv = inject(ControlMeasureService);
   private readonly cmaSrv = inject(ControlMeasureAssignmentService);
+  private readonly ismsValidationService = inject(IsmsValidationService);
 
   public loading = false;
+  public configurationIsValid: boolean = true;
+
   /* ──────────────────────────────────────────────────────────────────────────
    *  Flags derived from route
    * ────────────────────────────────────────────────────────────────────────── */
@@ -161,15 +165,21 @@ export class RiskAssessmentAddComponent implements OnInit {
   constructor(private location: Location) { }
 
   ngOnInit(): void {
-    this.applyRouteDefaults();
-    this.loadReferenceData();
-
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras?.state as { objectSummary?: string, riskName?: string };
-
-    this.objectSummary = state?.objectSummary || null;
-    this.riskName = state?.riskName || null;  // Pass risk name from state if present
-
+    this.ismsValidationService.checkConfigSilently().subscribe({
+      next: (isValid) => {
+        this.configurationIsValid = isValid;
+        if (!isValid) return;
+        this.applyRouteDefaults();
+        this.loadReferenceData();
+        const navigation = this.router.getCurrentNavigation();
+        const state = navigation?.extras?.state as { objectSummary?: string, riskName?: string };
+        this.objectSummary = state?.objectSummary || null;
+        this.riskName = state?.riskName || null;
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message);
+      }
+    });
   }
 
   /* ══════════════════════════════════════════════════════════════════════════

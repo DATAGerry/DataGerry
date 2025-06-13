@@ -16,6 +16,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { getTextColorBasedOnBackground, hexToRgb } from 'src/app/core/utils/color-utils';
 import { getCurrentDate } from 'src/app/core/utils/date.utils';
+import { IsmsValidationService } from '../../services/isms-validation.service';
 
 type ApiRow = any;             // raw row from the API
 type ViewRow = Record<string, any>; // flattened for table / export
@@ -54,7 +55,9 @@ export class RiskTreatmentPlanComponent implements OnInit {
     private readonly api: RiskTreatmentPlanService,
     private readonly fileExp: FileExportService,
     private readonly loader: LoaderService,
-    private readonly toast: ToastService
+    private readonly toast: ToastService,
+    private readonly ismsValidationService :IsmsValidationService
+    
   ) { }
 
   /* ================================================================
@@ -62,7 +65,17 @@ export class RiskTreatmentPlanComponent implements OnInit {
    * ============================================================= */
   ngOnInit(): void {
     this.buildColumns();
-    this.loadData();
+
+    this.ismsValidationService.checkAndHandleInvalidConfig().subscribe({
+      next: (isValid) => {
+        if (!isValid) return;
+        this.loadData();
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message );
+      }
+    })
+    
   }
 
   /* ================================================================

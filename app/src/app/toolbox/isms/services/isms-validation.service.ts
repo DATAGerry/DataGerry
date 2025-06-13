@@ -22,7 +22,7 @@ import { ISMSService } from './isms.service';
 import { CoreWarningModalComponent } from 'src/app/core/components/dialog/core-warning-modal/core-warning-modal.component';
 import { IsmsConfigValidation } from '../models/isms-config-validation.model';
 import { Observable, of } from 'rxjs';
-import {  switchMap } from 'rxjs/operators';
+import {  map, switchMap } from 'rxjs/operators';
 import { Location } from '@angular/common';
 
 @Injectable({
@@ -71,5 +71,22 @@ export class IsmsValidationService {
       })
     );
   }
+
+
+    /**
+   * Returns true if config is valid.
+   * This version does not show a modal.
+   */
+    checkConfigSilently(): Observable<boolean> {
+      return this.ismsService.getIsmsValidationStatus().pipe(
+        map((status: IsmsConfigValidation) =>
+          status.risk_classes &&
+          status.likelihoods &&
+          status.impacts &&
+          status.impact_categories &&
+          status.risk_matrix
+        )
+      );
+    }
   
 }
