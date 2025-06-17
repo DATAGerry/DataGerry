@@ -20,7 +20,7 @@
                                     [dndDisableIf]="isAnySectionHighlighted() || disableFields"
                                 >
                                     <span>
-                                        #{{ globalSectionTemplate.public_id }} - <b>{{ globalSectionTemplate.label }}</b>
+                                        #{{ globalSectionTemplate?.public_id }} - <b>{{ globalSectionTemplate?.label }}</b>
                                     </span>
                                     <div class="clearfix"></div>
                                 </div>
@@ -45,7 +45,7 @@
                                     [ngClass]="getDraggableItemClass()"
                                     [dndDisableIf]="isAnySectionHighlighted() || disableFields"                             >
                                     <span>
-                                        #{{ sectionTemplate.public_id }} - <b>{{ sectionTemplate.label }}</b>
+                                        #{{ sectionTemplate?.public_id }} - <b>{{ sectionTemplate?.label }}</b>
                                     </span>
                                     <div class="clearfix"></div>
                                 </div>
@@ -64,14 +64,14 @@
                             <div class="list-group section-template-item">
                                 <div 
                                     *ngFor="let control of structureControls" 
-                                    [dndType]="control.typeController.dndType"
-                                    [dndDraggable]="control.typeController.content()"
+                                    [dndType]="control?.typeController?.dndType"
+                                    [dndDraggable]="control?.typeController?.content()"
                                     class="list-group-item list-group-item-action"
                                     [ngClass]="getDraggableItemClass()"
                                     [attr.draggable]="(isAnySectionHighlighted() || disableFields) ? 'false' : 'true'"
                                     >
                                     <span>
-                                        <i class="{{control.typeController.icon}}"></i> {{ control.typeController.label }}
+                                        <i class="{{control.typeController.icon}}"></i> {{ control?.typeController?.label }}
                                     </span>
                                     <div class="clearfix"></div>
                                 </div>
@@ -90,14 +90,14 @@
                             <div class="list-group section-template-item">
                                 <div 
                                     *ngFor="let control of basicControls" 
-                                    [dndType]="control.typeController.dndType"
-                                    [dndDraggable]="control.typeController.content()"
+                                    [dndType]="control?.typeController?.dndType"
+                                    [dndDraggable]="control?.typeController?.content()"
                                     class="list-group-item list-group-item-action"
                                     [ngClass]="getDraggableItemClass()"
                                     [dndDisableIf]="isAnySectionHighlighted() || disableFields"
                                 >
                                     <span>
-                                        <i class="{{control.typeController.icon}}"></i> {{ control.typeController.label }}
+                                        <i class="{{control.typeController.icon}}"></i> {{ control?.typeController?.label }}
                                     </span>
                                     <div class="clearfix"></div>
                                 </div>
@@ -116,14 +116,14 @@
                             <div class="list-group section-template-item">
                                 <div 
                                     *ngFor="let control of specialControls"
-                                    [dndType]="control.typeController.dndType"
-                                    [dndDraggable]="control.typeController.content()"
+                                    [dndType]="control?.typeController?.dndType"
+                                    [dndDraggable]="control?.typeController?.content()"
                                     class="list-group-item list-group-item-action"
                                     [ngClass]="getDraggableItemClass()"
                                     [attr.draggable]="(isAnySectionHighlighted() || disableFields) ? 'false' : 'true'"
                                 >
                                     <span>
-                                        <i class="{{control.typeController.icon}}"></i> {{ control.typeController.label }}
+                                        <i class="{{control.typeController.icon}}"></i> {{ control?.typeController?.label }}
                                     </span>
                                     <div class="clearfix"></div>
                                 </div>
@@ -156,7 +156,7 @@
         <div 
             id="form-content"
             data-content="Drop structure controls here"
-            [ngClass]="{'empty': sections.length == 0 }"
+            [ngClass]="{'empty': sections?.length == 0 }"
             [dndDropzone]="['sections']"
             (dndDrop)="onSectionDrop($event)"
         >
@@ -174,13 +174,13 @@
                 <div class="card" [ngStyle]="{'background-color': section.bg_color || '#ffffff'}">
                     <div class="card-header" [ngClass]="getSectionHeaderClass(section)">
                         <fa-icon [icon]="['far', 'object-group']"></fa-icon>
-                            {{section.label}}
+                            {{section?.label}}
                         <span class="float-right">
                             <button 
                                 class="btn btn-link mr-1"
                                 type="button"
                                 data-toggle="collapse"
-                                [attr.data-target]="'#section-' + x + section.name"
+                                [attr.data-target]="'#section-' + x + section?.name"
                             >
                                 <fa-icon [icon]="getSectionCollapseIcon(section)"></fa-icon>
                             </button>
@@ -208,7 +208,7 @@
                             </button>
                         </span>
                     </div>
-                    <div class="collapse show" id="section-{{x}}{{section.name}}">
+                    <div class="collapse show" id="section-{{x}}{{section?.name}}">
                         <div class="card-body"  
                         (focusin)="setActiveIndex(x)" 
                         tabindex="0" >
@@ -216,18 +216,18 @@
                                 [types]="types"
                                 [mode]="getSectionMode(section, mode)"
                                 [sections]="sections"
-                                [fields]="typeInstance.fields"
+                                [fields]="typeInstance?.fields"
                                 [data]="section"
                                 (valuesChanged)="onFieldChange($event)"
                             />
-                            <ng-container *ngIf="section.type === 'section' || section.type === 'multi-data-section'">
+                            <ng-container *ngIf="section.type === 'section' || section?.type === 'multi-data-section'">
                                 <p>Fields:</p>
                                 <div
-                                    [dndDropzone]="getInputType(section.type)"
+                                    [dndDropzone]="getInputType(section?.type)"
                                     [dndDisableDropIf]="isGlobalSection(section)"
                                     (dndDrop)="onFieldDrop($event, section)"
                                 >
-                                    <div *ngIf="section.fields.length == 0" class="empty-section" data-content="Drop controls here">
+                                    <div *ngIf="section?.fields?.length == 0" class="empty-section" data-content="Drop controls here">
                                     </div>
                                     <div 
                                         *ngIf="!isGlobalSection(section)"
@@ -245,18 +245,18 @@
                                             <div class="fields card">
                                                 <div 
                                                     class="card-header d-flex justify-content-between align-items-center"
-                                                    [ngClass]="{'global-section-item': isGlobalField(field.name)}"
-                                                    [ngClass]="{'highlight-field-header': isFieldHighlighted(field, section.fields)}"
+                                                    [ngClass]="{'global-section-item': isGlobalField(field?.name)}"
+                                                    [ngClass]="{'highlight-field-header': isFieldHighlighted(field, section?.fields)}"
                                                 >
                                                     <span>
-                                                        <fa-icon [icon]="['fas', matchedType(field.type)]"></fa-icon> {{field.label}}
+                                                        <fa-icon [icon]="['fas', matchedType(field.type)]"></fa-icon> {{field?.label}}
                                                     </span>
                                                     <span *ngIf="!isGlobalField(field.name)">
                                                         <button
                                                             class="btn btn-link mr-1"
                                                             type="button"
                                                             data-toggle="collapse"
-                                                            [attr.data-target]="'#field-'+ x + y + field.name"
+                                                            [attr.data-target]="'#field-'+ x + y + field?.name"
                                                             [class.disabled]="isLocked() || disableFields"
                                                             >
                                                             <fa-icon [icon]="['far', 'edit']"></fa-icon>
@@ -271,9 +271,9 @@
                                                             *ngIf="externalField(field) as externalLink; else removeFieldContainer"
                                                             class="btn btn-link"
                                                             type="button"
-                                                            [disabled]="externalLink.links.length"
+                                                            [disabled]="externalLink?.links?.length"
                                                             [ngbTooltip]="tipContent"
-                                                            [disableTooltip]="!externalLink.links.length"
+                                                            [disableTooltip]="!externalLink?.links?.length"
                                                             (click)="removeField(field, section)"
                                                             [class.disabled]="disableFields"
                                                         >
@@ -284,8 +284,8 @@
                                                                 <br><strong>Label</strong>: {{linked.label}}
                                                                 </span>
                                                                 <p>
-                                                                <strong>Show</strong>: {{externalLink.links.length}}
-                                                                <strong>Total</strong>: {{externalLink.total}}
+                                                                <strong>Show</strong>: {{externalLink?.links?.length}}
+                                                                <strong>Total</strong>: {{externalLink?.total}}
                                                                 </p>
                                                             </ng-template>
                                                         </button>
@@ -306,7 +306,7 @@
                                                         [types]="types"
                                                         [sections]="sections"
                                                         [data]="field"
-                                                        [fieldSectionType]="section.type"
+                                                        [fieldSectionType]="section?.type"
                                                         [hiddenStatus]="getFieldHiddenState(section, field)"
                                                         (valuesChanged)="onFieldChange($event, x, y)"
                                                         [isDisabled]="isEmptyFielsExist(x, y) || isConfigEditDisabled(x, y)"

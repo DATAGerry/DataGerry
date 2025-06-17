@@ -110,13 +110,13 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         this.typeInstance = instance;
         if (instance !== undefined) {
             const preSectionList: any[] = [];
-            for (const section of instance.render_meta.sections) {
-                preSectionList.push(section);
+            for (const section of instance?.render_meta?.sections) {
+                preSectionList?.push(section);
                 const fieldBufferList = [];
-                for (const field of section.fields) {
-                    const found = instance.fields.find(f => f.name === field);
+                for (const field of section?.fields) {
+                    const found = instance?.fields?.find(f => f?.name === field);
                     if (found) {
-                        fieldBufferList.push(found);
+                        fieldBufferList?.push(found);
                     }
                 }
                 preSectionList.find(s => s.name === section.name).fields = fieldBufferList;
@@ -174,7 +174,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.globalSectionTemplates.length > 0 && this.globalSectionTemplateFields.length == 0) {
+        if (this.globalSectionTemplates?.length > 0 && this.globalSectionTemplateFields?.length == 0) {
             this.initGlobalFieldsList();
             this.setSelectedGlobalTemplates();
         }
@@ -182,11 +182,11 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
 
     ngOnDestroy(): void {
-        this.subscriber.next();
-        this.subscriber.complete();
-        this.sectionIdentifierService.resetIdentifiers();
-        this.validationService.cleanup();
-        this.fieldIdentifierValidation.clearFieldNames();
+        this.subscriber?.next();
+        this.subscriber?.complete();
+        this.sectionIdentifierService?.resetIdentifiers();
+        this.validationService?.cleanup();
+        this.fieldIdentifierValidation?.clearFieldNames();
     }
 
 
@@ -199,22 +199,22 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
     private addRefSectionSelectionField(refSection: CmdbTypeSection): void {
         refSection.fields = [];
-        refSection.fields.push(`${refSection.name}-field`);
+        refSection?.fields?.push(`${refSection?.name}-field`);
 
-        this.typeInstance.fields.push({
+        this.typeInstance?.fields?.push({
             type: 'ref-section-field',
-            name: `${refSection.name}-field`,
-            label: refSection.label
+            name: `${refSection?.name}-field`,
+            label: refSection?.label
         });
 
-        this.typeInstance.fields = [...this.typeInstance.fields];
+        this.typeInstance.fields = [...this.typeInstance?.fields];
     }
 
 
     private removeRefSectionSelectionField(refSection: CmdbTypeSection): void {
-        const index = this.typeInstance.fields.map(x => x.name).indexOf(`${refSection.name}-field`);
-        this.typeInstance.fields.splice(index, 1);
-        this.typeInstance.fields = [...this.typeInstance.fields];
+        const index = this.typeInstance?.fields?.map(x => x?.name).indexOf(`${refSection?.name}-field`);
+        this.typeInstance?.fields?.splice(index, 1);
+        this.typeInstance.fields = [...this.typeInstance?.fields];
     }
 
 
@@ -231,43 +231,43 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
     public onSectionDrop(event: DndDropEvent): void {
 
         event.event.preventDefault;
-        let sectionData = event.data;
+        let sectionData = event?.data;
 
         //check if it is a section template
         if ('is_global' in sectionData) {
 
             if (sectionData.is_global) {
-                this.selectedGlobalSectionTemplates.push(sectionData);
+                this.selectedGlobalSectionTemplates?.push(sectionData);
 
                 let index = 0;
                 for (let sectionIndex in this.globalSectionTemplates) {
                     const aTemplate = this.globalSectionTemplates[sectionIndex];
 
-                    if (aTemplate.name == sectionData.name) {
+                    if (aTemplate?.name == sectionData?.name) {
                         index = parseInt(sectionIndex);
                         break;
                     }
                 }
 
-                this.globalSectionTemplates.splice(index, 1);
-                this.typeInstance.global_template_ids.push(sectionData.name);
+                this.globalSectionTemplates?.splice(index, 1);
+                this.typeInstance?.global_template_ids?.push(sectionData?.name);
             }
 
-            sectionData = this.extractSectionData(event.data);
+            sectionData = this.extractSectionData(event?.data);
         }
 
-        if (this.sections && (event.dropEffect === 'copy' || event.dropEffect === 'move')) {
+        if (this.sections && (event?.dropEffect === 'copy' || event?.dropEffect === 'move')) {
 
-            let index = event.index;
+            let index = event?.index;
             if (typeof index === 'undefined') {
-                index = this.sections.length;
+                index = this.sections?.length;
             }
 
             for (const el of this.sections) {
-                if (el.name && el.name.trim()) {
-                    const collapseCard = this.el.nativeElement.querySelector(`#${el.name}`);
+                if (el.name && el?.name?.trim()) {
+                    const collapseCard = this.el?.nativeElement?.querySelector(`#${el?.name}`);
                     if (collapseCard) {
-                        this.renderer.setStyle(collapseCard, 'display', 'none');
+                        this.renderer?.setStyle(collapseCard, 'display', 'none');
                     }
                 }
             }
@@ -277,25 +277,25 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
             }
 
             if (event.dropEffect === 'move') {
-                this.eventIndex = event.index;
+                this.eventIndex = event?.index;
             }
 
             this.sections.splice(index, 0, sectionData);
             this.typeInstance.render_meta.sections = [...this.sections];
             this.sectionIdentifierService.getDroppedIndex(index);
-            this.sectionIdentifierService.addSection(sectionData.name, sectionData.name, index);
+            this.sectionIdentifierService.addSection(sectionData?.name, sectionData?.name, index);
 
-            if (sectionData.type === 'ref-section' && event.dropEffect === 'copy') {
+            if (sectionData?.type === 'ref-section' && event?.dropEffect === 'copy') {
                 this.addRefSectionSelectionField(sectionData as CmdbTypeSection);
             }
 
             //add fields of section template after the section was added
-            if ('is_global' in event.data) {
-                this.setSectionTemplateFields(event.data);
+            if ('is_global' in event?.data) {
+                this.setSectionTemplateFields(event?.data);
             }
         }
 
-        this.validationService.setSectionValid(sectionData.name, sectionData.fields.length > 0);
+        this.validationService.setSectionValid(sectionData?.name, sectionData?.fields?.length > 0);
         this.updateSectionFieldStatus()
         this.updateHighlightState();
     }
@@ -308,16 +308,16 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
     public externalField(field) {
         const include = { links: [], total: 0 };
 
-        for (const external of this.typeInstance.render_meta.externals) {
-            const fields = external.hasOwnProperty('fields') ? Array.isArray(external.fields) ? external.fields : [] : [];
-            const found = fields.find(f => f === field.name);
+        for (const external of this.typeInstance?.render_meta?.externals) {
+            const fields = external?.hasOwnProperty('fields') ? Array.isArray(external?.fields) ? external?.fields : [] : [];
+            const found = fields?.find(f => f === field?.name);
 
             if (found) {
-                if (include.total < 10) {
-                    include.links.push(external);
+                if (include?.total < 10) {
+                    include?.links?.push(external);
                 }
 
-                include.total = include.total + 1;
+                include.total = include?.total + 1;
             }
         }
 
@@ -330,7 +330,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @param data new data for field
      */
     public onFieldChange(data: any, sectionIndex: number, fieldIndex: number) {
-        if (data.hasOwnProperty("isDuplicate") && data.isDuplicate) {
+        if (data.hasOwnProperty("isDuplicate") && data?.isDuplicate) {
 
             // Set the current field as the active duplicate and set disableFields to true
             this.activeDuplicateField = { sectionIndex, fieldIndex };
@@ -351,17 +351,17 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @param data the new values which need to be processed
      */
     private handleHideFields(data: any) {
-        let sectionIndex: number = this.getSectionOfField(data.fieldName);
-        let section: CmdbMultiDataSection = this.typeInstance.render_meta.sections[sectionIndex];
+        let sectionIndex: number = this.getSectionOfField(data?.fieldName);
+        let section: CmdbMultiDataSection = this.typeInstance?.render_meta?.sections[sectionIndex];
 
         if (!("hidden_fields" in section)) {
             section.hidden_fields = [];
         }
 
         if (data.newValue == true) {
-            section.hidden_fields.push(data.fieldName);
+            section.hidden_fields.push(data?.fieldName);
         } else {
-            section.hidden_fields = section.hidden_fields.filter(hiddenField => hiddenField != data.fieldName);
+            section.hidden_fields = section.hidden_fields.filter(hiddenField => hiddenField != data?.fieldName);
         }
 
         this.typeInstance.render_meta.sections[sectionIndex] = section;
@@ -376,11 +376,11 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     private updateHiddenFields(previousName: string, newName: string) {
         let sectionIndex: number = this.getSectionOfField(previousName);
-        let section: CmdbMultiDataSection = this.typeInstance.render_meta.sections[sectionIndex];
+        let section: CmdbMultiDataSection = this.typeInstance?.render_meta?.sections[sectionIndex];
 
         if (section?.hidden_fields?.includes(previousName)) {
-            section.hidden_fields = section.hidden_fields.filter(hiddenField => hiddenField != previousName);
-            section.hidden_fields.push(newName);
+            section.hidden_fields = section?.hidden_fields?.filter(hiddenField => hiddenField != previousName);
+            section?.hidden_fields?.push(newName);
             this.typeInstance.render_meta.sections[sectionIndex] = section;
         }
     }
@@ -388,7 +388,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
     public getFieldHiddenState(section: CmdbTypeSection | CmdbMultiDataSection, field: any): boolean {
         if (section.type == "multi-data-section") {
-            if ((section as CmdbMultiDataSection).hidden_fields?.includes(field.name)) {
+            if ((section as CmdbMultiDataSection)?.hidden_fields?.includes(field?.name)) {
                 return true;
             } else {
                 return false;
@@ -401,8 +401,8 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
     private getSectionOfField(fieldName: string) {
         let index = 0;
 
-        for (let aSection of this.typeInstance.render_meta.sections) {
-            for (let aField of aSection.fields) {
+        for (let aSection of this.typeInstance?.render_meta?.sections) {
+            for (let aField of aSection?.fields) {
                 if (aField.name == fieldName) {
                     return index;
                 }
@@ -423,24 +423,24 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
     private handleFieldChanges(data: any) {
 
         if (data.elementType == 'section') {
-            this.validationService.updateSectionKey(data.previousName, data.fieldName)
+            this.validationService.updateSectionKey(data?.previousName, data?.fieldName)
         }
         if (data.inputName == "hideField") {
             this.handleHideFields(data);
             return;
         }
 
-        const newValue: any = data.newValue;
-        const inputName: string = data.inputName;
-        let fieldName: string = data.fieldName;
+        const newValue: any = data?.newValue;
+        const inputName: string = data?.inputName;
+        let fieldName: string = data?.fieldName;
 
         if (data.inputName === "name") {
-            fieldName = data.previousName;
+            fieldName = data?.previousName;
         }
 
         let index = -1;
 
-        if (data.elementType == "section" || data.elementType == "multi-data-section") {
+        if (data.elementType == "section" || data?.elementType == "multi-data-section") {
             index = this.getSectionIndexForName(fieldName);
 
             if (this.activeIndex !== null) {
@@ -451,7 +451,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
             }
         } else {
             if (data.inputName == "name") {
-                this.updateHiddenFields(data.previousName, data.newValue);
+                this.updateHiddenFields(data?.previousName, data?.newValue);
             }
 
             index = this.getFieldIndexForName(fieldName);
@@ -473,7 +473,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns (int): Index of the field. -1 of no field with this name is found
      */
     private getFieldIndexForName(targetName: string): number {
-        return BuilderUtils.getFieldIndexForName(this.typeInstance, targetName);
+        return BuilderUtils?.getFieldIndexForName(this.typeInstance, targetName);
     }
 
 
@@ -484,7 +484,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns (int): Index of the field. -1 of no field with this name is found
      */
     private getSectionIndexForName(targetName: string): number {
-        return BuilderUtils.getSectionIndexForName(this.typeInstance, targetName);
+        return BuilderUtils?.getSectionIndexForName(this.typeInstance, targetName);
     }
 
     /**
@@ -500,25 +500,25 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
             return;
         }
 
-        const fieldData = event.data;
+        const fieldData = event?.data;
 
-        if (section && (event.dropEffect === 'copy' || event.dropEffect === 'move')) {
-            let index = event.index;
+        if (section && (event?.dropEffect === 'copy' || event?.dropEffect === 'move')) {
+            let index = event?.index;
 
-            this.initialIdentifier = section.name;
+            this.initialIdentifier = section?.name;
             if (typeof index === 'undefined') {
-                index = section.fields.length;
+                index = section?.fields?.length;
             }
 
             if (event.dropEffect === 'copy') {
-                this.newFields.push(fieldData);
+                this.newFields?.push(fieldData);
             }
 
-            section.fields.splice(index, 0, fieldData);
+            section?.fields?.splice(index, 0, fieldData);
             this.typeInstance.render_meta.sections = [...this.sections];
             this.typeInstance.fields.push(fieldData);
-            this.typeInstance.fields = [...this.typeInstance.fields];
-            this.validationService.setSectionValid(section.name, true);
+            this.typeInstance.fields = [...this.typeInstance?.fields];
+            this.validationService?.setSectionValid(section?.name, true);
         }
     }
 
@@ -529,13 +529,13 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         }
 
         const sectionIndex = section.fields.indexOf(item);
-        section.fields.splice(sectionIndex, 1);
-        const fieldIndex = this.typeInstance.fields.indexOf(item);
-        let updatedDraggedFieldName = this.typeInstance.fields[fieldIndex].name;
+        section?.fields?.splice(sectionIndex, 1);
+        const fieldIndex = this.typeInstance?.fields?.indexOf(item);
+        let updatedDraggedFieldName = this.typeInstance?.fields[fieldIndex]?.name;
 
-        this.typeInstance.fields.splice(fieldIndex, 1);
-        this.typeInstance.fields = [...this.typeInstance.fields];
-        this.validationService.setIsValid(updatedDraggedFieldName, true)
+        this.typeInstance?.fields?.splice(fieldIndex, 1);
+        this.typeInstance.fields = [...this.typeInstance?.fields];
+        this.validationService?.setIsValid(updatedDraggedFieldName, true)
 
         this.refreshFieldIdentifiers();
         this.updateHighlightState();
@@ -552,11 +552,11 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     public onSectionDragged(item: any, list: any[], effect: DropEffect) {
         if (effect === 'move') {
-            const index = list.indexOf(item);
+            const index = list?.indexOf(item);
             list.splice(index, 1);
             this.sections = list;
             this.typeInstance.render_meta.sections = [...this.sections];
-            this.sectionIdentifierService.updateSectionIndexes(this.onSectionMoveIndex, this.eventIndex);
+            this.sectionIdentifierService?.updateSectionIndexes(this.onSectionMoveIndex, this.eventIndex);
             this.updateHighlightState();
             this.refreshFieldIdentifiers();
         }
@@ -576,21 +576,21 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         }
 
         this.handleGlobalTemplates(item);
-        this.sectionIdentifierService.removeSection(sectionIndex);
+        this.sectionIdentifierService?.removeSection(sectionIndex);
 
-        const index: number = this.typeInstance.render_meta.sections.indexOf(item);
+        const index: number = this.typeInstance?.render_meta?.sections?.indexOf(item);
 
         if (index !== -1) {
             if (item.type === 'section') {
-                const fields: Array<string> = this.typeInstance.render_meta.sections[index].fields;
+                const fields: Array<string> = this.typeInstance?.render_meta?.sections[index]?.fields;
                 for (const field of fields) {
-                    const fieldIdx = this.typeInstance.fields.map(x => x.name).indexOf(field['name']);
+                    const fieldIdx = this.typeInstance?.fields.map(x => x?.name).indexOf(field['name']);
                     if (fieldIdx !== -1) {
-                        this.typeInstance.fields.splice(fieldIdx, 1);
+                        this.typeInstance?.fields.splice(fieldIdx, 1);
                     }
                 }
 
-                this.typeInstance.fields = [...this.typeInstance.fields];
+                this.typeInstance.fields = [...this.typeInstance?.fields];
 
             } else if (item.type === 'ref-section') {
                 this.removeRefSectionSelectionField(item);
@@ -598,12 +598,12 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
             this.sections.splice(index, 1);
             this.typeInstance.render_meta.sections.splice(index, 1);
-            this.typeInstance.render_meta.sections = [...this.typeInstance.render_meta.sections];
+            this.typeInstance.render_meta.sections = [...this.typeInstance?.render_meta?.sections];
 
             this.updateHighlightState()
             this.refreshFieldIdentifiers()
 
-            this.validationService.setSectionValid(item.name, true);
+            this.validationService.setSectionValid(item?.name, true);
         }
     }
 
@@ -614,27 +614,27 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @param section - The section from which the field will be removed.
      */
     public removeField(item: any, section: CmdbTypeSection) {
-        const indexField: number = this.typeInstance.fields.indexOf(item);
+        const indexField: number = this.typeInstance?.fields?.indexOf(item);
 
         if (indexField > -1) {
-            let removedFieldName = this.typeInstance.fields[indexField].name;
-            this.typeInstance.fields.splice(indexField, 1);
-            this.typeInstance.fields = [...this.typeInstance.fields];
-            this.validationService.updateFieldValidityOnDeletion(removedFieldName);
+            let removedFieldName = this.typeInstance?.fields[indexField]?.name;
+            this.typeInstance?.fields?.splice(indexField, 1);
+            this.typeInstance.fields = [...this.typeInstance?.fields];
+            this.validationService?.updateFieldValidityOnDeletion(removedFieldName);
         }
 
-        const sectionFieldIndex = section.fields.indexOf(item);
+        const sectionFieldIndex = section?.fields?.indexOf(item);
 
         if (sectionFieldIndex > -1) {
-            section.fields.splice(sectionFieldIndex, 1);
+            section?.fields?.splice(sectionFieldIndex, 1);
         }
 
-        this.typeInstance.render_meta.sections = [...this.typeInstance.render_meta.sections];
+        this.typeInstance.render_meta.sections = [...this.typeInstance?.render_meta.sections];
 
-        let numberOfFields = section.fields.length > 0;
+        let numberOfFields = section?.fields?.length > 0;
 
         if (!numberOfFields) {
-            this.validationService.setSectionValid(section.name, false);
+            this.validationService?.setSectionValid(section?.name, false);
         }
 
         this.updateHighlightState()
@@ -673,7 +673,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     isSectionHasField(section: any): boolean {
         // this.updateHighlightState()
-        return section.fields.length > 0;
+        return section?.fields?.length > 0;
     }
 
 
@@ -681,7 +681,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * Checks if any section lacks fields and updates the save button status.
      */
     updateSectionFieldStatus(): void {
-        const allSectionsHaveFields = this.sections.every(section => section.fields.length > 0);
+        const allSectionsHaveFields = this.sections?.every(section => section?.fields?.length > 0);
 
         // Set the save button disabled state based on section status
         this.validationService.setSectionWithoutFieldState(allSectionsHaveFields);
@@ -696,15 +696,15 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns boolean - Returns true if the section or any of its fields are highlighted, false otherwise.
      */
     public isSectionHighlighted(section: any): boolean {
-        const isDuplicateIdentifier = this.sections.filter(s => s.name === section.name).length > 1;
-        const isRefSection = section.type === "ref-section";
-        const hasInvalidFields = section.fields?.some(field => this.isFieldHighlighted(field, section.fields));
+        const isDuplicateIdentifier = this.sections?.filter(s => s?.name === section?.name).length > 1;
+        const isRefSection = section?.type === "ref-section";
+        const hasInvalidFields = section?.fields?.some(field => this.isFieldHighlighted(field, section?.fields));
 
         // Check for section-level issues (name, label, duplicates)
-        const hasSectionIssues = !section.name || isDuplicateIdentifier || !section.label;
+        const hasSectionIssues = !section?.name || isDuplicateIdentifier || !section?.label;
 
         if (isRefSection) {
-            const isInvalidReference = !section.reference.type_id || !section.reference.section_name;
+            const isInvalidReference = !section?.reference?.type_id || !section?.reference?.section_name;
             return isInvalidReference || hasSectionIssues;
         }
 
@@ -725,18 +725,18 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         if (!field || typeof field !== 'object') {
             return false;
         }
-        const isRefField = field.type === "ref";
-        const hasInvalidIdentifier = !field.name || sectionfields.filter(s => s.name === field.name).length > 1;
-        const hasValidRefTypes = field && 'ref_types' in field && Array.isArray(field.ref_types) && field.ref_types.length > 0;
+        const isRefField = field?.type === "ref";
+        const hasInvalidIdentifier = !field?.name || sectionfields?.filter(s => s?.name === field?.name).length > 1;
+        const hasValidRefTypes = field && 'ref_types' in field && Array.isArray(field?.ref_types) && field?.ref_types?.length > 0;
 
-        if (hasInvalidIdentifier || isRefField || !field.label) {
+        if (hasInvalidIdentifier || isRefField || !field?.label) {
             if (isRefField) {
 
                 const hasSummaries = field.summaries?.every(
                     ({ type_id, line }) => type_id != null && line?.trim() !== "" && line !== null
                 );
 
-                return !hasValidRefTypes || hasInvalidIdentifier || !field.label || !hasSummaries;
+                return !hasValidRefTypes || hasInvalidIdentifier || !field?.label || !hasSummaries;
             }
             return true;
         }
@@ -751,10 +751,10 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @param event - The drag event to be checked and possibly prevented.
      */
     public preventDragForAllSections(event: DragEvent): void {
-        const isAnyHighlighted = this.sections.some(section => this.isSectionHighlighted(section));
+        const isAnyHighlighted = this.sections?.some(section => this.isSectionHighlighted(section));
         if (isAnyHighlighted || this.disableFields) {
-            event.stopPropagation(); // Stops event from affecting other elements
-            event.preventDefault();  // Prevent dragging behavior
+            event?.stopPropagation(); // Stops event from affecting other elements
+            event?.preventDefault();  // Prevent dragging behavior
         }
     }
 
@@ -766,12 +766,12 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     public preventDragForAllFields(event: DragEvent, section: any): void {
         // Check if any field in the section is highlighted (has an error)
-        const isAnyFieldHighlighted = section.fields.some(field => this.isFieldHighlighted(field, section.fields));
-        const isAnyFieldEmpty = this.checkEmptyFields().length > 0;
+        const isAnyFieldHighlighted = section?.fields?.some(field => this.isFieldHighlighted(field, section?.fields));
+        const isAnyFieldEmpty = this.checkEmptyFields()?.length > 0;
 
         if (isAnyFieldHighlighted || isAnyFieldEmpty || this.disableFields) {
-            event.stopPropagation();  // Stops event from affecting other elements
-            event.preventDefault();   // Prevent dragging behavior
+            event?.stopPropagation();  // Stops event from affecting other elements
+            event?.preventDefault();   // Prevent dragging behavior
         }
     }
 
@@ -786,8 +786,8 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         const isFieldHighlighted = this.isAnyFieldHighlighted();
 
         this.updateSectionFieldStatus()
-        this.validationService.setSectionHighlightState(isSectionHighlighted);
-        this.validationService.setFieldHighlightState(isFieldHighlighted);
+        this.validationService?.setSectionHighlightState(isSectionHighlighted);
+        this.validationService?.setFieldHighlightState(isFieldHighlighted);
     }
 
 
@@ -796,7 +796,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns A boolean indicating if any section is currently highlighted.
      */
     isAnySectionHighlighted(): boolean {
-        return this.sections.some(section =>
+        return this.sections?.some(section =>
             this.isSectionHighlighted(section)
         );
     }
@@ -809,7 +809,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     isAnyFieldHighlighted(): boolean {
         return this.sections.some(section =>
-            section.fields.some(field => this.isFieldHighlighted(field, section.fields))
+            section?.fields?.some(field => this.isFieldHighlighted(field, section?.fields))
         );
     }
 
@@ -820,10 +820,10 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns An array of objects with `sectionIndex` and `fieldIndex` for each field with an empty name.
      */
     checkEmptyFields(): Array<{ sectionIndex: number, fieldIndex: number }> {
-        return this.sections.flatMap((section, sectionIndex) =>
-            section.fields
+        return this.sections?.flatMap((section, sectionIndex) =>
+            section?.fields
                 .map((field, fieldIndex) => {
-                    if (!field.name || field.name.trim() === '') {
+                    if (!field?.name || field?.name?.trim() === '') {
                         if (field.hasOwnProperty('name')) {
                             return { sectionIndex, fieldIndex };
                         }
@@ -864,10 +864,10 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
     isEmptyFielsExist(sectionIndex: number, fieldIndex: number): boolean {
         const emptyFields = this.checkEmptyFields();
-        if (emptyFields.length === 0) {
+        if (emptyFields?.length === 0) {
             return false;
         }
-        return !emptyFields.some(emptyField => emptyField.sectionIndex === sectionIndex && emptyField.fieldIndex === fieldIndex);
+        return !emptyFields?.some(emptyField => emptyField?.sectionIndex === sectionIndex && emptyField?.fieldIndex === fieldIndex);
     }
 
 
@@ -891,19 +891,19 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     isLocked(): boolean {
         // Lock all interactions if there are any empty fields
-        return this.checkEmptyFields().length > 0;
+        return this.checkEmptyFields()?.length > 0;
     }
 
     /* -------------------------------------------- SECTION TEMPLATE HANDLING ------------------------------------------- */
 
     public getDnDEffectAllowedForField(field: any) {
-        return this.isGlobalField(field.name) ? "none" : "move";
+        return this.isGlobalField(field?.name) ? "none" : "move";
     }
 
 
     public getSectionMode(section: CmdbTypeSection, mode: CmdbMode) {
         //TODO: improve this condition
-        if (this.isGlobalSection(section) || section.name.includes("dg_gst-") || section.name.includes("dg-")) {
+        if (this.isGlobalSection(section) || section?.name?.includes("dg_gst-") || section?.name?.includes("dg-")) {
             return CmdbMode.Global
         }
 
@@ -940,7 +940,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         for (let sectionIndex in this.globalSectionTemplates) {
             const aTemplate = this.globalSectionTemplates[sectionIndex];
 
-            if (aTemplate.name == section.name) {
+            if (aTemplate?.name == section?.name) {
                 return true;
             }
         }
@@ -948,7 +948,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         for (let sectionIndex in this.selectedGlobalSectionTemplates) {
             const aTemplate = this.selectedGlobalSectionTemplates[sectionIndex];
 
-            if (aTemplate.name == section.name) {
+            if (aTemplate?.name == section?.name) {
                 return true;
             }
         }
@@ -958,22 +958,22 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
 
     public setSelectedGlobalTemplates() {
-        if (this.typeInstance.global_template_ids.length > 0) {
+        if (this.typeInstance?.global_template_ids?.length > 0) {
             // iterate global_template_ids
-            this.typeInstance.global_template_ids.forEach((globalTemplateName) => {
+            this.typeInstance?.global_template_ids?.forEach((globalTemplateName) => {
 
                 let index: number = -1;
 
                 for (let templateIndex in this.globalSectionTemplates) {
                     let aTemplate = this.globalSectionTemplates[templateIndex];
 
-                    if (aTemplate.name == globalTemplateName) {
-                        this.selectedGlobalSectionTemplates.push(aTemplate);
+                    if (aTemplate?.name == globalTemplateName) {
+                        this.selectedGlobalSectionTemplates?.push(aTemplate);
                         index = Number(templateIndex);
                     }
                 }
 
-                this.globalSectionTemplates.splice(index, 1);
+                this.globalSectionTemplates?.splice(index, 1);
             })
         }
     }
@@ -986,7 +986,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns True if it is in the List
      */
     public isGlobalField(fieldName: string) {
-        return this.globalSectionTemplateFields.indexOf(fieldName) > -1;
+        return this.globalSectionTemplateFields?.indexOf(fieldName) > -1;
     }
 
 
@@ -998,9 +998,9 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         for (let templateIndex in this.globalSectionTemplates) {
             let aTemplate = this.globalSectionTemplates[templateIndex];
 
-            for (let fieldIndex in aTemplate.fields) {
-                let aField = aTemplate.fields[fieldIndex];
-                this.globalSectionTemplateFields.push(aField.name);
+            for (let fieldIndex in aTemplate?.fields) {
+                let aField = aTemplate?.fields[fieldIndex];
+                this.globalSectionTemplateFields?.push(aField.name);
             }
         }
     }
@@ -1012,18 +1012,18 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
 
         for (let index in this.selectedGlobalSectionTemplates) {
             const aSection = this.selectedGlobalSectionTemplates[index];
-            if (aSection.name == sectionData.name) {
+            if (aSection?.name == sectionData?.name) {
                 isGlobalTemplate = true;
                 globalTemplateIndex = parseInt(index);
-                this.globalSectionTemplates.push(aSection);
-                this.globalSectionTemplates.sort((a, b) => a.public_id - b.public_id);
+                this.globalSectionTemplates?.push(aSection);
+                this.globalSectionTemplates?.sort((a, b) => a?.public_id - b?.public_id);
             }
         }
 
         if (isGlobalTemplate) {
-            const nameIndex = this.typeInstance.global_template_ids.indexOf(sectionData.name, 0);
-            this.typeInstance.global_template_ids.splice(nameIndex, 1);
-            this.selectedGlobalSectionTemplates.splice(globalTemplateIndex, 1);
+            const nameIndex = this.typeInstance?.global_template_ids?.indexOf(sectionData?.name, 0);
+            this.typeInstance?.global_template_ids?.splice(nameIndex, 1);
+            this.selectedGlobalSectionTemplates?.splice(globalTemplateIndex, 1);
         }
     }
 
@@ -1034,9 +1034,9 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns section properties
      */
     public extractSectionData(data: CmdbSectionTemplate) {
-        let sectionName: string = data.name;
+        let sectionName: string = data?.name;
 
-        if (!data.is_global && !this.isUniqueID(sectionName)) {
+        if (!data?.is_global && !this.isUniqueID(sectionName)) {
             sectionName = this.createUniqueID('section_template');
         }
 
@@ -1055,17 +1055,17 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @param sectionTemplateFields 
      */
     public setSectionTemplateFields(sectionTemplate: CmdbSectionTemplate) {
-        let sectionTemplateFields = sectionTemplate.fields;
+        let sectionTemplateFields = sectionTemplate?.fields;
 
         for (let fieldIndex in sectionTemplateFields) {
             let aField = sectionTemplateFields[fieldIndex];
 
-            if (!this.isGlobalField(aField.name) && !this.isUniqueID(aField.name)) {
-                aField.name = this.createUniqueID(aField.type);
+            if (!this.isGlobalField(aField?.name) && !this.isUniqueID(aField?.name)) {
+                aField.name = this.createUniqueID(aField?.type);
             }
 
-            this.newFields.push(aField);
-            this.typeInstance.fields.push(aField);
+            this.newFields?.push(aField);
+            this.typeInstance?.fields?.push(aField);
         }
 
         this.typeInstance.fields = [...this.typeInstance.fields];
@@ -1104,19 +1104,19 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     private isUniqueID(uniqueID: string) {
         //first check all field names
-        for (let fieldIndex in this.typeInstance.fields) {
-            let currentField = this.typeInstance.fields[fieldIndex];
+        for (let fieldIndex in this.typeInstance?.fields) {
+            let currentField = this.typeInstance?.fields[fieldIndex];
 
-            if (currentField.name == uniqueID) {
+            if (currentField?.name == uniqueID) {
                 return false;
             }
         }
 
         //check all section names 
-        for (let sectionIndex in this.typeInstance.render_meta.sections) {
-            let currentSection = this.typeInstance.render_meta.sections[sectionIndex];
+        for (let sectionIndex in this.typeInstance?.render_meta?.sections) {
+            let currentSection = this.typeInstance?.render_meta?.sections[sectionIndex];
 
-            if (currentSection.name == uniqueID) {
+            if (currentSection?.name == uniqueID) {
                 return false;
             }
         }
@@ -1131,7 +1131,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      */
     setActiveIndex(index: number) {
         this.activeIndex = index;
-        this.sectionIdentifierService.setActiveIndex(index);
+        this.sectionIdentifierService?.setActiveIndex(index);
     }
 
 
@@ -1140,10 +1140,10 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @param section - The section for which the color picker visibility is toggled.
      */
     public toggleColorPicker(section: CmdbTypeSection): void {
-        if (this.showColorPickerForSection === section.name) {
+        if (this.showColorPickerForSection === section?.name) {
             this.showColorPickerForSection = null;
         } else {
-            this.showColorPickerForSection = section.name;
+            this.showColorPickerForSection = section?.name;
         }
     }
 
@@ -1159,14 +1159,14 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
         }
 
         // Validate color input, ensure it's a valid string
-        if (!color || color.trim() === '') {
+        if (!color || color?.trim() === '') {
             return;
         }
 
         section.bg_color = color;
 
 
-        const sectionIndex = this.typeInstance.render_meta.sections.findIndex((s) => s.name === section.name);
+        const sectionIndex = this.typeInstance?.render_meta?.sections?.findIndex((s) => s?.name === section?.name);
         if (sectionIndex !== -1) {
             this.typeInstance.render_meta.sections[sectionIndex].bg_color = color;
         }
@@ -1254,7 +1254,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns `true` if the section is new, otherwise `false`.
      */
     isNewSection(section: CmdbTypeSection): boolean {
-        return BuilderUtils.isNewSection(section, this.newSections);
+        return BuilderUtils?.isNewSection(section, this.newSections);
     }
 
 
@@ -1264,7 +1264,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns `true` if the field is new, otherwise `false`.
      */
     isNewField(field: any): boolean {
-        return BuilderUtils.isNewField(field, this.newFields);
+        return BuilderUtils?.isNewField(field, this.newFields);
     }
 
 
@@ -1272,7 +1272,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * Opens a preview modal for the current sections.
      */
     openPreview(): void {
-        BuilderUtils.openPreview(this.modalService, this.sections);
+        BuilderUtils?.openPreview(this.modalService, this.sections);
     }
 
 
@@ -1280,7 +1280,7 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * Opens a diagnostic modal for the current sections.
      */
     openDiagnostic(): void {
-        BuilderUtils.openDiagnostic(this.modalService, this.sections);
+        BuilderUtils?.openDiagnostic(this.modalService, this.sections);
     }
 
 
@@ -1290,6 +1290,6 @@ export class BuilderComponent implements OnChanges, OnDestroy, AfterViewChecked 
      * @returns The matched type as a string.
      */
     matchedType(value: string): string {
-        return BuilderUtils.matchedType(value);
+        return BuilderUtils?.matchedType(value);
     }
 }

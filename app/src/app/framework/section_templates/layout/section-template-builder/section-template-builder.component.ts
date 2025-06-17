@@ -110,32 +110,32 @@ export class SectionTemplateBuilderComponent implements OnInit {
             this.getSectionTemplate(this.sectionTemplateID);
         }
 
-        this.isValid$ = this.validationService.getIsValid();
+        this.isValid$ = this.validationService?.getIsValid();
 
         this.isValid$.subscribe(valid => {
             this.isFormValid = valid;
-          });
+        });
 
-        this.formGroup.controls['isGlobal'].valueChanges.subscribe(isGlobal => {
+        this.formGroup?.controls['isGlobal']?.valueChanges?.subscribe(isGlobal => {
             if (isGlobal) {
-                if (this.initialSection.name.includes('dg_gst-')) {
-                    this.sectionComponent.form.controls['name'].setValue(this.initialSection.name);
+                if (this.initialSection?.name?.includes('dg_gst-')) {
+                    this.sectionComponent?.form?.controls['name']?.setValue(this.initialSection?.name);
                 } else {
-                    this.sectionComponent.form.controls['name'].setValue(this.generateSectionTemplateName(isGlobal));
+                    this.sectionComponent.form?.controls['name']?.setValue(this.generateSectionTemplateName(isGlobal));
                 }
             }
             else {
-                if (this.initialSection.name.includes('section_template')) {
-                    this.sectionComponent.form.controls['name'].setValue(this.initialSection.name);
+                if (this.initialSection?.name?.includes('section_template')) {
+                    this.sectionComponent?.form?.controls['name']?.setValue(this.initialSection?.name);
                 } else {
-                    this.sectionComponent.form.controls['name'].setValue(this.generateSectionTemplateName());
+                    this.sectionComponent?.form?.controls['name']?.setValue(this.generateSectionTemplateName());
                 }
             }
         });
     }
 
     public ngOnDestroy(): void {
-        this.validationService.cleanup();
+        this.validationService?.cleanup();
     }
 
     /* ---------------------------------------------------- API Calls --------------------------------------------------- */
@@ -148,7 +148,7 @@ export class SectionTemplateBuilderComponent implements OnInit {
         if (this.initialSection.fields.length === 0 || !this.isFormValid) {
             this.toastService.error("Form is invalid or incomplete. Cannot save.");
             return;
-          }
+        }
 
         this.initialSection.label = this.sectionComponent.form.controls['label'].value;
 
@@ -165,20 +165,20 @@ export class SectionTemplateBuilderComponent implements OnInit {
      */
     public createSectionTemplate() {
         let params = {
-            "name": this.sectionComponent.form.controls['name'].value,
-            "label": this.initialSection.label,
-            "is_global": this.formGroup.value.isGlobal,
+            "name": this.sectionComponent?.form?.controls['name']?.value,
+            "label": this.initialSection?.label,
+            "is_global": this.formGroup?.value?.isGlobal,
             "predefined": false,
-            "fields": JSON.stringify(this.initialSection.fields)
+            "fields": JSON.stringify(this.initialSection?.fields)
         }
 
-        this.sectionTemplateService.postSectionTemplate(params).subscribe({
+        this.sectionTemplateService?.postSectionTemplate(params).subscribe({
             next: (res: APIInsertSingleResponse) => {
                 this.toastService.success("Section Template created!");
                 this.router.navigate(['/framework/section_templates']);
             },
             error: (error) => {
-                this.toastService.error(error);
+                this.toastService.error(error?.error?.message);
             }
         });
     }
@@ -189,23 +189,24 @@ export class SectionTemplateBuilderComponent implements OnInit {
      */
     public updateSectionTemplate() {
         let params = {
-            'name': this.initialSection.name,
-            'label': this.initialSection.label,
+            'name': this.initialSection?.name,
+            'label': this.initialSection?.label,
             'type': 'section',
-            'is_global': this.formGroup.value.isGlobal,
+            'is_global': this.formGroup?.value?.isGlobal,
             'predefined': false,
-            'fields': JSON.stringify(this.initialSection.fields),
-            'public_id': this.initialSection.public_id
+            'fields': JSON.stringify(this.initialSection?.fields),
+            'public_id': this.initialSection?.public_id
         }
 
-        this.sectionTemplateService.updateSectionTemplate(params)
-        .subscribe({
-            next: (res: APIUpdateSingleResponse) => {
+        this.sectionTemplateService?.updateSectionTemplate(params)
+            .subscribe({
+                next: (res: APIUpdateSingleResponse) => {
                     this.toastService.success("Section Template updated!");
-            this.router.navigate(['/framework/section_templates']);
-        },
-        error: (error) => this.toastService.error(error?.error?.message)}
-    );
+                    this.router.navigate(['/framework/section_templates']);
+                },
+                error: (error) => this.toastService.error(error?.error?.message)
+            }
+            );
     }
 
 
@@ -215,13 +216,15 @@ export class SectionTemplateBuilderComponent implements OnInit {
      * @param publicID publicID of section template which should be edited
      */
     private getSectionTemplate(publicID: number) {
-        this.sectionTemplateService.getSectionTemplate(publicID)
-        .subscribe({
-            next: (response: CmdbSectionTemplate) => {                    this.initialSection = response;
-            this.formGroup.controls.isGlobal.setValue(this.initialSection.is_global);
-        },
-        error: (error) => this.toastService.error(error?.error?.message)}
-    );
+        this.sectionTemplateService?.getSectionTemplate(publicID)
+            .subscribe({
+                next: (response: CmdbSectionTemplate) => {
+                    this.initialSection = response;
+                    this.formGroup?.controls?.isGlobal?.setValue(this.initialSection?.is_global);
+                },
+                error: (error) => this.toastService.error(error?.error?.message)
+            }
+            );
     }
 
     /* ------------------------------------------------- EVENT HANDLERS ------------------------------------------------- */
@@ -243,12 +246,9 @@ export class SectionTemplateBuilderComponent implements OnInit {
         const newValue: any = data.newValue;
         const inputName: string = data.inputName;
         const fieldName: string = data.fieldName;
-
-        if (inputName != 'name' && inputName != 'label') {
-            const index: number = this.getFieldIndexForName(fieldName);
-            if (index >= 0) {
-                this.initialSection.fields[index][inputName] = newValue;
-            }
+        const index: number = this.getFieldIndexForName(fieldName);
+        if (index >= 0) {
+            this.initialSection.fields[index][inputName] = newValue;
         }
     }
 
@@ -261,9 +261,9 @@ export class SectionTemplateBuilderComponent implements OnInit {
      */
     private getFieldIndexForName(targetName: string): number {
         let index = 0;
-        for (let field of this.initialSection.fields) {
+        for (let field of this.initialSection?.fields) {
 
-            if (field.name == targetName) {
+            if (field?.name == targetName) {
                 return index;
             } else {
                 index += 1;
@@ -281,7 +281,7 @@ export class SectionTemplateBuilderComponent implements OnInit {
      */
     public onFieldDrop(event: DndDropEvent) {
         if (event.dropEffect === 'copy' || event.dropEffect === 'move') {
-            this.initialSection.fields.splice(event.index, 0, event.data);
+            this.initialSection?.fields?.splice(event?.index, 0, event?.data);
         }
     }
 
@@ -293,7 +293,7 @@ export class SectionTemplateBuilderComponent implements OnInit {
      * @returns True if it a new field
      */
     public isNewField(field: any): boolean {
-        return this.initialSection.fields.indexOf(field) > -1;
+        return this.initialSection?.fields?.indexOf(field) > -1;
     }
 
 
@@ -303,11 +303,11 @@ export class SectionTemplateBuilderComponent implements OnInit {
      * @param item field data
      */
     public onFieldDragged(item: any) {
-        const fieldIndex = this.initialSection.fields.indexOf(item);
-        let updatedDraggedFieldName = this.initialSection.fields[fieldIndex].name;
+        const fieldIndex = this.initialSection?.fields?.indexOf(item);
+        let updatedDraggedFieldName = this.initialSection?.fields[fieldIndex]?.name;
 
-        this.initialSection.fields.splice(fieldIndex, 1);
-        this.validationService.setIsValid(updatedDraggedFieldName, true)
+        this.initialSection?.fields?.splice(fieldIndex, 1);
+        this.validationService?.setIsValid(updatedDraggedFieldName, true)
     }
 
 
@@ -317,13 +317,13 @@ export class SectionTemplateBuilderComponent implements OnInit {
      * @param item field which should be removed
      */
     public removeField(item: any) {
-        const indexField: number = this.initialSection.fields.indexOf(item);
-        let removedFieldName = this.initialSection.fields[indexField].name;
+        const indexField: number = this.initialSection?.fields?.indexOf(item);
+        let removedFieldName = this.initialSection?.fields[indexField]?.name;
 
         if (indexField > -1) {
-            this.initialSection.fields.splice(indexField, 1);
-            this.initialSection.fields = [...this.initialSection.fields];
-            this.validationService.updateFieldValidityOnDeletion(removedFieldName);
+            this.initialSection?.fields?.splice(indexField, 1);
+            this.initialSection.fields = [...this.initialSection?.fields];
+            this.validationService?.updateFieldValidityOnDeletion(removedFieldName);
         }
     }
 
