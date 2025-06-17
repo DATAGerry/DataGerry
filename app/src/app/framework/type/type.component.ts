@@ -37,6 +37,7 @@ import { CollectionParameters } from '../../services/models/api-parameter';
 import { UserSetting } from '../../management/user-settings/models/user-setting';
 import { SidebarService } from 'src/app/layout/services/sidebar.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { ToastService } from 'src/app/layout/toast/toast.service';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @Component({
@@ -115,7 +116,8 @@ export class TypeComponent implements OnInit, OnDestroy {
         private userSettingsService: UserSettingsService<UserSetting, TableStatePayload>,
         private indexDB: UserSettingsDBService<UserSetting, TableStatePayload>,
         private sideBarService: SidebarService,
-        private loaderService: LoaderService
+        private loaderService: LoaderService,
+        private toastService: ToastService
     ) {
 
         this.route.data.pipe(takeUntil(this.subscriber)).subscribe((data: Data) => {
@@ -314,12 +316,19 @@ export class TypeComponent implements OnInit, OnDestroy {
         };
 
         this.typeService.getTypes(params).pipe(takeUntil(this.subscriber), finalize(() => this.loaderService.hide())).subscribe(
-            (apiResponse: APIGetMultiResponse<CmdbType>) => {
-                this.typesAPIResponse = apiResponse;
-                this.types = apiResponse.results as Array<CmdbType>;
-                this.totalTypes = apiResponse.total;
-                this.loading = false;
-                this.sideBarService.loadCategoryTree();
+            {
+                next: (apiResponse: APIGetMultiResponse<CmdbType>) => {
+                    this.typesAPIResponse = apiResponse;
+                    this.types = apiResponse?.results as Array<CmdbType>;
+                    this.totalTypes = apiResponse?.total;
+                    this.loading = false;
+                    this.sideBarService?.loadCategoryTree();
+
+                },
+                error: (error) => {
+                    this.loading = false;
+                    this.toastService?.error(error?.error?.message)
+                }
             }
         );
     }

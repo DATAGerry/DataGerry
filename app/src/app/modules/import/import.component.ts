@@ -36,7 +36,6 @@ export class ImportComponent {
     private subscription: Subscription;
 
     isCloudModeEnabled = environment.cloudMode;
-    isPreCloudMode = environment.preCloudMode;
 
 
     public constructor(private objectService: ObjectService) { }

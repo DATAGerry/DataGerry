@@ -37,8 +37,8 @@ export class SectionTemplateAddComponent implements OnInit {
 
     ngOnInit(): void {
         //only editing has a sectionTemplateID 
-        if(this.activeRoute.snapshot.params.sectionTemplateID){
-            this.sectionTemplateID = this.activeRoute.snapshot.params.sectionTemplateID;
+        if(this.activeRoute?.snapshot?.params?.sectionTemplateID){
+            this.sectionTemplateID = this.activeRoute?.snapshot?.params?.sectionTemplateID;
         }
     }
 }

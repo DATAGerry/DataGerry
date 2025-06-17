@@ -104,7 +104,6 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         private sidebarService: SidebarService,
         private validationService: ValidationService,
         private changeDetector: ChangeDetectorRef,
-        private sectionIdentifierService: SectionIdentifierService,
          private loaderService: LoaderService,
     ) {
 
@@ -115,7 +114,7 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
 
-        const sectionHighlightSubscription = this.validationService.isSectionHighlighted$.subscribe((highlighted) => {
+        const sectionHighlightSubscription = this.validationService?.isSectionHighlighted$.subscribe((highlighted) => {
 
             setTimeout(() => {
                 this.isSectionHighlighted = highlighted;
@@ -123,33 +122,33 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         });
 
         // Subscribe to the field highlight state
-        const fieldHighlightSubscription = this.validationService.isFieldHighlighted$.subscribe((highlighted) => {
+        const fieldHighlightSubscription = this.validationService?.isFieldHighlighted$.subscribe((highlighted) => {
 
             setTimeout(() => {
                 this.isFieldHighlighted = highlighted;
             });
         });
 
-        const disableFieldsSubscription = this.validationService.disableFields$.subscribe((disableFields) => {
+        const disableFieldsSubscription = this.validationService?.disableFields$.subscribe((disableFields) => {
 
             setTimeout(() => {
                 this.disableFields = disableFields;
             });
         });
 
-        const sectionWithoutFieldSubscription = this.validationService.isSectionWithoutField$.subscribe((disabledSection) => {
+        const sectionWithoutFieldSubscription = this.validationService?.isSectionWithoutField$.subscribe((disabledSection) => {
             setTimeout(() => {
                 this.isSectionWithoutFields = disabledSection
             });
         });
 
-        this.subscriptions.add(sectionHighlightSubscription);
-        this.subscriptions.add(fieldHighlightSubscription);
-        this.subscriptions.add(disableFieldsSubscription)
-        this.subscriptions.add(sectionWithoutFieldSubscription)
+        this.subscriptions?.add(sectionHighlightSubscription);
+        this.subscriptions?.add(fieldHighlightSubscription);
+        this.subscriptions?.add(disableFieldsSubscription)
+        this.subscriptions?.add(sectionWithoutFieldSubscription)
 
-        this.isValid$ = this.validationService.getIsValid();
-        this.isSectionValid$ = this.validationService.overallSectionValidity();
+        this.isValid$ = this.validationService?.getIsValid();
+        this.isSectionValid$ = this.validationService?.overallSectionValidity();
 
         // this.subscription = this.sectionIdentifierService.getIsIdentifierValid().subscribe(isValid => {
         //     this.isIdentifierValid = isValid;
@@ -160,7 +159,7 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
             this.typeInstance = new CmdbType();
             this.typeInstance.active = true;
             this.typeInstance.version = '1.0.0';
-            this.typeInstance.author_id = this.userService.getCurrentUser().public_id;
+            this.typeInstance.author_id = this.userService?.getCurrentUser()?.public_id;
             this.typeInstance.render_meta = {
                 icon: undefined,
                 sections: [],
@@ -181,10 +180,10 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
             page: 1
         };
 
-        this.groupService.getGroups(groupsCallParameters).pipe(takeUntil(this.subscriber))
+        this.groupService?.getGroups(groupsCallParameters).pipe(takeUntil(this.subscriber))
             .subscribe({
                 next: (response: APIGetMultiResponse) => {
-                    this.groups = [...response.results as Array<Group>];
+                    this.groups = [...response?.results as Array<Group>];
                 },
                 error: (e) => {
                     this.toast.error(e?.error?.message)
@@ -204,7 +203,7 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         };
         this.typeService.getTypes(typesCallParameters).pipe(takeUntil(this.subscriber))
             .subscribe((response: APIGetMultiResponse) => {
-                this.types = response.results as Array<CmdbType>;
+                this.types = response?.results as Array<CmdbType>;
                 this.changeDetector.detectChanges();
             });
 
@@ -216,7 +215,7 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         this.subscriber.next();
         this.subscriber.complete();
         if (this.subscription) {
-            this.subscription.unsubscribe();
+            this.subscription?.unsubscribe();
         }
     }
 
@@ -236,9 +235,9 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
      * @private
      */
     private checkAclGroupExist(): void {
-        if (this.typeInstance.acl && this.typeInstance.acl.groups && this.typeInstance.acl.groups.includes && this.groups) {
-            Object.keys(this.typeInstance.acl.groups.includes).forEach((key) => {
-                const found = this.groups.find(g => g.public_id === Number(key));
+        if (this.typeInstance.acl && this.typeInstance?.acl?.groups && this.typeInstance?.acl?.groups?.includes && this.groups) {
+            Object.keys(this.typeInstance?.acl?.groups?.includes).forEach((key) => {
+                const found = this.groups.find(g => g?.public_id === Number(key));
 
                 if (!found) {
                     this.toast.error(`The group for the ACL setting does not exist: GroupID: ${key}`);
@@ -256,12 +255,12 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
         const saveTypeInstance: CmdbType = Object.assign({}, this.typeInstance) as CmdbType;
         const sections: Array<CmdbTypeSection> = [];
 
-        for (const section of saveTypeInstance.render_meta.sections) {
+        for (const section of saveTypeInstance?.render_meta.sections) {
             const fields = [];
 
-            for (const field of section.fields) {
+            for (const field of section?.fields) {
                 if (typeof field === 'object' && field !== null) {
-                    fields.push(field.name);
+                    fields.push(field?.name);
                 } else {
                     fields.push(field);
                 }
@@ -278,11 +277,11 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
             let newTypeID = null;
             saveTypeInstance.editor_id = undefined;
 
-            this.typeService.postType(saveTypeInstance).pipe(finalize(() => this.loaderService.hide())).subscribe({
+            this.typeService?.postType(saveTypeInstance)?.pipe(finalize(() => this.loaderService.hide())).subscribe({
                 next: (typeIDResp: CmdbType) => {
-                    newTypeID = +typeIDResp.public_id;
+                    newTypeID = +typeIDResp?.public_id;
                     this.router.navigate(['/framework/type/'], { queryParams: { typeAddSuccess: newTypeID } });
-                    this.sidebarService.loadCategoryTree();
+                    this.sidebarService?.loadCategoryTree();
                     this.toast.success(`Type was successfully created: TypeID: ${newTypeID}`);
                 },
                 error: (e) => {
@@ -291,16 +290,16 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
             });
         } else if (this.mode === CmdbMode.Edit) {
             this.loaderService.show();
-            saveTypeInstance.editor_id = this.userService.getCurrentUser().public_id;
+            saveTypeInstance.editor_id = this.userService?.getCurrentUser()?.public_id;
             this.typeService.putType(saveTypeInstance).pipe(finalize(() =>  this.loaderService.hide())).subscribe({
                 next: (updateResp: CmdbType) => {
-                    this.toast.success(`Type was successfully edited: TypeID: ${updateResp.public_id}`);
+                    this.toast.success(`Type was successfully edited: TypeID: ${updateResp?.public_id}`);
                     this.sidebarService.loadCategoryTree();
                     this.router.navigate(['/framework/type/'],
-                        { queryParams: { typeEditSuccess: updateResp.public_id } });
+                        { queryParams: { typeEditSuccess: updateResp?.public_id } });
                 },
                 error: (error) => {
-                    this.toast.error(`${error}`);
+                    this.toast.error(error?.error?.message);
                 }
             });
         }

@@ -61,14 +61,14 @@ export class SectionTemplateService<T = CmdbSectionTemplate | RenderResult> impl
     
         for (let key in params){
             let val:string = String(params[key]);
-            httpParams = httpParams.set(key, val);
+            httpParams = httpParams?.set(key, val);
         }
 
         this.options.params = httpParams;
     
         return this.api.callPost<CmdbSectionTemplate>(this.servicePrefix + '/', params , this.options).pipe(
             map((apiResponse) => {
-                return apiResponse.body;
+                return apiResponse?.body;
             }),
         );
     }

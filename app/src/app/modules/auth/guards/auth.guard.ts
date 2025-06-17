@@ -60,7 +60,6 @@ export class AuthGuard  {
             return true;
         }
 
-        console.log('NO USER -> REDIRECT TO LOGIN');
         this.authService.logout();
 
         if(navigate){
