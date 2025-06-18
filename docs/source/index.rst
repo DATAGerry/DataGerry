@@ -1,20 +1,23 @@
 +++++++++++++++++++++++
-DATAGERRY Documentation
+DataGerry Documentation
 +++++++++++++++++++++++
 
 .. image:: introduction/img/introduction_datagerry.png
+    :align: center
 
-DATAGERRY is an enterprise-grade, open-source CMDB that empowers users by allowing
-complete customization of data types.
+DataGerry is an enterprise-grade, open-source CMDB that gives you full control to define, customize,
+and manage any type of asset or configuration data.
 
 | 
 
 =======================================================================================================================
 
 .. toctree::
+    :caption: Getting Started
+    :maxdepth: 2
+
     introduction/welcome
-    :caption: Introduction
-    :name: introduction
+    introduction/cloud_vs_on_premise
 
 =======================================================================================================================
 
