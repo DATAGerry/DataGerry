@@ -14,7 +14,8 @@ Requirements
 DATAGERRY has the following system requirements:
 
  * Linux Operating System
- * MongoDB 6.0 (MongoDB 4.4+ should still be compatible)
+ * MongoDB 6.0 (MongoDB 4.4+ should stille be compatible)
+ * RabbitMQ (except the deb-packages)
 
 Although DATAGERRY includes its own web server, we recommend using Nginx as a reverse proxy to enhance performance.
 
@@ -63,7 +64,7 @@ This feature is especially useful, if you want to run DATAGERRY in Docker.
 Setup via Docker Image
 ======================
 The quickest way to get started with DATAGERRY is by using Docker. We provide a docker-compose file
-that creates four containers: DATAGERRY, MongoDB, RabbitMQ and Nginx. All data is stored in MongoDB
+that creates four containers: DATAGERRY, MongoDB, RabbitMQ, and Nginx. All data is stored in MongoDB
 using Docker volumes on the host system.
 
 To begin, copy the following docker-compose.yml file into a directory on your Docker host.
@@ -139,7 +140,7 @@ Setup via RPM
 For Red Hat Enterprise Linux (RHEL) and RHEL-based systems such as CentOS or Oracle Linux,
 we offer an RPM file for installing DATAGERRY.
 
-Link to RPM Package: `Packagecloud <https://packagecloud.io/becon/datagerry>`_
+Link to RPM Package: `BuildKite <https://buildkite.com/organizations/becon-gmbh/packages/registries/datagerry-rpm>`_
 
 The following RHEL/CentOS versions are supported and tested:
 
@@ -245,7 +246,7 @@ setup RabbitMQ for your distribution.
 
 Setup DATAGERRY
 ---------------
-Link to zip Package: `Packagecloud <https://packagecloud.io/becon/datagerry>`_
+Link to zip Package: `BuildKite <https://buildkite.com/organizations/becon-gmbh/packages/registries/datagerry-zip>`_
 
 Extract the provided zip archive and execute the setup script as root:
 
@@ -302,7 +303,7 @@ the `MongoDB-Homepage <https://www.mongodb.com/docs/v6.0/tutorial/install-mongod
 The next step is to download the deb-package and install it via the following command (execute the command in the
 folder where the deb-package is).
 
-Link to deb Package: `Packagecloud <https://packagecloud.io/becon/datagerry>`_
+Link to deb Package: `BuildKite <https://buildkite.com/organizations/becon-gmbh/packages/registries/datagerry-deb>`_
 
 .. code-block:: console
 

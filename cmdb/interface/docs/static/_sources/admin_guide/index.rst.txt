@@ -11,6 +11,7 @@ Admin Manual
     gettingstarted
     framework
     advanced-concepts
+    exportd
     docapi
     user-management
     authentication
