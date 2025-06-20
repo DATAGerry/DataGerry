@@ -310,5 +310,11 @@ def get_cmdb_type_schema() -> dict:
             'type': 'dict',
             'allow_unknown': True,
             'required': False,
+        },
+        'ci_explorer_label': { # Stores the name of the field which should be used as the Label in the CI Explorer
+            'type': 'string',
+            'required': False,
+            'nullable': True,
+            'empty': True,
         }
     }

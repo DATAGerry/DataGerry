@@ -75,6 +75,7 @@ class CmdbType(CmdbDAO):
                  fields: list = None, version: str = None,
                  label: str = None,
                  description: str = None,
+                 ci_explorer_label: str = None,
                  acl: AccessControlList = None):
         """
         Initializes a CmdbType
@@ -95,6 +96,7 @@ class CmdbType(CmdbDAO):
             version (str): The version of the CmdbType. Defaults to 1.0.0
             label (str): A user-friendly label for the CmdbType. Defaults to a title-cased version of the name
             description (str, optional): A description of the CmdbType
+            ci_explorer_label (str): Label displayed in the CI Explorer
             acl (AccessControlList, optional): AccessControlList for the CmdbType. Defaults to none
 
         Raises:
@@ -114,6 +116,7 @@ class CmdbType(CmdbDAO):
             self.last_edit_time = last_edit_time
             self.render_meta = render_meta
             self.fields = fields or []
+            self.ci_explorer_label = ci_explorer_label
             self.acl = acl
 
             super().__init__(public_id=public_id)
@@ -148,19 +151,20 @@ class CmdbType(CmdbDAO):
             return cls(
                 public_id = data.get('public_id'),
                 name = data.get('name'),
-                selectable_as_parent = data.get('selectable_as_parent', True),
+                selectable_as_parent = data.get('selectable_as_parent'),
                 global_template_ids = data.get('global_template_ids', []),
-                active = data.get('active', True),
+                active = data.get('active'),
                 author_id = data.get('author_id'),
                 creation_time = creation_time,
-                editor_id = data.get('editor_id', None),
+                editor_id = data.get('editor_id'),
                 last_edit_time = last_edit_time,
-                label = data.get('label', None),
-                version = data.get('version', None),
-                description = data.get('description', None),
+                label = data.get('label'),
+                version = data.get('version'),
+                description = data.get('description'),
                 render_meta = TypeRenderMeta.from_data(data.get('render_meta', {})),
-                fields = data.get('fields', None) or [],
-                acl = AccessControlList.from_data(data.get('acl', {}))
+                fields = data.get('fields') or [],
+                ci_explorer_label = data.get('ci_explorer_label'),
+                acl = AccessControlList.from_data(data.get('acl', {})),
             )
         except Exception as err:
             raise CmdbTypeInitFromDataError(err) from err
@@ -196,7 +200,8 @@ class CmdbType(CmdbDAO):
                 'description': instance.description,
                 'render_meta': TypeRenderMeta.to_json(instance.render_meta),
                 'fields': instance.fields,
-                'acl': AccessControlList.to_json(instance.acl)
+                'ci_explorer_label': instance.ci_explorer_label,
+                'acl': AccessControlList.to_json(instance.acl),
             }
         except Exception as err:
             raise CmdbTypeToJsonError(err) from err
