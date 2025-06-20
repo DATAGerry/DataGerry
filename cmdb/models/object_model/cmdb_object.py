@@ -61,6 +61,7 @@ class CmdbObject(CmdbDAO):
                  last_edit_time: datetime = None,
                  editor_id: int = None,
                  version: str = '1.0.0',
+                 ci_explorer_tooltip: str = None,
                  **kwargs):
         """
         Initialises a CmdbObject
@@ -74,6 +75,7 @@ class CmdbObject(CmdbDAO):
             editor_id (int): public_id of the CmdbUser which edited this CmdbObject the last time
             active (bool): activation status of the CmdbObject (True = active, False = inactive)
             fields (list): Fields with values for his CmdbObject
+            ci_explorer_tooltip (str): Tooltip to show for this CmdbObject in the CI Explorer when it is hovered
             multi_data_sections (list): MDS with values for this CmdbObject
             **kwargs: additional data
 
@@ -89,6 +91,7 @@ class CmdbObject(CmdbDAO):
             self.editor_id = editor_id
             self.active = active
             self.fields = fields
+            self.ci_explorer_tooltip = ci_explorer_tooltip
             self.multi_data_sections = multi_data_sections or []
 
             super().__init__(**kwargs)
@@ -150,10 +153,11 @@ class CmdbObject(CmdbDAO):
                 creation_time = creation_time,
                 author_id = data.get('author_id'),
                 last_edit_time = last_edit_time,
-                editor_id = data.get('editor_id', None),
+                editor_id = data.get('editor_id'),
                 active = data.get('active'),
                 fields = data.get('fields', []),
-                multi_data_sections = data.get('multi_data_sections', [])
+                ci_explorer_tooltip = data.get('ci_explorer_tooltip'),
+                multi_data_sections = data.get('multi_data_sections', []),
             )
         except Exception as err:
             raise CmdbObjectInitFromDataError(err) from err
@@ -184,7 +188,8 @@ class CmdbObject(CmdbDAO):
                 'editor_id': instance.editor_id,
                 'active': instance.active,
                 'fields': instance.fields,
-                'multi_data_sections': instance.multi_data_sections
+                'ci_explorer_tooltip': instance.ci_explorer_tooltip,
+                'multi_data_sections': instance.multi_data_sections,
             }
         except Exception as err:
             raise CmdbObjectToJsonError(err) from err
@@ -225,8 +230,9 @@ class CmdbObject(CmdbDAO):
         Returns:
             Optional[str]: The value of the field if found
         """
+        f: dict
         for f in self.fields:
             if f.get('name') == field:
-                return f.get('value', None)
+                return f.get('value')
 
         raise ValueError(field)
