@@ -32,7 +32,7 @@
                                     title="View Template"
                                     (click)="showTemplatePreview(sectionTemplate)"
                                 >
-                                    <i class="far fa-eye"></i>
+                                    <i class="far fa-eye icon-view"></i>
                                 </button>
                             </span>
                             <span *permissionLink="['base.framework.sectionTemplate.edit']">
@@ -50,7 +50,7 @@
                                     title="Edit"
                                     [routerLink]="['/framework/section_templates/edit/',sectionTemplate.public_id]"
                                 >
-                                    <i class="fas fa-edit"></i>
+                                    <i class="far fa-edit icon-edit"></i>
                                 </button>
                             </span>
                             <span *permissionLink="['base.framework.sectionTemplate.create',
@@ -60,7 +60,7 @@
                                     title="Clone Section Template"
                                     (click)="showCloneModal(sectionTemplate)"
                                 >
-                                    <i class="far fa-clone"></i>
+                                    <i class="far fa-clone icon-copy"></i>
                                 </button>
                             
                                 <button
@@ -95,7 +95,7 @@
                                     title="Delete"
                                     (click)="showDeleteModal(sectionTemplate)"
                                 >
-                                    <i class="fas fa-trash-alt"></i>
+                                    <i class="far fa-trash-alt icon-delete"></i>
                                 </button>
                             </span>
                         </td>

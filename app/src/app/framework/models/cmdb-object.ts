@@ -42,6 +42,7 @@ export interface MultiDataSectionEntry {
 export class CmdbObject implements CmdbDao {
     public public_id: number;
     public type_id: number;
+    public ci_explorer_tooltip: string;
     public status: boolean = true;
     public version: string;
     public author_id: number;
