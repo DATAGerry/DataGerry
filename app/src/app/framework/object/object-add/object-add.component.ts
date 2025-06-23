@@ -157,6 +157,7 @@ export class ObjectAddComponent implements OnInit, OnDestroy {
             this.objectInstance.type_id = this.currentTypeID;
             this.objectInstance.version = '1.0.0';
             this.objectInstance.author_id = this.userService.getCurrentUser().public_id;
+            this.objectInstance.ci_explorer_tooltip = null;
 
             this.objectInstance.fields = [];
             this.render.renderForm.removeControl('active');

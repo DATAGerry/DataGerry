@@ -79,6 +79,7 @@ import { RelationRoleDialogComponent } from './object-view/relation-role-dialog/
 import { RelationLogListComponent } from './components/object-relation-log-list/relation-log-list.component';
 import { ChangesModalComponent } from './modals/object-relation-changes-modal/changes-modal.component';
 import { RiskAssessmentModule } from 'src/app/toolbox/isms/risk-assessment/risk-assesment.module';
+import { GraphEditorComponent } from './object-view/graph-editor/graph-editor.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -125,7 +126,8 @@ import { RiskAssessmentModule } from 'src/app/toolbox/isms/risk-assessment/risk-
         ObjectBulkChangeCompleteComponent,
         RelationRoleDialogComponent,
         RelationLogListComponent,
-        ChangesModalComponent
+        ChangesModalComponent,
+        GraphEditorComponent
        ],
     imports: [
         CommonModule,

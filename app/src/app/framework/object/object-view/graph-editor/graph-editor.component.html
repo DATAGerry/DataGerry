@@ -1,0 +1,19 @@
+<div style="padding:2rem;font-family:Roboto;">
+  <h2>CI-Explorer backend test</h2>
+
+
+  <!-- child request -------------------------------------------------- -->
+  <label style="margin-left:2rem">
+    Child ID ⇢
+    <input type="number" [(ngModel)]="childId" style="width:6rem" />
+  </label>
+  <button (click)="expandChild()">expandChild()</button>
+
+  <!-- parent request ------------------------------------------------- -->
+  <label style="margin-left:2rem">
+    Parent ID ⇢
+    <input type="number" [(ngModel)]="parentId" style="width:6rem" />
+  </label>
+  <button (click)="expandParent()">expandParent()</button>
+
+</div>
