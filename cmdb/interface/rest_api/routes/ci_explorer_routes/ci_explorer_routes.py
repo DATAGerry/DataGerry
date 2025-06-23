@@ -154,7 +154,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
         # Retrieve all object relations where this object is involved (either as parent or child)
         # We want all relations with either parent_id == target_id or child_id == target_id
         object_relations = list(object_relations_manager.find(
-            {
+            criteria={
                 "$or": [
                     {"relation_parent_id": target_id},
                     {"relation_child_id": target_id}
@@ -164,7 +164,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
 
         # Load all relations (relation metadata) used by these object_relations
         relation_ids = set(rel['relation_id'] for rel in object_relations)
-        relations_list = relations_manager.find({"public_id": {"$in": list(relation_ids)}})
+        relations_list = relations_manager.find(criteria={"public_id": {"$in": list(relation_ids)}})
         relations_by_id = {rel['public_id']: rel for rel in relations_list}
 
         # Helper: map public_id to object and type
@@ -178,14 +178,14 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 linked_object_ids.add(orr['relation_child_id'])
 
         # Get all linked objects
-        linked_objects_cursor = objects_manager.find({"public_id": {"$in": list(linked_object_ids)}})
+        linked_objects_cursor = objects_manager.find(criteria={"public_id": {"$in": list(linked_object_ids)}})
         linked_objects = {obj['public_id']: obj for obj in linked_objects_cursor}
 
         # Get all linked types for those objects + root type if needed
         type_ids = {obj['type_id'] for obj in linked_objects.values()}
         if root_type_info:
             type_ids.add(root_type_info['public_id'])
-        types_list = types_manager.find({"public_id": {"$in": list(type_ids)}})
+        types_list = types_manager.find(criteria={"public_id": {"$in": list(type_ids)}})
         types_by_id = {t['public_id']: t for t in types_list}
 
         # Helper function to get title based on type ci_explorer_label
