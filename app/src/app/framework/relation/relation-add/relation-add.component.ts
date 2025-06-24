@@ -19,7 +19,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { UserService } from '../../../management/services/user.service';
 import { CmdbRelation } from '../../models/relation.model';
 import { RelationService } from '../../services/relaion.service';
 

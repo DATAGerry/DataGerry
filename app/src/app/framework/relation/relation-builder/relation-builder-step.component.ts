@@ -20,7 +20,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CmdbMode } from '../../modes.enum';
 import { CmdbType } from '../../models/cmdb-type';
-import { CmdbCategory } from '../../models/cmdb-category';
 import { CmdbRelation } from '../../models/relation.model';
 
 

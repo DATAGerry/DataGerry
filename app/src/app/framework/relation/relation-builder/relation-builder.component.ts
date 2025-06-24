@@ -19,7 +19,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { finalize, Observable, ReplaySubject, Subscription, takeUntil } from 'rxjs';
+import { finalize, Observable, ReplaySubject, Subscription } from 'rxjs';
 
 import { ToastService } from '../../../layout/toast/toast.service';
 
