@@ -32,7 +32,6 @@ import { ObjectRelationService } from '../../services/object-relation.service';
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-//TODO: Extract this component in its own component folder
 @Component({
     selector: 'cmdb-relation-delete-confirm-modal',
     styleUrls: ['./relation-delete.component.scss'],
@@ -198,7 +197,6 @@ export class RelationDeleteComponent implements OnInit {
                                 this.toast.success(`Relation was successfully deleted: RelationID: ${this.relationID}`);
                             },
                             error: (error) => {
-                                console.error('Error deleting relation:', error);
                                 this.toast.error(error?.error?.message);
                             }
                         });

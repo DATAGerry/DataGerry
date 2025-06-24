@@ -30,7 +30,6 @@ import { CmdbRelation } from 'src/app/framework/models/relation.model';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { alphanumericValidator } from 'src/app/framework/type/type-builder/type-basic-step/alphanumeric-validator';
 import { CmdbMode } from 'src/app/framework/modes.enum';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'cmdb-relation-basic-step',
@@ -45,7 +44,7 @@ export class RelationBasicStepComponent
 
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
 
-  /** Main form with all fields, including parent/child icons by your chosen names */
+  /** Main form with all fields, including parent/child icons by chosen names */
   public form: FormGroup;
   public CmdbMode = CmdbMode; 
 
@@ -61,7 +60,6 @@ export class RelationBasicStepComponent
   constructor(private typeService: TypeService, private loaderService: LoaderService) {
     super();
 
-    // Define your main form exactly as before
     this.form = new FormGroup({
       relation_name: new FormControl('', {
         validators: [Validators.required, alphanumericValidator()],
@@ -127,7 +125,6 @@ export class RelationBasicStepComponent
       this.patchFormValues();
     }
 
-    //Keep each mini-form in sync with the main form’s icon fields
     this.syncIconForms();
 
   }
@@ -167,7 +164,7 @@ export class RelationBasicStepComponent
   }
 
   private initFormListeners(): void {
-    // Whenever main form values change, push them to your model
+    // Whenever main form values change, push them to the model
     this.form.valueChanges
       .pipe(takeUntil(this.subscriber))
       .subscribe(changes => this.assign(changes));
@@ -227,6 +224,7 @@ export class RelationBasicStepComponent
       .valueChanges.pipe(takeUntil(this.subscriber))
       .subscribe(newVal => {
         this.relation_icon_parent.setValue(newVal, { emitEvent: false });
+        this.relationInstance.relation_icon_parent = newVal;
       });
 
     this.relation_icon_parent.valueChanges
@@ -240,6 +238,7 @@ export class RelationBasicStepComponent
       .valueChanges.pipe(takeUntil(this.subscriber))
       .subscribe(newVal => {
         this.relation_icon_child.setValue(newVal, { emitEvent: false });
+        this.relationInstance.relation_icon_child = newVal;
       });
 
     this.relation_icon_child.valueChanges
