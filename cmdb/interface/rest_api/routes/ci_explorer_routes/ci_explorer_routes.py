@@ -137,22 +137,21 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
             abort(400, "Missing ID of target Object!")
 
         if not NodeType.is_valid(target_type):
-            abort(
-                400, f"Invalid target_type '{target_type}'. Must be one of: {', '.join(NodeType.__members__.keys())}"
-            )
+            abort(400, f"Invalid target_type '{target_type}'. Must be one of: {', '.join(NodeType.__members__.keys())}")
 
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
         types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS, request_user)
-        object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(ManagerType.OBJECT_RELATIONS,
-                                                                                       request_user)
+        object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
+            ManagerType.OBJECT_RELATIONS,
+            request_user
+        )
 
         # Retrieve target object & type info for root if needed
         root_object = objects_manager.get_object(target_id) if with_root else None
         root_type_info = types_manager.get_type(root_object['type_id']) if root_object else None
 
-        # Retrieve all object relations where this object is involved (either as parent or child)
-        # We want all relations with either parent_id == target_id or child_id == target_id
+        # Retrieve object relations involving the target_id
         object_relations = list(object_relations_manager.find(
             criteria={
                 "$or": [
@@ -162,14 +161,12 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
             }
         ))
 
-        # Load all relations (relation metadata) used by these object_relations
+        # Retrieve all relations
         relation_ids = set(rel['relation_id'] for rel in object_relations)
         relations_list = relations_manager.find(criteria={"public_id": {"$in": list(relation_ids)}})
         relations_by_id = {rel['public_id']: rel for rel in relations_list}
 
-        # Helper: map public_id to object and type
-        # We'll need the linked CmdbObjects and their CmdbTypes for nodes
-        # Collect all object ids referenced by relations except the root object (we already have it if with_root)
+        # Collect all linked object ids
         linked_object_ids = set()
         for orr in object_relations:
             if orr['relation_parent_id'] != target_id:
@@ -177,31 +174,29 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
             if orr['relation_child_id'] != target_id:
                 linked_object_ids.add(orr['relation_child_id'])
 
-        # Get all linked objects
         linked_objects_cursor = objects_manager.find(criteria={"public_id": {"$in": list(linked_object_ids)}})
         linked_objects = {obj['public_id']: obj for obj in linked_objects_cursor}
 
-        # Get all linked types for those objects + root type if needed
         type_ids = {obj['type_id'] for obj in linked_objects.values()}
         if root_type_info:
             type_ids.add(root_type_info['public_id'])
+
         types_list = types_manager.find(criteria={"public_id": {"$in": list(type_ids)}})
         types_by_id = {t['public_id']: t for t in types_list}
 
-        # Helper function to get title based on type ci_explorer_label
+        # Helper to get CI Explorer label title
         def get_title(obj: dict, obj_type: dict):
             label_field_name = obj_type.get('ci_explorer_label')
             if not label_field_name:
                 return None
-            # Find the value of the field in obj['fields'] by field name
-            f: dict
             for f in obj.get('fields', []):
                 if f.get('name') == label_field_name:
                     return f.get('value')
             return None
 
-        # Prepare response containers
+        # Prepare response container
         response = {}
+
         if with_root and root_object and root_type_info:
             root_title = get_title(root_object, root_type_info)
             response['root_node'] = {
@@ -213,27 +208,23 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                     "icon": root_type_info.get('icon'),
                     "fields": root_type_info.get('fields', {}),
                 },
-                "relation_color": None,  # Root has no relation_color since no relation in this context
+                "relation_color": None,
             }
 
-        # Initialize children/parents lists
-        response['children_nodes'] = []
-        response['child_edges'] = []
-        response['parent_nodes'] = []
-        response['parent_edges'] = []
+        # Use dicts to ensure uniqueness of nodes
+        child_nodes = {}
+        child_edges = []
+        parent_nodes = {}
+        parent_edges = []
 
-        # Iterate over object relations and create nodes and edges
         for obj_rel in object_relations:
             relation = relations_by_id.get(obj_rel['relation_id'])
             if not relation:
-                # Skip if relation info missing
                 continue
 
-            # Determine if target is parent or child in this relation
             is_parent = obj_rel['relation_parent_id'] == target_id
             is_child = obj_rel['relation_child_id'] == target_id
 
-            # Determine linked object id and type for the opposite end of the relation
             if is_parent:
                 linked_id = obj_rel['relation_child_id']
                 linked_type_id = obj_rel['relation_child_type_id']
@@ -251,19 +242,15 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 edge_relation_name = relation.get('relation_name_child')
                 edge_relation_icon = relation.get('relation_icon_child')
             else:
-                # Should not happen since we filtered relations involving target_id
                 continue
 
             linked_object = linked_objects.get(linked_id)
-            linked_type: dict = types_by_id.get(linked_type_id)
+            linked_type = types_by_id.get(linked_type_id)
 
             if not linked_object or not linked_type:
-                # Missing data, skip this relation
                 continue
 
-            # Build node title
             node_title = get_title(linked_object, linked_type)
-
             node_dict = {
                 "linked_object": linked_object,
                 "title": node_title,
@@ -276,7 +263,6 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 "relation_color": relation_color
             }
 
-            # Build edge metadata
             edge_dict = {
                 "from": edge_from,
                 "to": edge_to,
@@ -289,22 +275,20 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 }
             }
 
-            # Append node & edge to children or parents depending on relation direction
             if is_parent:
-                # The linked object is child
-                response['children_nodes'].append(node_dict)
-                response['child_edges'].append(edge_dict)
+                child_nodes[linked_id] = node_dict
+                child_edges.append(edge_dict)
             elif is_child:
-                # The linked object is parent
-                response['parent_nodes'].append(node_dict)
-                response['parent_edges'].append(edge_dict)
+                parent_nodes[linked_id] = node_dict
+                parent_edges.append(edge_dict)
 
-        # Ensure keys exist even if empty (except root_node when with_root is False)
-        if 'root_node' not in response and with_root:
-            response['root_node'] = None
-        for key in ['children_nodes', 'child_edges', 'parent_nodes', 'parent_edges']:
-            if key not in response:
-                response[key] = []
+        # Assign unique nodes and all edges to response
+        if target_type in (NodeType.BOTH, NodeType.CHILD):
+            response['children_nodes'] = list(child_nodes.values())
+            response['child_edges'] = child_edges
+        if target_type in (NodeType.BOTH, NodeType.PARENT):
+            response['parent_nodes'] = list(parent_nodes.values())
+            response['parent_edges'] = parent_edges
 
         return DefaultResponse(response).make_response()
     except HTTPException as http_err:
