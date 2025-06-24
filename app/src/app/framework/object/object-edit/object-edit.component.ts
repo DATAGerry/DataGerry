@@ -139,11 +139,16 @@ export class ObjectEditComponent implements OnInit {
      * @param multiDataSection (MultiDataSectionEntry):  the new data of the section 
      */
     handleMultiDataSection(multiDataSection: MultiDataSectionEntry) {
-        for (let aSection of this.objectInstance.multi_data_sections) {
-            if (aSection.section_id == multiDataSection.section_id) {
-                aSection.highest_id = multiDataSection.highest_id;
-                aSection.values = multiDataSection.values;
-            }
+        const existingSection = this.objectInstance.multi_data_sections.find(
+            s => s.section_id === multiDataSection.section_id
+        );
+        
+        if (existingSection) {
+            // Update existing section
+            existingSection.values = multiDataSection.values;
+        } else {
+            // Add new section
+            this.objectInstance.multi_data_sections.push(multiDataSection);
         }
     }
 
@@ -161,8 +166,13 @@ export class ObjectEditComponent implements OnInit {
                 if (key == 'dg_location') {
                     this.selectedLocation = val;
                 } else if (key.startsWith('dg-mds-')) {
+                    if (val && !val.section_id) {
+                        const matchedSectionId = key.replace('dg-mds-', '');
+                        val.section_id = matchedSectionId;
+                    }
                     this.handleMultiDataSection(val);
-                } else if (key == 'locationTreeName') {
+                }
+                else if (key == 'locationTreeName') {
                     this.locationTreeName = val;
                     return;
                 } else if (key == 'locationForObjectExists') {
