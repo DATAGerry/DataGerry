@@ -61,6 +61,9 @@ export interface Field {
     direction: Direction; //  "root" | "child" | "parent"
     color: string; 
     title: string; //  short label shown in the node
+    relation_color?: string;
+    ci_explorer_tooltip?: string;
+    ci_explorer_label?: string;
   
     /* domain data -------------------------------------------------------- */
     linked_object: LinkedObject;
@@ -69,11 +72,10 @@ export interface Field {
   
   /* -------- Edge & relation metadata ----------------------------------- */
   export interface RelationMeta {
-    relation_id: number;
-    relationName: string;
-    relationLabel: string; 
-    relationIcon: string; 
-    relationColor: string; 
+    relation_name?: string;
+    relation_label?: string;
+    relation_icon?: string;
+    relation_color?: string;
   }
   
   export interface CIEdge {
