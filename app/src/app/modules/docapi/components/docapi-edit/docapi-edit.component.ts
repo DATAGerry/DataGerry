@@ -36,11 +36,11 @@ export class DocapiEditComponent implements OnInit {
 
 
     constructor(private docapiService: DocapiService, private route: ActivatedRoute) {
-        this.route.params.subscribe((id) => this.docId = id.publicId);
+        this.route?.params?.subscribe((id) => this.docId = id?.publicId);
     }
 
 
     public ngOnInit(): void {
-        this.docapiService.getDocTemplate(this.docId).subscribe((docInstance: DocTemplate) => this.docInstance = docInstance);
+        this.docapiService?.getDocTemplate(this.docId).subscribe((docInstance: DocTemplate) => this.docInstance = docInstance);
     }
 }

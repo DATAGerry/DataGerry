@@ -31,9 +31,9 @@ import { APIGetMultiResponse } from '../../../services/models/api-response';
     export const checkDocTemplateExistsValidator = (docApiService: DocapiService<DocTemplate>, time: number = 500) => {
         return (control: UntypedFormControl) => {
             return timer(time).pipe(switchMap(() => {
-                return docApiService.checkDocTemplateExists(control.value).pipe(
+                return docApiService.checkDocTemplateExists(control?.value).pipe(
                     map((response) => {
-                        if(response?.body?.name == control.value) {
+                        if(response?.body?.name == control?.value) {
                             return { docTemplateExists: true};
                         } else {
                             return null;
@@ -99,7 +99,7 @@ export class DocapiService<T = DocTemplate> implements ApiServicePrefix {
 
         return this.api.callGet<T>(`${ this.newServicePrefix }`, options).pipe(
             map((apiResponse: HttpResponse<APIGetMultiResponse<T>>) => {
-                return apiResponse.body;
+                return apiResponse?.body;
             })
         );
     }
@@ -115,31 +115,31 @@ export class DocapiService<T = DocTemplate> implements ApiServicePrefix {
 
         return this.api.callGet<T>(`${ this.servicePrefix }/by/${ JSON.stringify(searchfilter) }`, options).pipe(
             map((apiResponse) => {
-                if (apiResponse.status === 204) {
+                if (apiResponse?.status === 204) {
                     return [];
                 }
 
-                return apiResponse.body;
+                return apiResponse?.body;
             })
         );
     }
 
 
     public getRenderedObjectDoc(templateId: number, objectId: number) {
-        return this.api.callGet<any>(`${ this.servicePrefix }/${ templateId }/render/${ objectId }`, httpFileOptions);
+        return this.api?.callGet<any>(`${ this.servicePrefix }/${ templateId }/render/${ objectId }`, httpFileOptions);
     }
 
 
     public getDocTemplate(publicId: number) {
         const options = this.getBaseOptions();
 
-        return this.api.callGet<DocTemplate>(this.servicePrefix + '/' + publicId, options).pipe(
+        return this.api?.callGet<DocTemplate>(this.servicePrefix + '/' + publicId, options).pipe(
             map((apiResponse) => {
-                if (apiResponse.status === 204) {
+                if (apiResponse?.status === 204) {
                     return [];
                 }
 
-                return apiResponse.body;
+                return apiResponse?.body;
             })
         );
     }
@@ -148,7 +148,7 @@ export class DocapiService<T = DocTemplate> implements ApiServicePrefix {
     public checkDocTemplateExists(docName: string) {
         const options = this.getBaseOptions();
 
-        return this.api.callGet<T>(`${ this.servicePrefix }/name/${ docName }`, options);
+        return this.api?.callGet<T>(`${ this.servicePrefix }/name/${ docName }`, options);
     }
 
 /* -------------------------------------------------- CRUD - UPDATE ------------------------------------------------- */
@@ -156,7 +156,7 @@ export class DocapiService<T = DocTemplate> implements ApiServicePrefix {
     public putDocTemplate(docInstance: DocTemplate): Observable<any> {
         const options = this.getBaseOptions();
 
-        return this.api.callPut(this.servicePrefix + '/', docInstance, options);
+        return this.api?.callPut(this.servicePrefix + '/', docInstance, options);
     }
 
 /* -------------------------------------------------- CRUD - DELETE ------------------------------------------------- */
@@ -164,7 +164,7 @@ export class DocapiService<T = DocTemplate> implements ApiServicePrefix {
     public deleteDocTemplate(publicID: number) {
         const options = this.getBaseOptions();
 
-        return this.api.callDelete<number>(this.servicePrefix + '/' + publicID, options);
+        return this.api?.callDelete<number>(this.servicePrefix + '/' + publicID, options);
     }
 
 

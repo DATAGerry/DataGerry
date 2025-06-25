@@ -96,14 +96,14 @@ export class DocapiBuilderComponent {
         const { contentForm } = this.contentStep;
         const { styleForm } = this.styleStep;
     
-        this.docInstance.name = settingsForm.get('name').value;
-        this.docInstance.label = settingsForm.get('label').value;
-        this.docInstance.active = settingsForm.get('active').value;
-        this.docInstance.description = settingsForm.get('description').value;
-        this.docInstance.template_type = typeForm.get('template_type').value;
-        this.docInstance.template_parameters = typeParamComponent.typeParamForm.value;
-        this.docInstance.template_data = contentForm.get('template_data').value;
-        this.docInstance.template_style = styleForm.get('template_style').value;
+        this.docInstance.name = settingsForm?.get('name')?.value;
+        this.docInstance.label = settingsForm?.get('label')?.value;
+        this.docInstance.active = settingsForm?.get('active')?.value;
+        this.docInstance.description = settingsForm?.get('description')?.value;
+        this.docInstance.template_type = typeForm?.get('template_type')?.value;
+        this.docInstance.template_parameters = typeParamComponent?.typeParamForm?.value;
+        this.docInstance.template_data = contentForm?.get('template_data')?.value;
+        this.docInstance.template_style = styleForm?.get('template_style')?.value;
     }
 
 

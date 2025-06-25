@@ -42,11 +42,11 @@ export class DocapiBuilderTypeStepObjectComponent extends DocapiBuilderTypeStepB
 
 
     public ngOnInit(): void {
-        this.typeParamForm.valueChanges.subscribe(() => {
-            this.formValid = this.typeParamForm.valid;
-            this.formValidationEmitter.emit(this.formValid);
+        this.typeParamForm?.valueChanges?.subscribe(() => {
+            this.formValid = this.typeParamForm?.valid;
+            this.formValidationEmitter?.emit(this.formValid);
         });
 
-        this.typeService.getTypeList().subscribe((value: CmdbType[]) => this.objectTypeList = value);
+        this.typeService?.getTypeList()?.subscribe((value: CmdbType[]) => this.objectTypeList = value);
     }
 }

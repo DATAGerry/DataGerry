@@ -32,7 +32,7 @@ export class DocapiBuilderSettingsStepComponent implements OnInit {
     @Input()
     set preData(data: any) {
         if (data !== undefined) {
-            this.settingsForm.patchValue(data);
+            this.settingsForm?.patchValue(data);
         }
     }
 
@@ -43,12 +43,12 @@ export class DocapiBuilderSettingsStepComponent implements OnInit {
 /* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
 
     public get name() {
-        return this.settingsForm.get('name');
+        return this.settingsForm?.get('name');
     }
 
 
     public get label() {
-    return this.settingsForm.get('label');
+    return this.settingsForm?.get('label');
     }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -67,17 +67,17 @@ export class DocapiBuilderSettingsStepComponent implements OnInit {
 
     ngOnInit() {
         if (this.mode === CmdbMode.Create) {
-            this.settingsForm.get('name').setAsyncValidators(checkDocTemplateExistsValidator(this.docapiService));
+            this.settingsForm?.get('name')?.setAsyncValidators(checkDocTemplateExistsValidator(this.docapiService));
 
-            this.settingsForm.get('label').valueChanges.subscribe(value => {
-                this.settingsForm.get('name').setValue(value.replace(/ /g, '-').toLowerCase());
-                const newValue = this.settingsForm.get('name').value;
-                this.settingsForm.get('name').setValue(newValue.replace(/[^a-z0-9 \-]/gi, '').toLowerCase());
-                this.settingsForm.get('name').markAsDirty({ onlySelf: true });
-                this.settingsForm.get('name').markAsTouched({ onlySelf: true });
+            this.settingsForm?.get('label')?.valueChanges?.subscribe(value => {
+                this.settingsForm?.get('name')?.setValue(value?.replace(/ /g, '-')?.toLowerCase());
+                const newValue = this.settingsForm?.get('name')?.value;
+                this.settingsForm?.get('name')?.setValue(newValue?.replace(/[^a-z0-9 \-]/gi, '')?.toLowerCase());
+                this.settingsForm?.get('name')?.markAsDirty({ onlySelf: true });
+                this.settingsForm?.get('name')?.markAsTouched({ onlySelf: true });
             });
         } else if (CmdbMode.Edit) {
-            this.settingsForm.markAllAsTouched();
+            this.settingsForm?.markAllAsTouched();
         }
     }
 }

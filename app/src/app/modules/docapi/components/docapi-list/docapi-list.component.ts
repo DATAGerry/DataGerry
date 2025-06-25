@@ -126,11 +126,11 @@ export class DocapiListComponent implements OnInit, OnDestroy {
 
 
     public ngOnDestroy(): void {
-        this.subscriber.next();
-        this.subscriber.complete();
+        this.subscriber?.next();
+        this.subscriber?.complete();
 
         if (this.modalRef) {
-            this.modalRef.close();
+            this.modalRef?.close();
         }
     }
 
@@ -140,19 +140,19 @@ export class DocapiListComponent implements OnInit, OnDestroy {
      * Load/reload types from the api
      */
     private loadTemplatesFromAPI(): void {
-        this.loaderService.show();
+        this.loaderService?.show();
         this.loading = true;
         let query;
 
         if (this.filter) {
             query = [];
             const or = [];
-            const searchableColumns = this.columns.filter(c => c.searchable);
+            const searchableColumns = this.columns?.filter(c => c?.searchable);
 
             // Searchable Columns
             for (const column of searchableColumns) {
                 const regex: any = {};
-                regex[column.name] = {
+                regex[column?.name] = {
                     $regex: String(this.filter),
                     $options: 'ismx'
                 };
@@ -187,11 +187,11 @@ export class DocapiListComponent implements OnInit, OnDestroy {
             page: this.page
         };
 
-        this.docapiService.getDocTemplateList(params).pipe(takeUntil(this.subscriber), finalize(() =>  this.loaderService.hide())).subscribe(
+        this.docapiService.getDocTemplateList(params).pipe(takeUntil(this.subscriber), finalize(() =>  this.loaderService?.hide())).subscribe(
             (apiResponse: APIGetMultiResponse<DocTemplate>) => {
                 this.templateAPIResponse = apiResponse;
-                this.templates = apiResponse.results as Array<DocTemplate>;
-                this.totalTemplates = apiResponse.total;
+                this.templates = apiResponse?.results as Array<DocTemplate>;
+                this.totalTemplates = apiResponse?.total;
                 this.loading = false;
             }
         );
@@ -207,8 +207,8 @@ export class DocapiListComponent implements OnInit, OnDestroy {
 
         this.modalRef.result.then((result) => {
             if (result) {
-                this.loaderService.show();
-                this.docapiService.deleteDocTemplate(publicId).pipe(finalize(() => this.loaderService.hide())).subscribe({
+                this.loaderService?.show();
+                this.docapiService?.deleteDocTemplate(publicId)?.pipe(finalize(() => this.loaderService?.hide())).subscribe({
                     next: resp => console.log(resp),
                     error: error => console.log(error),
                     complete: () => this.loadTemplatesFromAPI()
