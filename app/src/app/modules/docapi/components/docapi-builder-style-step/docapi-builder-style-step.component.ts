@@ -30,7 +30,7 @@ export class DocapiBuilderStyleStepComponent {
     @Input()
     set preData(data: any) {
         if (data !== undefined) {
-        this.styleForm.patchValue(data);
+        this.styleForm?.patchValue(data);
         }
     }
 

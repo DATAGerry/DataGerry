@@ -32,10 +32,10 @@ export class DocapiBuilderTypeStepComponent implements OnInit {
     @Input()
     set preData(data: any) {
         if (data !== undefined) {
-            this.typeForm.patchValue(data);
+            this.typeForm?.patchValue(data);
 
             if (data.template_parameters) {
-                this.typeParamPreData = data.template_parameters;
+                this.typeParamPreData = data?.template_parameters;
             }
 
             this.checkTypeChildValid();
@@ -63,8 +63,8 @@ export class DocapiBuilderTypeStepComponent implements OnInit {
     * Updates the validity of the child components based on the type parameter
     */
     private checkTypeChildValid() {
-        this.typeChildValid = this.typeParamComponent ? this.typeParamComponent.formValid : true;
-        this.formValidEmitter.emit(this.typeValid && this.typeChildValid);
+        this.typeChildValid = this.typeParamComponent ? this.typeParamComponent?.formValid : true;
+        this.formValidEmitter?.emit(this.typeValid && this.typeChildValid);
     }
 
 
@@ -82,9 +82,9 @@ export class DocapiBuilderTypeStepComponent implements OnInit {
 
 
     public ngOnInit(): void {
-        this.typeForm.valueChanges.subscribe(() => {
-            this.typeValid = this.typeForm.valid;
-            this.formValidEmitter.emit(this.typeValid && this.typeChildValid);
+        this.typeForm?.valueChanges?.subscribe(() => {
+            this.typeValid = this.typeForm?.valid;
+            this.formValidEmitter?.emit(this.typeValid && this.typeChildValid);
         });
     }
 }

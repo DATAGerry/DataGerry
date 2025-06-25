@@ -31,7 +31,7 @@ export class DocapiBuilderTypeStepBaseComponent {
     @Input()
     set preData(data: any) {
         if (data) {
-            this.typeParamForm.patchValue(data);
+            this.typeParamForm?.patchValue(data);
         }
     }
 

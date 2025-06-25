@@ -35,7 +35,7 @@ export class DocapiBuilderContentStepComponent {
     @Input()
     set preData(data: any) {
         if (data !== undefined) {
-            this.contentForm.patchValue(data);
+            this.contentForm?.patchValue(data);
         }
     }
 
@@ -43,7 +43,7 @@ export class DocapiBuilderContentStepComponent {
     set typeParam(data: any) {
         if (data) {
             if (data.type) {
-                this.templateHelperService.getObjectTemplateHelperData(data.type).then(helperData => {
+                this.templateHelperService?.getObjectTemplateHelperData(data?.type).then(helperData => {
                     this.templateHelperData = helperData;
                 });
             }
@@ -80,19 +80,19 @@ export class DocapiBuilderContentStepComponent {
             input.setAttribute('type', 'file');
             input.setAttribute('accept', 'image/png,image/jpeg');
             input.onchange = () => {
-                const file = input.files[0];
+                const file = input?.files[0];
                 const reader = new FileReader();
                 reader.onload = () => {
                     const id = 'blobid' + (new Date()).getTime();
-                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
-                    const base64 = (reader.result as string).split(',')[1];
-                    const blobInfo = blobCache.create(id, file, base64);
-                    blobCache.add(blobInfo);
-                    cb(blobInfo.blobUri(), { title: file.name });
+                    const blobCache = tinymce?.activeEditor?.editorUpload?.blobCache;
+                    const base64 = (reader?.result as string).split(',')[1];
+                    const blobInfo = blobCache?.create(id, file, base64);
+                    blobCache?.add(blobInfo);
+                    cb(blobInfo.blobUri(), { title: file?.name });
                 };
-                reader.readAsDataURL(file);
+                reader?.readAsDataURL(file);
             };
-            input.click();
+            input?.click();
         },
         pagebreak_separator: '<pdf:nextpage />',
         extended_valid_elements: 'pdf:barcode[*]',
@@ -100,7 +100,7 @@ export class DocapiBuilderContentStepComponent {
         valid_children: '-pdf:barcode[*]',
         content_css: '/assets/css/tinymce_custom.css',
         setup: (editor) => {
-            editor.ui.registry.addMenuButton('cmdbdata', {
+            editor?.ui?.registry?.addMenuButton('cmdbdata', {
                 text: 'CMDB Data',
                 icon: 'plus',
                 fetch: (callback) => {
@@ -113,7 +113,7 @@ export class DocapiBuilderContentStepComponent {
 
 
     public get content() {
-        return this.contentForm.get('template_data');
+        return this.contentForm?.get('template_data');
     }
 
     constructor(private templateHelperService: TemplateHelperService) {
@@ -147,22 +147,22 @@ export class DocapiBuilderContentStepComponent {
                     text: item.label,
                     icon: 'chevron-right',
                     getSubmenuItems: () => {
-                        return this.getObjectDataMenuItems(editor, item.subdata);
+                        return this.getObjectDataMenuItems(editor, item?.subdata);
                     }
                 });
             } else {
                 let icon = 'sourcecode';
 
-                if (item.label === 'Public ID') {
+                if (item?.label === 'Public ID') {
                     icon = 'character-count';
                 }
 
                 items.push({
                     type: 'menuitem',
-                    text: item.label,
+                    text: item?.label,
                     icon,
                     onAction: function () {
-                        editor.insertContent(item.templatedata);
+                        editor.insertContent(item?.templatedata);
                     }
                 });
             }
@@ -180,11 +180,11 @@ export class DocapiBuilderContentStepComponent {
             onAction: () => {
                 const selection = editor.selection.getNode();
                 const preData = {};
-                if (selection.tagName === 'PDF:BARCODE') {
-                    preData['type'] = selection.attributes.getNamedItem('type').value;
-                    preData['content'] = selection.attributes.getNamedItem('value').value;
+                if (selection?.tagName === 'PDF:BARCODE') {
+                    preData['type'] = selection?.attributes?.getNamedItem('type')?.value;
+                    preData['content'] = selection?.attributes?.getNamedItem('value')?.value;
                 }
-                editor.windowManager.open({
+                editor?.windowManager?.open({
                     title: 'Insert Barcode',
                     body: {
                         type: 'panel',
@@ -213,8 +213,8 @@ export class DocapiBuilderContentStepComponent {
                     ],
                     initialData: preData,
                     onSubmit: (dialogApi) => {
-                        const barcodeContent = dialogApi.getData()['content'];
-                        const barcodeType = dialogApi.getData()['type'];
+                        const barcodeContent = dialogApi?.getData()['content'];
+                        const barcodeType = dialogApi?.getData()['type'];
                         const barcodeElementAttr = {
                             class: 'mceNonEditable',
                             type: barcodeType,
@@ -224,16 +224,16 @@ export class DocapiBuilderContentStepComponent {
                             barcodeElementAttr['barwidth'] = '3cm';
                             barcodeElementAttr['barheight'] = '3cm';
                         }
-                        const barcodeElement = editor.dom.create('pdf:barcode', barcodeElementAttr);
+                        const barcodeElement = editor?.dom?.create('pdf:barcode', barcodeElementAttr);
                         if (preData['content']) {
-                            let selectionNext = editor.selection.getNode().nextSibling;
+                            let selectionNext = editor?.selection?.getNode()?.nextSibling;
                             editor.dom.remove(selection);
                             if (selectionNext) {
-                                editor.selection.setCursorLocation(selectionNext);
+                                editor?.selection?.setCursorLocation(selectionNext);
                             }
                         }
-                        editor.insertContent(barcodeElement.outerHTML);
-                        dialogApi.close();
+                        editor?.insertContent(barcodeElement?.outerHTML);
+                        dialogApi?.close();
                     }
                 });
             }
