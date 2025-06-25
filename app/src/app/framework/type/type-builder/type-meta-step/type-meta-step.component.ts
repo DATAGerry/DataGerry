@@ -45,6 +45,9 @@ export class TypeMetaStepComponent extends TypeBuilderStepComponent implements D
     private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
 
     public summaryForm: UntypedFormGroup;
+    public get ciExplorerLabel(): UntypedFormControl {
+        return this.summaryForm.get('ci_explorer_label') as UntypedFormControl;
+    }
     public externalsForm: UntypedFormGroup;
 
     public hasInter: boolean = false;
@@ -60,7 +63,10 @@ export class TypeMetaStepComponent extends TypeBuilderStepComponent implements D
             this.typeInstance = instance;
             this.summaries = [...this.typeInstance.fields];
             this.fields = [{ label: 'Object ID', name: 'object_id' }, ...this.typeInstance.fields];
-            this.summaryForm.patchValue(this.typeInstance.render_meta.summary);
+            this.summaryForm.patchValue({
+                fields: instance.render_meta.summary?.fields ?? [],
+                ci_explorer_label: instance.ci_explorer_label ?? ''
+            });
             this.externalsForm.get('name').setValidators(this.listNameValidator());
         }
     }
@@ -72,7 +78,8 @@ export class TypeMetaStepComponent extends TypeBuilderStepComponent implements D
         this.iterableDiffer = iterableDiffers.find([]).create(null);
 
         this.summaryForm = new UntypedFormGroup({
-            fields: new UntypedFormControl('', Validators.required)
+            fields: new UntypedFormControl('', Validators.required),
+            ci_explorer_label: new UntypedFormControl('', Validators.required)
         });
 
         this.externalsForm = new UntypedFormGroup({
@@ -168,6 +175,12 @@ export class TypeMetaStepComponent extends TypeBuilderStepComponent implements D
                 filteredFieldNames.includes(field.name)
             );
 
+            const currentLabel = this.ciExplorerLabel.value;
+            if (currentLabel && !this.filteredFields.find(f => f.name === currentLabel)) {
+                this.ciExplorerLabel.patchValue(null);
+                this.typeInstance.ci_explorer_label = '';
+            }
+
             let summaries = this.summaryFields.value;
             changes.forEachRemovedItem(record => {
                 summaries = summaries?.filter(f => f !== record.item.name);
@@ -186,6 +199,15 @@ export class TypeMetaStepComponent extends TypeBuilderStepComponent implements D
     }
 
 
+    /**
+     * Updates the CI Explorer label in the type instance
+     * based on the selected field. Clears it if no field is selected.
+     */
+    public onCiExplorerChange(field: any): void {
+        this.typeInstance.ci_explorer_label = field ? field.name : null;
+    }
+
+
     public occurrences(s, subString): number {
         s += '';
         subString += '';
@@ -196,7 +218,6 @@ export class TypeMetaStepComponent extends TypeBuilderStepComponent implements D
 
         let n = 0;
         let pos = 0;
-    
         while (true) {
             pos = s.indexOf(subString, pos);
 

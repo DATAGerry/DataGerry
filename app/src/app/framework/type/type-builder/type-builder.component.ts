@@ -168,6 +168,7 @@ export class TypeBuilderComponent implements OnInit, OnDestroy {
                     fields: []                
                 }
             };
+            this.typeInstance.ci_explorer_label = null;
 
             this.typeInstance.acl = new AccessControlList(false);
         }
