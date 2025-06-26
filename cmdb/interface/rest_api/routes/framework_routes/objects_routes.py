@@ -1228,7 +1228,7 @@ def delete_cmdb_object(public_id: int, request_user: CmdbUser):
         abort(500, "Failed to delete the Object in the database!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while deleting the Object with ID: {public_id}!")
 
 
 @objects_blueprint.route('/<int:public_id>/locations', methods=['DELETE'])

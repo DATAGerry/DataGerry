@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CMDB Concepts &#8212; DATAGERRY undefined documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=6b9c481c" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=6ffac522"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="icon" href="../_static/datagerry_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DataGerry Assistant" href="datagerry_assistant.html" />
+    <link rel="prev" title="Administration" href="../getting_started/administration.html" />
+     
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+
+  </head><body>
+    <div id="document">
+            <div id="sidebar">
+                <div class="sidebar-header">
+    <a href="../index.html"><img src="../_static/img/datagerry_logo.svg"
+                                            class="d-inline-block align-top"/></a>
+</div>
+
+
+    <div id="navigation" role="navigation">
+        
+            
+            
+                <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/welcome.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/cloud_vs_on_premise.html">Cloud vs On Premise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/service_portal.html">Cloud version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/dg_installation.html">On Premise Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/updates.html">Updating DataGerry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/administration.html">Administration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CMDB Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#todo-categories">TODO: Categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo-types">TODO: Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo-objects">TODO: Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo-objectgroups">TODO: ObjectGroups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo-persons">TODO: Persons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo-persongroups">TODO: PersonGroups</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datagerry_assistant.html">DataGerry Assistant</a></li>
+<li class="toctree-l1"><a class="reference internal" href="section_templates.html">Section Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n_m_relations.html">n:m Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_generator.html">Document generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isms.html">ISMS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webhooks.html">Webhooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_explorer.html">File Explorer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../management/authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management/access_control_list.html">Access Control List (ACL)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Media</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html">TODO: Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-service-portal">TODO: Service Portal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-community-forum">TODO: Community Forum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-contact-us">TODO: Contact us</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Sources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sources/sources.html">Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sources/changelog.html">Changelogs</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">REST API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rest_api/rest_api.html">TODO: Swagger REST API</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">License</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/license.html">License</a></li>
+</ul>
+
+            
+        
+        <p class="caption">Search</p>
+        <form action="../search.html" method="get">
+            <div class="form-group">
+                <input type="search" name="q" class="form-control" placeholder="Search"/>
+            </div>
+            <input type="hidden" name="check_keywords" value="yes"/>
+            <input type="hidden" name="area" value="default"/>
+        </form>
+    </div>
+
+            </div>
+            <div class="documentwrapper">
+                <div class="bodywrapper">
+                    <div id="content" role="main">
+                        
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../index.html">Docs</a></li>
+            
+            <li class="breadcrumb-item active">CMDB Concepts</li>
+            <div class="ml-auto">
+                
+    <a href="../getting_started/administration.html" title="Previous Chapter: Administration">
+        <span>&laquo; Administration</span>
+    </a> |
+    <a href="datagerry_assistant.html" title="Next Chapter: DataGerry Assistant">
+        <span>DataGerry Assistant &raquo;</span>
+    </a>
+            </div>
+        </ol>
+    </nav>
+
+
+                        
+  <section id="cmdb-concepts">
+<h1>CMDB Concepts<a class="headerlink" href="#cmdb-concepts" title="Link to this heading">¶</a></h1>
+<p>DataGerry is a flexible asset management solution (also known as a <strong>CMDB</strong>) that allows users to build their
+own data models by defining custom types. The core unit of data in DataGerry is the <strong>Object</strong>.</p>
+<p>An <strong>Object</strong> represents a real-world asset or entity—such as a router, server, building, or service contract.
+Each <strong>Object</strong> is based on a <strong>Type</strong>, which defines a set of <strong>fields</strong> representing the attributes of that
+<strong>Object</strong>. Examples of such fields include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Hostname</strong> (text)</p></li>
+<li><p><strong>Maintenance Status</strong> (checkbox)</p></li>
+<li><p><strong>Location</strong> (dropdown)</p></li>
+<li><p><strong>Warranty Expiration</strong> (date)</p></li>
+</ul>
+</div></blockquote>
+<p>Each field is assigned a specific <strong>data type</strong>, offering a high level of flexibility for modeling any kind of
+structured information. This enables teams to manage technical infrastructure, business assets, or virtually
+any domain-specific data within a single platform—tailored entirely to their own requirements.</p>
+<p>The basic concepts of <strong>Data Structure Modeling</strong> will be explained in more detail
+in the upcoming sections.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="todo-categories">
+<h2>TODO: Categories<a class="headerlink" href="#todo-categories" title="Link to this heading">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="todo-types">
+<h2>TODO: Types<a class="headerlink" href="#todo-types" title="Link to this heading">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="todo-objects">
+<h2>TODO: Objects<a class="headerlink" href="#todo-objects" title="Link to this heading">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="todo-objectgroups">
+<h2>TODO: ObjectGroups<a class="headerlink" href="#todo-objectgroups" title="Link to this heading">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="todo-persons">
+<h2>TODO: Persons<a class="headerlink" href="#todo-persons" title="Link to this heading">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="todo-persongroups">
+<h2>TODO: PersonGroups<a class="headerlink" href="#todo-persongroups" title="Link to this heading">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
+
+
+                    </div>
+                </div>
+               
+    <footer class="footer">
+        <div class="container">
+            <p class="float-left">
+                        &copy; Copyright 2025, becon GmbH
+            </p>
+            <p class="float-right">
+                <a href="#">Back to top</a>
+                
+            </p>
+        <div class="clearfix"></div>
+        </div>
+    </footer>
+            </div>
+    </div>
+
+  </body>
+</html>

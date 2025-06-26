@@ -2,7 +2,7 @@
 DataGerry Documentation
 +++++++++++++++++++++++
 
-.. image:: introduction/img/introduction_datagerry.png
+.. image:: getting_started/img/introduction_datagerry.png
     :align: center
 
 DataGerry is an enterprise-grade, open-source CMDB that gives you full control to define, customize,
@@ -16,33 +16,70 @@ and manage any type of asset or configuration data.
     :caption: Getting Started
     :maxdepth: 2
 
-    introduction/welcome
-    introduction/cloud_vs_on_premise
+    getting_started/welcome
+    getting_started/cloud_vs_on_premise
+    getting_started/service_portal
+    getting_started/dg_installation
+    getting_started/updates
+    getting_started/administration
 
 =======================================================================================================================
 
 .. toctree::
-    admin_guide/index
-    :caption: Admin Manual
-    :name: admin_manual
+    :caption: Usage
+    :maxdepth: 2
+
+    usage/cmdb_concepts
+    usage/datagerry_assistant
+    usage/section_templates
+    usage/multi_data_sections
+    usage/n_m_relations
+    usage/locations
+    usage/reports
+    usage/document_generator
+    usage/isms
+    usage/webhooks
+    usage/imports
+    usage/exports
+    usage/file_explorer
 
 =======================================================================================================================
 
 .. toctree::
-    dev_guide/index
-    :caption: Dev Guide
-    :name: dev_guide
+    :caption: Management
+    :maxdepth: 2
+
+    management/authentication
+    management/access_control_list
 
 =======================================================================================================================
 
 .. toctree::
-    api/rest/index
-    :caption: API
-    :name: api
+    :caption: Media
+    :maxdepth: 2
+
+    media/media
 
 =======================================================================================================================
 
 .. toctree::
-    introduction/license
+    :caption: Sources
+    :maxdepth: 2
+
+    sources/sources
+    sources/changelog
+
+=======================================================================================================================
+
+.. toctree::
+    :caption: REST API
+    :maxdepth: 2
+
+    rest_api/rest_api
+
+=======================================================================================================================
+
+.. toctree::
+    getting_started/license
     :caption: License
     :name: license
