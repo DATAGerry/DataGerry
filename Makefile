@@ -19,7 +19,13 @@ BUILDVAR_VERSION = 2.2.0
 BUILDVAR_VERSION_EXT = 2.2.0
 BUILDVAR_DOCKER_TAG = 2.2.0
 BIN_PYINSTALLER = pyinstaller
+
+# Sphinx
 BIN_SPHINX = sphinx-build
+DIR_DOCS_SOURCE = docs/source
+DIR_DOCS_BUILD = ${DIR_BUILD}/docs
+DIR_DOCS_TARGET = cmdb/interface/docs/static
+
 BIN_PYTEST = pytest
 BIN_PIP = pip
 BIN_NPM = npm
@@ -28,9 +34,7 @@ BIN_DEBBUILD = dpkg-deb
 DIR_BUILD = $(CURDIR)/target
 DIR_BIN_BUILD = ${DIR_BUILD}/bin
 DIR_TEMP= ${DIR_BUILD}/temp
-DIR_DOCS_SOURCE = docs/source
-DIR_DOCS_BUILD = ${DIR_BUILD}/docs
-DIR_DOCS_TARGET = cmdb/interface/docs/static
+
 DIR_RPM_BUILD = ${DIR_BUILD}/rpm
 DIR_DEB_BUILD = ${DIR_BUILD}/deb
 DIR_TARGZ_BUILD = ${DIR_BUILD}/targz

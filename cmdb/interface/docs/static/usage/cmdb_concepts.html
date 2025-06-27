@@ -56,8 +56,15 @@
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CMDB Concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#todo-categories">TODO: Categories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#todo-types">TODO: Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#categories">Categories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-category">Create a Category</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#edit-delete-a-category">Edit/Delete a Category</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#types">Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-type">Adding a Type</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#todo-objects">TODO: Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#todo-objectgroups">TODO: ObjectGroups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#todo-persons">TODO: Persons</a></li>
@@ -155,8 +162,102 @@ in the upcoming sections.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="todo-categories">
-<h2>TODO: Categories<a class="headerlink" href="#todo-categories" title="Link to this heading"></a></h2>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="categories">
+<h2>Categories<a class="headerlink" href="#categories" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Categories</strong> in DataGerry are used to organize <strong>Types</strong> by grouping them together and enhancing the organisational
+overview in the sidebar. They can be structured hierarchically by assigning an existing <strong>Category</strong> as a parent. To
+manage <strong>Categories</strong>, navigate to <strong>Framework =&gt; Categories</strong>.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Categories overview</strong></p>
+<p>In the <strong>Categories</strong> overview, you will find the <strong>“Category-Tree”</strong>, which visualizes the current structure of all
+<strong>Categories</strong>. The <strong>“Category-List”</strong> provides a detailed view of each existing <strong>Category</strong>, including information
+such as PublicID and ParentID. At the top right corner, there are two buttons: the <strong>“Add”</strong> - Button for creating a
+new <strong>Category</strong>, and the <strong>“Edit”</strong> - Button for rearranging or deleting existing <strong>Categories</strong> in the
+<strong>“Category-Tree”</strong>.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/categories_overview.png"><img alt="../_images/categories_overview.png" src="../_images/categories_overview.png" style="width: 1000px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Overview of <strong>Categories</strong></span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>In DataGerry, the tree structure of <strong>Categories</strong> and their assigned <strong>Types</strong> is visible in the sidebar under the
+<strong>“CATEGORIES”</strong> tab on the left side. Any <strong>Type</strong> that is not assigned to a <strong>Category</strong> appears in the
+<strong>“UNCATEGORIZED”</strong> section below.</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/categories_sidebar.png"><img alt="../_images/categories_sidebar.png" src="../_images/categories_sidebar.png" style="width: 200px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Displayed <strong>Categories</strong> in the Sidebar of DataGerry</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="create-a-category">
+<h3>Create a Category<a class="headerlink" href="#create-a-category" title="Link to this heading"></a></h3>
+<p>To create a new <strong>Category</strong> click the <strong>“+Add”</strong>-Button in the <strong>“Categories Overview”</strong>. All unassigned <strong>Types</strong>
+are displayed in the left <strong>“Unassigned types”</strong> overview and can be Drag/Dropped into the <strong>“Types”</strong> area within the
+<strong>“Basic information”</strong> section. In the <strong>“Basic information”</strong>-Section it is poosible to set the following
+properties:</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils align-center" id="id3" style="width: 60%">
+<caption><span class="caption-text">Table: Fields for <strong>Categories</strong></span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Name</p></td>
+<td><p>A unique identifier for the <strong>Category</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Label</p></td>
+<td><p>The displayed label of the <strong>Category</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Icon</p></td>
+<td><p>The icon of the <strong>Category</strong> is displayed in various views , such as the sidebar</p></td>
+</tr>
+<tr class="row-odd"><td><p>Parent</p></td>
+<td><p>Select the top <strong>Category</strong> if this one should be a sub <strong>Category</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Types</p></td>
+<td><p>Drag/Drop <strong>Types</strong> in this section which should be grouped by this <strong>Category</strong></p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../_images/categories_add.png"><img alt="../_images/categories_add.png" src="../_images/categories_add.png" style="width: 1000px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Adding a <strong>Category</strong></span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -165,8 +266,36 @@ in the upcoming sections.</p>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="todo-types">
-<h2>TODO: Types<a class="headerlink" href="#todo-types" title="Link to this heading"></a></h2>
+<section id="edit-delete-a-category">
+<h3>Edit/Delete a Category<a class="headerlink" href="#edit-delete-a-category" title="Link to this heading"></a></h3>
+<p>To edit a <strong>Category</strong> press the <strong>“Edit”</strong>-Button  located in the top right corner of the <strong>“Categories View”</strong>.
+This action will toggle the display of the <strong>“Category-Tree”</strong> section. Within this view, you can rearrange
+the order of <strong>Categories</strong> by dragging and dropping the icon to the right of the <strong>Category</strong> - Label. Each
+<strong>Category</strong> is accompanied by two actions: accessing its <strong>‘Edit’</strong> form or deleting it (by clicking the
+<strong>Trash Bin</strong> - Icon).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Deleting a <strong>Category</strong> will not delete the assigned <strong>Types</strong>.</p>
+</div>
+<figure class="align-default" id="id5">
+<a class="reference internal image-reference" href="../_images/categories_edit_tree.png"><img alt="../_images/categories_edit_tree.png" src="../_images/categories_edit_tree.png" style="width: 1000px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Edit a <strong>Category</strong> in <strong>“Category-Tree”</strong></span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>When editing a <strong>Category</strong> within the <strong>“Edit”</strong>-Form you can additionaly rearange the order of the assigned
+<strong>Types</strong> as well as modify the assignments.</p>
+<figure class="align-default" id="id6">
+<a class="reference internal image-reference" href="../_images/categories_edit_form.png"><img alt="../_images/categories_edit_form.png" src="../_images/categories_edit_form.png" style="width: 1000px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Edit a <strong>Category</strong> in <strong>“Edit”</strong>-Form</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -174,6 +303,234 @@ in the upcoming sections.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Types</strong> are structured entities that enclose various sections, each containing specific fields. These fields are
+designed to capture and describe the attributes and characteristics of real-world objects. By organizing information
+into sections, <strong>Types</strong> provide a systematic way to represent complex <strong>Objects</strong> and their properties, ensuring
+consistency and clarity in data management.</p>
+<p><strong>Types</strong> serve as blueprints for <strong>Objects</strong>, defining the structure and characteristics each <strong>Object</strong> can possess.
+In other words, a <strong>Type</strong> specifies the fields and potential values that an <strong>Object</strong> can include, ensuring that
+all <strong>Objects</strong> of a particular <strong>Type</strong> adhere to a consistent format and set of attributes.</p>
+<p>To manage <strong>Types</strong> click <strong>Framework -&gt; Types</strong> in the top right corner.</p>
+<figure class="align-default" id="id7">
+<a class="reference internal image-reference" href="../_images/types_open_menu.png"><img alt="../_images/types_open_menu.png" src="../_images/types_open_menu.png" style="width: 200px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Open <strong>Types</strong> management</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="adding-a-type">
+<h3>Adding a Type<a class="headerlink" href="#adding-a-type" title="Link to this heading"></a></h3>
+<p>The type list (<strong>Framework -&gt; Types</strong>) provides an overview of all the <strong>Types</strong> created so far, displayed in a table
+format. Above the table, there is an <strong>“Add”</strong> button, which opens a form for creating a new <strong>Type</strong>. The form consists
+of several steps.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Step 1 - Basic information</strong></p>
+<p>In this step you need to provide some basic information about the type:</p>
+<ul class="simple">
+<li><p><strong>Name</strong>: A unique identifier for the <strong>Type</strong></p></li>
+<li><p><strong>Label</strong>: The displayed label of the <strong>Type</strong></p></li>
+<li><p><strong>Icon</strong>: Select an icon for the <strong>Type</strong> by double clicking in the name (<strong>“fa fa-cube”</strong>) of the default icon</p></li>
+</ul>
+<p>Once you have completed these fields, press the <strong>“Next Step”</strong> button to proceed to the next step.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id8">
+<a class="reference internal image-reference" href="../_images/types_create_basic_information_step.png"><img alt="../_images/types_create_basic_information_step.png" src="../_images/types_create_basic_information_step.png" style="width: 800px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Type creation - Step 1</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Step 2 - Content</strong></p>
+<p>In this step all sections and their correspondig fields are defined for the type. In the left sidebar are several
+expandable elements which provide components to build up a type by drag and drop these components inside the area
+in the center:</p>
+<ul class="simple">
+<li><p><strong>Global Section Templates</strong>: For more infomation about this section see this link: TODO: Section Templates Anchor</p></li>
+<li><p><strong>Section Templates</strong>: For more infomation about this section see this link: TODO: Section Templates Anchor</p></li>
+<li><p><strong>Structure Controls</strong>: These components group fields. Fields can only be placed inside of
+these <strong>Structure Controls</strong>. More details can be found in the table below.</p></li>
+<li><p><strong>Basic Controls</strong>: These components are the fields with different data formats. They need to be dragged and
+dropped inside of <strong>Structure Controls</strong>. More details are in the table below.</p></li>
+<li><p><strong>Special Controls</strong>: These components are also fields but with a specific purpose. More details are in the table
+below.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After you finished Step 1 and 2, the <strong>Type</strong> can be saved. Steps 3 and 4 are optional to configure.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id9">
+<a class="reference internal image-reference" href="../_images/types_create_content_step.png"><img alt="../_images/types_create_content_step.png" src="../_images/types_create_content_step.png" style="width: 800px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Definition of fields for <strong>Type</strong> - Step 2</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils align-left" id="id10" style="width: 80%">
+<caption><span class="caption-text">Table: Structure Controls</span><a class="headerlink" href="#id10" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 85.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Section</p></td>
+<td><p>A container used to group fields</p></td>
+</tr>
+<tr class="row-odd"><td><p>Multi Data Section</p></td>
+<td><p>Allows saving multiple values for the defined fields. See more: TODO: MDS Anchor</p></td>
+</tr>
+<tr class="row-even"><td><p>Reference Section</p></td>
+<td><p>Binds a section with all fields of a referencing object completely as a display. The search for
+the field values is run through like a normal field. The references are expanded accordingly, so
+that a distinction is made between field references and section references.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id11">
+<a class="reference internal image-reference" href="../_images/types_reference_section.png"><img alt="../_images/types_reference_section.png" src="../_images/types_reference_section.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Definition of the object fields via reference section</span><a class="headerlink" href="#id11" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils align-left" id="id12" style="width: 80%">
+<caption><span class="caption-text">Table: Basic and Special Controls</span><a class="headerlink" href="#id12" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 85.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Text</p></td>
+<td><p>A text field. Content validation with regular expression is possible</p></td>
+</tr>
+<tr class="row-odd"><td><p>Password</p></td>
+<td><p>password field with integrated password generator and hiding of content</p></td>
+</tr>
+<tr class="row-even"><td><p>Textarea</p></td>
+<td><p>Textbox with multiple lines</p></td>
+</tr>
+<tr class="row-odd"><td><p>Checkbox</p></td>
+<td><p>A boolean checkbox</p></td>
+</tr>
+<tr class="row-even"><td><p>Radio</p></td>
+<td><p>Selection between multiple options</p></td>
+</tr>
+<tr class="row-odd"><td><p>Select</p></td>
+<td><p>Selection between multiple options with a dropdown menu</p></td>
+</tr>
+<tr class="row-even"><td><p>Date</p></td>
+<td><p>A Date picker</p></td>
+</tr>
+<tr class="row-odd"><td><p>Reference</p></td>
+<td><p>Reference to another <strong>Object</strong> of a specific <strong>Type</strong>. E.g. connection between a PC and a hard drive.
+Embeds a summary of a referencing <strong>Object</strong> as a display. The summary for each object definition is
+predefined in the type generator under the “Meta” step (TODO: Create Meta Step Anchor). With the field type
+“Reference” it is possible to override the predefined summaries and make them user specific.</p></td>
+</tr>
+<tr class="row-even"><td><p>Location</p></td>
+<td><p>Can be only used once per <strong>Type</strong>. Follow this link for more information: TODO: Locations Anchor</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id13">
+<a class="reference internal image-reference" href="../_images/special_control_field.png"><img alt="../_images/special_control_field.png" src="../_images/special_control_field.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Special Control - Reference</span><a class="headerlink" href="#id13" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Step 3 - Meta(Optional)</strong></p>
+<p>In this step the meta information of the <strong>Type</strong> can be set. Each object can have summary fields. These fields
+summarize the <strong>Object</strong> and are shown by default in object lists. On a router, this could be a management ip and
+a hostname. The summary fields can be set under <strong>“Summary”</strong>. Also, external links can be set, which are shown on
+the object page to add a quick link to the WebUI of another system. An External Link has a name, a label, an icon and
+the link (URL) itself. In the link, use curved brackets to access values of an <strong>Object</strong> field.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id14">
+<a class="reference internal image-reference" href="../_images/types_create_meta_step.png"><img alt="../_images/types_create_meta_step.png" src="../_images/types_create_meta_step.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: Meta information of a <strong>Type</strong></span><a class="headerlink" href="#id14" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Step 4 - ACL (Optional)</strong></p>
+<p>In this step advanced permissions can be set for this <strong>Type</strong>. The default setting is set to “ACL deactivated”.
+More information to this topic at this link: TODO: Access Control Anchor.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id15">
+<a class="reference internal image-reference" href="../_images/types_create_acl_step.png"><img alt="../_images/types_create_acl_step.png" src="../_images/types_create_acl_step.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: ACL settings for the <strong>Type</strong></span><a class="headerlink" href="#id15" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 </section>
 <section id="todo-objects">
 <h2>TODO: Objects<a class="headerlink" href="#todo-objects" title="Link to this heading"></a></h2>
