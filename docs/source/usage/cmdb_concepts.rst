@@ -27,8 +27,44 @@ in the upcoming sections.
 
 | 
 
-TODO: Categories
-================
+=======================================================================================================================
+
+| 
+
+Categories
+==========
+
+| 
+
+**Categories** in DataGerry are used to organize **Types** by grouping them together and enhancing the organisational
+overview in the sidebar. They can be structured hierarchically by assigning an existing **Category** as a parent. To
+manage **Categories**, navigate to **Framework => Categories**.
+
+| 
+
+**Categories overview**
+
+In the **Categories** overview, you will find the **"Category-Tree"**, which visualizes the current structure of all
+**Categories**. The **"Category-List"** provides a detailed view of each existing **Category**, including information
+such as PublicID and ParentID. At the top right corner, there are two buttons: the **"Add"** - Button for creating a
+new **Category**, and the **"Edit"** - Button for rearranging or deleting existing **Categories** in the
+**"Category-Tree"**.
+
+.. figure:: img/categories_overview.png
+    :width: 1000
+
+    Picture: Overview of **Categories**
+
+| 
+
+In DataGerry, the tree structure of **Categories** and their assigned **Types** is visible in the sidebar under the
+**"CATEGORIES"** tab on the left side. Any **Type** that is not assigned to a **Category** appears in the
+**"UNCATEGORIZED"** section below.
+
+.. figure:: img/categories_sidebar.png
+    :width: 200
+
+    Picture: Displayed **Categories** in the Sidebar of DataGerry
 
 | 
 
@@ -36,8 +72,257 @@ TODO: Categories
 
 | 
 
-TODO: Types
-===========
+Create a Category
+-----------------
+To create a new **Category** click the **"+Add"**-Button in the **"Categories Overview"**. All unassigned **Types**
+are displayed in the left **"Unassigned types"** overview and can be Drag/Dropped into the **"Types"** area within the
+**"Basic information"** section. In the **"Basic information"**-Section it is poosible to set the following
+properties:
+
+| 
+
+.. list-table:: Table: Fields for **Categories**
+   :width: 60%
+   :widths: 25 75
+   :align: center
+   :header-rows: 1
+
+   * - Field
+     - Description
+   * - Name
+     - A unique identifier for the **Category**
+   * - Label
+     - The displayed label of the **Category**
+   * - Icon
+     - The icon of the **Category** is displayed in various views , such as the sidebar
+   * - Parent
+     - Select the top **Category** if this one should be a sub **Category**
+   * - Types
+     - Drag/Drop **Types** in this section which should be grouped by this **Category**
+
+| 
+
+.. figure:: img/categories_add.png
+    :width: 1000
+
+    Picture: Adding a **Category**
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Edit/Delete a Category
+----------------------
+To edit a **Category** press the **"Edit"**-Button  located in the top right corner of the **"Categories View"**.
+This action will toggle the display of the **"Category-Tree"** section. Within this view, you can rearrange
+the order of **Categories** by dragging and dropping the icon to the right of the **Category** - Label. Each
+**Category** is accompanied by two actions: accessing its **'Edit'** form or deleting it (by clicking the
+**Trash Bin** - Icon).
+
+.. note::
+    Deleting a **Category** will not delete the assigned **Types**.
+
+.. figure:: img/categories_edit_tree.png
+    :width: 1000
+
+    Picture: Edit a **Category** in **"Category-Tree"**
+
+| 
+
+When editing a **Category** within the **"Edit"**-Form you can additionaly rearange the order of the assigned
+**Types** as well as modify the assignments.
+
+.. figure:: img/categories_edit_form.png
+    :width: 1000
+
+    Picture: Edit a **Category** in **"Edit"**-Form
+
+| 
+
+=======================================================================================================================
+
+| 
+
+=======================================================================================================================
+
+Types
+=====
+
+| 
+
+**Types** are structured entities that enclose various sections, each containing specific fields. These fields are
+designed to capture and describe the attributes and characteristics of real-world objects. By organizing information
+into sections, **Types** provide a systematic way to represent complex **Objects** and their properties, ensuring
+consistency and clarity in data management.
+
+**Types** serve as blueprints for **Objects**, defining the structure and characteristics each **Object** can possess.
+In other words, a **Type** specifies the fields and potential values that an **Object** can include, ensuring that
+all **Objects** of a particular **Type** adhere to a consistent format and set of attributes.
+
+To manage **Types** click **Framework -> Types** in the top right corner.
+
+.. figure:: img/types_open_menu.png
+    :width: 200
+
+    Picture: Open **Types** management
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Adding a Type
+-------------
+The type list (**Framework -> Types**) provides an overview of all the **Types** created so far, displayed in a table
+format. Above the table, there is an **"Add"** button, which opens a form for creating a new **Type**. The form consists
+of several steps.
+
+| 
+
+**Step 1 - Basic information**
+
+In this step you need to provide some basic information about the type:
+
+- **Name**: A unique identifier for the **Type**
+- **Label**: The displayed label of the **Type**
+- **Icon**: Select an icon for the **Type** by double clicking in the name (**"fa fa-cube"**) of the default icon
+
+Once you have completed these fields, press the **"Next Step"** button to proceed to the next step.
+
+| 
+
+.. figure:: img/types_create_basic_information_step.png
+    :width: 800
+
+    Picture: Type creation - Step 1
+
+| 
+
+**Step 2 - Content**
+
+In this step all sections and their correspondig fields are defined for the type. In the left sidebar are several
+expandable elements which provide components to build up a type by drag and drop these components inside the area
+in the center:
+
+- **Global Section Templates**: For more infomation about this section see this link: TODO: Section Templates Anchor
+- **Section Templates**: For more infomation about this section see this link: TODO: Section Templates Anchor
+- **Structure Controls**: These components group fields. Fields can only be placed inside of
+  these **Structure Controls**. More details can be found in the table below.
+- **Basic Controls**: These components are the fields with different data formats. They need to be dragged and
+  dropped inside of **Structure Controls**. More details are in the table below.
+- **Special Controls**: These components are also fields but with a specific purpose. More details are in the table
+  below.
+
+| 
+
+.. note::
+  After you finished Step 1 and 2, the **Type** can be saved. Steps 3 and 4 are optional to configure.
+
+| 
+
+.. figure:: img/types_create_content_step.png
+    :width: 800
+
+    Picture: Definition of fields for **Type** - Step 2
+
+| 
+
+.. list-table:: Table: Structure Controls
+   :width: 80%
+   :widths: 15 85
+   :align: left
+   :header-rows: 1
+
+   * - Type
+     - Description
+   * - Section
+     - A container used to group fields
+   * - Multi Data Section
+     - Allows saving multiple values for the defined fields. See more: TODO: MDS Anchor
+   * - Reference Section
+     - Binds a section with all fields of a referencing object completely as a display. The search for
+       the field values is run through like a normal field. The references are expanded accordingly, so
+       that a distinction is made between field references and section references.
+
+| 
+
+.. figure:: img/types_reference_section.png
+    :width: 600
+
+    Picture: Definition of the object fields via reference section
+
+| 
+
+.. list-table:: Table: Basic and Special Controls
+   :width: 80%
+   :widths: 15 85
+   :align: left
+   :header-rows: 1
+
+   * - Type
+     - Description
+   * - Text
+     - A text field. Content validation with regular expression is possible
+   * - Password
+     - password field with integrated password generator and hiding of content
+   * - Textarea
+     - Textbox with multiple lines
+   * - Checkbox
+     - A boolean checkbox
+   * - Radio
+     - Selection between multiple options
+   * - Select
+     - Selection between multiple options with a dropdown menu
+   * - Date
+     - A Date picker
+   * - Reference
+     - Reference to another **Object** of a specific **Type**. E.g. connection between a PC and a hard drive.
+       Embeds a summary of a referencing **Object** as a display. The summary for each object definition is
+       predefined in the type generator under the “Meta” step (TODO: Create Meta Step Anchor). With the field type
+       “Reference” it is possible to override the predefined summaries and make them user specific.
+   * - Location
+     - Can be only used once per **Type**. Follow this link for more information: TODO: Locations Anchor
+
+| 
+
+.. figure:: img/special_control_field.png
+    :width: 600
+
+    Picture: Special Control - Reference
+
+| 
+
+**Step 3 - Meta(Optional)**
+
+In this step the meta information of the **Type** can be set. Each object can have summary fields. These fields
+summarize the **Object** and are shown by default in object lists. On a router, this could be a management ip and
+a hostname. The summary fields can be set under **“Summary”**. Also, external links can be set, which are shown on
+the object page to add a quick link to the WebUI of another system. An External Link has a name, a label, an icon and
+the link (URL) itself. In the link, use curved brackets to access values of an **Object** field.
+
+| 
+
+.. figure:: img/types_create_meta_step.png
+    :width: 600
+
+    Picure: Meta information of a **Type**
+
+| 
+
+**Step 4 - ACL (Optional)**
+
+In this step advanced permissions can be set for this **Type**. The default setting is set to "ACL deactivated".
+More information to this topic at this link: TODO: Access Control Anchor.
+
+| 
+
+.. figure:: img/types_create_acl_step.png
+    :width: 600
+
+    Picure: ACL settings for the **Type**
 
 | 
 
