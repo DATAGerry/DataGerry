@@ -34,6 +34,7 @@ and manage any type of asset or configuration data.
     usage/section_templates
     usage/multi_data_sections
     usage/n_m_relations
+    usage/ci_explorer
     usage/locations
     usage/reports
     usage/document_generator

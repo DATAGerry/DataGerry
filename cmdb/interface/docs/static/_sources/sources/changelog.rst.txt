@@ -46,35 +46,6 @@ Multi Data Sections (MDS)
 
 | 
 
-Changes
--------
-
-RHEL 8
-
--  DATAGERRY is no longer compatible with **RHEL8**. The build package
-   of version 2.2.0 and following will use **RHEL9**
-
-| 
-
-General
-
--  Dates in date fields can now be copy pasted via keyboard, see the
-   hint below date fields for more details on the format
--  The “Cancel” button in object edit-mode page navigates back to the
-   objects overview table instead of the objects corresponding view-mode
-   page
--  The “ATTACHMENTS” modal view in the object overview now has a
-   “Cancel”-Button to close it instead of only be able to press the “x”
-   in the top right corner to close it
--  The “About”-Section of DATAGERRY was slightly reworked
--  Changed the displayed message in backend when DATAGERRY informs the
-   user that an update needs to be executed to update the objects/types
-   schema due to a previous misleading message
--  Added additional backend console logs for RabbitMQ connection
-   exceptions
-
-| 
-
 Bugfixes
 --------
 
@@ -115,6 +86,35 @@ Bugfixes
    were not saved
 -  Fixed a bug where a click on the password field in tables triggered a
    redirection instead of showing the password
+
+| 
+
+Changes
+-------
+
+RHEL 8
+
+-  DATAGERRY is no longer compatible with **RHEL8**. The build package
+   of version 2.2.0 and following will use **RHEL9**
+
+| 
+
+General
+
+-  Dates in date fields can now be copy pasted via keyboard, see the
+   hint below date fields for more details on the format
+-  The “Cancel” button in object edit-mode page navigates back to the
+   objects overview table instead of the objects corresponding view-mode
+   page
+-  The “ATTACHMENTS” modal view in the object overview now has a
+   “Cancel”-Button to close it instead of only be able to press the “x”
+   in the top right corner to close it
+-  The “About”-Section of DATAGERRY was slightly reworked
+-  Changed the displayed message in backend when DATAGERRY informs the
+   user that an update needs to be executed to update the objects/types
+   schema due to a previous misleading message
+-  Added additional backend console logs for RabbitMQ connection
+   exceptions
 
 | 
 
@@ -252,36 +252,6 @@ deb-Package
 
 | 
 
-Changes
--------
-
-DATAGerry Assistant
-
--  Created types are now placed in categories instead of being added
-   plain
--  Added predefined section templates to several types which can be
-   created via the assistant
-
-| 
-
-General
-
--  When an object is deleted, all corresponding object links will be
-   removed. Additionally the object reference will be removed from all
-   other objects referencing the deleted object
--  Removed the info box in the type overview
--  Moved the status message boxes in the top right corner down to not
-   overlap the buttons like Settings, Logout etc.
--  Fields and section identifiers are now getting an UUID instead of a
-   random number
--  In the object list table an object’s **View Mode** can now be
-   accessed by clicking once into the row and the **Edit Mode** can be
-   accessed by double clicking the row of the object
--  When cloning a type, the sections and fields will receive new IDs if
-   required (global section templates won’t get new IDs)
-
-| 
-
 Bugfixes
 --------
 
@@ -319,6 +289,36 @@ Bugfixes
    errors occurred
 -  Fixed the “Cleanup”-Button for all object logs (Settings => Object
    Logs) which should now work
+
+| 
+
+Changes
+-------
+
+DATAGerry Assistant
+
+-  Created types are now placed in categories instead of being added
+   plain
+-  Added predefined section templates to several types which can be
+   created via the assistant
+
+| 
+
+General
+
+-  When an object is deleted, all corresponding object links will be
+   removed. Additionally the object reference will be removed from all
+   other objects referencing the deleted object
+-  Removed the info box in the type overview
+-  Moved the status message boxes in the top right corner down to not
+   overlap the buttons like Settings, Logout etc.
+-  Fields and section identifiers are now getting an UUID instead of a
+   random number
+-  In the object list table an object’s **View Mode** can now be
+   accessed by clicking once into the row and the **Edit Mode** can be
+   accessed by double clicking the row of the object
+-  When cloning a type, the sections and fields will receive new IDs if
+   required (global section templates won’t get new IDs)
 
 | 
 
@@ -459,20 +459,6 @@ Assistant
 
 | 
 
-Changes
--------
-
--  Rework of the Feedback-Form (**Toolbox => Feedback**)
--  When creating or editing a type it is no longer possible to proceed
-   to the next step (or press the “Save”-button) if this step has
-   invalid fields
--  Added an “x” to be able to clear the filter input in the sidebar
--  Types are now only deletable if no object instances exist of this
-   type
--  Dropped support for python 3.6, 3.7 and 3.8
-
-| 
-
 Bugfixes
 --------
 
@@ -517,6 +503,20 @@ Bugfixes
    in object list
 -  Fixed a bug where the sidebar was not reloaded after deleting a type
    and still showing the deleted type
+
+| 
+
+Changes
+-------
+
+-  Rework of the Feedback-Form (**Toolbox => Feedback**)
+-  When creating or editing a type it is no longer possible to proceed
+   to the next step (or press the “Save”-button) if this step has
+   invalid fields
+-  Added an “x” to be able to clear the filter input in the sidebar
+-  Types are now only deletable if no object instances exist of this
+   type
+-  Dropped support for python 3.6, 3.7 and 3.8
 
 | 
 

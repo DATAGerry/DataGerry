@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -75,7 +75,7 @@ webapp:
 	cp -R ${DIR_WEB_BUILD}/* ${DIR_WEB_TARGET}
 
 
-# create onefile binary of DATAGERRY
+# create onefile binary of DataGerry
 .PHONY: bin
 bin: requirements buildvars docs webapp
 	${BIN_PYINSTALLER} --name datagerry --onefile \

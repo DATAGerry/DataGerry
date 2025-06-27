@@ -1,5 +1,5 @@
 ![Image](app/src/assets/img/datagerry_logo.svg)
-DATAGERRY is an OpenSource CMDB & Asset Management Tool, which completely leaves the definition of a data model to the user.
+DataGerry is an OpenSource CMDB & Asset Management Tool, which completely leaves the definition of a data model to the user.
 
 Key Functions:
 * Define your own object types (e.g. router, server, location) in a simple webfrontend
@@ -13,7 +13,7 @@ Key Facts:
 * Automate your IT with exporting assets to external systems
 * OpenSource (AGPLv3)
 
-See [DATAGERRY website](https://www.datagerry.com) for more details!
+See [DataGerry website](https://www.datagerry.com) for more details!
 
 
 ## Getting Started

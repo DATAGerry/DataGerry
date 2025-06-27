@@ -20,20 +20,16 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'DATAGERRY'
+project = 'DataGerry'
 copyright = '2025, becon GmbH'
 author = 'becon GmbH'
 
 # The short X.Y version
-version = 'undefined'
+version = 'latest'
 # The full version, including alpha/beta/rc tags
-release = 'undefined'
+release = 'latest'
 
 # -- General configuration ---------------------------------------------------
-
-# If your documentation needs a minimal Sphinx version, state it here.
-#
-# needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -46,7 +42,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'sphinxcontrib.httpdomain'
+    'sphinxcontrib.httpdomain',
+    'sphinx_rtd_theme',
 ]
 
 # Napoleon settings
@@ -69,6 +66,7 @@ templates_path = ['_templates']
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
+html_theme = "sphinx_rtd_theme"
 # The master toctree document.
 master_doc = 'index'
 
@@ -92,13 +90,14 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme_path = ["../theme"]
-html_theme = 'sphinx_dg_theme'
+# html_theme_path = ["../theme"]
+# html_theme = 'sphinx_dg_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
+html_logo = '_static/img/datagerry_logo.svg'
 html_favicon = '_static/img/datagerry_favicon.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -106,50 +105,14 @@ html_favicon = '_static/img/datagerry_favicon.png'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# -- Options for LaTeX output ------------------------------------------------
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
-
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (master_doc, 'DATAGERRY.tex', 'DATAGERRY Documentation',
-     'becon GmbH', 'manual'),
-]
-
-# -- Options for manual page output ------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'datagerry', 'DATAGERRY Documentation',
-     [author], 1)
-]
-
 # -- Options for Texinfo output ----------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'DATAGERRY', 'DATAGERRY Documentation',
-     author, 'DATAGERRY', 'One line description of project.',
+    (master_doc, 'DataGerry', 'DataGerry Documentation',
+     author, 'DataGerry', 'One line description of project.',
      'Miscellaneous'),
 ]
 

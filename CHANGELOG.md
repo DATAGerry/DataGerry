@@ -26,7 +26,7 @@
 
 ### RHEL 8
 
-- DATAGERRY is no longer compatible with **RHEL8**. The build package of version 2.2.0 and following will use **RHEL9**
+- DataGerry is no longer compatible with **RHEL8**. The build package of version 2.2.0 and following will use **RHEL9**
 
 
 ### General
@@ -34,8 +34,8 @@
 - Dates in date fields can now be copy pasted via keyboard, see the hint below date fields for more details on the format
 - The “Cancel” button in object edit-mode page navigates back to the objects overview table instead of the objects corresponding view-mode page 
 - The “ATTACHMENTS” modal view in the object overview now has a “Cancel”-Button to close it instead of only be able to press the “x” in the top right corner to close it
-- The “About”-Section of DATAGERRY was slightly reworked
-- Changed the displayed message in backend when DATAGERRY informs the user that an update needs to be executed to update the objects/types schema due to a previous misleading message
+- The “About”-Section of DataGerry was slightly reworked
+- Changed the displayed message in backend when DataGerry informs the user that an update needs to be executed to update the objects/types schema due to a previous misleading message
 - Added additional backend console logs for RabbitMQ connection exceptions
 
 
@@ -178,7 +178,7 @@
 
 ### deb-Package
 
-- Starting with version 2.1.0 DATAGERRY will provide a deb-package for installations on debian systems
+- Starting with version 2.1.0 DataGerry will provide a deb-package for installations on debian systems
 
 
 ## <ins>Changes</ins>
@@ -269,7 +269,7 @@
 
 ## <ins>Backend Changes</ins>
 
-- The version of MongoDB for development is increased to 6.0 due the upcoming End of Life for MongoDB 4.4 and 5.0.  There are currently noissues with MongoDB 4.4 and 5.0 and they should be compatible with the newest Version of DATAGERRY
+- The version of MongoDB for development is increased to 6.0 due the upcoming End of Life for MongoDB 4.4 and 5.0.  There are currently noissues with MongoDB 4.4 and 5.0 and they should be compatible with the newest Version of DataGerry
 - Several package bumps to fix security issues
 
 
@@ -337,7 +337,7 @@
 ### Assistant
 
 - Reworked initial assistant
-- It is now possible to select branches and profiles and DATAGERRY will automatically create the corresponding types for a quick start
+- It is now possible to select branches and profiles and DataGerry will automatically create the corresponding types for a quick start
 - Added a link to the assistant in the toolbox (**Toolbox => Assistant**) so that it is possible to start it manually
 
 
@@ -363,7 +363,7 @@
 - Fixed a display bug where other elements overlapped the sidebar when in cropped view
 - Fixed an error when copying dates to clipboard resulting in output to be [object Object]
 - Fixed bugs with the “Save” and “Cancel” button when creating new categories not working as intended
-- Fixed an error occurring when closing popups via the “x” in the top right corner at several places in DATAGERRY
+- Fixed an error occurring when closing popups via the “x” in the top right corner at several places in DataGerry
 - Fixed stacking counters when interacting with bulk changes
 - Fixed an error appearing when pressing to often and to fast references in object overviews
 - Fixed a bug falsely displaying an error when objects are exported
