@@ -4,39 +4,6 @@ Basic Concepts
 
 | 
 
-=======================================================================================================================
-
-| 
-
-Editing/Deleting a Type
------------------------
-
-The type list (**Framework => Types**) table itself contains, apart from several useful information about the created
-**Types**, two columns in the end with **"Actions"** and **"Clean"**. In the **"Actions"** column it is possible to
-edit, clone or delete the existing **Types**.
-
-.. warning::
-  A **Type** can only be deleted if there are no exisitng **Objects** of this **Type**
-
-| 
-
-In the **"Clean"** column is a button which will turn red and state **"Unclean"** if you change the **Type** schema
-(by adding or deleting fields/sections) This happens only if there is at least one **Object** of this **Type**. By
-pressing the **"Unclean"**-Button it lets you update all your created **Objects** of this **Type** with the changes
-you applied on the **Type** (for example a newly added field to the **Type** will be added to all existing 
-**Objects** of that **Type**).
-
-.. figure:: img/types_overview.png
-    :width: 600
-
-    Picure: **Types** overview table
-
-| 
-
-=======================================================================================================================
-
-| 
-
 Importing/Exporting Types
 -------------------------
 Object Types can be exported in JSON format. In the Object Types list, click on the yellow "Export" button to get a file
