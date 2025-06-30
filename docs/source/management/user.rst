@@ -1,9 +1,7 @@
-********************
-UserModel Management
-********************
+*****
+Users
+*****
 
-Local Users and Groups
-======================
 Local users and groups can be configured in the WebUI under "Settings" -> "UserModel Management". A user is part of one
 group. Access rights are defined for a specific group.
 
@@ -51,6 +49,3 @@ The following rights are necessary to use the frontend::
     base.user-management.user.view
     base.user-management.group.view
     base.docapi.template.view
-
-
-

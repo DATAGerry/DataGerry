@@ -58,11 +58,12 @@
 <li class="toctree-l1"><a class="reference internal" href="cmdb_concepts.html">CMDB Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datagerry_assistant.html">DataGerry Assistant</a></li>
 <li class="toctree-l1"><a class="reference internal" href="section_templates.html">Section Templates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections (MDS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="n_m_relations.html">n:m Relations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ci_explorer.html">CI Explorer</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Locations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#todo-locations">TODO: Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initialise-location-functionality-for-a-type">Initialise Location-Functionality for a Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-a-location-for-an-object">Configure a Location for an Object</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reports.html">Reports</a></li>
@@ -75,6 +76,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../management/user.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management/user_group.html">User Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
@@ -125,6 +128,17 @@
              
   <section id="locations">
 <h1>Locations<a class="headerlink" href="#locations" title="Link to this heading"></a></h1>
+<p><strong>Locations</strong> give users the possibility to structure their objects in a tree like shape where the top elements are for
+example a country or a city and the sub elements are something like offices, rooms, servers etc. This will enhance the
+overview as well as give the possibility to quickly find an object. The location tree can be found in the sidebar
+inside the “LOCATIONS”-Tab.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/locations_sidebar.png"><img alt="Locations tab in sidebar" src="../_images/locations_sidebar.png" style="width: 200px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Locations tab in sidebar</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -132,8 +146,77 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="todo-locations">
-<h2>TODO: Locations<a class="headerlink" href="#todo-locations" title="Link to this heading"></a></h2>
+<section id="initialise-location-functionality-for-a-type">
+<h2>Initialise Location-Functionality for a Type<a class="headerlink" href="#initialise-location-functionality-for-a-type" title="Link to this heading"></a></h2>
+<p>In order to display <strong>Objects</strong> in the Locations-Tab the corresponding <strong>Type</strong> needs to have assigned the Special
+Control <strong>Location</strong> in it’s type configuration. To do this open the type overview via <strong>Framework =&gt; Types</strong> in the
+top right corner and press the <strong>Edit</strong>-Icon from the <strong>Actions</strong>-column for the <strong>Type</strong> which should get the
+<strong>Locations</strong> functionality.</p>
+<p>In the type configuration switch to the <strong>Content</strong>-Tab and on the left side in <strong>Special Controls</strong> drag the
+<strong>Location</strong>-Control inside the fields-area of a section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <strong>Location-Control</strong> can only be assigned once to a <strong>Type</strong>.</p>
+</div>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/locations_special_control.png"><img alt="Location control in type configuration" src="../_images/locations_special_control.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Location control in type configuration</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The <strong>Location</strong>-Control contains two fields, “Label” and “Selectable as Location”. The “Label” is used in the object
+overview to identify the location field and the “Selectable as Location” defines if this type can be used as a top
+location for other objects .This is useful if you have a type where you don’t want the have any objects below it,
+for example you have a <strong>Type</strong> Server and a <strong>Type</strong> Processor. The server is the top location for the processor but
+the processor can not be the top location for any other <strong>Types</strong>.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="configure-a-location-for-an-object">
+<h2>Configure a Location for an Object<a class="headerlink" href="#configure-a-location-for-an-object" title="Link to this heading"></a></h2>
+<p>After the <strong>Location</strong>-Special Control has been added to the <strong>Type**(see previous step) switch to the object overview
+of an **Object</strong> of this <strong>Type</strong>. The <strong>Location</strong>-Special Control added two fields to the <strong>Object</strong>. The first is
+the location selection named after the “Label” which was set in the type configuration. In this field the top location
+for this <strong>Object</strong> can be selected.The drop down list contains always the <strong>Root</strong>-Location which is the top most
+<strong>Location</strong> possible. Furthermore the drop down will also contain all <strong>Objects</strong> which have a <strong>Location</strong> selected
+(but not <strong>Objects</strong> which are directly below the current object in the <strong>Location Tree</strong>).</p>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="../_images/locations_dropdown_selection.png"><img alt="Selection of top location for current location" src="../_images/locations_dropdown_selection.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Selection of top location for current location</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The second added field “Label in location tree” is used to set the name of this <strong>Object</strong> when displayed in the
+<strong>Location tree</strong>.</p>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../_images/locations_added_fields.png"><img alt="Added fields to object from special control “Location”" src="../_images/locations_added_fields.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Added fields to <strong>Object</strong> from <strong>Location</strong>-Special Control</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>When the top location is selected and the <strong>Object</strong> is saved it will appear in the <strong>Locations</strong>-Tab in the sidebar.
+Each <strong>Object</strong> in the <strong>Locations</strong>-Tab can be clicked and will open the object overview of the selected <strong>Object</strong>.</p>
+<figure class="align-default" id="id5">
+<a class="reference internal image-reference" href="../_images/locations_displayed_sidebar.png"><img alt="Locations in the “Locations”-Tab" src="../_images/locations_displayed_sidebar.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: <strong>Locations</strong> in the <strong>Locations</strong>-Tab</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
