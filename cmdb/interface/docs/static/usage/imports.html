@@ -58,7 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cmdb_concepts.html">CMDB Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datagerry_assistant.html">DataGerry Assistant</a></li>
 <li class="toctree-l1"><a class="reference internal" href="section_templates.html">Section Templates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections (MDS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="n_m_relations.html">n:m Relations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ci_explorer.html">CI Explorer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="locations.html">Locations</a></li>
@@ -67,7 +67,14 @@
 <li class="toctree-l1"><a class="reference internal" href="isms.html">ISMS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="webhooks.html">Webhooks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Imports</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#todo-imports">TODO: Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-types">Importing Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#importing-objects">Importing Objects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#csv-import">CSV Import</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#json">JSON</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
@@ -75,6 +82,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../management/user.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management/user_group.html">User Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
@@ -132,11 +141,56 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="todo-imports">
-<h2>TODO: Imports<a class="headerlink" href="#todo-imports" title="Link to this heading"></a></h2>
+<section id="importing-types">
+<h2>Importing Types<a class="headerlink" href="#importing-types" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p>Types can also be imported from a JSON file. In the menu, choose “Type Import/Export” -&gt; “Import Type” and upload
+a JSON file with type definitions. During the import, you can choose, which types from the JSON file should be imported.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="importing-objects">
+<h3>Importing Objects<a class="headerlink" href="#importing-objects" title="Link to this heading"></a></h3>
+<p>To import Objects, choose “Objects Import/Export” -&gt; “Import Objects” from the menu. Currently we support the import of
+the following file formats:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CSV</p></li>
+<li><p>JSON</p></li>
+</ul>
+</div></blockquote>
+<p>To start an import, upload a file and choose the file format. Depending on the format, you have to make some settings
+before an import can start.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="csv-import">
+<h4>CSV Import<a class="headerlink" href="#csv-import" title="Link to this heading"></a></h4>
+<p>During an import from a CSV file, a mapping of rows to object fields must be defined with a drag and drop assistent.
+If the CSV file contains a header that matches the name of object fields, the mapping will be predefined in the WebUI.
+Also object references can be resolved with “Foreign Keys”. For example, router objects with a field “location” should
+be imported. There are Location objects in DataGerry with a field “name”, that contains an unique name of a Location
+(e.g. FRA1). The CSV file with router Objects contains the unique location name. If you choose “foreign key:
+location:name” in the mapping wizard, a reference to the correct Location object will be set during the import.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="json">
+<h4>JSON<a class="headerlink" href="#json" title="Link to this heading"></a></h4>
+<p>DataGerry can import Objects from a JSON file. The JSON format correspond to the format that was created when exporting
+Objects.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
 </section>
 </section>
 

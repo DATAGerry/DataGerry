@@ -66,7 +66,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#editing-deleting-a-type">Editing/Deleting a Type</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#todo-objects">TODO: Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#objects">Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#active-und-inactive-objects">Active und Inactive Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#object-tables-search-filter">Object tables search / filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#table-search">Table search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#table-filter">Table filter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#bulk-change-of-objects">Bulk change of Objects</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#todo-objectgroups">TODO: ObjectGroups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#todo-persons">TODO: Persons</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#todo-persongroups">TODO: PersonGroups</a></li>
@@ -74,7 +83,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datagerry_assistant.html">DataGerry Assistant</a></li>
 <li class="toctree-l1"><a class="reference internal" href="section_templates.html">Section Templates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections (MDS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="n_m_relations.html">n:m Relations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ci_explorer.html">CI Explorer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="locations.html">Locations</a></li>
@@ -88,6 +97,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../management/user.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management/user_group.html">User Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
@@ -563,10 +574,27 @@ you applied on the <strong>Type</strong> (for example a newly added field to the
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
-<section id="todo-objects">
-<h2>TODO: Objects<a class="headerlink" href="#todo-objects" title="Link to this heading"></a></h2>
+<section id="objects">
+<h2>Objects<a class="headerlink" href="#objects" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>You can access Objects in DataGerry in several ways:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>using the Category tree on the left side</p></li>
+<li><p>using the search bar at the top</p></li>
+</ul>
+</div></blockquote>
+<p>When using the Category tree, you can choose an Object Type (e.g. router) and get a list with all objects of that Type.
+By default, only summary fields of an object are shown in the table, with the yellow settings button, additional fields
+can be faded in.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -574,6 +602,170 @@ you applied on the <strong>Type</strong> (for example a newly added field to the
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<section id="active-und-inactive-objects">
+<h3>Active und Inactive Objects<a class="headerlink" href="#active-und-inactive-objects" title="Link to this heading"></a></h3>
+<p>Objects in DataGerry can be active or inactive. Inactive Objects are hidden in the WebUI. By default, all new created
+Objects in DataGerry are active. You can set an Object to inactive by hitting the small switch on the Object view page.</p>
+<p>If you want to see inactive Objects in the WebUI, click on the switch under the navigation bar.</p>
+<figure class="align-default" id="id17">
+<a class="reference internal image-reference" href="../_images/objects_active_switch.png"><img alt="../_images/objects_active_switch.png" src="../_images/objects_active_switch.png" style="width: 300px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 8: Active / Inactive Objects switch</span><a class="headerlink" href="#id17" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="object-tables-search-filter">
+<h3>Object tables search / filter<a class="headerlink" href="#object-tables-search-filter" title="Link to this heading"></a></h3>
+<p>Searching a table is one of the most common user interactions with a DataGerry table, and DataGerry provides a number
+of methods for you to control this interaction. There are tools for the table search(search) and for each individual
+column (filter). Each search (table or column) can be marked as a regular expression (allowing you to create very complex
+interactions).</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Please note that this method only applies the search to the table - it does not actually perform the search.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id18">
+<a class="reference internal image-reference" href="../_images/object_table_search_initial.png"><img alt="../_images/object_table_search_initial.png" src="../_images/object_table_search_initial.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 9: Unfiltered object overview</span><a class="headerlink" href="#id18" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="table-search">
+<h4>Table search<a class="headerlink" href="#table-search" title="Link to this heading"></a></h4>
+<p>The search option offers the possibility to check the results in a table.
+The search is performed across all searchable columns. If matching data is found in a column,
+the entire row is matched and displayed in the result set. See Figure 10: <em>Search result after searching for “B”</em></p>
+<figure class="align-default" id="id19">
+<a class="reference internal image-reference" href="../_images/object_table_search_result.png"><img alt="../_images/object_table_search_result.png" src="../_images/object_table_search_result.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 10: Search result after searching for “B”</span><a class="headerlink" href="#id19" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="table-filter">
+<h4>Table filter<a class="headerlink" href="#table-filter" title="Link to this heading"></a></h4>
+<p>While the search function offers the possibility to search the table,
+the filter method provides the ability to search for data in a specific column.</p>
+<p>The column searches are cumulative, so additional columns can be inserted to apply multiple individual column searches,
+presenting the user with complex search options.</p>
+<figure class="align-default" id="id20">
+<a class="reference internal image-reference" href="../_images/object_table_filter_result.png"><img alt="../_images/object_table_filter_result.png" src="../_images/object_table_filter_result.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 11: Filter result after filtering for “B”</span><a class="headerlink" href="#id20" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The search terms within different rows are linked with each other with the condition <em>OR</em>
+(Figure 12: <em>Filtering by OR-expression</em>). The search terms within a row are all linked with the condition <em>AND</em>
+(Figure 13: <em>Filter by AND-expression</em>). Only the filtered objects are available for exporting the values from the current
+table.</p>
+<figure class="align-default" id="id21">
+<a class="reference internal image-reference" href="../_images/object_table_filter_example_1_result.png"><img alt="../_images/object_table_filter_example_1_result.png" src="../_images/object_table_filter_example_1_result.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 12: Filtering by OR expression</span><a class="headerlink" href="#id21" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id22">
+<a class="reference internal image-reference" href="../_images/object_table_filter_example_2_result.png"><img alt="../_images/object_table_filter_example_2_result.png" src="../_images/object_table_filter_example_2_result.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 13: Filtering by AND expression</span><a class="headerlink" href="#id22" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Date values must be searched according to the following format:</p>
+<p><strong>Format</strong>: <em>YYYY-MM-DDThh:mmZ</em></p>
+<p><strong>Example</strong>: <em>2019-12-19T11:02</em></p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
+<section id="bulk-change-of-objects">
+<h3>Bulk change of Objects<a class="headerlink" href="#bulk-change-of-objects" title="Link to this heading"></a></h3>
+<p>The bulk change is a function in DataGerry with which several objects can be changed in one step
+on the basis of change templates. With this change, the selected objects adopt the field values of the change template.</p>
+<p><strong>Start</strong></p>
+<p>Simply select all objects you want to change and click on the yellow button for mass changes above the list.</p>
+<figure class="align-default" id="id23">
+<a class="reference internal image-reference" href="../_images/objects_bulk_change_list.png"><img alt="../_images/objects_bulk_change_list.png" src="../_images/objects_bulk_change_list.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 14: Select objects for bulk change</span><a class="headerlink" href="#id23" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Template</strong></p>
+<p>A change template is generated based on the assigned object type. The following change template is identical
+to the creation of a regular object. Store all contents that you want to
+transfer to the objects later and save your entries.</p>
+<figure class="align-default" id="id24">
+<a class="reference internal image-reference" href="../_images/objects_bulk_change_active.png"><img alt="../_images/objects_bulk_change_active.png" src="../_images/objects_bulk_change_active.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 15: Change template</span><a class="headerlink" href="#id24" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Preview</strong>:</p>
+<p>In the preview, all changes made are listed and can be adjusted again if necessary.</p>
+<figure class="align-default" id="id25">
+<a class="reference internal image-reference" href="../_images/objects_bulk_change_preview.png"><img alt="../_images/objects_bulk_change_preview.png" src="../_images/objects_bulk_change_preview.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 16: Overview of changes</span><a class="headerlink" href="#id25" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Result</strong>:</p>
+<p>After a preview, the selected objects will be changed.</p>
+<figure class="align-default" id="id26">
+<a class="reference internal image-reference" href="../_images/objects_bulk_change_list.png"><img alt="../_images/objects_bulk_change_list.png" src="../_images/objects_bulk_change_list.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 17: Bulk change result</span><a class="headerlink" href="#id26" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 </section>
 <section id="todo-objectgroups">
 <h2>TODO: ObjectGroups<a class="headerlink" href="#todo-objectgroups" title="Link to this heading"></a></h2>

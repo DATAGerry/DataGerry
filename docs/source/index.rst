@@ -50,6 +50,8 @@ and manage any type of asset or configuration data.
     :caption: Management
     :maxdepth: 2
 
+    management/user
+    management/user_group
     management/authentication
     management/access_control_list
 

@@ -58,7 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cmdb_concepts.html">CMDB Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datagerry_assistant.html">DataGerry Assistant</a></li>
 <li class="toctree-l1"><a class="reference internal" href="section_templates.html">Section Templates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_data_sections.html">Multi Data Sections (MDS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="n_m_relations.html">n:m Relations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ci_explorer.html">CI Explorer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="locations.html">Locations</a></li>
@@ -68,13 +68,18 @@
 <li class="toctree-l1"><a class="reference internal" href="webhooks.html">Webhooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Exports</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#todo-exports">TODO: Exports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#export-types">Export Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-objects">Exporting Objects</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="file_explorer.html">File Explorer</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../management/user.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management/user_group.html">User Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../management/access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
@@ -132,11 +137,78 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="todo-exports">
-<h2>TODO: Exports<a class="headerlink" href="#todo-exports" title="Link to this heading"></a></h2>
+<section id="export-types">
+<h2>Export Types<a class="headerlink" href="#export-types" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p>Types can be exported in JSON format. In the Types list, click on the yellow “Export” button to get a file
+in JSON format. By default, all Object Types will be exported. If you only want to export specific types, select items
+in the list and click on the “Export” button.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="exporting-objects">
+<h3>Exporting Objects<a class="headerlink" href="#exporting-objects" title="Link to this heading"></a></h3>
+<p>Objects can be exported in several formats. Currently we support:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CSV</p></li>
+<li><p>Microsoft Excel (xlsx)</p></li>
+<li><p>JSON</p></li>
+<li><p>XML</p></li>
+</ul>
+</div></blockquote>
+<p>To export objects, click the “Export” button in an object list and select the desired format. Only objects of a single
+type can be exported (therefore you will not find the “Export” button in a list with objects of multiple types).</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/raw-custom-export.png"><img alt="../_images/raw-custom-export.png" src="../_images/raw-custom-export.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 18: Export from object list overview</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<table class="docutils align-left" id="id2" style="width: 100%">
+<caption><span class="caption-text">Table 2: Supported export types</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Raw Export</p></td>
+<td><p>All fields of the objects are exported raw. This functionality makes it easier for the user to make some changes
+and import the changed data back into DataGerry.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Customer Export</p></td>
+<td><p>Only the fields selected by the user are exported. When using a quick filter in the table, only iltered objects
+are exported and only rendered fields are displayed instead of raw data.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Export is also possible from the menu, select “Toolbox” -&gt; “Exporter” -&gt; “Objects”.</p>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="../_images/object-import-export.png"><img alt="../_images/object-import-export.png" src="../_images/object-import-export.png" style="width: 300px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Figure 19: Export / Import via Toolbox</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 </section>
 </section>
 
