@@ -74,6 +74,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#id4">MongoDB Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id5">DataGerry Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#web-interface-access">Web Interface Access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nginx">Nginx</a></li>
 </ul>
 </li>
 </ul>
@@ -107,10 +108,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Media</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html">TODO: Website</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-service-portal">TODO: Service Portal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-community-forum">TODO: Community Forum</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-contact-us">TODO: Contact us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html">Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#service-portal">Service Portal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#community-forum">Community Forum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#contact-us">Contact us</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Sources</span></p>
 <ul>
@@ -167,7 +168,7 @@ The following installation methods are supported:</p>
 <ul class="simple">
 <li><p><strong>Docker Image</strong> (simplified deployment via containers)</p></li>
 <li><p><strong>RPM Package</strong> (for RHEL/CentOS-based systems)</p></li>
-<li><p><strong>tar.gz Archive with Setup Script</strong> (for Debian/Ubuntu and other distros)</p></li>
+<li><p><strong>tar.gz Archive with Setup Script</strong> (for Debian/Ubuntu and other distributions)</p></li>
 <li><p><strong>Deb Package</strong> (for Debian-based systems)</p></li>
 </ul>
 <p>For the fastest setup, we recommend using Docker along with the provided docker-compose configuration.</p>
@@ -334,7 +335,8 @@ following containers:</p>
 <p>You can use the following tags:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">latest</span></code>
-Points to the most recent stable release. Good for testing or quick setup, but it will upgrade to new major versions automatically.</p></li>
+Points to the most recent stable release. Good for testing or quick setup, but it will upgrade to new major
+versions automatically.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;release&gt;</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">2.2.0</span></code>)
 Use a specific version tag for predictable behavior in production environments.</p></li>
 </ul>
@@ -346,6 +348,10 @@ Use a specific version tag for predictable behavior in production environments.<
 <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">becongmbh/datagerry:2.2.0</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -367,9 +373,8 @@ be installed using an RPM package.</p>
 <li><p>RHEL/CentOS 9 (tested and verified)</p></li>
 </ul>
 </div></blockquote>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Ensure MongoDB is installed before proceeding.</p>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 <hr class="docutils" />
 <section id="mongodb-setup">
@@ -377,6 +382,9 @@ be installed using an RPM package.</p>
 <p>DataGerry requires MongoDB 6.0. MongoDB 4.4+ may work but is not guaranteed.</p>
 <p>Installation instructions are available here:
 <a class="reference external" href="https://www.mongodb.com/docs/v6.0/tutorial/install-mongodb-on-red-hat/">MongoDB Installation for RHEL</a></p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 <hr class="docutils" />
 <section id="datagerry-installation">
@@ -411,6 +419,10 @@ be installed using an RPM package.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
 <section id="setup-via-tar-gz-zip-archive">
@@ -424,9 +436,8 @@ for simplified installation. This method requires <strong>systemd</strong> and h
 </ul>
 </div></blockquote>
 <p>This approach should also work on other distributions that support systemd.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Before installing DataGerry, ensure MongoDB is installed and running.</p>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 <hr class="docutils" />
 <section id="id1">
@@ -500,6 +511,10 @@ for simplified installation. This method requires <strong>systemd</strong> and h
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
 <section id="setup-via-deb-package">
@@ -550,6 +565,16 @@ for simplified installation. This method requires <strong>systemd</strong> and h
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="nginx">
+<h3>Nginx<a class="headerlink" href="#nginx" title="Link to this heading"></a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>

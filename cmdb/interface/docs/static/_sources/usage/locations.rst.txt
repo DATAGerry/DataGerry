@@ -2,6 +2,8 @@
 Locations
 *********
 
+.. _locations-anchor:
+
 **Locations** give users the possibility to structure their objects in a tree like shape where the top elements are for
 example a country or a city and the sub elements are something like offices, rooms, servers etc. This will enhance the
 overview as well as give the possibility to quickly find an object. The location tree can be found in the sidebar

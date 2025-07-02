@@ -90,10 +90,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Media</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html">TODO: Website</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-service-portal">TODO: Service Portal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-community-forum">TODO: Community Forum</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-contact-us">TODO: Contact us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html">Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#service-portal">Service Portal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#community-forum">Community Forum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#contact-us">Contact us</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Sources</span></p>
 <ul>
@@ -151,6 +151,10 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 <section id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Link to this heading"></a></h2>
@@ -158,10 +162,10 @@
 <div class="line"><br /></div>
 </div>
 <p>Logging is done by the Python logging module. Each process of the application initializes the logging
-with a configuration. This configuration is defined in the cmdb.utils.logger module.</p>
+with a configuration. This configuration is defined in the <code class="docutils literal notranslate"><span class="pre">cmdb.utils.logger</span></code> module.</p>
 <p>By default, each process will write the logs to one file as it is not safe, to write to a single
 logfile from multiple processes.</p>
-<p>To add logs within the application, use the following code snippet:</p>
+<p>To add logs within the applications backend, use the following code snippet:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;error message&quot;</span><span class="p">)</span>
@@ -186,6 +190,10 @@ are stored for each logfile.</p>
 <h3>Changing the Log Configuration<a class="headerlink" href="#changing-the-log-configuration" title="Link to this heading"></a></h3>
 <p>The log configuration is done in the module cmdb.utils.logger. Change this module to change the log
 configuration.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>

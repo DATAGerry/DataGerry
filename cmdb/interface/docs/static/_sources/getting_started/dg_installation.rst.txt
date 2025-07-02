@@ -18,7 +18,7 @@ The following installation methods are supported:
 
 - **Docker Image** (simplified deployment via containers)
 - **RPM Package** (for RHEL/CentOS-based systems)
-- **tar.gz Archive with Setup Script** (for Debian/Ubuntu and other distros)
+- **tar.gz Archive with Setup Script** (for Debian/Ubuntu and other distributions)
 - **Deb Package** (for Debian-based systems)
 
 For the fastest setup, we recommend using Docker along with the provided docker-compose configuration.
@@ -124,7 +124,8 @@ DataGerry Docker images are available on `Docker Hub <https://hub.docker.com/r/b
 You can use the following tags:
 
 - ``latest``  
-  Points to the most recent stable release. Good for testing or quick setup, but it will upgrade to new major versions automatically.
+  Points to the most recent stable release. Good for testing or quick setup, but it will upgrade to new major  
+  versions automatically.
 
 - ``<release>`` (e.g. ``2.2.0``)  
   Use a specific version tag for predictable behavior in production environments.
@@ -145,6 +146,10 @@ To specify a tag in your ``docker-compose.yml``:
 
 | 
 
+=======================================================================================================================
+
+| 
+
 Setup via RPM 
 =============
 
@@ -158,8 +163,7 @@ Supported Platforms:
 
     - RHEL/CentOS 9 (tested and verified)
 
-.. note::
-   Ensure MongoDB is installed before proceeding.
+| 
 
 =======================================================================================================================
 
@@ -171,7 +175,7 @@ DataGerry requires MongoDB 6.0. MongoDB 4.4+ may work but is not guaranteed.
 Installation instructions are available here:  
 `MongoDB Installation for RHEL <https://www.mongodb.com/docs/v6.0/tutorial/install-mongodb-on-red-hat/>`_
 
-
+| 
 
 =======================================================================================================================
 
@@ -214,6 +218,10 @@ You can now access the frontend:
 
 | 
 
+=======================================================================================================================
+
+| 
+
 Setup via tar.gz / zip Archive
 ==============================
 
@@ -225,8 +233,7 @@ for simplified installation. This method requires **systemd** and has been teste
 
 This approach should also work on other distributions that support systemd.
 
-.. note::
-   Before installing DataGerry, ensure MongoDB is installed and running.
+| 
 
 =======================================================================================================================
 
@@ -312,6 +319,10 @@ Once started, you can access the DataGerry web interface at:
 
 | 
 
+=======================================================================================================================
+
+| 
+
 Setup via DEB Package
 =====================
 
@@ -363,6 +374,15 @@ Once installed, you can access the DataGerry web frontend at:
 | 
 
 =======================================================================================================================
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Nginx
+-----
 
 | 
 

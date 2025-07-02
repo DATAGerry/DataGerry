@@ -17,7 +17,7 @@ custom assets—based on the unique requirements of your organization.
 **Key Features**
 
 - **Customizable Data Models**  
-    Design object types with custom fields and relationships. You're not limited by predefined structures—every data model is
+    Design Types with custom fields and relationships. You're not limited by predefined structures—every data model is
     entirely user-defined.
 
 - **User-Friendly Interface**  
@@ -39,28 +39,3 @@ custom assets—based on the unique requirements of your organization.
 
 With its flexible data modeling, seamless integration options, and extensibility, DataGerry supports smarter
 decisions, streamlined automation, and full visibility across your entire IT landscape.
-
-.. | 
-
-.. =======================================================================================================================
-
-.. | 
-
-.. If you need assistance, please refer to the following resources for support and information:
-
-.. - `DATAGERRY Website <https://datagerry.com>`_
-  
-..   Visit the official DATAGERRY website for comprehensive information about the tool and its features.
-
-.. - `Professional Services <https://datagerry.com/professional-services/>`_
-  
-..   Explore our professional services for expert guidance, custom solutions, and support tailored to your specific needs.
-
-.. - `Community Support <https://community.datagerry.com>`_
-  
-..   Join the DATAGERRY community forum to connect with other users, share experiences, ask questions, and find
-..   solutions collaboratively.
-
-.. - `Source Code <https://github.com/DATAGerry/DATAGerry/>`_
-  
-..   Access the DATAGERRY source code on GitHub to review the codebase and gain a deeper understanding of the tool.

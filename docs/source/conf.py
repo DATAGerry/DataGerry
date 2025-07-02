@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # pylint: disable=invalid-name
 #
 # Configuration file for the Sphinx documentation builder.

@@ -66,19 +66,24 @@
 <li class="toctree-l3"><a class="reference internal" href="#editing-deleting-a-type">Editing/Deleting a Type</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#objects">Objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#todo-objects">TODO: Objects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#active-und-inactive-objects">Active und Inactive Objects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#object-tables-search-filter">Object tables search / filter</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#table-search">Table search</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#table-filter">Table filter</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#object-tables-search-filter">Object tables search / filter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bulk-change-of-objects">Bulk change of Objects</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#todo-objectgroups">TODO: ObjectGroups</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#todo-persons">TODO: Persons</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#todo-persongroups">TODO: PersonGroups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#objectgroups">ObjectGroups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-an-objectgroup">Adding an ObjectGroup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#persons">Persons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-person">Adding a Person</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#persongroups">PersonGroups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-persongroup">Adding a PersonGroup</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datagerry_assistant.html">DataGerry Assistant</a></li>
@@ -104,10 +109,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Media</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html">TODO: Website</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-service-portal">TODO: Service Portal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-community-forum">TODO: Community Forum</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../media/media.html#todo-contact-us">TODO: Contact us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html">Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#service-portal">Service Portal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#community-forum">Community Forum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../media/media.html#contact-us">Contact us</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Sources</span></p>
 <ul>
@@ -150,10 +155,10 @@
   <section id="cmdb-concepts">
 <h1>CMDB Concepts<a class="headerlink" href="#cmdb-concepts" title="Link to this heading"></a></h1>
 <p>DataGerry is a flexible asset management solution (also known as a <strong>CMDB</strong>) that allows users to build their
-own data models by defining custom types. The core unit of data in DataGerry is the <strong>Object</strong>.</p>
-<p>An <strong>Object</strong> represents a real-world asset or entity—such as a router, server, building, or service contract.
-Each <strong>Object</strong> is based on a <strong>Type</strong>, which defines a set of <strong>fields</strong> representing the attributes of that
-<strong>Object</strong>. Examples of such fields include:</p>
+own data models by defining custom types. The core unit of data in DataGerry is the <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a>.</p>
+<p>An <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> represents a real-world asset or entity—such as a router, server, building, or service
+contract. Each <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> is based on a <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a>, which defines a set of <strong>fields</strong>
+representing the attributes of that <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a>. Examples of such fields are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>Hostname</strong> (text)</p></li>
@@ -175,17 +180,11 @@ in the upcoming sections.</p>
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <section id="categories">
-<h2>Categories<a class="headerlink" href="#categories" title="Link to this heading"></a></h2>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<p><strong>Categories</strong> in DataGerry are used to organize <strong>Types</strong> by grouping them together and enhancing the organisational
-overview in the sidebar. They can be structured hierarchically by assigning an existing <strong>Category</strong> as a parent. To
-manage <strong>Categories</strong>, navigate to <strong>Framework =&gt; Categories</strong>.</p>
+<span id="categories-anchor"></span><h2>Categories<a class="headerlink" href="#categories" title="Link to this heading"></a></h2>
+<p><strong>Categories</strong> in DataGerry are used to organize <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a> by grouping them together and enhancing
+the organisational overview in the sidebar. They can be structured hierarchically by assigning an existing <strong>Category</strong>
+as a parent. To manage <strong>Categories</strong>, navigate to <strong>Framework =&gt; Categories</strong>.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -205,9 +204,9 @@ new <strong>Category</strong>, and the <strong>“Edit”</strong> - Button for 
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>In DataGerry, the tree structure of <strong>Categories</strong> and their assigned <strong>Types</strong> is visible in the sidebar under the
-<strong>“CATEGORIES”</strong> tab on the left side. Any <strong>Type</strong> that is not assigned to a <strong>Category</strong> appears in the
-<strong>“UNCATEGORIZED”</strong> section below.</p>
+<p>In DataGerry, the tree structure of <strong>Categories</strong> and their assigned <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a> is visible in the
+sidebar under the <strong>“CATEGORIES”</strong> tab on the left side. Any <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a> that is not assigned to a
+<strong>Category</strong> appears in the <strong>“UNCATEGORIZED”</strong> section below.</p>
 <figure class="align-default" id="id2">
 <a class="reference internal image-reference" href="../_images/categories_sidebar.png"><img alt="../_images/categories_sidebar.png" src="../_images/categories_sidebar.png" style="width: 200px;" />
 </a>
@@ -224,10 +223,10 @@ new <strong>Category</strong>, and the <strong>“Edit”</strong> - Button for 
 </div>
 <section id="create-a-category">
 <h3>Create a Category<a class="headerlink" href="#create-a-category" title="Link to this heading"></a></h3>
-<p>To create a new <strong>Category</strong> click the <strong>“+Add”</strong>-Button in the <strong>“Categories Overview”</strong>. All unassigned <strong>Types</strong>
-are displayed in the left <strong>“Unassigned types”</strong> overview and can be Drag/Dropped into the <strong>“Types”</strong> area within the
-<strong>“Basic information”</strong> section. In the <strong>“Basic information”</strong>-Section it is poosible to set the following
-properties:</p>
+<p>To create a new <strong>Category</strong> click the <strong>“+Add”</strong>-Button in the <strong>“Categories Overview”</strong>. All unassigned
+<a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a> are displayed in the left <strong>“Unassigned types”</strong> overview and can be Drag/Dropped into the
+<strong>“Types”</strong> area within the <strong>“Basic information”</strong> section. In the <strong>“Basic information”</strong>-Section it is poosible to
+set the following properties:</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -315,21 +314,22 @@ the order of <strong>Categories</strong> by dragging and dropping the icon to th
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-</section>
-</section>
 <hr class="docutils" />
+</section>
+</section>
 <section id="types">
-<h2>Types<a class="headerlink" href="#types" title="Link to this heading"></a></h2>
+<span id="types-anchor"></span><h2>Types<a class="headerlink" href="#types" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p><strong>Types</strong> are structured entities that enclose various sections, each containing specific fields. These fields are
 designed to capture and describe the attributes and characteristics of real-world objects. By organizing information
-into sections, <strong>Types</strong> provide a systematic way to represent complex <strong>Objects</strong> and their properties, ensuring
-consistency and clarity in data management.</p>
-<p><strong>Types</strong> serve as blueprints for <strong>Objects</strong>, defining the structure and characteristics each <strong>Object</strong> can possess.
-In other words, a <strong>Type</strong> specifies the fields and potential values that an <strong>Object</strong> can include, ensuring that
-all <strong>Objects</strong> of a particular <strong>Type</strong> adhere to a consistent format and set of attributes.</p>
+into sections, <strong>Types</strong> provide a systematic way to represent complex <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> and their
+properties, ensuring consistency and clarity in data management.</p>
+<p><strong>Types</strong> serve as blueprints for <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a>, defining the structure and characteristics each
+<a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> can possess. In other words, a <strong>Type</strong> specifies the fields and
+potential values that an <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> can include, ensuring that all <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a>
+of a particular <strong>Type</strong> adhere to a consistent format and set of attributes.</p>
 <p>To manage <strong>Types</strong> click <strong>Framework -&gt; Types</strong> in the top right corner.</p>
 <figure class="align-default" id="id7">
 <a class="reference internal image-reference" href="../_images/types_open_menu.png"><img alt="../_images/types_open_menu.png" src="../_images/types_open_menu.png" style="width: 200px;" />
@@ -379,8 +379,10 @@ of several steps.</p>
 expandable elements which provide components to build up a type by drag and drop these components inside the area
 in the center:</p>
 <ul class="simple">
-<li><p><strong>Global Section Templates</strong>: For more infomation about this section see this link: TODO: Section Templates Anchor</p></li>
-<li><p><strong>Section Templates</strong>: For more infomation about this section see this link: TODO: Section Templates Anchor</p></li>
+<li><p><strong>Global Section Templates</strong>: For more infomation about this section see this link:
+<a class="reference internal" href="section_templates.html#section-templates-anchor"><span class="std std-ref">Section Templates</span></a></p></li>
+<li><p><strong>Section Templates</strong>: For more infomation about this section see this link:
+<a class="reference internal" href="section_templates.html#section-templates-anchor"><span class="std std-ref">Section Templates</span></a></p></li>
 <li><p><strong>Structure Controls</strong>: These components group fields. Fields can only be placed inside of
 these <strong>Structure Controls</strong>. More details can be found in the table below.</p></li>
 <li><p><strong>Basic Controls</strong>: These components are the fields with different data formats. They need to be dragged and
@@ -424,7 +426,7 @@ below.</p></li>
 <td><p>A container used to group fields</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi Data Section</p></td>
-<td><p>Allows saving multiple values for the defined fields. See more: TODO: MDS Anchor</p></td>
+<td><p>Allows saving multiple values for the defined fields. See more: <a class="reference internal" href="multi_data_sections.html#mds-anchor"><span class="std std-ref">Multi Data Sections</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Reference Section</p></td>
 <td><p>Binds a section with all fields of a referencing object completely as a display. The search for
@@ -461,32 +463,35 @@ that a distinction is made between field references and section references.</p><
 <tr class="row-even"><td><p>Text</p></td>
 <td><p>A text field. Content validation with regular expression is possible</p></td>
 </tr>
-<tr class="row-odd"><td><p>Password</p></td>
+<tr class="row-odd"><td><p>Number</p></td>
+<td><p>A numeric field. Only accepts numbers a input</p></td>
+</tr>
+<tr class="row-even"><td><p>Password</p></td>
 <td><p>password field with integrated password generator and hiding of content</p></td>
 </tr>
-<tr class="row-even"><td><p>Textarea</p></td>
+<tr class="row-odd"><td><p>Textarea</p></td>
 <td><p>Textbox with multiple lines</p></td>
 </tr>
-<tr class="row-odd"><td><p>Checkbox</p></td>
-<td><p>A boolean checkbox</p></td>
+<tr class="row-even"><td><p>Checkbox</p></td>
+<td><p>A checkbox used to store a True or False value</p></td>
 </tr>
-<tr class="row-even"><td><p>Radio</p></td>
+<tr class="row-odd"><td><p>Radio</p></td>
 <td><p>Selection between multiple options</p></td>
 </tr>
-<tr class="row-odd"><td><p>Select</p></td>
+<tr class="row-even"><td><p>Select</p></td>
 <td><p>Selection between multiple options with a dropdown menu</p></td>
 </tr>
-<tr class="row-even"><td><p>Date</p></td>
+<tr class="row-odd"><td><p>Date</p></td>
 <td><p>A Date picker</p></td>
 </tr>
-<tr class="row-odd"><td><p>Reference</p></td>
-<td><p>Reference to another <strong>Object</strong> of a specific <strong>Type</strong>. E.g. connection between a PC and a hard drive.
-Embeds a summary of a referencing <strong>Object</strong> as a display. The summary for each object definition is
-predefined in the type generator under the “Meta” step (TODO: Create Meta Step Anchor). With the field type
+<tr class="row-even"><td><p>Reference</p></td>
+<td><p>Reference to another <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> of a specific <strong>Type</strong>. E.g. connection between a PC and
+a hard drive. Embeds a summary of a referencing <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> as a display. The summary for
+each object definition is predefined in the type configuration under the <strong>“Meta”</strong> step. With the field type
 “Reference” it is possible to override the predefined summaries and make them user specific.</p></td>
 </tr>
-<tr class="row-even"><td><p>Location</p></td>
-<td><p>Can be only used once per <strong>Type</strong>. Follow this link for more information: TODO: Locations Anchor</p></td>
+<tr class="row-odd"><td><p>Location</p></td>
+<td><p>Can be only used once per <strong>Type</strong>. Follow this link for more information: <a class="reference internal" href="locations.html#locations-anchor"><span class="std std-ref">Locations</span></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -494,7 +499,7 @@ predefined in the type generator under the “Meta” step (TODO: Create Meta St
 <div class="line"><br /></div>
 </div>
 <figure class="align-default" id="id13">
-<a class="reference internal image-reference" href="../_images/special_control_field.png"><img alt="../_images/special_control_field.png" src="../_images/special_control_field.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/types_special_control_field.png"><img alt="../_images/types_special_control_field.png" src="../_images/types_special_control_field.png" style="width: 600px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Picture: Special Control - Reference</span><a class="headerlink" href="#id13" title="Link to this image"></a></p>
@@ -505,10 +510,11 @@ predefined in the type generator under the “Meta” step (TODO: Create Meta St
 </div>
 <p><strong>Step 3 - Meta(Optional)</strong></p>
 <p>In this step the meta information of the <strong>Type</strong> can be set. Each object can have summary fields. These fields
-summarize the <strong>Object</strong> and are shown by default in object lists. On a router, this could be a management ip and
-a hostname. The summary fields can be set under <strong>“Summary”</strong>. Also, external links can be set, which are shown on
-the object page to add a quick link to the WebUI of another system. An External Link has a name, a label, an icon and
-the link (URL) itself. In the link, use curved brackets to access values of an <strong>Object</strong> field.</p>
+summarize the <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> and are shown by default in object lists. On a router, this could be a
+management ip and a hostname. The summary fields can be set under <strong>“Summary”</strong>. Also, external links can be set,
+which are shown on the object page to add a quick link to the WebUI of another system. An External Link has a name,
+a label, an icon and the link (URL) itself. In the link, use curved brackets to access values of an
+<a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> field.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -524,7 +530,7 @@ the link (URL) itself. In the link, use curved brackets to access values of an <
 </div>
 <p><strong>Step 4 - ACL (Optional)</strong></p>
 <p>In this step advanced permissions can be set for this <strong>Type</strong>. The default setting is set to “ACL deactivated”.
-More information to this topic at this link: TODO: Access Control Anchor.</p>
+More information to this topic at this link: <a class="reference internal" href="../management/access_control_list.html#access-control-list-anchor"><span class="std std-ref">Access Control List</span></a></p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -550,16 +556,16 @@ More information to this topic at this link: TODO: Access Control Anchor.</p>
 edit, clone or delete the existing <strong>Types</strong>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>A <strong>Type</strong> can only be deleted if there are no exisitng <strong>Objects</strong> of this <strong>Type</strong></p>
+<p>A <strong>Type</strong> can only be deleted if there are no exisitng <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> of this <strong>Type</strong></p>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p>In the <strong>“Clean”</strong> column is a button which will turn red and state <strong>“Unclean”</strong> if you change the <strong>Type</strong> schema
-(by adding or deleting fields/sections) This happens only if there is at least one <strong>Object</strong> of this <strong>Type</strong>. By
-pressing the <strong>“Unclean”</strong>-Button it lets you update all your created <strong>Objects</strong> of this <strong>Type</strong> with the changes
-you applied on the <strong>Type</strong> (for example a newly added field to the <strong>Type</strong> will be added to all existing
-<strong>Objects</strong> of that <strong>Type</strong>).</p>
+(by adding or deleting fields/sections) This happens only if there is at least one <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> of
+this <strong>Type</strong>. By pressing the <strong>“Unclean”</strong>-Button it lets you update all your created <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a>
+of this <strong>Type</strong> with the changes you applied on the <strong>Type</strong> (for example a newly added field to the <strong>Type</strong> will be
+added to all existing <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> of that <strong>Type</strong>).</p>
 <figure class="align-default" id="id16">
 <a class="reference internal image-reference" href="../_images/types_overview.png"><img alt="../_images/types_overview.png" src="../_images/types_overview.png" style="width: 600px;" />
 </a>
@@ -575,16 +581,10 @@ you applied on the <strong>Type</strong> (for example a newly added field to the
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 </section>
 </section>
-<section id="objects">
-<h2>Objects<a class="headerlink" href="#objects" title="Link to this heading"></a></h2>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+<section id="todo-objects">
+<span id="objects-anchor"></span><h2>TODO: Objects<a class="headerlink" href="#todo-objects" title="Link to this heading"></a></h2>
 <p>You can access Objects in DataGerry in several ways:</p>
 <blockquote>
 <div><ul class="simple">
@@ -592,9 +592,9 @@ you applied on the <strong>Type</strong> (for example a newly added field to the
 <li><p>using the search bar at the top</p></li>
 </ul>
 </div></blockquote>
-<p>When using the Category tree, you can choose an Object Type (e.g. router) and get a list with all objects of that Type.
-By default, only summary fields of an object are shown in the table, with the yellow settings button, additional fields
-can be faded in.</p>
+<p>When using the Category tree, you can choose a <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a> (e.g. Router) and get a list with all
+<strong>Objects</strong> of that <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a>. By default, only summary fields of an <strong>Object</strong> are shown in the
+table, with the yellow settings button, additional fields can be faded in.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -604,14 +604,15 @@ can be faded in.</p>
 </div>
 <section id="active-und-inactive-objects">
 <h3>Active und Inactive Objects<a class="headerlink" href="#active-und-inactive-objects" title="Link to this heading"></a></h3>
-<p>Objects in DataGerry can be active or inactive. Inactive Objects are hidden in the WebUI. By default, all new created
-Objects in DataGerry are active. You can set an Object to inactive by hitting the small switch on the Object view page.</p>
+<p><strong>Objects</strong> in DataGerry can be active or inactive. Inactive <strong>Objects</strong> are hidden in the WebUI. By default, all new
+created <strong>Objects</strong> in DataGerry are active. You can set an <strong>Object</strong> to inactive by hitting the small switch on the
+Object view page.</p>
 <p>If you want to see inactive Objects in the WebUI, click on the switch under the navigation bar.</p>
 <figure class="align-default" id="id17">
 <a class="reference internal image-reference" href="../_images/objects_active_switch.png"><img alt="../_images/objects_active_switch.png" src="../_images/objects_active_switch.png" style="width: 300px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Figure 8: Active / Inactive Objects switch</span><a class="headerlink" href="#id17" title="Link to this image"></a></p>
+<p><span class="caption-text">Figure 8: Active / Inactive <strong>Objects</strong> switch</span><a class="headerlink" href="#id17" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -645,8 +646,7 @@ interactions).</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="table-search">
-<h4>Table search<a class="headerlink" href="#table-search" title="Link to this heading"></a></h4>
+<p><strong>Table search</strong></p>
 <p>The search option offers the possibility to check the results in a table.
 The search is performed across all searchable columns. If matching data is found in a column,
 the entire row is matched and displayed in the result set. See Figure 10: <em>Search result after searching for “B”</em></p>
@@ -660,9 +660,7 @@ the entire row is matched and displayed in the result set. See Figure 10: <em>Se
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-</section>
-<section id="table-filter">
-<h4>Table filter<a class="headerlink" href="#table-filter" title="Link to this heading"></a></h4>
+<p><strong>Table filter</strong></p>
 <p>While the search function offers the possibility to search the table,
 the filter method provides the ability to search for data in a specific column.</p>
 <p>The column searches are cumulative, so additional columns can be inserted to apply multiple individual column searches,
@@ -679,8 +677,8 @@ presenting the user with complex search options.</p>
 </div>
 <p>The search terms within different rows are linked with each other with the condition <em>OR</em>
 (Figure 12: <em>Filtering by OR-expression</em>). The search terms within a row are all linked with the condition <em>AND</em>
-(Figure 13: <em>Filter by AND-expression</em>). Only the filtered objects are available for exporting the values from the current
-table.</p>
+(Figure 13: <em>Filter by AND-expression</em>). Only the filtered <strong>Objects</strong> are available for exporting the values
+from the current table.</p>
 <figure class="align-default" id="id21">
 <a class="reference internal image-reference" href="../_images/object_table_filter_example_1_result.png"><img alt="../_images/object_table_filter_example_1_result.png" src="../_images/object_table_filter_example_1_result.png" style="width: 600px;" />
 </a>
@@ -715,13 +713,12 @@ table.</p>
 <div class="line"><br /></div>
 </div>
 </section>
-</section>
 <section id="bulk-change-of-objects">
 <h3>Bulk change of Objects<a class="headerlink" href="#bulk-change-of-objects" title="Link to this heading"></a></h3>
-<p>The bulk change is a function in DataGerry with which several objects can be changed in one step
-on the basis of change templates. With this change, the selected objects adopt the field values of the change template.</p>
+<p>The bulk change is a function in DataGerry with which several <strong>Objects</strong> can be changed in one step on the basis of
+change templates. With this change, the selected <strong>Objects</strong> adopt the field values of the change template.</p>
 <p><strong>Start</strong></p>
-<p>Simply select all objects you want to change and click on the yellow button for mass changes above the list.</p>
+<p>Simply select all <strong>Objects</strong> you want to change and click on the yellow button for mass changes above the list.</p>
 <figure class="align-default" id="id23">
 <a class="reference internal image-reference" href="../_images/objects_bulk_change_list.png"><img alt="../_images/objects_bulk_change_list.png" src="../_images/objects_bulk_change_list.png" style="width: 600px;" />
 </a>
@@ -730,9 +727,9 @@ on the basis of change templates. With this change, the selected objects adopt t
 </figcaption>
 </figure>
 <p><strong>Template</strong></p>
-<p>A change template is generated based on the assigned object type. The following change template is identical
-to the creation of a regular object. Store all contents that you want to
-transfer to the objects later and save your entries.</p>
+<p>A change template is generated based on the assigned <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a>. The following change template is
+identical to the creation of a regular <strong>Object</strong>. Store all contents that you want to transfer to the <strong>Objects</strong>
+later and save your entries.</p>
 <figure class="align-default" id="id24">
 <a class="reference internal image-reference" href="../_images/objects_bulk_change_active.png"><img alt="../_images/objects_bulk_change_active.png" src="../_images/objects_bulk_change_active.png" style="width: 600px;" />
 </a>
@@ -765,10 +762,137 @@ transfer to the objects later and save your entries.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
-<section id="todo-objectgroups">
-<h2>TODO: ObjectGroups<a class="headerlink" href="#todo-objectgroups" title="Link to this heading"></a></h2>
+<section id="objectgroups">
+<h2>ObjectGroups<a class="headerlink" href="#objectgroups" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As of <strong>Version 3.0.0</strong>, <strong>ObjectGroups</strong> are currently only utilized by the <a class="reference internal" href="isms.html#isms-anchor"><span class="std std-ref">ISMS</span></a> functionality.
+Integration with other areas of DataGerry is planned for future releases.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>ObjectGroups</strong> provide a powerful way to logically group related configuration items (CIs) in the CMDB, making
+management, documentation, and analysis significantly more efficient.</p>
+<p><strong>Benefits</strong></p>
+<ul class="simple">
+<li><p><strong>Simplified Management</strong>: <strong>ObjectGroups</strong> enable administrators to work with collections of
+<a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> as a single entity, improving clarity and reducing complexity when handling
+infrastructure components.</p></li>
+<li><p><strong>Improved Visibility</strong>: By grouping related <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> (e.g., servers, load balancers,
+databases) under a common service or application context, dependencies and relationships become more transparent.</p></li>
+<li><p><strong>Flexible Grouping</strong>:
+- <em>Static Groups</em>: Multiple specific <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> are explicitly assigned to the <strong>ObjectGroup</strong>,
+giving full manual control.
+- <em>Dynamic Groups</em>: Entire <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a> are assigned, and all <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> of
+those <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a> automatically belong to the <strong>ObjectGroup</strong>. This is ideal for environments with
+frequent changes.</p></li>
+<li><p><strong>Categorization Support</strong>: Multiple category tags can be assigned to an <strong>ObjectGroup</strong>, helping to organize and
+filter
+<strong>ObjectGroups</strong> by business area, service level, environment (e.g., production or staging), and more.</p></li>
+<li><p><strong>Better Impact Analysis</strong>: Understanding the full scope of a service or application is easier when all relevant
+<a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> are grouped together, especially during incidents or planned maintenance.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>To access <strong>ObjectGroups</strong>, navigate to <strong>Framework -&gt; ObjectGroups</strong>. This section provides a tabular overview of
+all existing <strong>ObjectGroups</strong>. Above the table, you’ll find an <strong>“Add”</strong> button, which opens a form for creating a
+new <strong>ObjectGroup</strong>. In the <strong>Actions</strong> column, you can edit or delete existing <strong>ObjectGroups</strong>.</p>
+<figure class="align-default" id="id27">
+<a class="reference internal image-reference" href="../_images/object_groups_overview.png"><img alt="../_images/object_groups_overview.png" src="../_images/object_groups_overview.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: <strong>ObjectGroups</strong> overview table</span><a class="headerlink" href="#id27" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="adding-an-objectgroup">
+<h3>Adding an ObjectGroup<a class="headerlink" href="#adding-an-objectgroup" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>To add a new <strong>ObjectGroup</strong>, go to <strong>Framework -&gt; ObjectGroups</strong> and click the <strong>“Add”</strong> button to open the creation
+form. There are two types of <strong>ObjectGroups</strong>:</p>
+<ul class="simple">
+<li><p><strong>Static</strong> groups, which contain multiple <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a></p></li>
+<li><p><strong>Dynamic</strong> groups, which include multiple <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a> and automatically group all existing
+<a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> of those <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a></p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils align-center" id="id28" style="width: 60%">
+<caption><span class="caption-text">Table: Fields for <strong>ObjectGroups</strong></span><a class="headerlink" href="#id28" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Group Name</strong></p></th>
+<th class="head"><p>The display name of the <strong>ObjectGroup</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Group Type</strong></p></td>
+<td><p>The group mode:
+- <em>Static</em>: Manually assigned <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a>
+- <em>Dynamic</em>: All <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> from selected <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Categories</strong></p></td>
+<td><p>Tags that can be assigned to organize or label the <strong>ObjectGroup</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Assigned Objects</strong></p></td>
+<td><p>Depending on the group type, either selected <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> or <a class="reference internal" href="#types-anchor"><span class="std std-ref">Types</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id29">
+<a class="reference internal image-reference" href="../_images/object_groups_create.png"><img alt="../_images/object_groups_create.png" src="../_images/object_groups_create.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: <strong>ObjectGroups</strong> creation form</span><a class="headerlink" href="#id29" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Adding Categories to ObjectGroups</strong></p>
+<p>Categories can be assigned to <strong>ObjectGroups</strong> to help organize and filter them effectively. To manage these
+categories, click the <strong>“Manage Categories”</strong> button. Categories created here are global and shared across
+all <strong>ObjectGroups</strong>.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id30">
+<a class="reference internal image-reference" href="../_images/object_groups_manage_categories.png"><img alt="../_images/object_groups_manage_categories.png" src="../_images/object_groups_manage_categories.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: <strong>ObjectGroups</strong> categories management</span><a class="headerlink" href="#id30" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -777,8 +901,102 @@ transfer to the objects later and save your entries.</p>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="todo-persons">
-<h2>TODO: Persons<a class="headerlink" href="#todo-persons" title="Link to this heading"></a></h2>
+</section>
+<section id="persons">
+<h2>Persons<a class="headerlink" href="#persons" title="Link to this heading"></a></h2>
+<div class="line-block" id="persons-anchor">
+<div class="line"><br /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As of <strong>Version 3.0.0</strong>, <strong>Persons</strong> are currently only utilized by the <a class="reference internal" href="isms.html#isms-anchor"><span class="std std-ref">ISMS</span></a> functionality.
+Integration with other areas of DataGerry is planned for future releases.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The <strong>Persons</strong> section in DataGerry provides a way to model real-world individuals relevant to your organization
+or processes. These are <strong>not</strong> users of the DataGerry frontend and do <strong>not</strong> represent login accounts, but rather
+describe people who are referenced in documentation, responsibilities, or compliance records —
+such as employees, external contacts, or role-holders.</p>
+<p>To access <strong>Persons</strong>, navigate to <strong>Framework -&gt; Persons</strong>. This area displays a tabular overview of all defined
+<strong>Persons</strong>, with options to <strong>Add</strong>, <strong>Edit</strong>, or <strong>Delete</strong> entries.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id31">
+<a class="reference internal image-reference" href="../_images/persons_overview.png"><img alt="../_images/persons_overview.png" src="../_images/persons_overview.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: <strong>Persons</strong> overview table</span><a class="headerlink" href="#id31" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="adding-a-person">
+<h3>Adding a Person<a class="headerlink" href="#adding-a-person" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>To add a new <strong>Person</strong>, go to <strong>Framework -&gt; Persons</strong> and click the <strong>“Add Person”</strong> button to open the creation
+form.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils align-center" id="id32" style="width: 60%">
+<caption><span class="caption-text">Table: Fields for <strong>Persons</strong></span><a class="headerlink" href="#id32" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>First Name</strong></p></th>
+<th class="head"><p>The given name of the <strong>Person</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Last Name</strong></p></td>
+<td><p>The family name or surname of the <strong>Person</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Display Name</strong></p></td>
+<td><p><em>(Read-only)</em> – Automatically generated as “&lt;FirstName&gt; &lt;LastName&gt;”, used when referencing the <strong>Person</strong>
+in other parts of the system</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Phone Number</strong></p></td>
+<td><p>Phone number of the <strong>Person</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Email</strong></p></td>
+<td><p>Email address of the <strong>Person</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Groups</strong></p></td>
+<td><p>Assigned <a class="reference internal" href="#person-groups-anchor"><span class="std std-ref">PersonGroups</span></a> that this <strong>Person</strong> belongs to</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a <strong>Person</strong> is created, they are automatically linked to all selected
+<a class="reference internal" href="#person-groups-anchor"><span class="std std-ref">PersonGroups</span></a></p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id33">
+<a class="reference internal image-reference" href="../_images/persons_create.png"><img alt="../_images/persons_create.png" src="../_images/persons_create.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: Create a <strong>Person</strong> form</span><a class="headerlink" href="#id33" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -787,11 +1005,90 @@ transfer to the objects later and save your entries.</p>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="todo-persongroups">
-<h2>TODO: PersonGroups<a class="headerlink" href="#todo-persongroups" title="Link to this heading"></a></h2>
+</section>
+<section id="persongroups">
+<h2>PersonGroups<a class="headerlink" href="#persongroups" title="Link to this heading"></a></h2>
+<div class="line-block" id="person-groups-anchor">
+<div class="line"><br /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As of <strong>Version 3.0.0</strong>, <strong>PersonGroups</strong> are primarily used in the context of the <a class="reference internal" href="isms.html#isms-anchor"><span class="std std-ref">ISMS</span></a>
+functionality. Integration with other modules is planned for future releases.</p>
+</div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p><strong>PersonGroups</strong> allow you to logically group multiple <a class="reference internal" href="#persons-anchor"><span class="std std-ref">Persons</span></a> for use in responsibilities,
+audits, and documentation. These groups can represent departments, teams, or role-based clusters of individuals.</p>
+<p>To access <strong>PersonGroups</strong>, navigate to <strong>Framework -&gt; PersonGroups</strong>. This section provides a tabular overview of all
+existing groups, along with options to <strong>Add</strong>, <strong>Edit</strong>, or <strong>Delete</strong> entries.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id34">
+<a class="reference internal image-reference" href="../_images/person_groups_table.png"><img alt="../_images/person_groups_table.png" src="../_images/person_groups_table.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: <strong>PersonGroups</strong> overview table</span><a class="headerlink" href="#id34" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="adding-a-persongroup">
+<h3>Adding a PersonGroup<a class="headerlink" href="#adding-a-persongroup" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>To create a new <strong>PersonGroup</strong>, go to <strong>Framework -&gt; PersonGroups</strong> and click the <strong>“Add PersonGroup”</strong> button to open
+the creation form.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table class="docutils align-center" id="id35" style="width: 60%">
+<caption><span class="caption-text">Table: Fields for <strong>PersonGroups</strong></span><a class="headerlink" href="#id35" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Group Name</strong></p></th>
+<th class="head"><p>The name of the <strong>PersonGroup</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Email</strong></p></td>
+<td><p>A shared or representative email address for the group (optional)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Group Members</strong></p></td>
+<td><p>A list of <a class="reference internal" href="#persons-anchor"><span class="std std-ref">Persons</span></a> who are part of this group</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a <strong>PersonGroup</strong> is created or modified, its members are automatically synchronized with the corresponding
+<a class="reference internal" href="#persons-anchor"><span class="std std-ref">Persons</span></a>, ensuring that group assignments remain consistent across the system.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<figure class="align-default" id="id36">
+<a class="reference internal image-reference" href="../_images/person_groups_create.png"><img alt="../_images/person_groups_create.png" src="../_images/person_groups_create.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picture: Create a <strong>PersonGroup</strong> form</span><a class="headerlink" href="#id36" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 </section>
 </section>
 

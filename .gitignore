@@ -34,10 +34,7 @@ var/
 .installed.cfg
 *.egg
 cmdb/interface/docs/static/_static
-cmdb/interface/docs/static/admin_guide
 cmdb/interface/docs/static/api
-cmdb/interface/docs/static/dev_guide
-cmdb/interface/docs/static/introduction
 cmdb/interface/docs/static/genindex.html
 cmdb/interface/docs/static/http-routingtable.html
 cmdb/interface/docs/static/objects.inv
