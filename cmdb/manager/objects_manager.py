@@ -814,16 +814,14 @@ class ObjectsManager(BaseManager):
             self.dbm.delete_many(
                 IsmsRiskAssessment.COLLECTION,
                 self.db_name,
-                {'public_id': {'$in': risk_assessment_ids}},
-                plain=True
+                **{'public_id': {'$in': risk_assessment_ids}},
             )
 
             # Delete all ControlMeasureAssignments referencing those RiskAssessments
             self.dbm.delete_many(
                 IsmsControlMeasureAssignment.COLLECTION,
                 self.db_name,
-                {'risk_assessment_id': {'$in': risk_assessment_ids}},
-                plain=True
+                **{'risk_assessment_id': {'$in': risk_assessment_ids}},
             )
 
 

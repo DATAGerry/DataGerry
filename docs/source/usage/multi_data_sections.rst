@@ -2,6 +2,8 @@
 Multi Data Sections (MDS)
 *************************
 
+.. _mds-anchor:
+
 **Multi Data Sections** enable users to create a group of fields (a section) within the **Type Configuration**,
 allowing the storage of multiple value sets. These value sets are displayed and managed in a table format.
 

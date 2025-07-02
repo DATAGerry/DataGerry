@@ -2,6 +2,8 @@
 Section Templates
 *****************
 
+.. _section-templates-anchor:
+
 Section templates allow users to create custom sections and insert them via drag-and-drop in type configurations.
 This is particularly useful when the same group of fields (a section) is used for different **Types**. Section
 templates speed up the creation and modification of types, eliminating the need to repeatedly

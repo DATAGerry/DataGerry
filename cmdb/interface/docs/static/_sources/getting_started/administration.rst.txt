@@ -17,18 +17,22 @@ TODO: Autostart
 
 | 
 
+=======================================================================================================================
+
+| 
+
 Logging
 =======
 
 | 
 
 Logging is done by the Python logging module. Each process of the application initializes the logging
-with a configuration. This configuration is defined in the cmdb.utils.logger module.
+with a configuration. This configuration is defined in the ``cmdb.utils.logger`` module.
 
 By default, each process will write the logs to one file as it is not safe, to write to a single
 logfile from multiple processes.
 
-To add logs within the application, use the following code snippet::
+To add logs within the applications backend, use the following code snippet::
 
     import logging
     LOGGER = logging.getLogger(__name__)
@@ -58,6 +62,10 @@ Changing the Log Configuration
 ------------------------------
 The log configuration is done in the module cmdb.utils.logger. Change this module to change the log
 configuration.
+
+| 
+
+=======================================================================================================================
 
 | 
 
