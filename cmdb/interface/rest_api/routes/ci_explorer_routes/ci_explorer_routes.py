@@ -205,7 +205,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 "type_info": {
                     "type_id": root_type_info['public_id'],
                     "label": root_type_info['label'],
-                    "icon": root_type_info.get('icon'),
+                    "icon": root_type_info['render_meta'].get('icon'),
                     "fields": root_type_info.get('fields', {}),
                 },
                 "relation_color": None,
@@ -257,7 +257,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 "type_info": {
                     "type_id": linked_type['public_id'],
                     "label": linked_type['label'],
-                    "icon": linked_type.get('icon'),
+                    "icon": linked_type['render_meta'].get('icon'),
                     "fields": linked_type.get('fields', {}),
                 },
                 "relation_color": relation_color
