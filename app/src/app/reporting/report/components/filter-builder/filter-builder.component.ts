@@ -43,6 +43,10 @@ export class FilterBuilderComponent implements OnInit, OnChanges {
         this.initializeConfig();
         if (this.conditions) {
             this.query = { ...this.conditions }; // Initialize with edit conditions if available
+            console.log('Initial query:', this.query);
+            console.log('Initial config:', this.config);
+            console.log('Initial fields:', this.fields);
+            console.log('condition')
         }
     }
 
@@ -82,8 +86,11 @@ export class FilterBuilderComponent implements OnInit, OnChanges {
                 let fieldType = field.type;
                 let operators = ['=', '!=', 'contains', 'is null', 'is not null', 'like']; // Default operators for non-numeric types
 
-                // Check if the fieldType is specifically 'number' or 'date'
-                if (fieldType === 'number' || fieldType === 'date') {
+                if (fieldType === 'ref') {
+                    fieldType = 'number';
+                    operators = ['=', '!=', 'in', 'not in', 'is null', 'is not null'];
+                  }
+               else if (fieldType === 'number' || fieldType === 'date') {
                     operators = ['=', '!=', '<', '>', '<=', '>='];
                 }
                 else if (fieldType === 'select') {

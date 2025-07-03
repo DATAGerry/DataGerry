@@ -12,8 +12,8 @@
                 *ngIf="!shouldHideValueField(rule.operator)"
                 [(ngModel)]="rule.value"
                 class="form-control"
-                type="text"
-            />
+                [type]="config.fields[rule.field]?.type === 'number' ? 'number' : 'text'"
+                />
         </ng-container>
         
     </query-builder>
