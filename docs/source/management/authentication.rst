@@ -1,6 +1,6 @@
-**************
-Authentication
-**************
+********************
+TODO: Authentication
+********************
 
 DATAGERRY uses a hybrid authentication method for issuing access tokens. These tokens can be used to
 authenticate against the Rest API.

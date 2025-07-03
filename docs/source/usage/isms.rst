@@ -1,6 +1,7 @@
-****
-ISMS
-****
+**********
+TODO: ISMS
+**********
+.. _isms-anchor:
 
 | 
 
@@ -8,7 +9,7 @@ ISMS
 
 | 
 
-.. _isms-anchor:
+
 
 TODO: ISMS
 ==========
