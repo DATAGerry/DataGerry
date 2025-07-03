@@ -43,10 +43,6 @@ export class FilterBuilderComponent implements OnInit, OnChanges {
         this.initializeConfig();
         if (this.conditions) {
             this.query = { ...this.conditions }; // Initialize with edit conditions if available
-            console.log('Initial query:', this.query);
-            console.log('Initial config:', this.config);
-            console.log('Initial fields:', this.fields);
-            console.log('condition')
         }
     }
 
