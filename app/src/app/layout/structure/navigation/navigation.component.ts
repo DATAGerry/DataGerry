@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import * as jQuery from 'jquery';
 
@@ -29,6 +29,8 @@ import { ObjectService } from 'src/app/framework/services/object.service';
 import { Subscription, switchMap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ToastService } from '../../toast/toast.service';
+import { AiPromptModalComponent } from 'src/app/ai-assistant/components/ai-prompt-modal/ai-prompt-modal.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 declare global {
@@ -50,6 +52,7 @@ export class NavigationComponent implements OnInit {
     public usedObjects: number = 0;
     public totalObjects: number = 0;
     public isCloudMode = environment.cloudMode;
+    public featurePreviewMode = environment.featurePreviewMode;
     configItemsLimit: number;
     private subscription: Subscription;
 
@@ -61,7 +64,7 @@ export class NavigationComponent implements OnInit {
         private userService: UserService,
         private groupService: GroupService,
         private objectService: ObjectService,
-        private toast: ToastService
+        private modalService: NgbModal
     ) {
         this.user = this.userService.getCurrentUser();
     }
@@ -187,4 +190,16 @@ export class NavigationComponent implements OnInit {
     getTextColor(): string {
         return this.percentage > 85 ? '#fff' : '#000'; // Use white text on high usage (red background)
     }
+
+    public openAiPromptModal(): void {
+        const modalRef = this.modalService.open(AiPromptModalComponent, { size: 'lg', backdrop: 'static' });
+        modalRef.result.then(
+          (result) => {
+            console.log('AI Assistant modal result:', result);
+          },
+          (reason) => {
+            console.warn('AI Assistant modal dismissed:', reason);
+          }
+        );
+      }
 }
