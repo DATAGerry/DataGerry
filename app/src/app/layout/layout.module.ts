@@ -91,6 +91,7 @@ import { BlockComponent } from './components/block/block.component';
 import { TypeSelectComponent } from './components/type-select/type-select.component';
 import { LoadingPopupComponent } from '../core/components/loading-popup/loading-popup.component';
 import { CoreModule } from '../core/core.module';
+import { AiPromptModalModule } from '../ai-assistant/ai-assistant.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -187,7 +188,9 @@ import { CoreModule } from '../core/core.module';
         MatTreeModule,
         MatButtonModule,
         MatIconModule,
-        CoreModule
+        CoreModule,
+        AiPromptModalModule
+
         ],
     providers: [
         BreadcrumbService,
