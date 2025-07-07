@@ -41,6 +41,7 @@ cmdb/interface/docs/static/objects.inv
 cmdb/interface/docs/static/search.html
 cmdb/interface/docs/static/searchindex.js
 cmdb/interface/net_app/datagerry-app
+.env
 
 .vscode
 # PyInstaller
