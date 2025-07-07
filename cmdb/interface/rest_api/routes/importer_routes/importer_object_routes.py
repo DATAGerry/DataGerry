@@ -384,8 +384,7 @@ def import_objects(request_user: CmdbUser):
                 current_object_render_result = CmdbRender(current_object,
                                                         current_type_instance,
                                                         request_user,
-                                                        False,
-                                                        objects_manager.dbm).result()
+                                                        False).result()
 
                 # insert object create log
                 log_params = {

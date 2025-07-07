@@ -156,8 +156,7 @@ def insert_cmdb_object(request_user: CmdbUser):
                                                 current_object,
                                                 current_type_instance,
                                                 request_user,
-                                                False,
-                                                objects_manager.dbm
+                                                False
                                             ).result()
         except Exception as err:
             #TODO: ERROR-FIX
@@ -249,8 +248,8 @@ def get_cmdb_object(public_id, request_user: CmdbUser):
             render_result = CmdbRender(requested_object,
                                        type_instance,
                                        request_user,
-                                       True,
-                                       objects_manager.dbm).result()
+                                       True
+                                       ).result()
         except Exception as err:
             LOGGER.error("[get_cmdb_object] Error: %s , Type: %s", err, type(err), exc_info=True)
             abort(500, "Object could not be rendered!")
@@ -477,8 +476,7 @@ def get_cmdb_object_mds_reference(public_id: int, request_user: CmdbUser):
         mds_reference = CmdbRender(referenced_object,
                                    referenced_type,
                                    request_user,
-                                   True,
-                                   objects_manager.dbm).get_mds_reference(public_id)
+                                   True).get_mds_reference(public_id)
 
         return DefaultResponse(mds_reference).make_response()
     except HTTPException as http_err:
@@ -535,8 +533,7 @@ def get_cmdb_object_mds_references(public_id: int, request_user: CmdbUser):
             mds_reference = CmdbRender(referenced_object,
                                         referenced_type,
                                         request_user,
-                                        True,
-                                        objects_manager.dbm).get_mds_reference(object_id)
+                                        True).get_mds_reference(object_id)
 
             summary_lines[object_id] = mds_reference
 
@@ -774,8 +771,7 @@ def update_cmdb_object(public_id: int, data: dict, request_user: CmdbUser):
             current_object_render_result = CmdbRender(current_object_instance,
                                                     current_type_instance,
                                                     request_user,
-                                                    False,
-                                                    objects_manager.dbm).result()
+                                                    False).result()
 
             new_data.update({
                 'public_id': obj_id,
@@ -925,8 +921,7 @@ def update_cmdb_object_state(public_id: int, request_user: CmdbUser):
         current_object_render_result = CmdbRender(found_object,
                                                   current_type_instance,
                                                   request_user,
-                                                  False,
-                                                  objects_manager.dbm).result()
+                                                  False).result()
 
         object_after = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
 
@@ -1154,8 +1149,7 @@ def delete_cmdb_object(public_id: int, request_user: CmdbUser):
         current_object_render_result = CmdbRender(current_object_instance,
                                                   current_type_instance,
                                                   request_user,
-                                                  False,
-                                                  objects_manager.dbm).result()
+                                                  False).result()
 
         #an object can not be deleted if it has a location AND the location is a parent for other locations
         try:
@@ -1541,9 +1535,7 @@ def delete_many_cmdb_objects(public_ids: str, request_user: CmdbUser):
             current_object_render_result = CmdbRender(current_object_instance,
                                                         current_type_instance,
                                                         request_user,
-                                                        False,
-                                                        objects_manager).result()
-
+                                                        False).result()
 
             objects_manager.delete_with_follow_up(current_object_instance.get_public_id(),
                                                   request_user,

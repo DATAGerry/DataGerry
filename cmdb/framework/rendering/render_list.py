@@ -72,8 +72,7 @@ class RenderList:
             tmp_render = CmdbRender(passed_object,
                                     self.objects_manager.get_object_type(passed_object.type_id),
                                     self.request_user,
-                                    self.ref_render,
-                                    self.objects_manager.dbm)
+                                    self.ref_render)
 
             current_render_result = tmp_render.result()
             preparation_objects.append(current_render_result.__dict__ if raw else current_render_result)

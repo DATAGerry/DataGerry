@@ -19,6 +19,7 @@ Implementation of CmdbRender
 import logging
 from dateutil.parser import parse
 
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 from cmdb.database import MongoDatabaseManager
 from cmdb.manager import (
     ObjectsManager,
@@ -67,8 +68,7 @@ class CmdbRender:
                  object_instance: CmdbObject,
                  type_instance: CmdbType,
                  render_user: CmdbUser,
-                 ref_render=False,
-                 dbm: MongoDatabaseManager = None):
+                 ref_render=False):
         """
         Initializes CmdbRender
 
@@ -79,15 +79,14 @@ class CmdbRender:
             ref_render (bool, optional): Flag to enable reference rendering. Defaults to False
             dbm (MongoDatabaseManager, optional): Database manager. Defaults to None
         """
-        self.dbm = dbm
+        self.database = render_user.database
         self.object_instance = object_instance
         self.type_instance = type_instance
         self.render_user = render_user
 
-        if dbm:
-            self.objects_manager = ObjectsManager(self.dbm)
-            self.types_manager = TypesManager(self.dbm)
-            self.users_manager = UsersManager(self.dbm)
+        self.objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, self.render_user)
+        self.types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, self.render_user)
+        self.users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, self.render_user)
 
         self.ref_render = ref_render
 
@@ -486,6 +485,7 @@ class CmdbRender:
                     self.type_instance.render_meta.sections[idx] = section
                 else:
                     selected_ref_fields = [f for f in ref_section.fields if f in section.reference.selected_fields]
+
                 for ref_section_field_name in selected_ref_fields:
                     try:
                         ref_section_field = ref_type.get_field(ref_section_field_name)
@@ -531,7 +531,7 @@ class CmdbRender:
                 instance = self.objects_manager.get_object(ref_section_field.get('value'))
                 instance = CmdbObject.from_data(instance)
                 reference_type: CmdbType = self.objects_manager.get_object_type(instance.get_type_id())
-                render = CmdbRender(instance, ref_type, self.render_user, True, self.dbm)
+                render = CmdbRender(instance, ref_type, self.render_user, True)
                 fields = render.result(level).fields
                 res = next((x for x in fields if x['name'] == ref_section_field.get('name', '')), None)
 

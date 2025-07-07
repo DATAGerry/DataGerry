@@ -75,8 +75,7 @@ class DocApiRenderer:
         cmdb_render_object = CmdbRender(self.target_object,
                                         type_instance,
                                         None,
-                                        False,
-                                        self.objects_manager.dbm)
+                                        False)
 
         generator = ObjectDocumentGenerator(self.target_template,
                                             cmdb_render_object.result(),
