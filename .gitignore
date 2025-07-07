@@ -33,13 +33,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-cmdb/interface/docs/static/_static
-cmdb/interface/docs/static/api
-cmdb/interface/docs/static/genindex.html
-cmdb/interface/docs/static/http-routingtable.html
-cmdb/interface/docs/static/objects.inv
-cmdb/interface/docs/static/search.html
-cmdb/interface/docs/static/searchindex.js
 cmdb/interface/net_app/datagerry-app
 .env
 
