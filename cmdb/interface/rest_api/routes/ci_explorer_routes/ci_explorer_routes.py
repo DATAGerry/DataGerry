@@ -17,6 +17,7 @@
 Implementation of all API routes for CI Explorer
 """
 import logging
+import ast
 from flask import abort, request
 from werkzeug.exceptions import HTTPException
 
@@ -133,6 +134,10 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
         target_type = request.args.get("target_type", default="BOTH").upper()
         with_root = request.args.get("with_root", default="false").lower() == "true"
 
+        # Parse filters from query args
+        types_filter = parse_int_list_filter("types_filter")
+        relations_filter = parse_int_list_filter("relations_filter")
+
         if target_id is None:
             abort(400, "Missing ID of target Object!")
 
@@ -161,6 +166,10 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
             }
         ))
 
+        # Apply relation filter if present
+        if relations_filter:
+            object_relations = [rel for rel in object_relations if rel['relation_id'] in relations_filter]
+
         # Retrieve all relations
         relation_ids = set(rel['relation_id'] for rel in object_relations)
         relations_list = relations_manager.find(criteria={"public_id": {"$in": list(relation_ids)}})
@@ -176,6 +185,12 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
 
         linked_objects_cursor = objects_manager.find(criteria={"public_id": {"$in": list(linked_object_ids)}})
         linked_objects = {obj['public_id']: obj for obj in linked_objects_cursor}
+
+
+        if types_filter:
+            linked_objects = {
+                obj_id: obj for obj_id, obj in linked_objects.items() if obj.get("type_id") in types_filter
+            }
 
         type_ids = {obj['type_id'] for obj in linked_objects.values()}
         if root_type_info:
@@ -296,3 +311,30 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
     except Exception as err:
         LOGGER.error("[get_ci_explorer_nodes_edges] Exception: %s. Type: %s", err, type(err), exc_info=True)
         abort(500, "An internal server error occured while retrieving CI Explorer nodes and edges!")
+
+# -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
+
+def parse_int_list_filter(arg_name: str) -> set[int]:
+    """
+    Converts a list of intergers from request.args to a python list of integers
+
+    Args:
+        arg_name (str): _description_
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        set[int]: _description_
+    """
+    raw_value = request.args.get(arg_name)
+    if not raw_value:
+        return set()
+
+    try:
+        parsed = ast.literal_eval(raw_value)
+        if not isinstance(parsed, list):
+            raise ValueError
+        return {int(x) for x in parsed}
+    except (SyntaxError, ValueError, TypeError):
+        abort(400, f"Invalid format for '{arg_name}'. Must be a list of integers like [1,2,3].")
