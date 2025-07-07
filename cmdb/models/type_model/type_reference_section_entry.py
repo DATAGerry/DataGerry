@@ -67,3 +67,10 @@ class TypeReferenceSectionEntry:
             'section_name': instance.section_name,
             'selected_fields': instance.selected_fields
         }
+
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}(\n"
+                f"type_id={self.type_id}\n "
+                f"section_name={repr(self.section_name)}\n "
+                f"selected_fields={repr(self.selected_fields)})\n")

@@ -87,3 +87,12 @@ class TypeReferenceSection(TypeSection):
             'reference': TypeReferenceSectionEntry.to_json(instance.reference),
             'fields': instance.fields,
         }
+
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}(\n"
+                f"type={repr(self.type)},\n "
+                f"name={repr(self.name)},\n "
+                f"label={repr(self.label)},\n "
+                f"reference={repr(self.reference)},\n "
+                f"fields={repr(self.fields)})\n")

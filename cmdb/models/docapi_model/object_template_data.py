@@ -89,7 +89,7 @@ class ObjectTemplateData:
                     related_object = CmdbObject.from_data(related_object)
                     object_type = self.objects_manager.get_object_type(related_object.get_type_id())
 
-                    related_render = CmdbRender(related_object, object_type, None, False, self.objects_manager.dbm)
+                    related_render = CmdbRender(related_object, object_type, None, False)
 
                     data["fields"][field_name] = self.extract_object_data(related_render.result(), depth - 1)
                 elif field_type == 'ref-section-field':
