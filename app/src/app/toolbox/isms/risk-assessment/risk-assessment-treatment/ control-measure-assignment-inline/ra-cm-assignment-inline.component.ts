@@ -17,7 +17,8 @@
 */
 import {
   Component, Input, ViewChild, TemplateRef,
-  OnInit, OnChanges, SimpleChanges, inject
+  OnInit, OnChanges, SimpleChanges, inject,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   FormArray, FormGroup, Validators, NonNullableFormBuilder
@@ -40,7 +41,8 @@ interface RespItem {
 @Component({
   selector: 'ra-cm-assignment-inline',
   templateUrl: './ra-cm-assignment-inline.component.html',
-  styleUrls: ['./ra-cm-assignment-inline.component.scss']
+  styleUrls: ['./ra-cm-assignment-inline.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
@@ -102,7 +104,7 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
     /* keep pristine copy for diff-calculation (edit / view only) */
     if (!this.createMode) {
-      this.originalSnapshot = structuredClone(this.cmArray.value) as ControlMeasureAssignment[];
+      this.originalSnapshot = structuredClone(this.cmArray?.value) as ControlMeasureAssignment[];
     }
 
     this.modalForm = this.buildModalForm();           // create once
@@ -120,20 +122,20 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
   /* ═════════════════════ build-helpers ═════════════════════ */
   private buildMaps(): void {
-    this.cmMap.clear();
-    this.allControlMeasures.forEach(cm => this.cmMap.set(cm.public_id, cm));
-    this.stsMap.clear();
-    this.implementationStates.forEach(s => this.stsMap.set(s.public_id, s.value));
+    this.cmMap?.clear();
+    this.allControlMeasures?.forEach(cm => this.cmMap?.set(cm?.public_id, cm));
+    this.stsMap?.clear();
+    this.implementationStates?.forEach(s => this.stsMap?.set(s?.public_id, s?.value));
   }
 
 
   private buildResponsibleOptions(): void {
-    const groups: RespItem[] = this.allPersonGroups.map(pg => ({
-      public_id: pg.public_id, display_name: pg.name,
+    const groups: RespItem[] = this.allPersonGroups?.map(pg => ({
+      public_id: pg?.public_id, display_name: pg?.name,
       group: 'Groups', type: 'PERSON_GROUP'
     }));
-    const persons: RespItem[] = this.allPersons.map(p => ({
-      public_id: p.public_id, display_name: p.display_name,
+    const persons: RespItem[] = this.allPersons?.map(p => ({
+      public_id: p?.public_id, display_name: p?.display_name,
       group: 'Persons', type: 'PERSON'
     }));
     this.responsibleOptions = [...groups, ...persons];
@@ -141,7 +143,7 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
 
   private getRespType(id: number): RespType {
-    return this.responsibleOptions.find(r => r.public_id === id)?.type ?? 'PERSON';
+    return this.responsibleOptions?.find(r => r?.public_id === id)?.type ?? 'PERSON';
   }
 
 
@@ -162,13 +164,13 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
   /* ═════════════════════ form-array helpers ═════════════════════ */
   private get cmArray(): FormArray {
-    return this.parentForm.get('control_measure_assignments') as FormArray;
+    return this.parentForm?.get('control_measure_assignments') as FormArray;
   }
 
 
   private ensureCmArrayExists(): void {
-    if (!this.parentForm.get('control_measure_assignments')) {
-      this.parentForm.addControl('control_measure_assignments', this.fb.array([]));
+    if (!this.parentForm?.get('control_measure_assignments')) {
+      this.parentForm?.addControl('control_measure_assignments', this.fb?.array([]));
     }
   }
 
@@ -190,14 +192,14 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
   get tableRows(): any[] {
     const allRows = this.cmArray.controls.map(ctrl => {
-      const v = ctrl.value as ControlMeasureAssignment;
-      const cm = this.cmMap.get(v.control_measure_id);
+      const v = ctrl?.value as ControlMeasureAssignment;
+      const cm = this.cmMap?.get(v?.control_measure_id);
       return {
         ...v,
         identifier: cm?.identifier ?? `#${v.control_measure_id}`,
         title: cm?.title ?? '',
-        responsibleLabel: this.responsibleOptions.find(r => r.public_id === v.responsible_for_implementation_id)?.display_name ?? '',
-        statusLabel: this.stsMap.get(v.implementation_status) ?? v.implementation_status
+        responsibleLabel: this.responsibleOptions?.find(r => r?.public_id === v?.responsible_for_implementation_id)?.display_name ?? '',
+        statusLabel: this.stsMap.get(v?.implementation_status) ?? v?.implementation_status
       };
     });
 
@@ -249,29 +251,29 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
   public updateAvailableControlMeasures(currentId?: number): void {
     const used = new Set<number>();
-    const controls = this.cmArray.value;
+    const controls = this.cmArray?.value;
   
     for (let i = 0; i < controls.length; i++) {
-      used.add(controls[i].control_measure_id);
+      used.add(controls[i]?.control_measure_id);
     }
   
     if (currentId != null) {
-      used.delete(currentId);
+      used?.delete(currentId);
     }
   
     const temp: (CmItem & { displayTitle: string })[] = [];
   
     for (const cm of this.allControlMeasures) {
-      if (!used.has(cm.public_id)) {
+      if (!used?.has(cm?.public_id)) {
         temp.push({
           ...cm,
-          displayTitle: `${cm.identifier} - ${cm.title}`
+          displayTitle: `${cm?.identifier} - ${cm?.title}`
         });
       }
     }
   
     // Sort by title
-    temp.sort((a, b) => a.title.localeCompare(b.title));
+    temp.sort((a, b) => a?.title?.localeCompare(b?.title));
   
     this.availableControlMeasures = temp;
   }
@@ -296,15 +298,15 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
   openModal(idx?: number, mode: 'add' | 'edit' | 'view' = 'add'): void {
     this.modalMode = mode;
     this.editIndex = idx ?? null;
-    const seed = idx != null ? { ...this.cmArray.at(idx).getRawValue() } : undefined;
-    this.modalForm.reset();
-    this.modalForm.patchValue(seed ?? {});
-    mode === 'view' ? this.modalForm.disable() : this.modalForm.enable();
+    const seed = idx != null ? { ...this.cmArray?.at(idx)?.getRawValue() } : undefined;
+    this.modalForm?.reset();
+    this.modalForm?.patchValue(seed ?? {});
+    mode === 'view' ? this.modalForm?.disable() : this.modalForm?.enable();
   
     // Defer both data update and modal rendering
     setTimeout(() => {
       this.updateAvailableControlMeasures(seed?.control_measure_id);
-      this.modalRef = this.modal.open(this.modalTpl, {
+      this.modalRef = this.modal?.open(this.modalTpl, {
         size: 'lg',
         centered: true,
         backdrop: 'static',
@@ -315,27 +317,27 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
   /* -------- save ------- */
   saveAssignment(): void {
-    if (this.modalForm.invalid) { return; }
+    if (this.modalForm?.invalid) { return; }
 
-    const val = this.modalForm.getRawValue();
+    const val = this.modalForm?.getRawValue();
     val.responsible_for_implementation_id_ref_type =
-      this.getRespType(val.responsible_for_implementation_id);
+      this.getRespType(val?.responsible_for_implementation_id);
 
     if (this.riskAssessmentId) {
       (val as any).risk_assessment_id = this.riskAssessmentId;
     }
 
     /* prevent duplicates */
-    const dup = this.cmArray.controls.find((c, i) =>
-      c.value.control_measure_id === val.control_measure_id && i !== this.editIndex);
+    const dup = this.cmArray?.controls?.find((c, i) =>
+      c?.value?.control_measure_id === val?.control_measure_id && i !== this.editIndex);
     if (dup) { return; }
 
     if (this.editIndex != null) {
-      this.cmArray.at(this.editIndex).patchValue(val);
+      this.cmArray?.at(this.editIndex)?.patchValue(val);
     } else {
       /* remove public_id */
-      delete (val as any).public_id;
-      this.cmArray.push(this.fb.group(val));
+      delete (val as any)?.public_id;
+      this.cmArray?.push(this.fb?.group(val));
     }
     this.closeModal();
     this.updateAvailableControlMeasures();
@@ -357,7 +359,7 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
     if (idx !== -1) { this.cmArray.removeAt(idx); this.updateAvailableControlMeasures(); }
   }
   private rowIndex(r: any): number {
-    return this.cmArray.controls.findIndex(c => c.value.control_measure_id === r.control_measure_id);
+    return this.cmArray?.controls?.findIndex(c => c?.value?.control_measure_id === r?.control_measure_id);
   }
 
   /* ═════════════════════ PUBLIC: build payload ═════════════════════ */
@@ -367,22 +369,22 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
     updated: any[],
     deleted: number[]
   } {
-    const current = this.cmArray.value as ControlMeasureAssignment[];
+    const current = this.cmArray?.value as ControlMeasureAssignment[];
 
     /* helper maps */
     const origById = new Map<number, ControlMeasureAssignment>(
-      this.originalSnapshot.filter(o => o.public_id != null)
+      this.originalSnapshot?.filter(o => o?.public_id != null)
         .map(o => [o.public_id!, o]));
     const curById = new Map<number, ControlMeasureAssignment>(
-      current.filter(c => c.public_id != null).map(c => [c.public_id!, c]));
+      current.filter(c => c?.public_id != null).map(c => [c?.public_id!, c]));
 
     /* created */
-    const created = current.filter(c => c.public_id == null)
+    const created = current?.filter(c => c?.public_id == null)
       .map(c => ({ ...c })); // keep shape – NO public_id
 
     /* updated */
     const updated: ControlMeasureAssignment[] = [];
-    curById.forEach((cur, id) => {
+    curById?.forEach((cur, id) => {
       const orig = origById.get(id);
       if (orig && JSON.stringify(orig) !== JSON.stringify(cur)) {
         updated.push(cur);
@@ -391,8 +393,8 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
     /* deleted */
     const deleted: number[] = [];
-    origById.forEach((_v, id) => {
-      if (!curById.has(id)) { deleted.push(id); }
+    origById?.forEach((_v, id) => {
+      if (!curById?.has(id)) { deleted?.push(id); }
     });
 
     return { created, updated, deleted };
@@ -400,11 +402,11 @@ export class RaCmAssignmentInlineComponent implements OnInit, OnChanges {
 
   public markSnapshot(): void {
     this.originalSnapshot = structuredClone(
-      this.cmArray.value
+      this.cmArray?.value
     ) as ControlMeasureAssignment[];
   }
 
   public refreshSnapshot(): void {
-    this.originalSnapshot = structuredClone(this.cmArray.value) as ControlMeasureAssignment[];
+    this.originalSnapshot = structuredClone(this.cmArray?.value) as ControlMeasureAssignment[];
   }
 }

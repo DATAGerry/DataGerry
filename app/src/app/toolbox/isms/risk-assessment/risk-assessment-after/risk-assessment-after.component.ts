@@ -33,6 +33,7 @@ export class RiskAssessmentAfterComponent implements OnInit {
   @Input() impactCategories: any[] = [];
   @Input() riskMatrix: any;
   @Input() riskClasses: RiskClass[];
+  @Input() isView = false;
 
   public displayedLikelihoods: any[] = [];
   public calcRiskBgColor: string = FALLBACK_GREY;

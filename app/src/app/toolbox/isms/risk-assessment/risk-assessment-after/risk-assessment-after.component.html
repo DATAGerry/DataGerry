@@ -10,7 +10,7 @@
         <label class="cat-name">{{ impactCategories[i]?.name }}</label>
 
         <app-form-slider [items]="impacts" [allowNotRated]="true" [selectedId]="catCtrl.get('impact_id')?.value"
-            (selectedIdChange)="onImpactChanged(i, $event)" [showChosenText]="false">
+            (selectedIdChange)="onImpactChanged(i, $event)" [showChosenText]="false" [disabled]="isView">
         </app-form-slider>
     </div>
 
@@ -27,7 +27,7 @@
 
         <app-form-slider [items]="displayedLikelihoods" [allowNotRated]="true"
             [selectedId]="afterGroup.get('likelihood_id')?.value" (selectedIdChange)="onLikelihoodChanged($event)"
-            [showChosenText]="false">
+            [showChosenText]="false" [disabled]="isView">
         </app-form-slider>
     </div>
 
