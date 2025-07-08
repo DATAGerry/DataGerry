@@ -75,11 +75,11 @@ export class RiskAssessmentTreatmentComponent implements OnInit, OnChanges {
   private buildRespOptions(): void {
     this.responsiblePersonOptions = [
       ...this.allPersonGroups.map(pg => ({
-        public_id: pg.public_id, display_name: pg.name,
+        public_id: pg?.public_id, display_name: pg?.name,
         group:'Person groups', type:'PERSON_GROUP'
       })),
       ...this.allPersons.map(p => ({
-        public_id: p.public_id, display_name: p.display_name,
+        public_id: p?.public_id, display_name: p?.display_name,
         group:'Persons', type:'PERSON'
       }))
     ];
@@ -87,8 +87,8 @@ export class RiskAssessmentTreatmentComponent implements OnInit, OnChanges {
 
   onOwnerSelected(item:any):void{
     if (item){
-      this.parentForm.patchValue(
-        { responsible_persons_id_ref_type:item.type },
+      this.parentForm?.patchValue(
+        { responsible_persons_id_ref_type:item?.type },
         { emitEvent:false }
       );
     }
@@ -105,26 +105,26 @@ export class RiskAssessmentTreatmentComponent implements OnInit, OnChanges {
 
 
   buildAssignmentsPayload() {
-    return this.cmInline.buildAssignmentsPayload();
+    return this.cmInline?.buildAssignmentsPayload();
   }
 
 
   /** called by the parent once the initial CMA list has been downloaded */
 public markInlineSnapshot(): void {
-  this.cmInline.markSnapshot();
+  this.cmInline?.markSnapshot();
 }
 
 
  setInlineToEditMode(): void {
     if (!this.cmInline) { return; }
     //  this.cmInline.createMode = false;        // switch off “create” mode
-     this.cmInline.refreshSnapshot();         // take a pristine snapshot
+     this.cmInline?.refreshSnapshot();         // take a pristine snapshot
    }
 
 
   /** Called by parent to recalc “availableControlMeasures” inside inline */
   public updateInlineAvailableCMs(currentId?: number): void {
-    this.cmInline.updateAvailableControlMeasures(currentId);
+    this.cmInline?.updateAvailableControlMeasures(currentId);
   }
 
 }
