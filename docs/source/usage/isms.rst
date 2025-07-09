@@ -267,7 +267,7 @@ Each **Impact** includes the following fields:
 Impact Categories
 -----------------
 
-| 
+.. _isms-impact-categories-anchor:
 
 **Impact Categories** allow organizations to group different dimensions of potential impact for use in risk assessments.
 They provide context to the selected **Impact levels** by defining what a certain severity means in specific areas —
@@ -414,3 +414,605 @@ This setting is purely visual and does not affect the actual calculation or clas
 
 | 
 
+Threats
+=======
+
+.. _isms-threat-anchor:
+
+**Threats** represent potential causes of unwanted incidents that may result in harm to a system, asset, or organization.
+They are a key component in evaluating :ref:`Risks <isms-risk-anchor>` within the ISMS and must be created before
+defining :ref:`Risks <isms-risk-anchor>` of type **"Threat x Vulnerability"** or **Threat**.
+
+To manage **Threats**, navigate to **Toolbox -> ISMS -> Threats**.
+
+.. figure:: img/isms/isms_threats_overview.png
+    :width: 600
+
+    Picure: **Threats** overview
+
+| 
+
+Each **Threat** includes the following fields:
+
+.. list-table:: Table: Fields for Threats
+   :width: 80%
+   :widths: 30 70
+   :align: center
+
+   * - **Name**
+     - A short, descriptive name for the threat (e.g., *Malware Infection*, *Phishing Attack*)
+   * - **Source**
+     - Optional field indicating the origin or classification of the threat (can be a numeric reference or category ID)
+   * - **Identifier**
+     - Optional string to uniquely identify or reference the threat (e.g., *THR-001*)
+   * - **Description**
+     - A longer explanation of the threat and its potential impact
+
+.. figure:: img/isms/isms_threats_create.png
+    :width: 600
+
+    Picure: Create **Threat** form
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Vulnerabilities
+===============
+
+.. _isms-vulnerability-anchor:
+
+**Vulnerabilities** are weaknesses in systems, processes, or controls that can be exploited by
+:ref:`Threats <isms-threat-anchor>` to cause harm or loss. In the ISMS context, **Vulnerabilities** are used to assess
+and define :ref:`Risks <isms-risk-anchor>` — especially in combination with :ref:`Threats <isms-threat-anchor>` when
+using the **"Threat x Vulnerability"** risk type.
+
+To manage **Vulnerabilities**, navigate to **Toolbox -> ISMS -> Vulnerabilities**.
+
+.. figure:: img/isms/isms_vulnerabilities_overview.png
+    :width: 600
+
+    Picure: **Vulnerabilities** overview
+
+| 
+
+Each **Vulnerability** includes the following fields:
+
+.. list-table:: Table: Fields for Vulnerabilities
+   :width: 80%
+   :widths: 30 70
+   :align: center
+
+   * - **Name**
+     - A short, descriptive name for the vulnerability (e.g., *Outdated Software*, *Weak Password Policy*)
+   * - **Source**
+     - Optional field to indicate the origin or classification of the vulnerability
+       (can be a numeric reference or category ID)
+   * - **Identifier**
+     - Optional string to uniquely identify or reference the vulnerability (e.g., *VUL-001*)
+   * - **Description**
+     - A detailed explanation of the vulnerability and its potential implications
+
+.. figure:: img/isms/isms_vulnerability_create.png
+    :width: 600
+
+    Picure: Create **Vulnerability** form
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Risks
+=====
+
+.. _isms-risk-anchor:
+
+Within the ISMS module, **Risks** represent potential threats to the confidentiality, integrity, or availability
+of information assets. Risks are central to performing security assessments and defining mitigation strategies.
+
+To manage risks, navigate to: **Toolbox -> ISMS -> Risks**.
+
+.. figure:: img/isms/isms_risk_overview.png
+    :width: 600
+
+    Picure: **Risks** overview
+
+| 
+
+The Risks overview provides a list of all defined risks in the system, including their types, associated
+protection goals, and threat context. From this view, you can:
+
+- Create new **Risks**
+- Edit existing ones
+- Filter or search **Risks**
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Risk Fields
+-----------
+
+When creating or editing a **Risk**, the fields that are displayed in the form depend on the selected **Risk Type**.  
+This ensures that only relevant data is captured for each kind of **Risk**.
+
+Each risk includes the following fields:
+
+.. list-table:: Table: Risk Fields
+   :width: 90%
+   :widths: 25 75
+   :align: center
+
+   * - **Name**
+     - The title of the risk
+   * - **Risk Type**
+     - The classification of the risk, which controls the visibility of other fields in the form.
+       Available types include:
+
+       - *Threat x Vulnerability*: Combines a known threat with an exploitable vulnerability
+       - *Threat*: Represents a direct threat without explicitly linking to a vulnerability
+       - *Event*: Describes a scenario or occurrence that may cause an impact, without requiring a threat or vulnerability
+
+   * - **Protection Goals**
+     - A list of protection goals (e.g., *Confidentiality*, *Integrity*, *Availability*) the risk may impact
+   * - **Threats**
+     - A list of known or anticipated threats that contribute to the risk (optional, depending on type)
+   * - **Vulnerabilities**
+     - Weaknesses in the system that can be exploited by the associated threats (optional, depending on type)
+   * - **Consequences**
+     - Free-text description of potential outcomes if the risk materializes (optional)
+   * - **Description**
+     - Detailed explanation of the risk scenario
+   * - **Category**
+     - A risk category that groups similar risks
+   * - **Identifier**
+     - An optional unique reference code for internal or regulatory use
+
+| 
+
+.. figure:: img/isms/isms_risk_create.png
+    :width: 600
+
+    Picure: Create **Risk** form
+
+| 
+
+**Example of a configured Risk**
+
+.. figure:: img/isms/isms_risk_example.png
+    :width: 600
+
+    Picure: Example of a **Risk**
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Controls
+========
+
+.. _isms-controls-anchor:
+
+**Controls** represent specific actions, procedures, or mechanisms designed to reduce or eliminate identified
+:ref:`Risks <isms-risk-anchor>` within the ISMS framework. **Controls** can originate from internal policies,
+regulatory requirements, or industry standards.
+
+To manage **Controls**, navigate to **Toolbox -> ISMS -> Controls**.
+
+.. figure:: img/isms/isms_control_overview.png
+    :width: 600
+
+    Picure: **Controls** overview
+
+| 
+
+Each **Control** includes the following fields:
+
+.. list-table:: Table: Fields for Controls
+   :width: 90%
+   :widths: 25 75
+   :align: center
+
+   * - **Name**
+     - The name or title of the control (e.g., *Access Control Policy*, *Regular Patch Management*)
+   * - **Control Measure Type**
+     - Describes the type of the control, which indicates its role or origin within the risk management process.
+       Available types include:
+
+       - *Control*: A concrete safeguard or mechanism implemented to mitigate identified risks.  
+         Example: *Firewall configuration*, *Password complexity enforcement*
+
+       - *Requirement*: A binding obligation, often based on external regulations, frameworks, or policies.  
+         Example: *Access logging must be retained for 6 months*, *Data must reside in the EU*
+
+       - *Measure*: A supportive or strategic activity that contributes to security posture or compliance.  
+         Example: *Annual awareness training*, *Third-party risk review*
+   * - **Source**
+     - Optional reference indicating the source of the control (e.g., a framework or standard such as ISO 27001)
+   * - **Implementation State**
+     - Indicates the current implementation status (e.g., *Planned*, *In Progress*, *Implemented*)
+   * - **Identifier**
+     - A unique string used to identify the control (e.g., *CTRL-001*)
+   * - **Chapter**
+     - A reference to a standard, framework, or internal policy section the control relates to (e.g., *A.9.1.1*)
+   * - **Description**
+     - A detailed explanation of what the control is and how it mitigates risk
+   * - **Is Applicable**
+     - A boolean flag indicating whether the control is applicable to the organization or context
+   * - **Reason**
+     - A justification for the control's applicability or inapplicability (e.g., *Not applicable due to cloud
+       hosting model*)
+
+.. note::
+   Controls are typically linked to Risks during the risk treatment process to define how specific risks are
+   mitigated or handled.
+
+| 
+
+.. figure:: img/isms/isms_control_create.png
+    :width: 600
+
+    Picure: Create **Control** form
+
+| 
+
+=======================================================================================================================
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Risk Assessments
+================
+
+.. _isms-risk-assessments-anchor:
+
+**Risk Assessments** are a central part of the ISMS process. They provide a detailed analysis of how
+:ref:`Risks <isms-risk-anchor>` impact specific components (e.g., assets, systems, or groups) and define how those
+:ref:`Risks <isms-risk-anchor>` are managed, mitigated, or accepted through risk treatment.
+
+| 
+
+Accessing Risk Assessments
+--------------------------
+
+Risk Assessments are NOT located under the **Toolbox -> ISMS** section. Instead, they are contextually accessible
+through the following entry points:
+
+From an :ref:`Object <objects-anchor>` detailed view
+
+| 
+
+From an :ref:`ObjectGroup <object-groups-anchor>` detailed view
+
+| 
+
+From a :ref:`Risk <isms-risk-anchor>` detailed view
+
+| 
+
+.. figure:: img/isms/isms_risk_assessment_open.png
+    :width: 600
+
+    Picure: **Risk Assessments** shown in a Risk detailed view
+
+| 
+
+This design allows assessments to be directly tied to relevant assets or groups.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Create Risk Assessment
+----------------------
+
+The Risk Assessment form is logically divided into several sequential sections. At the top of the form, the
+user selects the associated :ref:`Risk <isms-risk-anchor>` and the related :ref:`Object <objects-anchor>` or
+:ref:`ObjectGroup <object-groups-anchor>`.
+
+.. figure:: img/isms/isms_risk_assessment_form_1_5.png
+    :width: 600
+
+    Picure: Create **Risk Assessment** form
+
+The remaining form is divided into the following key sections:
+
+| 
+
+**Risk Assessment (Before Treatment)**
+
+This section is used to document the initial evaluation of the :ref:`Risk <isms-risk-anchor>` *before* any mitigating
+actions or treatments have been applied. The assessment relies on the selection of
+:ref:`Likelihood <isms-likelihood-anchor>` and :ref:`Impact <isms-impact-anchor>` values to determine the
+initial :ref:`Risk Class <isms-risk-class-anchor>`, along with key metadata such as responsible individuals and
+assessment date.
+
+.. rubric:: Fields in this Section
+
+.. list-table:: Table: Fields for Risk Assessment (Before Treatment)
+   :width: 100%
+   :widths: 25 75
+   :align: center
+
+   * - **Impacts**
+     - For each defined :ref:`Impact Category <isms-impact-categories-anchor>` a slider is displayed. Each slider
+       allows the selection of one of the available :ref:`Impacts <isms-impact-anchor>` in that category.
+       Each :ref:`Impact <isms-impact-anchor>` corresponds to a defined severity level with a numerical
+       **calculation basis** used for risk scoring.
+   * - **Likelihood**
+     - A single slider used to select the :ref:`Likelihood <isms-likelihood-anchor>` of the
+       :ref:`Risk Classes <isms-risk-class-anchor>` scenario. Each :ref:`Likelihood <isms-likelihood-anchor>` level
+       also has a numeric **calculation basis** associated with it.
+   * - **Calculated Risk**
+     - This field is automatically calculated as:  
+       **Maximum Impact (calculation basis) x Likelihood (calculation basis)**.  
+       It provides a quantitative representation of the initial risk level. The maximum
+       :ref:`Impacts <isms-impact-anchor>` is determined from the highest selected impact across all
+       :ref:`Impact Categories <isms-impact-categories-anchor>`.
+   * - **Risk Assessor**
+     - The :ref:`Person <persons-anchor>` (usually an ISMS or risk management team member) who performed the assessment
+   * - **Risk Owner**
+     - The :ref:`Person <persons-anchor>` or :ref:`PersonGroup <person-groups-anchor>` responsible for the
+       :ref:`Risk <isms-risk-anchor>`
+   * - **Interviewed Persons**
+     - A list of ref:`Persons <persons-anchor>` who were interviewed during the :ref:`Risk <isms-risk-anchor>`
+       evaluation process. This field supports multiple entries.
+   * - **Date of Assessment**
+     - The date on which the **Risk Assessment** was carried out.
+   * - **Additional Information**
+     - A free-text field where the assessor can include any further context, observations, or relevant notes
+       related to the assessment.
+
+.. figure:: img/isms/isms_risk_assessment_form_2_5.png
+    :width: 600
+
+    Picure: Create **Risk Assessment** form - Risk Assessment (Before Treatment)
+
+| 
+
+**Risk Treatment**
+
+This section documents the strategy and planned actions for addressing the :ref:`Risk <isms-risk-anchor>` identified
+in the assessment. Depending on the selected treatment option, appropriate responsibilities, timelines, and resource
+requirements must be provided. In addition, relevant :ref:`Controls <isms-controls-anchor>` can be assigned to this
+treatment (more details at :ref:`Control Assignment <isms-control-assignment-anchor>`).
+
+.. rubric:: Fields in this Section
+
+.. list-table:: Table: Fields for Risk Treatment
+   :width: 100%
+   :widths: 25 75
+   :align: center
+
+   * - **Treatment Option**
+     - Selection of one of the following strategies to address the :ref:`Risk <isms-risk-anchor>`
+
+       - *Avoid*:  
+         Eliminate the risk entirely by discontinuing the activity or removing the risk source.  
+         Example: Decommissioning a vulnerable system.
+
+       - *Accept*:  
+         Acknowledge the risk and accept its potential consequences, typically used when the risk level is low
+         or mitigation is not cost-effective.
+
+       - *Reduce*:  
+         Apply controls or take actions to lower the risk by reducing the impact or likelihood.  
+         Example: Implementing technical controls such as firewalls or backup systems.
+
+       - *Transfer/Share*:  
+         Shift the risk to another party (e.g., via insurance or outsourcing) or share the responsibility with partners.
+
+   * - **Responsible Persons**
+     - Specifies the individual or group tasked with executing the selected risk treatment.  
+       Supports assignment to either a :ref:`Person <persons-anchor>` or a :ref:`PersonGroup <person-groups-anchor>`.
+
+   * - **Risk Treatment Description**
+     - A detailed text field explaining how the :ref:`Risk <isms-risk-anchor>` will be treated, what measures will
+       be applied, and how these address the identified :ref:`Risk <isms-risk-anchor>`.
+
+   * - **Planned Implementation Date**
+     - The target date for completing the implementation of the treatment plan.
+
+   * - **Implementation State**
+     - A dropdown field indicating the current progress of implementation.  
+       Common states might include: *Open*, *In Progress*, *Implemented*.
+
+   * - **Finished Implementation Date**
+     - The actual date when the treatment was fully implemented.
+
+   * - **Required Resources**
+     - A textarea used to describe personnel, time, tools, or other resources needed to carry out the treatment.
+
+   * - **Cost for Implementation**
+     - A numeric input field to specify estimated or actual cost of implementing the treatment measures.
+
+   * - **Currency**
+     - A text input to define the currency used in the cost field (e.g., EUR, USD).
+
+   * - **Priority**
+     - Dropdown field indicating the urgency or importance of the treatment.  
+       Priority levels include:
+
+       - *Low*
+       - *Medium*
+       - *High*
+       - *Very High*
+
+.. figure:: img/isms/isms_risk_assessment_form_3_5.png
+    :width: 600
+
+    Picure: Create **Risk Assessment** form - Risk Treatment
+
+| 
+
+**Risk Assessment (After Treatment)**
+
+This section is used to reassess the :ref:`Risk <isms-risk-anchor>` after the selected treatment has
+been implemented. It helps evaluate the effectiveness of the applied :ref:`Controls <isms-controls-anchor>`
+and the update risk exposure.
+
+.. rubric:: Fields in this Section
+
+.. list-table:: Table: Fields for Risk Assessment (After Treatment)
+   :width: 100%
+   :widths: 25 75
+   :align: center
+
+   * - **Impact Sliders**
+     - For each defined :ref:`Impact Category <isms-impact-categories-anchor>`, a slider is displayed to
+       re-evaluate the impact level. The available steps in each slider represent the defined
+       **Impact Levels** (e.g., *Low*, *Moderate*, *Critical*).
+
+   * - **Likelihood Slider**
+     - A single slider to reassess the :ref:`Likelihood <isms-likelihood-anchor>` of the
+       :ref:`Risk <isms-risk-anchor>` occurring after the treatment. Uses the same scale and values as
+       the initial assessment.
+
+   * - **Calculated Risk**
+     - Displays the recalculated risk level after treatment. The value is automatically calculated as:  
+
+       ``Maximum Impact (Calculation Basis) x Likelihood (Calculation Basis)``
+
+       This serves as a comparison with the risk before treatment and helps demonstrate the effectiveness
+       of the treatment strategy.
+
+.. figure:: img/isms/isms_risk_assessment_form_4_5.png
+    :width: 600
+
+    Picure: Create **Risk Assessment** form - Risk Assessment (After Treatment)
+
+| 
+
+**Audit Information**
+
+The Audit Information section is used to verify the effectiveness of the risk treatment measures.  
+It allows documentation of the audit process, including when it took place, who performed it, and the results.
+
+.. rubric:: Fields in this Section
+
+.. list-table:: Table: Fields for Audit Information
+   :width: 100%
+   :widths: 25 75
+   :align: center
+
+   * - **Audit Done Date**
+     - The date on which the audit or review of the implemented risk treatment was completed.
+
+   * - **Auditor**
+     - The :ref:`Person <persons-anchor>` or :ref:`PersonGroup <person-groups-anchor>` responsible for
+       conducting the audit.
+
+   * - **Audit Result**
+     - A free-text area to record the outcome of the audit, observations, or conclusions.  
+       This may include comments on whether the controls were effective, partially effective, or require
+       improvements.
+
+.. figure:: img/isms/isms_risk_assessment_form_5_5.png
+    :width: 600
+
+    Picure: Create **Risk Assessment** form - Audit Information
+
+| 
+
+.. note::
+   While many fields are required, certain inputs (such as cost or audit details) may be completed at a later
+   stage during the treatment lifecycle.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Control Assignments
+===================
+
+.. _isms-control-assignment-anchor:
+
+Control Assignments link :ref:`Controls <isms-controls-anchor>` to specific
+:ref:`Risk Assessments <isms-risk-assessments-anchor>`, documenting how individual controls are
+intended to mitigate identified :ref:`Risks <isms-risk-anchor>`. These assignments support traceability,
+accountability, and audit readiness.
+
+| 
+
+Assignment Methods
+------------------
+
+:ref:`Controls <isms-controls-anchor>` can be assigned in two ways:
+
+1. **Within the Risk Assessment Form**
+
+   Inside the **Risk Treatment** section of a :ref:`Risk Assessment <isms-risk-assessments-anchor>`, a user can
+   assign one or more :ref:`Controls <isms-controls-anchor>` using the **"Add"** button next to "Assigned Controls".
+   Assigned controls are then listed in a table below with editable implementation metadata.
+
+2. **From the Control Detail View**
+
+   Alternatively, you can assign a :ref:`Control <isms-controls-anchor>` directly from its detailed view by
+   selecting a target :ref:`Risk Assessment <isms-risk-assessments-anchor>`. This allows you to see where the
+   :ref:`Control <isms-controls-anchor>` is already used and attach it to new assessments.
+
+| 
+
+Assignment Fields
+-----------------
+
+Each control assignment includes the following information:
+
+.. list-table:: Table: Fields for Control Assignments
+   :widths: 30 70
+   :width: 100%
+
+   * - **Control**
+     - Reference to the control being assigned (selected from existing controls)
+   * - **Risk Assessment**
+     - Reference to the risk assessment the control is linked to
+   * - **Planned Implementation Date**
+     - The date by which the control is planned to be implemented
+   * - **Implementation Status**
+     - Current status of implementation (e.g., *Planned*, *In Progress*, *Implemented*).
+       This is selected from an extendable option set
+   * - **Finished Implementation Date**
+     - The date the implementation was completed
+   * - **Priority**
+     - Indicates the urgency or importance of implementing the control. Available values include:
+
+       - 1: *Low*
+       - 2: *Medium*
+       - 3: *High*
+       - 4: *Very High*
+
+   * - **Responsible for Implementation**
+     - The person or person group responsible for implementing the control
+
+| 
+
+Benefits of Assignments
+-----------------------
+
+- **Centralized tracking** of control usage across multiple risks
+- **Clear accountability** through assignment of responsible individuals or groups
+- **Structured implementation timeline** with planned and actual completion dates
+- **Priority-based planning** to focus efforts on the most critical risks
+- **Supports auditability** by showing what controls were applied and their effectiveness status
+
+.. note::
+   Control assignments enhance transparency and ensure that risk treatments are actionable and verifiable.

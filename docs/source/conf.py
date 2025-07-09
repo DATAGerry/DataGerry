@@ -104,6 +104,10 @@ html_favicon = '_static/img/datagerry_favicon.png'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    'css/custom.css',
+]
+
 # -- Options for Texinfo output ----------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples

@@ -20,6 +20,7 @@ import logging
 import sys
 import copy
 from datetime import datetime, timezone
+# from flask import request
 from flask_cors import CORS
 
 from cmdb.database import MongoDatabaseManager
@@ -78,6 +79,31 @@ def create_rest_api(database_maanger: MongoDatabaseManager) -> BaseCmdbApp:
     else:
         config = app_config['production']
         app.config.from_object(config)
+
+
+    # @app.before_request
+    # def log_request_info():
+    #     logging.info(f"Incoming Request: {request.method} {request.path}")
+        # logging.info(f"Headers: {dict(request.headers)}")
+        # logging.info(f"Body: {request.get_data(as_text=True)}")
+
+
+    # @app.after_request
+    # def log_response_info(response):
+    #     route = request.endpoint  # Name of the function that handled the request
+    #     rule = request.url_rule   # The matched route pattern (e.g., '/hello')
+
+    #     logging.info(f"Response for route: {route} ({rule}). Status: {response.status}")
+
+        # # (Optional) log response body
+        # if not response.direct_passthrough:
+        #     try:
+        #         body = response.get_data(as_text=True)
+        #         logging.info(f"Body: {body}")
+        #     except Exception:
+        #         logging.info("Could not read response body")
+
+        # return response
 
     with app.app_context():
         register_converters(app)

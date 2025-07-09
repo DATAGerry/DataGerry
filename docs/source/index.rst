@@ -83,6 +83,7 @@ and manage any type of asset or configuration data.
 =======================================================================================================================
 
 .. toctree::
-    getting_started/license
     :caption: License
-    :name: license
+    :maxdepth: 2
+
+    getting_started/license

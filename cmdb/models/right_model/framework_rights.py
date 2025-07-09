@@ -153,11 +153,23 @@ class ExtendableOptionRight(FrameworkRight):
 
 class ObjectGroupRight(FrameworkRight):
     """
-    Base class for CmdbExtendableOption rights
+    Base class for ObjectGroup rights
     """
     MIN_LEVEL = Levels.PROTECTED
     MAX_LEVEL = Levels.DANGER
     PREFIX = f'{FrameworkRight.PREFIX}.objectGroup'
+
+    def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
+        super().__init__(name, level, description=description)
+
+
+class CiExplorerRight(FrameworkRight):
+    """
+    Base class for CIExplorer rights
+    """
+    MIN_LEVEL = Levels.PROTECTED
+    MAX_LEVEL = Levels.DANGER
+    PREFIX = f'{FrameworkRight.PREFIX}.ciExplorer'
 
     def __init__(self, name: str, level: Levels = MIN_LEVEL, description: str = None):
         super().__init__(name, level, description=description)
