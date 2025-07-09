@@ -88,7 +88,7 @@ const routes: Routes = [
         path: 'control-measure',
         canActivate: [PermissionGuard],
         data: {
-            breadcrumb: 'Controls/Measures',
+            breadcrumb: 'Controls',
            
         },
         component: ImportControlMeasureComponent
