@@ -41,6 +41,7 @@ from cmdb.models.right_model.framework_rights import (
     ObjectRelationLogRight,
     ExtendableOptionRight,
     ObjectGroupRight,
+    CiExplorerRight,
 )
 from cmdb.models.right_model.isms_rights import (
     IsmsRight,
@@ -174,6 +175,11 @@ FRAMEWORK_RIGHTS = (
             ObjectGroupRight('add', description='Add ObjectGroups'),
             ObjectGroupRight('edit', Levels.PROTECTED, description='Edit ObjectGroups'),
             ObjectGroupRight('delete', Levels.SECURE, description='Delete ObjectGroups'),
+        ),
+        CiExplorerRight(GLOBAL_RIGHT_IDENTIFIER, description='Manage CiExplorer'),
+        (
+            CiExplorerRight('view', description='View CiExplorer'),
+            CiExplorerRight('edit', Levels.PROTECTED, description='Edit CiExplorer'),
         ),
 )
 

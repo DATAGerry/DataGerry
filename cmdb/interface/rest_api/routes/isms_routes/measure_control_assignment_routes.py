@@ -248,7 +248,6 @@ def get_isms_control_measure_assignments(params: CollectionParameters, request_u
             cma_dict['naming'] = {'cma_summary': summary or None}
             cma_list.append(cma_dict)
 
-        LOGGER.debug(f"cma_list: {cma_list}")
         api_response = GetMultiResponse(cma_list,
                                         iteration_result.total,
                                         params,

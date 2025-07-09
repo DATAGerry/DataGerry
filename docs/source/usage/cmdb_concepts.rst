@@ -593,7 +593,7 @@ new **ObjectGroup**. In the **Actions** column, you can edit or delete existing 
 Adding an ObjectGroup
 ---------------------
 
-| 
+.. _object-groups-anchor:
 
 To add a new **ObjectGroup**, go to **Framework -> ObjectGroups** and click the **"Add"** button to open the creation
 form. There are two types of **ObjectGroups**:
