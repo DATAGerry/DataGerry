@@ -91,7 +91,7 @@
   <!-- footer (add / edit) -->
   <div class="modal-footer" *ngIf="modalMode!=='view'">
     <button class="btn btn-secondary" (click)="closeModal()">Close</button>
-    <button class="btn btn-primary" [disabled]="modalForm.invalid" (click)="saveAssignment()">
+    <button class="btn btn-success" [disabled]="modalForm.invalid" (click)="saveAssignment()">
       {{ modalMode==='edit' ? 'Save Changes' : 'Add control' }}
     </button>
   </div>

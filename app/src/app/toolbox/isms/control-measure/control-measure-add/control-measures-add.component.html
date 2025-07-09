@@ -1,6 +1,6 @@
 <div class="container" *ngIf="controlMeasureForm" [formGroup]="controlMeasureForm">
   <h2 class="mb-3">
-    {{ isViewMode ? 'View Controls' : isEditMode ? 'Edit Control' : 'Add Control' }} </h2>
+    {{ isViewMode ? 'View Control' : isEditMode ? 'Edit Control' : 'Add Control' }} </h2>
 
   <form autocomplete="off" class="needs-validation" [formGroup]="controlMeasureForm" (ngSubmit)="onSave()">
     <!-- Title (Required) -->

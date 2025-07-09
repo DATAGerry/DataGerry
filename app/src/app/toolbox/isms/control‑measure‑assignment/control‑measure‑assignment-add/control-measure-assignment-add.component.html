@@ -2,10 +2,7 @@
 
   <!-- ────────────── HEADLINE ────────────── -->
   <h2>
-    {{ isViewMode ? 'View'
-    : isEditMode ? 'Edit'
-    : 'Add' }}
-    Control&nbsp;/&nbsp;Measure Assignment
+    Assign Control
   </h2>
 
   <!-- ═══════════════ FORM ═══════════════ -->
@@ -14,7 +11,7 @@
     <!-- ────────────── CONTROL / MEASURE ────────────── -->
     <div class="form-block">
       <label>
-        Control&nbsp;/&nbsp;Measure
+        Control
         <span *ngIf="!isViewMode" class="required">*</span>
       </label>
 
@@ -101,7 +98,7 @@
       <div *permissionLink="['base.isms.controlMeasureAssignment.edit, base.isms.controlMeasureAssignment.add']">
         <!-- Submit Button -->
         <app-button [bootstrapClass]="'btn-success'" [disabled]="form.invalid" *ngIf="!isViewMode"
-          [label]="isEditMode ? 'Save Changes' : 'Create Control/Measure Assignment'" (clicked)="onSave()">
+          [label]="isEditMode ? 'Save Changes' : 'Assign Control'" (clicked)="onSave()">
         </app-button>
       </div>
     </div>

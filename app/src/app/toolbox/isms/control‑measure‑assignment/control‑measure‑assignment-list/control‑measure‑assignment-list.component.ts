@@ -293,9 +293,9 @@ onEdit(item: any): void {
   onDelete(item: any): void {
     if (!item.public_id) { return; }
     const modal = this.modalService.open(CoreDeleteConfirmationModalComponent, { size: 'lg' });
-    modal.componentInstance.title    = 'Delete Assignment';
+    modal.componentInstance.title    = 'Delete Assign Control';
     modal.componentInstance.item     = item;
-    modal.componentInstance.itemType = 'Control / Measure Assignment';
+    modal.componentInstance.itemType = 'Assign Control';
     modal.componentInstance.itemName = `#${item.public_id}`;
 
     modal.result.then(result => {
@@ -304,7 +304,7 @@ onEdit(item: any): void {
         this.srvAssign.deleteAssignment(item.public_id)
           .pipe(finalize(() => this.loader.hide()))
           .subscribe({
-            next : () => { this.toast.success('Assignment deleted'); this.loadAssignments(); },
+            next : () => { this.toast.success('Assign Control deleted'); this.loadAssignments(); },
             error: err => this.toast.error(err?.error?.message)
           });
       }

@@ -405,12 +405,12 @@ const routes: Routes = [
       /* ─────────── Control Measures ─────────── */
       {
         path: 'control-measures',
-        data: { breadcrumb: 'Control Measures' },
+        data: { breadcrumb: 'Controls' },
         children: [
-          { path: '', component: ControlmeasuresListComponent, data: { breadcrumb: 'Control Measures' } },
-          { path: 'add', component: ControlMeasuresAddComponent, data: { breadcrumb: 'Add Control Measure' } },
-          { path: 'edit', component: ControlMeasuresAddComponent, data: { breadcrumb: 'Edit Control Measure' } },
-          { path: 'view', component: ControlMeasuresAddComponent, data: { breadcrumb: 'View Control Measure' } }
+          { path: '', component: ControlmeasuresListComponent, data: { breadcrumb: 'Controls' } },
+          { path: 'add', component: ControlMeasuresAddComponent, data: { breadcrumb: 'Add Control' } },
+          { path: 'edit', component: ControlMeasuresAddComponent, data: { breadcrumb: 'Edit Control' } },
+          { path: 'view', component: ControlMeasuresAddComponent, data: { breadcrumb: 'View Control' } }
         ]
       },
 
@@ -418,8 +418,8 @@ const routes: Routes = [
       {
         path: 'control-measure-assignments',
         children: [
-          { path: 'view', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'View Assignment' } },
-          { path: 'edit', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'Edit Assignment' } }
+          { path: 'view', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'View Assign Control' } },
+          { path: 'edit', component: ControlMeasureAssignmentAddComponent, data: { breadcrumb: 'Edit Assign Control' } }
         ]
       },
       {
@@ -440,7 +440,7 @@ const routes: Routes = [
       {
         path: 'control_measures/:cmId/control_measure_assignments/add',
         component: ControlMeasureAssignmentAddComponent,
-        data: { breadcrumb: 'Add Assignment to Control' }
+        data: { breadcrumb: 'Add Assign Control' }
       },
 
       /* ─────────── Reports ─────────── */

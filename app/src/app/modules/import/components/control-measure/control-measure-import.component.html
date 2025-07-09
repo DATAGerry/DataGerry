@@ -1,9 +1,9 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Quick Controls/Measures Import</span>
+        <span>Quick Controls Import</span>
         <!-- Move the button to the top-right corner -->
         <a class="btn btn-secondary btn-sm" routerLink="/isms/control-measures">
-            Go to Controls/Measures Page
+            Go to Controls Page
         </a>
     </div>
     <div class="card-body">
@@ -12,8 +12,8 @@
             {{ showInstructions ? 'Hide Instructions' : 'Show Import Instructions' }}
         </button>
         <ng-container *ngIf="showInstructions">
-            <app-import-instructions [title]="'Importing Controls/Measures via CSV'"
-                [description]="'You can import multiple Controls/Measures using a CSV file. Please follow the structure and guidelines below to ensure successful import.'"
+            <app-import-instructions [title]="'Importing Controls via CSV'"
+                [description]="'You can import multiple Controls using a CSV file. Please follow the structure and guidelines below to ensure successful import.'"
                 [headers]="[
                 { header: 'title', type: 'string', required: 'Yes (*)', description: 'The title or name of the Control' },
                 { header: 'control_measure_type', type: 'string', required: 'Yes (*)', description: 'The type of The Control (Allowed values: CONTROL, REQUIREMENT, MEASURE)' },
@@ -26,7 +26,7 @@
                 { header: 'reason', type: 'string', required: 'No', description: 'Justification if the Control is marked as not applicable' }
               ]"
                 [mappings]="'The source and implementation_state values are matched against existing ones by name. Case sensitive: &quot;Source&quot; is not equal to &quot;source&quot;. If a matching does not exist, it will be automatically created in the database.'"
-                [duplicates]="'The system checks for existing Controls/Measures using case-sensitive comparison across all fields. A Control is only created if there is no exact match already in the database. Re-importing the same CSV file will not result in duplicates.'"
+                [duplicates]="'The system checks for existing Controls using case-sensitive comparison across all fields. A Control is only created if there is no exact match already in the database. Re-importing the same CSV file will not result in duplicates.'"
                 [exampleCsv]="'title,control_measure_type,source,implementation_state,identifier,chapter,description,is_applicable,reason\nMC1,CONTROL,MC_SOURCE,In Progress,Identifier1,Chapter1Text,Description1,true,Reason1Text\nMC2,REQUIREMENT,MC_SOURCE2,In Progress,Identifier2,Chapter2Text,Description2,no,Reason2Text'"></app-import-instructions>
         </ng-container>
 
@@ -42,7 +42,7 @@
             </div>
             <button type="button" class="btn btn-primary" [disabled]="fileForm.invalid"
                 (click)="importControlMeasures()">
-                Import Controls/Measures
+                Import Controls
             </button>
         </form>
     </div>
