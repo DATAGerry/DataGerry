@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TODO: Exports &mdash; DataGerry latest documentation</title>
+  <title>Exports &mdash; DataGerry latest documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f76a5f1d" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="TODO: File Explorer" href="file_explorer.html" />
-    <link rel="prev" title="TODO: Imports" href="imports.html" /> 
+    <link rel="prev" title="Imports" href="imports.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,11 +66,16 @@
 <li class="toctree-l1"><a class="reference internal" href="reports.html">Reports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_generator.html">Document generator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="isms.html">ISMS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="webhooks.html">TODO: Webhooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="imports.html">TODO: Imports</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TODO: Exports</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#export-types">Export Types</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#exporting-objects">Exporting Objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webhooks.html">Webhooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Exports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#exporting-types">Exporting Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#export-format">Export Format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exporting-objects">Exporting Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-from-the-object-list">Exporting from the Object List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-from-the-toolbox">Exporting from the Toolbox</a></li>
 </ul>
 </li>
 </ul>
@@ -119,7 +124,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">TODO: Exports</li>
+      <li class="breadcrumb-item active">Exports</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/exports.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -129,8 +134,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="todo-exports">
-<h1>TODO: Exports<a class="headerlink" href="#todo-exports" title="Link to this heading"></a></h1>
+  <section id="exports">
+<h1>Exports<a class="headerlink" href="#exports" title="Link to this heading"></a></h1>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -138,14 +143,40 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="export-types">
-<h2>Export Types<a class="headerlink" href="#export-types" title="Link to this heading"></a></h2>
+<section id="exporting-types">
+<h2>Exporting Types<a class="headerlink" href="#exporting-types" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a> can be exported in <strong>JSON format</strong>, allowing for backup, versioning, or migration across
+systems.</p>
+<p>There are two ways to export Types:</p>
+<ol class="arabic simple">
+<li><p><strong>From the Toolbox</strong>
+Navigate to <strong>Toolbox -&gt; Exporter</strong>, select the <strong>Type</strong> export option, and choose a specific Type
+to export. This provides a straightforward way to export a single Type definition.</p></li>
+<li><p><strong>From the Type Overview</strong>
+Go to <strong>Framework -&gt; Types</strong>. In the list view, you will see checkboxes next to each Type.
+You can either:</p>
+<ul class="simple">
+<li><p>Click the yellow <strong>Export</strong> button without selecting any items to export <strong>all Types</strong>.</p></li>
+<li><p>Select specific Types using the checkboxes, then click <strong>Export</strong> to export only the selected ones.</p></li>
+</ul>
+</li>
+</ol>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/export_types.png"><img alt="../_images/export_types.png" src="../_images/export_types.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: Multiple types selected to be exported in the type overview</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Types can be exported in JSON format. In the Types list, click on the yellow “Export” button to get a file
-in JSON format. By default, all Object Types will be exported. If you only want to export specific types, select items
-in the list and click on the “Export” button.</p>
+<section id="export-format">
+<h3>Export Format<a class="headerlink" href="#export-format" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The export produces a <strong>JSON file</strong> containing the full schema definitions of the selected Type(s).</p></li>
+<li><p>The structure of the exported file matches the format used for Type imports, making it ideal for use in migrations or automation.</p></li>
+</ul>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -153,28 +184,39 @@ in the list and click on the “Export” button.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
 <section id="exporting-objects">
-<h3>Exporting Objects<a class="headerlink" href="#exporting-objects" title="Link to this heading"></a></h3>
-<p>Objects can be exported in several formats. Currently we support:</p>
-<blockquote>
-<div><ul class="simple">
+<h2>Exporting Objects<a class="headerlink" href="#exporting-objects" title="Link to this heading"></a></h2>
+<p>Objects can be exported in various formats for reporting, processing, or re-importing. Currently supported formats
+include:</p>
+<ul class="simple">
 <li><p>CSV</p></li>
-<li><p>Microsoft Excel (xlsx)</p></li>
+<li><p>Microsoft Excel (XLSX)</p></li>
 <li><p>JSON</p></li>
 <li><p>XML</p></li>
 </ul>
-</div></blockquote>
-<p>To export objects, click the “Export” button in an object list and select the desired format. Only objects of a single
-type can be exported (therefore you will not find the “Export” button in a list with objects of multiple types).</p>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/raw-custom-export.png"><img alt="../_images/raw-custom-export.png" src="../_images/raw-custom-export.png" style="width: 600px;" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="exporting-from-the-object-list">
+<h3>Exporting from the Object List<a class="headerlink" href="#exporting-from-the-object-list" title="Link to this heading"></a></h3>
+<p>To export objects, navigate to a list of objects of a <strong>single type</strong> and click the <strong>Export</strong> button. If the object
+list contains multiple types, the export function will not be available.</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/export_objects_raw.png"><img alt="../_images/export_objects_raw.png" src="../_images/export_objects_raw.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Figure 18: Export from object list overview</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: Export from object list overview</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<table class="docutils align-left" id="id2" style="width: 100%">
-<caption><span class="caption-text">Table 2: Supported export types</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<p>You can choose between two export modes:</p>
+<table class="docutils align-left" id="id3" style="width: 100%">
+<caption><span class="caption-text">Table 2: Supported Export Types</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -186,24 +228,27 @@ type can be exported (therefore you will not find the “Export” button in a l
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Raw Export</p></td>
-<td><p>All fields of the objects are exported raw. This functionality makes it easier for the user to make some changes
-and import the changed data back into DataGerry.</p></td>
+<td><p>All fields of the selected objects are exported in their raw form. This is useful when the goal is to re-import updated data back into DataGerry with minimal formatting issues.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Customer Export</p></td>
-<td><p>Only the fields selected by the user are exported. When using a quick filter in the table, only iltered objects
-are exported and only rendered fields are displayed instead of raw data.</p></td>
+<td><p>Only the fields selected by the user are exported. When using a quick filter in the object table, only the <strong>filtered objects</strong> are exported. Additionally, this mode exports <strong>rendered values</strong> instead of raw data, offering a more readable format for reporting or external use.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Export is also possible from the menu, select “Toolbox” -&gt; “Exporter” -&gt; “Objects”.</p>
-<figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="../_images/object-import-export.png"><img alt="../_images/object-import-export.png" src="../_images/object-import-export.png" style="width: 300px;" />
+</section>
+<section id="exporting-from-the-toolbox">
+<h3>Exporting from the Toolbox<a class="headerlink" href="#exporting-from-the-toolbox" title="Link to this heading"></a></h3>
+<p>Object export is also accessible from the main menu. Go to:</p>
+<p><span class="menuselection">Toolbox ‣ Exporter ‣ Export Objects</span></p>
+<p>This method allows for direct access to the object export interface without navigating through the object lists.</p>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../_images/export_objects_toolbox.png"><img alt="../_images/export_objects_toolbox.png" src="../_images/export_objects_toolbox.png" style="width: 300px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Figure 19: Export / Import via Toolbox</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: Export via Toolbox</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -217,7 +262,7 @@ are exported and only rendered fields are displayed instead of raw data.</p></td
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="imports.html" class="btn btn-neutral float-left" title="TODO: Imports" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="imports.html" class="btn btn-neutral float-left" title="Imports" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="file_explorer.html" class="btn btn-neutral float-right" title="TODO: File Explorer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
