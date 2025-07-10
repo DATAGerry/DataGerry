@@ -1003,6 +1003,11 @@ Each control assignment includes the following information:
    * - **Responsible for Implementation**
      - The person or person group responsible for implementing the control
 
+.. figure:: img/isms/isms_control_assignment.png
+    :width: 600
+
+    Picure: Assigning a Control to a **Risk Assessment** from **Control** detailed view
+
 | 
 
 Benefits of Assignments
