@@ -85,13 +85,15 @@ def get_file_list(params: CollectionParameters, request_user: CmdbUser):
         output = media_files_manager.get_many_media_files(metadata, **response_query)
 
         api_response = GetMultiResponse(output.result, total=output.total, params=params, url=request.url)
+
         return api_response.make_response()
     except MediaFileManagerGetError as err:
-        LOGGER.error("[get_file_list] ImpactManagerGetError: %s", err, exc_info=True)
+        LOGGER.error("[get_file_list] MediaFileManagerGetError: %s", err, exc_info=True)
         abort(400, "Failed to retrieve the FilesList from the database!")
     except Exception as err:
         LOGGER.error("[get_file_list] Exception: %s. Type: %s", err, type(err), exc_info=True)
         abort(500, "An internal server error occured while retrieving the FilesList!")
+
 
 @media_file_blueprint.route('/', methods=['POST'])
 @insert_request_user
@@ -157,11 +159,15 @@ def add_new_file(request_user: CmdbUser):
         result = media_files_manager.insert_file(data=file, metadata=metadata)
 
         return InsertSingleResponse(result, result['public_id']).make_response()
-    except (MediaFileManagerInsertError, MediaFileManagerGetError):
-        #TODO: ERROR-FIX
-        abort(500)
-
-
+    except MediaFileManagerGetError as err:
+        LOGGER.error("[add_new_file] MediaFileManagerGetError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve the FilesList from the database!")
+    except MediaFileManagerInsertError as err:
+        LOGGER.error("[add_new_file] MediaFileManagerInsertError: %s", err, exc_info=True)
+        abort(400, "Failed to insert the File in the database!")
+    except Exception as err:
+        LOGGER.error("[add_new_file] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while adding the file!")
 
 
 @media_file_blueprint.route('/', methods=['PUT'])
@@ -199,11 +205,10 @@ def update_file(request_user: CmdbUser):
     Returns: MediaFile as JSON
 
     """
-    LOGGER.debug("[update_file] called")
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
+    try:
+        media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
-    try:
         add_data_dump = json.dumps(request.json)
         new_file_data = json.loads(add_data_dump, object_hook=json_util.object_hook)
         reference_attachment = json.loads(request.args.get('attachment'))
@@ -221,11 +226,14 @@ def update_file(request_user: CmdbUser):
             data['filename'] = copied_name
 
         media_files_manager.update_file(data)
-    except MediaFileManagerUpdateError:
-        #TODO: ERROR-FIX
-        abort(500)
 
-    return DefaultResponse(data).make_response()
+        return DefaultResponse(data).make_response()
+    except MediaFileManagerUpdateError as err:
+        LOGGER.error("[update_file] MediaFileManagerUpdateError: %s", err, exc_info=True)
+        abort(400, "Failed to update the File in the database!")
+    except Exception as err:
+        LOGGER.error("[update_file] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while updating the file!")
 
 
 @media_file_blueprint.route('/<string:filename>/', methods=['GET'])
@@ -246,11 +254,10 @@ def get_file(filename: str, request_user: CmdbUser):
 
     Returns: MediaFile as JSON
     """
-    LOGGER.debug("[get_file] called")
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
+    try:
+        media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
-    try:
         filter_metadata = generate_metadata_filter('metadata', request)
         filter_metadata.update({'filename': filename})
 
@@ -258,11 +265,11 @@ def get_file(filename: str, request_user: CmdbUser):
             result = media_files_manager.get_file(metadata=filter_metadata)
         else:
             result = None
-    except MediaFileManagerGetError:
-        #TODO: ERROR-FIX
-        abort(404, f"Could not retrieve file with filename: {filename}")
 
-    return DefaultResponse(result).make_response()
+        return DefaultResponse(result).make_response()
+    except Exception as err:
+        LOGGER.error("[get_file] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while retrieving the file: {filename}!")
 
 
 @media_file_blueprint.route('/download/<path:filename>', methods=['GET'])
@@ -282,26 +289,25 @@ def download_file(filename: str, request_user: CmdbUser):
 
     Returns: File
     """
-    LOGGER.debug("[download_file] called")
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
+    try:
+        media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
-    try:
         filter_metadata = generate_metadata_filter('metadata', request)
         filter_metadata.update({'filename': filename})
         result = media_files_manager.get_file(metadata=filter_metadata, blob=True)
-    except MediaFileManagerGetError:
-        #TODO: ERROR-FIX
-        abort(500)
 
-    return Response(
-        result,
-        mimetype="application/octet-stream",
-        headers={
-            "Content-Disposition":
-                f"attachment; filename={filename}"
-        }
-    )
+        return Response(
+            result,
+            mimetype="application/octet-stream",
+            headers={
+                "Content-Disposition":
+                    f"attachment; filename={filename}"
+            }
+        )
+    except Exception as err:
+        LOGGER.error("[download_file] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while downloading the file: {filename}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -323,19 +329,20 @@ def delete_file(public_id: int, request_user: CmdbUser):
     Returns:
          Delete result with the deleted File as JSON.
     """
-    LOGGER.debug("[delete_file] called")
-    media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
+    try:
+        media_files_manager: MediaFilesManager = ManagerProvider.get_manager(ManagerType.MEDIA_FILES,
                                                                          request_user)
 
-    try:
         file_to_delete = media_files_manager.get_file(metadata={'public_id': public_id})
 
         if file_to_delete:
             for _id in recursive_delete_filter(public_id, media_files_manager):
                 media_files_manager.delete_file(_id)
-    except MediaFileManagerDeleteError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_file] MediaFileManagerDeleteError: %s", err)
-        abort(404)
 
-    return DefaultResponse(file_to_delete).make_response()
+        return DefaultResponse(file_to_delete).make_response()
+    except MediaFileManagerDeleteError as err:
+        LOGGER.error("[delete_file] MediaFileManagerDeleteError: %s", err, exc_info=True)
+        abort(400, f"Failed to delete the File with ID: {public_id} in the database!")
+    except Exception as err:
+        LOGGER.error("[delete_file] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while deleting the file with ID: {public_id}!")

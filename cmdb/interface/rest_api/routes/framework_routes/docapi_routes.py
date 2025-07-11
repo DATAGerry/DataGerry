@@ -265,7 +265,7 @@ def render_object_template(public_id: int, object_id: int, request_user: CmdbUse
             abort(404, f"Object with ID: {object_id} for Template with ID: {public_id} not found!")
 
         docapi_renderer = DocApiRenderer(objects_manager, target_template, CmdbObject.from_data(target_object))
-        output = docapi_renderer.render_object_template()
+        output = docapi_renderer.render_object_template(request_user)
 
         return Response(
             output,
