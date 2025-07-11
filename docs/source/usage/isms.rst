@@ -1153,7 +1153,8 @@ and mitigation strategy per entity.
 | 
 
 **Export and Usability**
-- The report is optimized for screen viewing and PDF export, making it suitable for planning sessions, implementation tracking, and compliance documentation.
+- The report is optimized for screen viewing and PDF export, making it suitable for planning sessions, implementation
+tracking, and compliance documentation.
 
 | 
 
@@ -1291,7 +1292,8 @@ Each impact category appears as a separate column in the report.
 
 **Impact and Likelihood Values (After Treatment)**
 
-Similar to the "before treatment" values, each impact category and likelihood is shown **after treatment**, using the same format and columns.
+Similar to the "before treatment" values, each impact category and likelihood is shown **after treatment**,
+using the same format and columns.
 
 * **Calculated Risk (After Treatment)** - Value with background color indicating the risk class.
 

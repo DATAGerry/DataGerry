@@ -370,7 +370,7 @@ class BaseManager:
             raise BaseManagerIterationError(err) from err
 
 
-    def get_next_public_id(self) -> int:
+    def get_next_public_id(self, inc_id: bool = False) -> int:
         """
         Retrieves the next public_id for the collection
 
@@ -381,7 +381,7 @@ class BaseManager:
             int: The next public_id for the collection
         """
         try:
-            return self.dbm.get_next_public_id(self.collection, self.db_name)
+            return self.dbm.get_next_public_id(self.collection, self.db_name, inc_id)
         except DocumentGetError as err:
             raise BaseManagerGetError(err) from err
 
