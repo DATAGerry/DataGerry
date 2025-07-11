@@ -824,7 +824,7 @@ class MongoDatabaseManager:
 
 
     @retry_operation
-    def get_next_public_id(self, collection: str, db_name: str) -> int:
+    def get_next_public_id(self, collection: str, db_name: str, inc_id: bool = False) -> int:
         """
         Retrieves the next public_id for the specified collection
 
@@ -839,14 +839,14 @@ class MongoDatabaseManager:
         """
         try:
             found_counter = self.get_collection(PUBLIC_ID_COUNTER_COLLECTION, db_name).find_one({'_id': collection})
-
             if found_counter:
                 new_id = found_counter['counter'] + 1
             else:
                 docs_count = self.init_public_id_counter(collection, db_name)
                 new_id = docs_count + 1
 
-            self.update_public_id_counter(collection, db_name)
+
+            self.update_public_id_counter(collection, db_name, increment=inc_id)
 
             return new_id
         except Exception as err:

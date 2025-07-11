@@ -67,7 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#editing-deleting-a-type">Editing/Deleting a Type</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#todo-objects">TODO: Objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#objects">Objects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#active-und-inactive-objects">Active und Inactive Objects</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#object-tables-search-filter">Object tables search / filter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bulk-change-of-objects">Bulk change of Objects</a></li>
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="webhooks.html">Webhooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
-<li class="toctree-l1"><a class="reference internal" href="file_explorer.html">TODO: File Explorer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_explorer.html">File Explorer</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul>
@@ -320,9 +320,6 @@ the order of <strong>Categories</strong> by dragging and dropping the icon to th
 </section>
 <section id="types">
 <span id="types-anchor"></span><h2>Types<a class="headerlink" href="#types" title="Link to this heading"></a></h2>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <p><strong>Types</strong> are structured entities that enclose various sections, each containing specific fields. These fields are
 designed to capture and describe the attributes and characteristics of real-world objects. By organizing information
 into sections, <strong>Types</strong> provide a systematic way to represent complex <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> and their
@@ -331,7 +328,7 @@ properties, ensuring consistency and clarity in data management.</p>
 <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> can possess. In other words, a <strong>Type</strong> specifies the fields and
 potential values that an <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Object</span></a> can include, ensuring that all <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a>
 of a particular <strong>Type</strong> adhere to a consistent format and set of attributes.</p>
-<p>To manage <strong>Types</strong> click <strong>Framework -&gt; Types</strong> in the top right corner.</p>
+<p>To manage <strong>Types</strong> go to <span class="menuselection">Framework ‣ Types</span> in the top right corner.</p>
 <figure class="align-default" id="id7">
 <a class="reference internal image-reference" href="../_images/types_open_menu.png"><img alt="../_images/types_open_menu.png" src="../_images/types_open_menu.png" style="width: 200px;" />
 </a>
@@ -348,14 +345,14 @@ of a particular <strong>Type</strong> adhere to a consistent format and set of a
 </div>
 <section id="adding-a-type">
 <h3>Adding a Type<a class="headerlink" href="#adding-a-type" title="Link to this heading"></a></h3>
-<p>The type list (<strong>Framework -&gt; Types</strong>) provides an overview of all the <strong>Types</strong> created so far, displayed in a table
-format. Above the table, there is an <strong>“Add”</strong> button, which opens a form for creating a new <strong>Type</strong>. The form consists
-of several steps.</p>
+<p>The type list (<span class="menuselection">Framework ‣ Types</span>) provides an overview of all the <strong>Types</strong> created so far, displayed
+in a table format. Above the table, there is an <strong>“Add”</strong> button, which opens a form for creating a new <strong>Type</strong>. The
+form consists of several steps.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p><strong>Step 1 - Basic information</strong></p>
-<p>In this step you need to provide some basic information about the type:</p>
+<p>In this step you need to provide some basic information about the <strong>Type</strong>:</p>
 <ul class="simple">
 <li><p><strong>Name</strong>: A unique identifier for the <strong>Type</strong></p></li>
 <li><p><strong>Label</strong>: The displayed label of the <strong>Type</strong></p></li>
@@ -376,16 +373,21 @@ of several steps.</p>
 <div class="line"><br /></div>
 </div>
 <p><strong>Step 2 - Content</strong></p>
-<p>In this step all sections and their correspondig fields are defined for the type. In the left sidebar are several
-expandable elements which provide components to build up a type by drag and drop these components inside the area
-in the center:</p>
+<p>In this step all sections and their correspondig fields are defined for the <strong>Type</strong>. In the left sidebar are several
+expandable elements which provide components to build up a <strong>Type</strong> by drag and dropping these components inside the area
+in the center.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Fields must always be placed within a section. As a result, the smallest valid <strong>Type</strong> consists of one section
+and one field.</p>
+</div>
 <ul class="simple">
 <li><p><strong>Global Section Templates</strong>: For more infomation about this section see this link:
 <a class="reference internal" href="section_templates.html#section-templates-anchor"><span class="std std-ref">Section Templates</span></a></p></li>
 <li><p><strong>Section Templates</strong>: For more infomation about this section see this link:
 <a class="reference internal" href="section_templates.html#section-templates-anchor"><span class="std std-ref">Section Templates</span></a></p></li>
 <li><p><strong>Structure Controls</strong>: These components group fields. Fields can only be placed inside of
-these <strong>Structure Controls</strong>. More details can be found in the table below.</p></li>
+these Structure Controls. More details can be found in the table below.</p></li>
 <li><p><strong>Basic Controls</strong>: These components are the fields with different data formats. They need to be dragged and
 dropped inside of <strong>Structure Controls</strong>. More details are in the table below.</p></li>
 <li><p><strong>Special Controls</strong>: These components are also fields but with a specific purpose. More details are in the table
@@ -411,6 +413,7 @@ below.</p></li>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p><strong>Types of Structure Controls</strong></p>
 <table class="docutils align-left" id="id10" style="width: 80%">
 <caption><span class="caption-text">Table: Structure Controls</span><a class="headerlink" href="#id10" title="Link to this table"></a></caption>
 <colgroup>
@@ -449,6 +452,7 @@ that a distinction is made between field references and section references.</p><
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p><strong>Basic and Special Controls</strong></p>
 <table class="docutils align-left" id="id12" style="width: 80%">
 <caption><span class="caption-text">Table: Basic and Special Controls</span><a class="headerlink" href="#id12" title="Link to this table"></a></caption>
 <colgroup>
@@ -531,7 +535,7 @@ a label, an icon and the link (URL) itself. In the link, use curved brackets to 
 </div>
 <p><strong>Step 4 - ACL (Optional)</strong></p>
 <p>In this step advanced permissions can be set for this <strong>Type</strong>. The default setting is set to “ACL deactivated”.
-More information to this topic at this link: <a class="reference internal" href="../management/access_control_list.html#access-control-list-anchor"><span class="std std-ref">Access Control List</span></a></p>
+More information to this topic at this link: <a class="reference internal" href="../management/access_control_list.html#acl-type-anchor"><span class="std std-ref">Type ACL</span></a></p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -552,9 +556,9 @@ More information to this topic at this link: <a class="reference internal" href=
 </section>
 <section id="editing-deleting-a-type">
 <h3>Editing/Deleting a Type<a class="headerlink" href="#editing-deleting-a-type" title="Link to this heading"></a></h3>
-<p>The type list (<strong>Framework =&gt; Types</strong>) table itself contains, apart from several useful information about the created
-<strong>Types</strong>, two columns in the end with <strong>“Actions”</strong> and <strong>“Clean”</strong>. In the <strong>“Actions”</strong> column it is possible to
-edit, clone or delete the existing <strong>Types</strong>.</p>
+<p>The <strong>Type</strong> table (<span class="menuselection">Framework ‣ Types</span>) itself contains, apart from several useful information about
+the created <strong>Types</strong>, two columns in the end with <strong>“Actions”</strong> and <strong>“Clean”</strong>. In the <strong>“Actions”</strong> column it is
+possible to edit, clone or delete the existing <strong>Types</strong>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>A <strong>Type</strong> can only be deleted if there are no exisitng <a class="reference internal" href="#objects-anchor"><span class="std std-ref">Objects</span></a> of this <strong>Type</strong></p>
@@ -584,8 +588,8 @@ added to all existing <a class="reference internal" href="#objects-anchor"><span
 <hr class="docutils" />
 </section>
 </section>
-<section id="todo-objects">
-<span id="objects-anchor"></span><h2>TODO: Objects<a class="headerlink" href="#todo-objects" title="Link to this heading"></a></h2>
+<section id="objects">
+<span id="objects-anchor"></span><h2>Objects<a class="headerlink" href="#objects" title="Link to this heading"></a></h2>
 <p>You can access Objects in DataGerry in several ways:</p>
 <blockquote>
 <div><ul class="simple">
@@ -593,9 +597,9 @@ added to all existing <a class="reference internal" href="#objects-anchor"><span
 <li><p>using the search bar at the top</p></li>
 </ul>
 </div></blockquote>
-<p>When using the Category tree, you can choose a <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a> (e.g. Router) and get a list with all
-<strong>Objects</strong> of that <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a>. By default, only summary fields of an <strong>Object</strong> are shown in the
-table, with the yellow settings button, additional fields can be faded in.</p>
+<p>When using the <a class="reference internal" href="#categories-anchor"><span class="std std-ref">Categories</span></a> tree, you can choose a <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a> (e.g. Router)
+and get a list with all <strong>Objects</strong> of that <a class="reference internal" href="#types-anchor"><span class="std std-ref">Type</span></a>. By default, only summary fields of an <strong>Object</strong>
+are shown in the table, with the yellow <strong>“Columns”</strong> button, additional fields can be faded in.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -633,7 +637,10 @@ interactions).</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Please note that this method only applies the search to the table - it does not actually perform the search.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method only applies the search to the table - it does not actually perform the search in the database</p>
+</div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>

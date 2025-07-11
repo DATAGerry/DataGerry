@@ -150,8 +150,6 @@ When editing a **Category** within the **"Edit"**-Form you can additionaly reara
 Types
 =====
 
-| 
-
 **Types** are structured entities that enclose various sections, each containing specific fields. These fields are
 designed to capture and describe the attributes and characteristics of real-world objects. By organizing information
 into sections, **Types** provide a systematic way to represent complex :ref:`Objects <objects-anchor>` and their
@@ -162,7 +160,7 @@ properties, ensuring consistency and clarity in data management.
 potential values that an :ref:`Object <objects-anchor>` can include, ensuring that all :ref:`Objects <objects-anchor>`
 of a particular **Type** adhere to a consistent format and set of attributes.
 
-To manage **Types** click **Framework -> Types** in the top right corner.
+To manage **Types** go to :menuselection:`Framework --> Types` in the top right corner.
 
 .. figure:: img/types/types_open_menu.png
     :width: 200
@@ -177,15 +175,15 @@ To manage **Types** click **Framework -> Types** in the top right corner.
 
 Adding a Type
 -------------
-The type list (**Framework -> Types**) provides an overview of all the **Types** created so far, displayed in a table
-format. Above the table, there is an **"Add"** button, which opens a form for creating a new **Type**. The form consists
-of several steps.
+The type list (:menuselection:`Framework --> Types`) provides an overview of all the **Types** created so far, displayed
+in a table format. Above the table, there is an **"Add"** button, which opens a form for creating a new **Type**. The
+form consists of several steps.
 
 | 
 
 **Step 1 - Basic information**
 
-In this step you need to provide some basic information about the type:
+In this step you need to provide some basic information about the **Type**:
 
 - **Name**: A unique identifier for the **Type**
 - **Label**: The displayed label of the **Type**
@@ -204,16 +202,21 @@ Once you have completed these fields, press the **"Next Step"** button to procee
 
 **Step 2 - Content**
 
-In this step all sections and their correspondig fields are defined for the type. In the left sidebar are several
-expandable elements which provide components to build up a type by drag and drop these components inside the area
-in the center:
+In this step all sections and their correspondig fields are defined for the **Type**. In the left sidebar are several
+expandable elements which provide components to build up a **Type** by drag and dropping these components inside the area
+in the center.
+
+.. note::
+   Fields must always be placed within a section. As a result, the smallest valid **Type** consists of one section
+   and one field.
+
 
 - **Global Section Templates**: For more infomation about this section see this link:
   :ref:`Section Templates <section-templates-anchor>`
 - **Section Templates**: For more infomation about this section see this link:
   :ref:`Section Templates <section-templates-anchor>`
 - **Structure Controls**: These components group fields. Fields can only be placed inside of
-  these **Structure Controls**. More details can be found in the table below.
+  these Structure Controls. More details can be found in the table below.
 - **Basic Controls**: These components are the fields with different data formats. They need to be dragged and
   dropped inside of **Structure Controls**. More details are in the table below.
 - **Special Controls**: These components are also fields but with a specific purpose. More details are in the table
@@ -232,6 +235,8 @@ in the center:
     Picture: Definition of fields for **Type** - Step 2
 
 | 
+
+**Types of Structure Controls**
 
 .. list-table:: Table: Structure Controls
    :width: 80%
@@ -258,6 +263,8 @@ in the center:
     Picture: Definition of the object fields via reference section
 
 | 
+
+**Basic and Special Controls**
 
 .. list-table:: Table: Basic and Special Controls
    :width: 80%
@@ -321,7 +328,7 @@ a label, an icon and the link (URL) itself. In the link, use curved brackets to 
 **Step 4 - ACL (Optional)**
 
 In this step advanced permissions can be set for this **Type**. The default setting is set to "ACL deactivated".
-More information to this topic at this link: :ref:`Access Control List <access-control-list-anchor>`
+More information to this topic at this link: :ref:`Type ACL <acl-type-anchor>`
 
 | 
 
@@ -339,9 +346,9 @@ More information to this topic at this link: :ref:`Access Control List <access-c
 Editing/Deleting a Type
 -----------------------
 
-The type list (**Framework => Types**) table itself contains, apart from several useful information about the created
-**Types**, two columns in the end with **"Actions"** and **"Clean"**. In the **"Actions"** column it is possible to
-edit, clone or delete the existing **Types**.
+The **Type** table (:menuselection:`Framework --> Types`) itself contains, apart from several useful information about
+the created **Types**, two columns in the end with **"Actions"** and **"Clean"**. In the **"Actions"** column it is
+possible to edit, clone or delete the existing **Types**.
 
 .. warning::
   A **Type** can only be deleted if there are no exisitng :ref:`Objects <objects-anchor>` of this **Type**
@@ -369,17 +376,17 @@ added to all existing :ref:`Objects <objects-anchor>` of that **Type**).
 
 .. _objects-anchor:
 
-TODO: Objects
-=============
+Objects
+=======
 
 You can access Objects in DataGerry in several ways:
 
  * using the Category tree on the left side
  * using the search bar at the top
 
-When using the Category tree, you can choose a :ref:`Type <types-anchor>` (e.g. Router) and get a list with all
-**Objects** of that :ref:`Type <types-anchor>`. By default, only summary fields of an **Object** are shown in the
-table, with the yellow settings button, additional fields can be faded in.
+When using the :ref:`Categories <categories-anchor>` tree, you can choose a :ref:`Type <types-anchor>` (e.g. Router)
+and get a list with all **Objects** of that :ref:`Type <types-anchor>`. By default, only summary fields of an **Object**
+are shown in the table, with the yellow **"Columns"** button, additional fields can be faded in.
 
 | 
 
@@ -416,7 +423,8 @@ interactions).
 
 | 
 
-Please note that this method only applies the search to the table - it does not actually perform the search.
+.. note::
+    This method only applies the search to the table - it does not actually perform the search in the database
 
 | 
 

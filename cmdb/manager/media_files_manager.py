@@ -98,7 +98,7 @@ class MediaFilesManager(BaseManager):
         Returns:
             int: A new unique public_id
         """
-        return self.get_next_public_id()
+        return self.get_next_public_id(inc_id=True)
 
 
     def get_file(self, metadata: dict, blob: bool = False) -> GridOut:

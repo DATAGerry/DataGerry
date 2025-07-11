@@ -53,8 +53,10 @@ even if their group is explicitly listed in the respective ACL.
 
 | 
 
-Object ACL
-----------
+.. _acl-type-anchor:
+
+Type ACL
+--------
 The ACLs of the objects protect them from unauthorized access.
 They are used to make objects accessible to certain user groups or to hide them.
 This affects not only the view of the objects themselves, but any aspect of CRUD access to objects,
