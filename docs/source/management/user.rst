@@ -1,51 +1,57 @@
-***********
-TODO: Users
-***********
+*****
+Users
+*****
 
-Local users and groups can be configured in the WebUI under "Settings" -> "UserModel Management". A user is part of one
-group. Access rights are defined for a specific group.
+.. _users-anchor:
 
-The following groups are defined by default and cannot be deleted:
+.. admonition:: Cloud version
 
- * Administrator
- * UserModel
-
-Also, a user cannot delete itself.
+    At the current state of development this is not possible in the Cloud Version. Users can only be configured
+    inside the **Service Portal**.
 
 
-.. _system-access-rights:
+Local **Users** can be configured under :menuselection:`Settings --> User`. This section provides a central management interface
+to view, create, and manage system users.
 
-Access Rights
+All existing users are displayed in a table, showing their basic details. Each user can be edited or deleted via action buttons,
+with one exception: the initial **admin** user (identified by the reserved `public_id`) cannot be deleted for security reasons.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+User Creation
 =============
-Access Rights can be configured for a usergroup and are designed hierachically. Please see the following example::
 
-    # base right for whole application
-    base.*
+To create a new user, click the **"New User"** button. A form will appear where the following fields can be configured:
 
-    # right for core framework
-    base.framework.*
+- **Username**: The unique login name for the user.
+- **Firstname**: The first name for the user.
+- **Lastname**: The last name for the user.
+- **Authenticator**: Determines the login method. Two options are available:
+  
+  - **Local**: The user logs in with a username and password.
+  - **LDAP**: The user is authenticated via an LDAP directory (e.g., Active Directory).
+  
+- **Password**: Only applicable for users with the local authenticator.
+- **Email**: Optional contact information.
+- **UserGroup**: Mandatory selection of the group to which the user belongs. Each user must be assigned to at least one
+  UserGroup to ensure proper permission control.
 
-    # right for accessing objects
-    base.framework.object.*
+.. figure:: img/users/user_create.png
+    :width: 600
 
-    # right for viewing objects
-    base.framework.object.view
+    Picure: User creation form
 
-    # right for adding objects
-    base.framework.object.add
+| 
 
-If you add the right "base.framework.object.view" to a usergroup, all users of that group have the right of viewing
-objects. If the right "base.framework.object.*" is applied, all subsequent rights like "base.framework.object.view" are
-also applied.
+User Restrictions
+-----------------
 
-A list of rights can be found in the WebUI of DATAGERRY.
+- A user **cannot delete their own account**.
+- The **admin user** with a reserved `public_id` is **undeletable** to prevent accidental loss of system access.
 
-The following rights are necessary to use the frontend::
 
-    base.framework.object.view
-    base.framework.type.view
-    base.framework.category.view
-    base.framework.log.view
-    base.user-management.user.view
-    base.user-management.group.view
-    base.docapi.template.view
+

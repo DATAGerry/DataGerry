@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TODO: User Groups &mdash; DataGerry latest documentation</title>
+  <title>User Groups &mdash; DataGerry latest documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f76a5f1d" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="TODO: Authentication" href="authentication.html" />
-    <link rel="prev" title="TODO: Users" href="user.html" /> 
+    <link rel="next" title="Authentication" href="authentication.html" />
+    <link rel="prev" title="Users" href="user.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -73,13 +73,17 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="user.html">TODO: Users</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TODO: User Groups</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">TODO: User Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user.html">Users</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Groups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-an-usergroup">Creating an UserGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#access-rights">Access Rights</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-frontend-rights">Required Frontend Rights</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">TODO: Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="access_control_list.html">TODO: Access Control List (ACL)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Media</span></p>
 <ul>
@@ -116,7 +120,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">TODO: User Groups</li>
+      <li class="breadcrumb-item active">User Groups</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/management/user_group.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -126,8 +130,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="todo-user-groups">
-<h1>TODO: User Groups<a class="headerlink" href="#todo-user-groups" title="Link to this heading"></a></h1>
+  <section id="user-groups">
+<h1>User Groups<a class="headerlink" href="#user-groups" title="Link to this heading"></a></h1>
+<div class="admonition-cloud-version admonition">
+<p class="admonition-title">Cloud version</p>
+<p>At the current state of development this is not possible in the Cloud Version</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>User groups define role-based access within the system. Configuration can be accessed via
+<span class="menuselection">Settings ‣ Groups</span>.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/user_groups_overview.png"><img alt="../_images/user_groups_overview.png" src="../_images/user_groups_overview.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: UserGroup overview</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>All existing user groups are listed in a management overview, where they can be viewed, edited, or deleted—except for the
+two predefined groups:</p>
+<ul class="simple">
+<li><p><strong>Administrator</strong></p></li>
+<li><p><strong>Users</strong></p></li>
+</ul>
+<p>These two groups are system defaults and <strong>cannot be deleted</strong>.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -135,11 +165,72 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="id1">
-<h2>TODO: User Groups<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="creating-an-usergroup">
+<h2>Creating an UserGroup<a class="headerlink" href="#creating-an-usergroup" title="Link to this heading"></a></h2>
+<p>To create a new <strong>UserGroup</strong>, click the <strong>“Add”</strong> button. The following fields must be configured:</p>
+<ul class="simple">
+<li><p><strong>Name</strong>: The internal identifier of the group.</p></li>
+<li><p><strong>Label</strong>: A human-readable display name.</p></li>
+</ul>
+<p>In addition, the group’s <strong>access rights</strong> must be defined to control what <a class="reference internal" href="user.html#users-anchor"><span class="std std-ref">Users</span></a> in the
+<strong>UserGroup</strong> can see and do within the system.</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/user_groups_create.png"><img alt="../_images/user_groups_create.png" src="../_images/user_groups_create.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: UserGroup create form</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="access-rights">
+<h2>Access Rights<a class="headerlink" href="#access-rights" title="Link to this heading"></a></h2>
+<p>Access rights are configured per <strong>UserGroup</strong> and follow a <strong>hierarchical naming structure</strong>. This allows
+fine-grained permission control.</p>
+<p>A detailed overview of available <strong>Rights</strong> can be viewed under <span class="menuselection">Settings ‣ Rights</span>.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Example Structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># General base right</span>
+<span class="n">base</span><span class="o">.*</span>
+
+<span class="c1"># Rights for framework-level access</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.*</span>
+
+<span class="c1"># Access to object functionalities</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.*</span>
+
+<span class="c1"># Specific object rights</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">add</span>
+</pre></div>
+</div>
+<p>If an <strong>UserGroup</strong> is granted a general right such as <cite>base.framework.object.*</cite>, all child
+permissions (e.g. <cite>view</cite>, <cite>add</cite>, <cite>edit</cite>, etc.) are automatically included.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="required-frontend-rights">
+<h3>Required Frontend Rights<a class="headerlink" href="#required-frontend-rights" title="Link to this heading"></a></h3>
+<p>The following minimum <strong>Rights</strong> are required for a <strong>UserGroup</strong> to access and use the frontend
+application:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">user</span><span class="o">-</span><span class="n">management</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">user</span><span class="o">-</span><span class="n">management</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">view</span>
+<span class="n">base</span><span class="o">.</span><span class="n">docapi</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">view</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -147,8 +238,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="user.html" class="btn btn-neutral float-left" title="TODO: Users" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="authentication.html" class="btn btn-neutral float-right" title="TODO: Authentication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user.html" class="btn btn-neutral float-left" title="Users" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="authentication.html" class="btn btn-neutral float-right" title="Authentication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
