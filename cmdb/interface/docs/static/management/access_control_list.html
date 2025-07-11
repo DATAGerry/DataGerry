@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TODO: Access Control List (ACL) &mdash; DataGerry latest documentation</title>
+  <title>Access Control List (ACL) &mdash; DataGerry latest documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f76a5f1d" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Website" href="../media/media.html" />
-    <link rel="prev" title="TODO: Authentication" href="authentication.html" /> 
+    <link rel="prev" title="Authentication" href="authentication.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -73,10 +73,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="user.html">TODO: Users</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_group.html">TODO: User Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">TODO: Authentication</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TODO: Access Control List (ACL)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="user.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_group.html">User Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Access Control List (ACL)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#access-control-list">Access Control List</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#permissions">Permissions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#acl-vs-system-rights">ACL vs. System-Rights</a></li>
@@ -124,7 +124,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">TODO: Access Control List (ACL)</li>
+      <li class="breadcrumb-item active">Access Control List (ACL)</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/management/access_control_list.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -134,10 +134,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="todo-access-control-list-acl">
-<h1>TODO: Access Control List (ACL)<a class="headerlink" href="#todo-access-control-list-acl" title="Link to this heading"></a></h1>
-<p id="access-control-list-anchor">Datagerry uses multiple access controls to restrict the access to data and functions.
-In addition to the <a class="reference internal" href="user.html#system-access-rights"><span class="std std-ref">Access Rights</span></a>. implemented by default at the user management level,
+  <section id="access-control-list-acl">
+<h1>Access Control List (ACL)<a class="headerlink" href="#access-control-list-acl" title="Link to this heading"></a></h1>
+<p id="access-control-list-anchor">DataGerry uses multiple access controls to restrict the access to data and functions.
+In addition to the ACL. implemented by default at the user management level,
 there is also the concept of the access control list. These are currently only implemented for the object level,
 but will be extended to various sections of the core framework.
 They should provide more precise setting options for accesses within already authorized levels/functions.</p>
@@ -224,6 +224,9 @@ up to and including search, export, etc.</p>
 </tr>
 </tbody>
 </table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p><strong>Why additional protection of objects?</strong></p>
 <p>Datagerry instances can be defined large and complex. In many companies there are different hierarchies and access
 restrictions to different information areas. Until now, DataGerry only offered the possibility to give groups
@@ -263,9 +266,6 @@ Listing the same group with different permissions in the same list is not possib
 </figcaption>
 </figure>
 <p>The ACL settings are retained at the object level even after the ACL is disabled, but then they are no longer applied.</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 </section>
 </section>
 </section>
@@ -274,7 +274,7 @@ Listing the same group with different permissions in the same list is not possib
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="authentication.html" class="btn btn-neutral float-left" title="TODO: Authentication" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="authentication.html" class="btn btn-neutral float-left" title="Authentication" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../media/media.html" class="btn btn-neutral float-right" title="Website" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

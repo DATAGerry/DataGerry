@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TODO: Users &mdash; DataGerry latest documentation</title>
+  <title>Users &mdash; DataGerry latest documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f76a5f1d" />
@@ -21,7 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="TODO: User Groups" href="user_group.html" />
+    <link rel="next" title="User Groups" href="user_group.html" />
     <link rel="prev" title="File Explorer" href="../usage/file_explorer.html" /> 
 </head>
 
@@ -73,13 +73,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TODO: Users</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#access-rights">Access Rights</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Users</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#user-creation">User Creation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#user-restrictions">User Restrictions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user_group.html">TODO: User Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authentication.html">TODO: Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="access_control_list.html">TODO: Access Control List (ACL)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_group.html">User Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Media</span></p>
 <ul>
@@ -116,7 +119,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">TODO: Users</li>
+      <li class="breadcrumb-item active">Users</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/management/user.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -126,51 +129,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="todo-users">
-<h1>TODO: Users<a class="headerlink" href="#todo-users" title="Link to this heading"></a></h1>
-<p>Local users and groups can be configured in the WebUI under “Settings” -&gt; “UserModel Management”. A user is part of one
-group. Access rights are defined for a specific group.</p>
-<p>The following groups are defined by default and cannot be deleted:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Administrator</p></li>
-<li><p>UserModel</p></li>
+  <section id="users">
+<h1>Users<a class="headerlink" href="#users" title="Link to this heading"></a></h1>
+<div class="admonition-cloud-version admonition" id="users-anchor">
+<p class="admonition-title">Cloud version</p>
+<p>At the current state of development this is not possible in the Cloud Version. Users can only be configured
+inside the <strong>Service Portal</strong>.</p>
+</div>
+<p>Local <strong>Users</strong> can be configured under <span class="menuselection">Settings ‣ User</span>. This section provides a central management interface
+to view, create, and manage system users.</p>
+<p>All existing users are displayed in a table, showing their basic details. Each user can be edited or deleted via action buttons,
+with one exception: the initial <strong>admin</strong> user (identified by the reserved <cite>public_id</cite>) cannot be deleted for security reasons.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="user-creation">
+<h2>User Creation<a class="headerlink" href="#user-creation" title="Link to this heading"></a></h2>
+<p>To create a new user, click the <strong>“New User”</strong> button. A form will appear where the following fields can be configured:</p>
+<ul class="simple">
+<li><p><strong>Username</strong>: The unique login name for the user.</p></li>
+<li><p><strong>Firstname</strong>: The first name for the user.</p></li>
+<li><p><strong>Lastname</strong>: The last name for the user.</p></li>
+<li><p><strong>Authenticator</strong>: Determines the login method. Two options are available:</p>
+<ul>
+<li><p><strong>Local</strong>: The user logs in with a username and password.</p></li>
+<li><p><strong>LDAP</strong>: The user is authenticated via an LDAP directory (e.g., Active Directory).</p></li>
 </ul>
-</div></blockquote>
-<p>Also, a user cannot delete itself.</p>
-<section id="access-rights">
-<span id="system-access-rights"></span><h2>Access Rights<a class="headerlink" href="#access-rights" title="Link to this heading"></a></h2>
-<p>Access Rights can be configured for a usergroup and are designed hierachically. Please see the following example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># base right for whole application</span>
-<span class="n">base</span><span class="o">.*</span>
-
-<span class="c1"># right for core framework</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.*</span>
-
-<span class="c1"># right for accessing objects</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.*</span>
-
-<span class="c1"># right for viewing objects</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">view</span>
-
-<span class="c1"># right for adding objects</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">add</span>
-</pre></div>
+</li>
+<li><p><strong>Password</strong>: Only applicable for users with the local authenticator.</p></li>
+<li><p><strong>Email</strong>: Optional contact information.</p></li>
+<li><p><strong>UserGroup</strong>: Mandatory selection of the group to which the user belongs. Each user must be assigned to at least one
+UserGroup to ensure proper permission control.</p></li>
+</ul>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/user_create.png"><img alt="../_images/user_create.png" src="../_images/user_create.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Picure: User creation form</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
-<p>If you add the right “base.framework.object.view” to a usergroup, all users of that group have the right of viewing
-objects. If the right “base.framework.object.*” is applied, all subsequent rights like “base.framework.object.view” are
-also applied.</p>
-<p>A list of rights can be found in the WebUI of DATAGERRY.</p>
-<p>The following rights are necessary to use the frontend:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">view</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">view</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">view</span>
-<span class="n">base</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">view</span>
-<span class="n">base</span><span class="o">.</span><span class="n">user</span><span class="o">-</span><span class="n">management</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">view</span>
-<span class="n">base</span><span class="o">.</span><span class="n">user</span><span class="o">-</span><span class="n">management</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">view</span>
-<span class="n">base</span><span class="o">.</span><span class="n">docapi</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">view</span>
-</pre></div>
-</div>
+<section id="user-restrictions">
+<h3>User Restrictions<a class="headerlink" href="#user-restrictions" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>A user <strong>cannot delete their own account</strong>.</p></li>
+<li><p>The <strong>admin user</strong> with a reserved <cite>public_id</cite> is <strong>undeletable</strong> to prevent accidental loss of system access.</p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -179,7 +190,7 @@ also applied.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../usage/file_explorer.html" class="btn btn-neutral float-left" title="File Explorer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="user_group.html" class="btn btn-neutral float-right" title="TODO: User Groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user_group.html" class="btn btn-neutral float-right" title="User Groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

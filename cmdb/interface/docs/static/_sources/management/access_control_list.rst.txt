@@ -1,11 +1,11 @@
-*******************************
-TODO: Access Control List (ACL)
-*******************************
+*************************
+Access Control List (ACL)
+*************************
 
 .. _access-control-list-anchor:
 
-Datagerry uses multiple access controls to restrict the access to data and functions.
-In addition to the :ref:`system-access-rights`. implemented by default at the user management level,
+DataGerry uses multiple access controls to restrict the access to data and functions.
+In addition to the ACL. implemented by default at the user management level,
 there is also the concept of the access control list. These are currently only implemented for the object level,
 but will be extended to various sections of the core framework.
 They should provide more precise setting options for accesses within already authorized levels/functions.
@@ -17,7 +17,7 @@ They should provide more precise setting options for accesses within already aut
 | 
 
 Access Control List
--------------------
+===================
 The concept of ACL is basically very simple. They are, as the name suggests,
 lists that have group references with certain permissions. In our case, the user group is stored there.
 So if a user wants to get access via an ACL, this is only possible if the complete user group is listed in the ACL.
@@ -27,7 +27,7 @@ This allows different operations to be defined even more precisely.
 | 
 
 Permissions
-^^^^^^^^^^^
+-----------
 By default, four permissions are possible:
 
 - **Create** a resource
@@ -41,7 +41,7 @@ Further permissions can theoretically be added, but these are not planned at the
 | 
 
 ACL vs. System-Rights
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 The difference between the system rights and the ACL is that the ACL only improves the system rights
 and makes the accesses more detailed. They are **not a replacement** for the rights, they only extend the restrictions.
 Groups that do not have rights for certain actions (for example: viewing an object) cannot do this,
@@ -56,7 +56,7 @@ even if their group is explicitly listed in the respective ACL.
 .. _acl-type-anchor:
 
 Type ACL
---------
+========
 The ACLs of the objects protect them from unauthorized access.
 They are used to make objects accessible to certain user groups or to hide them.
 This affects not only the view of the objects themselves, but any aspect of CRUD access to objects,
@@ -76,6 +76,8 @@ In principle, there are five different access situations to objects.
    "ACL enabled and group included, but not the grant permission of the operation", "No access to objects of this type"
    "ACL enabled and group included and grant permission of the operation", "User group has access to objects of this type"
 
+| 
+
 **Why additional protection of objects?**
 
 Datagerry instances can be defined large and complex. In many companies there are different hierarchies and access
@@ -87,11 +89,11 @@ depending on the configuration.
 | 
 
 Configure Object ACL
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 Object ACL are defined in the respective type definitions via the type builder.
 These can be defined under the ACL step based on the type. By default, they are disabled and the menu is excluded.
 
-.. figure:: img/object_type_builder_acl_protected.png
+.. figure:: img/acl/object_type_builder_acl_protected.png
     :width: 600
     :alt: Deactivated object acl
 
@@ -99,7 +101,7 @@ These can be defined under the ACL step based on the type. By default, they are 
 
 When activated, the menu is enabled and groups can be added to an ACL with the respective permissions.
 
-.. figure:: img/object_type_builder_acl_setup.png
+.. figure:: img/acl/object_type_builder_acl_setup.png
     :width: 600
     :alt: While object acl configure
 
@@ -109,12 +111,10 @@ After adding the groups, they are displayed in the list below and their permissi
 But a group can only appear once in an ACL.
 Listing the same group with different permissions in the same list is not possible.
 
-.. figure:: img/object_type_builder_acl_example.png
+.. figure:: img/acl/object_type_builder_acl_example.png
     :width: 600
     :alt: Inserted object acl
 
     Figure 22: Inserted object acl
 
 The ACL settings are retained at the object level even after the ACL is disabled, but then they are no longer applied.
-
-| 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TODO: Authentication &mdash; DataGerry latest documentation</title>
+  <title>Authentication &mdash; DataGerry latest documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f76a5f1d" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="TODO: Access Control List (ACL)" href="access_control_list.html" />
-    <link rel="prev" title="TODO: User Groups" href="user_group.html" /> 
+    <link rel="next" title="Access Control List (ACL)" href="access_control_list.html" />
+    <link rel="prev" title="User Groups" href="user_group.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -73,9 +73,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Management</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="user.html">TODO: Users</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_group.html">TODO: User Groups</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TODO: Authentication</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="user.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_group.html">User Groups</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#access-token">Access Token</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#providers">Providers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ldap-group-mapping">LDAP group mapping</a></li>
@@ -83,7 +83,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="access_control_list.html">TODO: Access Control List (ACL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="access_control_list.html">Access Control List (ACL)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Media</span></p>
 <ul>
@@ -120,7 +120,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">TODO: Authentication</li>
+      <li class="breadcrumb-item active">Authentication</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/management/authentication.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -130,9 +130,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="todo-authentication">
-<h1>TODO: Authentication<a class="headerlink" href="#todo-authentication" title="Link to this heading"></a></h1>
-<p>DATAGERRY uses a hybrid authentication method for issuing access tokens. These tokens can be used to
+  <section id="authentication">
+<h1>Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h1>
+<div class="admonition-cloud-version admonition">
+<p class="admonition-title">Cloud Version</p>
+<p>See details in Service Portal documentation how authentification is implemented.</p>
+</div>
+<p>DataGerry uses a hybrid authentication method for issuing access tokens. These tokens can be used to
 authenticate against the Rest API.</p>
 <p>When logging in, the user is searched in the database using his user name. If a user is found, his stored provider is
 requested. Depending on the provider implementation, an authentication is now attempted using the submitted password.
@@ -151,10 +155,17 @@ stored in a predefined group. If no provider confirms a successful request, the 
 <section id="access-token">
 <h2>Access Token<a class="headerlink" href="#access-token" title="Link to this heading"></a></h2>
 <p>Authentication uses JSON Web Tokens as specified in RFC 7519 for identity verification.
-The <cite>Issuer</cite>, <cite>Issued at</cite>, <cite>Expiration time</cite> and the custom <cite>DATAGERRY</cite> claims are used.</p>
+The <cite>Issuer</cite>, <cite>Issued at</cite>, <cite>Expiration time</cite> and the custom <cite>DataGerry</cite> claims are used.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The asymmetrical RSA key for signing the tokens is stored in the database under <strong>settings.conf</strong>.</p>
+<p>(Only OnPremise) The asymmetrical RSA key for signing the tokens is stored in the database under <strong>settings.conf</strong>.</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 </section>
 <section id="providers">
@@ -163,30 +174,33 @@ The <cite>Issuer</cite>, <cite>Issued at</cite>, <cite>Expiration time</cite> an
 They are divided into internal and external providers. In the case of internal providers,
 the system searches for the user in the database.
 External providers identify the user in an external third party system.</p>
-<p>Preinstalled providers are:</p>
-<ol class="arabic simple">
-<li><p><strong>LocalAuthenticationProvider</strong> - Searches for users in the database by username and compares the password with the stored SHA256 HMAC.</p></li>
-<li><p><strong>LdapAuthenticationProvider</strong> - Using the user name, tries to find a user in the directory service and authenticate with the password.</p></li>
-</ol>
+<p>Available providers are:</p>
+<p>1. <strong>LocalAuthenticationProvider</strong> - Searches for users in the database by username and compares the password with
+the stored SHA256 HMAC.
+2. <strong>LdapAuthenticationProvider</strong> - Using the user name, tries to find a user in the directory service and authenticate
+with the password.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The order in which the providers are queried is determined by the installation order of the
 providers in the authentication module. A special factor here is that the local provider is always in
 first place.</p>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <section id="ldap-group-mapping">
 <h3>LDAP group mapping<a class="headerlink" href="#ldap-group-mapping" title="Link to this heading"></a></h3>
 <p>The LDAP authentication provider offers the possibility to create a mapping to the
-datagerry groups based on the LDAP groups. Since Datagerry does not allow users to be assigned to multiple groups,
+DataGerry groups based on the LDAP groups. Since DataGerry does not allow users to be assigned to multiple groups,
 the possibility of multiple LDAP groups must be reduced.</p>
 <p>The mapping of groups must first be activated manually. If mapping is disabled, all LDAP users are assigned to the
 default group. This is also the case if the mapping is deactivated afterwards.</p>
 <a class="reference internal image-reference" href="../_images/auth_provider_ldap_default.png"><img alt="../_images/auth_provider_ldap_default.png" src="../_images/auth_provider_ldap_default.png" style="width: 600px;" />
 </a>
 <p>After activating the mapping, a search filter can be created for selecting the groups at login.
-In the configuration interface you can now assign a group name of the LDAP to a datagerry group.
-Here an LDAP group can be assigned exactly to one datagerry group, however different LDAP groups can be assigned to
-the same datagerry group.</p>
+In the configuration interface you can now assign a group name of the LDAP to a DataGerry group.
+Here an LDAP group can be assigned exactly to one DataGerry group, however different LDAP groups can be assigned to
+the same DataGerry group.</p>
 <a class="reference internal image-reference" href="../_images/auth_provider_ldap_mapping.png"><img alt="../_images/auth_provider_ldap_mapping.png" src="../_images/auth_provider_ldap_mapping.png" style="width: 600px;" />
 </a>
 <p>The order of the mappings is important. If a LDAP user appears in several mappings,
@@ -200,8 +214,8 @@ default group.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="user_group.html" class="btn btn-neutral float-left" title="TODO: User Groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="access_control_list.html" class="btn btn-neutral float-right" title="TODO: Access Control List (ACL)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user_group.html" class="btn btn-neutral float-left" title="User Groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="access_control_list.html" class="btn btn-neutral float-right" title="Access Control List (ACL)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
