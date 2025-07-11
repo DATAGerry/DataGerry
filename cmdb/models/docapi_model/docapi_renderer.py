@@ -22,6 +22,7 @@ from io import BytesIO
 from cmdb.manager import ObjectsManager
 
 from cmdb.models.object_model import CmdbObject
+from cmdb.models.user_model import CmdbUser
 from cmdb.models.docapi_model.object_document_generator import ObjectDocumentGenerator
 from cmdb.models.docapi_model.pdf_document_type import PdfDocumentType
 
@@ -52,7 +53,7 @@ class DocApiRenderer:
         self.objects_manager = objects_manager
 
 
-    def render_object_template(self,) -> BytesIO:
+    def render_object_template(self, request_user: CmdbUser = None) -> BytesIO:
         """
         Renders a document by applying the provided DocapiTemplate to a CmdbObject
 
@@ -74,7 +75,7 @@ class DocApiRenderer:
 
         cmdb_render_object = CmdbRender(self.target_object,
                                         type_instance,
-                                        None,
+                                        request_user,
                                         False)
 
         generator = ObjectDocumentGenerator(self.target_template,

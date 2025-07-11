@@ -93,6 +93,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#benefits-of-assignments">Benefits of Assignments</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#isms-reporting">ISMS Reporting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Risk Matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#risk-treatment-plan">Risk Treatment Plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statement-of-applicability-soa">Statement of Applicability (SoA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Risk Assessments</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="webhooks.html">Webhooks</a></li>
@@ -157,35 +164,43 @@
 <nav class="contents local" id="table-of-contents">
 <span id="isms-anchor"></span><p class="topic-title">Table of Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#isms-configuration" id="id41">ISMS - Configuration</a></p>
+<li><p><a class="reference internal" href="#isms-configuration" id="id43">ISMS - Configuration</a></p>
 <ul>
-<li><p><a class="reference internal" href="#risk-classes" id="id42">Risk classes</a></p></li>
-<li><p><a class="reference internal" href="#likelihoods" id="id43">Likelihoods</a></p></li>
-<li><p><a class="reference internal" href="#impacts" id="id44">Impacts</a></p></li>
-<li><p><a class="reference internal" href="#impact-categories" id="id45">Impact Categories</a></p></li>
-<li><p><a class="reference internal" href="#protection-goals" id="id46">Protection Goals</a></p></li>
-<li><p><a class="reference internal" href="#risk-matrix" id="id47">Risk Matrix</a></p></li>
+<li><p><a class="reference internal" href="#risk-classes" id="id44">Risk classes</a></p></li>
+<li><p><a class="reference internal" href="#likelihoods" id="id45">Likelihoods</a></p></li>
+<li><p><a class="reference internal" href="#impacts" id="id46">Impacts</a></p></li>
+<li><p><a class="reference internal" href="#impact-categories" id="id47">Impact Categories</a></p></li>
+<li><p><a class="reference internal" href="#protection-goals" id="id48">Protection Goals</a></p></li>
+<li><p><a class="reference internal" href="#risk-matrix" id="id49">Risk Matrix</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#threats" id="id48">Threats</a></p></li>
-<li><p><a class="reference internal" href="#vulnerabilities" id="id49">Vulnerabilities</a></p></li>
-<li><p><a class="reference internal" href="#risks" id="id50">Risks</a></p>
+<li><p><a class="reference internal" href="#threats" id="id50">Threats</a></p></li>
+<li><p><a class="reference internal" href="#vulnerabilities" id="id51">Vulnerabilities</a></p></li>
+<li><p><a class="reference internal" href="#risks" id="id52">Risks</a></p>
 <ul>
-<li><p><a class="reference internal" href="#risk-fields" id="id51">Risk Fields</a></p></li>
+<li><p><a class="reference internal" href="#risk-fields" id="id53">Risk Fields</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#controls" id="id52">Controls</a></p></li>
-<li><p><a class="reference internal" href="#risk-assessments" id="id53">Risk Assessments</a></p>
+<li><p><a class="reference internal" href="#controls" id="id54">Controls</a></p></li>
+<li><p><a class="reference internal" href="#risk-assessments" id="id55">Risk Assessments</a></p>
 <ul>
-<li><p><a class="reference internal" href="#accessing-risk-assessments" id="id54">Accessing Risk Assessments</a></p></li>
-<li><p><a class="reference internal" href="#create-risk-assessment" id="id55">Create Risk Assessment</a></p></li>
+<li><p><a class="reference internal" href="#accessing-risk-assessments" id="id56">Accessing Risk Assessments</a></p></li>
+<li><p><a class="reference internal" href="#create-risk-assessment" id="id57">Create Risk Assessment</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#control-assignments" id="id56">Control Assignments</a></p>
+<li><p><a class="reference internal" href="#control-assignments" id="id58">Control Assignments</a></p>
 <ul>
-<li><p><a class="reference internal" href="#assignment-methods" id="id57">Assignment Methods</a></p></li>
-<li><p><a class="reference internal" href="#assignment-fields" id="id58">Assignment Fields</a></p></li>
-<li><p><a class="reference internal" href="#benefits-of-assignments" id="id59">Benefits of Assignments</a></p></li>
+<li><p><a class="reference internal" href="#assignment-methods" id="id59">Assignment Methods</a></p></li>
+<li><p><a class="reference internal" href="#assignment-fields" id="id60">Assignment Fields</a></p></li>
+<li><p><a class="reference internal" href="#benefits-of-assignments" id="id61">Benefits of Assignments</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#isms-reporting" id="id62">ISMS Reporting</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id63">Risk Matrix</a></p></li>
+<li><p><a class="reference internal" href="#risk-treatment-plan" id="id64">Risk Treatment Plan</a></p></li>
+<li><p><a class="reference internal" href="#statement-of-applicability-soa" id="id65">Statement of Applicability (SoA)</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id66">Risk Assessments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -215,11 +230,11 @@ posture.</p>
 <p>The ISMS implementation in <strong>DataGerry</strong> supports organizations in modeling these concepts and maintaining
 a centralized system to manage security-related documentation, responsibilities, risks, and controls.</p>
 <p>To access the ISMS functionalities of DataGerry go to <strong>Toolbox -&gt; ISMS</strong>.</p>
-<figure class="align-default" id="id1">
+<figure class="align-default" id="id3">
 <a class="reference internal image-reference" href="../_images/isms_overview.png"><img alt="../_images/isms_overview.png" src="../_images/isms_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS overview</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS overview</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>In the following sections, you will find detailed explanations of how ISMS-related features are integrated into
@@ -232,7 +247,7 @@ DataGerry.</p>
 <div class="line"><br /></div>
 </div>
 <section id="isms-configuration">
-<h2><a class="toc-backref" href="#id41" role="doc-backlink">ISMS - Configuration</a><a class="headerlink" href="#isms-configuration" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id43" role="doc-backlink">ISMS - Configuration</a><a class="headerlink" href="#isms-configuration" title="Link to this heading"></a></h2>
 <p>Before risks can be assessed and treated effectively, an Information Security Management System (ISMS) requires a solid
 foundation of clearly defined classification schemes and evaluation parameters. In DataGerry, the ISMS Configuration
 provides the necessary building blocks for a consistent and repeatable risk assessment process.</p>
@@ -261,7 +276,7 @@ they are managed in the system.</p>
 <div class="line"><br /></div>
 </div>
 <section id="risk-classes">
-<h3><a class="toc-backref" href="#id42" role="doc-backlink">Risk classes</a><a class="headerlink" href="#risk-classes" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id44" role="doc-backlink">Risk classes</a><a class="headerlink" href="#risk-classes" title="Link to this heading"></a></h3>
 <div class="line-block" id="isms-risk-class-anchor">
 <div class="line"><br /></div>
 </div>
@@ -272,11 +287,11 @@ decision-making.</p>
 <em>Medium</em>, or <em>High</em>. These labels are later used throughout the ISMS process to guide mitigation
 priorities, reporting, and compliance evaluations.</p>
 <p>To access and manage Risk Classes, navigate to <strong>Toolbox -&gt; Configure ISMS Settings -&gt; Risk Classes</strong>.</p>
-<figure class="align-default" id="id2">
+<figure class="align-default" id="id4">
 <a class="reference internal image-reference" href="../_images/isms_risk_classes_overview.png"><img alt="../_images/isms_risk_classes_overview.png" src="../_images/isms_risk_classes_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS risk classes overview</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS risk classes overview</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -292,8 +307,8 @@ priorities, reporting, and compliance evaluations.</p>
 </div>
 <p><strong>Risk class fields</strong></p>
 <p>Each Risk Class includes the following fields:</p>
-<table class="docutils align-center" id="id3" style="width: 80%">
-<caption><span class="caption-text">Table: Fields for Risk Classes</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id5" style="width: 80%">
+<caption><span class="caption-text">Table: Fields for Risk Classes</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -310,11 +325,11 @@ priorities, reporting, and compliance evaluations.</p>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id4">
+<figure class="align-default" id="id6">
 <a class="reference internal image-reference" href="../_images/isms_risk_classes_create.png"><img alt="../_images/isms_risk_classes_create.png" src="../_images/isms_risk_classes_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS risk classes create form</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS risk classes create form</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -326,7 +341,7 @@ priorities, reporting, and compliance evaluations.</p>
 </div>
 </section>
 <section id="likelihoods">
-<h3><a class="toc-backref" href="#id43" role="doc-backlink">Likelihoods</a><a class="headerlink" href="#likelihoods" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id45" role="doc-backlink">Likelihoods</a><a class="headerlink" href="#likelihoods" title="Link to this heading"></a></h3>
 <div class="line-block" id="isms-likelihood-anchor">
 <div class="line"><br /></div>
 </div>
@@ -334,11 +349,11 @@ priorities, reporting, and compliance evaluations.</p>
 is one of the two primary dimensions (alongside impact) used to calculate overall risk severity. Proper definition
 of likelihood levels ensures consistent and repeatable risk assessments across the organization.</p>
 <p>To manage <strong>Likelihoods</strong>, navigate to <strong>Toolbox -&gt; Configure ISMS Settings -&gt; Likelihoods</strong>.</p>
-<figure class="align-default" id="id5">
+<figure class="align-default" id="id7">
 <a class="reference internal image-reference" href="../_images/isms_likelihood_overview.png"><img alt="../_images/isms_likelihood_overview.png" src="../_images/isms_likelihood_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS likelihoods overview</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS likelihoods overview</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -354,8 +369,8 @@ of likelihood levels ensures consistent and repeatable risk assessments across t
 </div>
 <p><strong>Likelihood fields</strong></p>
 <p>Each <strong>Likelihood</strong> includes the following fields:</p>
-<table class="docutils align-center" id="id6" style="width: 80%">
-<caption><span class="caption-text">Table: Fields for Likelihoods</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id8" style="width: 80%">
+<caption><span class="caption-text">Table: Fields for Likelihoods</span><a class="headerlink" href="#id8" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -372,11 +387,11 @@ of likelihood levels ensures consistent and repeatable risk assessments across t
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id7">
+<figure class="align-default" id="id9">
 <a class="reference internal image-reference" href="../_images/isms_likelihood_create.png"><img alt="../_images/isms_likelihood_create.png" src="../_images/isms_likelihood_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS likelihood create form</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS likelihood create form</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -396,7 +411,7 @@ which is then categorized using the defined <a class="reference internal" href="
 </div>
 </section>
 <section id="impacts">
-<h3><a class="toc-backref" href="#id44" role="doc-backlink">Impacts</a><a class="headerlink" href="#impacts" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id46" role="doc-backlink">Impacts</a><a class="headerlink" href="#impacts" title="Link to this heading"></a></h3>
 <div class="line-block" id="isms-impact-anchor">
 <div class="line"><br /></div>
 </div>
@@ -404,11 +419,11 @@ which is then categorized using the defined <a class="reference internal" href="
 <a class="reference internal" href="#isms-likelihood-anchor"><span class="std std-ref">Likelihoods</span></a>, impacts form the basis of risk evaluation and define how critical a risk
 is to your organization. Well-defined impact levels help ensure a consistent and objective assessment process.</p>
 <p>To manage <strong>Impacts</strong>, navigate to <strong>Toolbox -&gt; Configure ISMS Settings -&gt; Impacts</strong>.</p>
-<figure class="align-default" id="id8">
+<figure class="align-default" id="id10">
 <a class="reference internal image-reference" href="../_images/isms_impact_overview.png"><img alt="../_images/isms_impact_overview.png" src="../_images/isms_impact_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS impacts overview</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS impacts overview</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -424,8 +439,8 @@ is to your organization. Well-defined impact levels help ensure a consistent and
 </div>
 <p><strong>Impact fields</strong></p>
 <p>Each <strong>Impact</strong> includes the following fields:</p>
-<table class="docutils align-center" id="id9" style="width: 80%">
-<caption><span class="caption-text">Table: Fields for Impacts</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id11" style="width: 80%">
+<caption><span class="caption-text">Table: Fields for Impacts</span><a class="headerlink" href="#id11" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -442,11 +457,11 @@ is to your organization. Well-defined impact levels help ensure a consistent and
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id12">
 <a class="reference internal image-reference" href="../_images/isms_impact_create.png"><img alt="../_images/isms_impact_create.png" src="../_images/isms_impact_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS impact create form</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS impact create form</span><a class="headerlink" href="#id12" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -466,16 +481,16 @@ score, which is then classified using defined <a class="reference internal" href
 </div>
 </section>
 <section id="impact-categories">
-<h3><a class="toc-backref" href="#id45" role="doc-backlink">Impact Categories</a><a class="headerlink" href="#impact-categories" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id47" role="doc-backlink">Impact Categories</a><a class="headerlink" href="#impact-categories" title="Link to this heading"></a></h3>
 <p id="isms-impact-categories-anchor"><strong>Impact Categories</strong> allow organizations to group different dimensions of potential impact for use in risk assessments.
 They provide context to the selected <strong>Impact levels</strong> by defining what a certain severity means in specific areas —
 such as financial damage, regulatory consequences, or business continuity.</p>
 <p>To manage <strong>Impact Categories</strong>, navigate to <strong>Toolbox -&gt; Configure ISMS Settings -&gt; Impact Categories</strong>.</p>
-<figure class="align-default" id="id11">
+<figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="../_images/isms_impact_categories_overview.png"><img alt="../_images/isms_impact_categories_overview.png" src="../_images/isms_impact_categories_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS impact categories overview</span><a class="headerlink" href="#id11" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS impact categories overview</span><a class="headerlink" href="#id13" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -483,8 +498,8 @@ such as financial damage, regulatory consequences, or business continuity.</p>
 </div>
 <p><strong>Impact Category fields</strong></p>
 <p>Each <strong>Impact Category</strong> consists of the following fields:</p>
-<table class="docutils align-center" id="id12" style="width: 90%">
-<caption><span class="caption-text">Table: Fields for Impact Categories</span><a class="headerlink" href="#id12" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id14" style="width: 90%">
+<caption><span class="caption-text">Table: Fields for Impact Categories</span><a class="headerlink" href="#id14" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -499,11 +514,11 @@ means within this category’s context</p></td>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id15">
 <a class="reference internal image-reference" href="../_images/isms_impact_categories_create.png"><img alt="../_images/isms_impact_categories_create.png" src="../_images/isms_impact_categories_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS impact categories create form</span><a class="headerlink" href="#id13" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS impact categories create form</span><a class="headerlink" href="#id15" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -523,7 +538,7 @@ risk assessors to understand the consequences within that category’s scope.</p
 </div>
 </section>
 <section id="protection-goals">
-<h3><a class="toc-backref" href="#id46" role="doc-backlink">Protection Goals</a><a class="headerlink" href="#protection-goals" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id48" role="doc-backlink">Protection Goals</a><a class="headerlink" href="#protection-goals" title="Link to this heading"></a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -539,11 +554,11 @@ information assets.</p>
 <p>You may also define additional custom Protection Goals to reflect your organization’s specific requirements
 (e.g., <em>Authenticity</em>, <em>Traceability</em>, <em>Resilience</em>).</p>
 <p>To manage <strong>Protection Goals</strong>, navigate to: <strong>Toolbox -&gt; Configure ISMS Settings -&gt; Protection Goals</strong></p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id16">
 <a class="reference internal image-reference" href="../_images/isms_protection_goal_overview.png"><img alt="../_images/isms_protection_goal_overview.png" src="../_images/isms_protection_goal_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS protection goal overview</span><a class="headerlink" href="#id14" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS protection goal overview</span><a class="headerlink" href="#id16" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -562,7 +577,7 @@ information assets.</p>
 </div>
 </section>
 <section id="risk-matrix">
-<h3><a class="toc-backref" href="#id47" role="doc-backlink">Risk Matrix</a><a class="headerlink" href="#risk-matrix" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id49" role="doc-backlink">Risk Matrix</a><a class="headerlink" href="#risk-matrix" title="Link to this heading"></a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -574,11 +589,11 @@ the criticality of the risk and guides appropriate mitigation measures.</p>
 <div class="line"><br /></div>
 </div>
 <p>To configure the Risk Matrix, navigate to: <strong>Toolbox -&gt; Configure ISMS Settings -&gt; Risk Calculation</strong></p>
-<figure class="align-default" id="id15">
+<figure class="align-default" id="id17">
 <a class="reference internal image-reference" href="../_images/isms_risk_matrix_overview.png"><img alt="../_images/isms_risk_matrix_overview.png" src="../_images/isms_risk_matrix_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picture: ISMS risk matrix overview</span><a class="headerlink" href="#id15" title="Link to this image"></a></p>
+<p><span class="caption-text">Picture: ISMS risk matrix overview</span><a class="headerlink" href="#id17" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -628,24 +643,24 @@ The user is only responsible for assigning appropriate <strong>Risk Classes</str
 </section>
 </section>
 <section id="threats">
-<h2><a class="toc-backref" href="#id48" role="doc-backlink">Threats</a><a class="headerlink" href="#threats" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id50" role="doc-backlink">Threats</a><a class="headerlink" href="#threats" title="Link to this heading"></a></h2>
 <p id="isms-threat-anchor"><strong>Threats</strong> represent potential causes of unwanted incidents that may result in harm to a system, asset, or organization.
 They are a key component in evaluating <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a> within the ISMS and must be created before
 defining <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a> of type <strong>“Threat x Vulnerability”</strong> or <strong>Threat</strong>.</p>
 <p>To manage <strong>Threats</strong>, navigate to <strong>Toolbox -&gt; ISMS -&gt; Threats</strong>.</p>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id18">
 <a class="reference internal image-reference" href="../_images/isms_threats_overview.png"><img alt="../_images/isms_threats_overview.png" src="../_images/isms_threats_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: <strong>Threats</strong> overview</span><a class="headerlink" href="#id16" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: <strong>Threats</strong> overview</span><a class="headerlink" href="#id18" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p>Each <strong>Threat</strong> includes the following fields:</p>
-<table class="docutils align-center" id="id17" style="width: 80%">
-<caption><span class="caption-text">Table: Fields for Threats</span><a class="headerlink" href="#id17" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id19" style="width: 80%">
+<caption><span class="caption-text">Table: Fields for Threats</span><a class="headerlink" href="#id19" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -665,11 +680,11 @@ defining <a class="reference internal" href="#isms-risk-anchor"><span class="std
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id20">
 <a class="reference internal image-reference" href="../_images/isms_threats_create.png"><img alt="../_images/isms_threats_create.png" src="../_images/isms_threats_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Threat</strong> form</span><a class="headerlink" href="#id18" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Threat</strong> form</span><a class="headerlink" href="#id20" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -681,25 +696,25 @@ defining <a class="reference internal" href="#isms-risk-anchor"><span class="std
 </div>
 </section>
 <section id="vulnerabilities">
-<h2><a class="toc-backref" href="#id49" role="doc-backlink">Vulnerabilities</a><a class="headerlink" href="#vulnerabilities" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id51" role="doc-backlink">Vulnerabilities</a><a class="headerlink" href="#vulnerabilities" title="Link to this heading"></a></h2>
 <p id="isms-vulnerability-anchor"><strong>Vulnerabilities</strong> are weaknesses in systems, processes, or controls that can be exploited by
 <a class="reference internal" href="#isms-threat-anchor"><span class="std std-ref">Threats</span></a> to cause harm or loss. In the ISMS context, <strong>Vulnerabilities</strong> are used to assess
 and define <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a> — especially in combination with <a class="reference internal" href="#isms-threat-anchor"><span class="std std-ref">Threats</span></a> when
 using the <strong>“Threat x Vulnerability”</strong> risk type.</p>
 <p>To manage <strong>Vulnerabilities</strong>, navigate to <strong>Toolbox -&gt; ISMS -&gt; Vulnerabilities</strong>.</p>
-<figure class="align-default" id="id19">
+<figure class="align-default" id="id21">
 <a class="reference internal image-reference" href="../_images/isms_vulnerabilities_overview.png"><img alt="../_images/isms_vulnerabilities_overview.png" src="../_images/isms_vulnerabilities_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: <strong>Vulnerabilities</strong> overview</span><a class="headerlink" href="#id19" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: <strong>Vulnerabilities</strong> overview</span><a class="headerlink" href="#id21" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p>Each <strong>Vulnerability</strong> includes the following fields:</p>
-<table class="docutils align-center" id="id20" style="width: 80%">
-<caption><span class="caption-text">Table: Fields for Vulnerabilities</span><a class="headerlink" href="#id20" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id22" style="width: 80%">
+<caption><span class="caption-text">Table: Fields for Vulnerabilities</span><a class="headerlink" href="#id22" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -720,11 +735,11 @@ using the <strong>“Threat x Vulnerability”</strong> risk type.</p>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id21">
+<figure class="align-default" id="id23">
 <a class="reference internal image-reference" href="../_images/isms_vulnerability_create.png"><img alt="../_images/isms_vulnerability_create.png" src="../_images/isms_vulnerability_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Vulnerability</strong> form</span><a class="headerlink" href="#id21" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Vulnerability</strong> form</span><a class="headerlink" href="#id23" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -736,15 +751,15 @@ using the <strong>“Threat x Vulnerability”</strong> risk type.</p>
 </div>
 </section>
 <section id="risks">
-<h2><a class="toc-backref" href="#id50" role="doc-backlink">Risks</a><a class="headerlink" href="#risks" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id52" role="doc-backlink">Risks</a><a class="headerlink" href="#risks" title="Link to this heading"></a></h2>
 <p id="isms-risk-anchor">Within the ISMS module, <strong>Risks</strong> represent potential threats to the confidentiality, integrity, or availability
 of information assets. Risks are central to performing security assessments and defining mitigation strategies.</p>
 <p>To manage risks, navigate to: <strong>Toolbox -&gt; ISMS -&gt; Risks</strong>.</p>
-<figure class="align-default" id="id22">
+<figure class="align-default" id="id24">
 <a class="reference internal image-reference" href="../_images/isms_risk_overview.png"><img alt="../_images/isms_risk_overview.png" src="../_images/isms_risk_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: <strong>Risks</strong> overview</span><a class="headerlink" href="#id22" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: <strong>Risks</strong> overview</span><a class="headerlink" href="#id24" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -765,12 +780,12 @@ protection goals, and threat context. From this view, you can:</p>
 <div class="line"><br /></div>
 </div>
 <section id="risk-fields">
-<h3><a class="toc-backref" href="#id51" role="doc-backlink">Risk Fields</a><a class="headerlink" href="#risk-fields" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id53" role="doc-backlink">Risk Fields</a><a class="headerlink" href="#risk-fields" title="Link to this heading"></a></h3>
 <p>When creating or editing a <strong>Risk</strong>, the fields that are displayed in the form depend on the selected <strong>Risk Type</strong>.
 This ensures that only relevant data is captured for each kind of <strong>Risk</strong>.</p>
 <p>Each risk includes the following fields:</p>
-<table class="docutils align-center" id="id23" style="width: 90%">
-<caption><span class="caption-text">Table: Risk Fields</span><a class="headerlink" href="#id23" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id25" style="width: 90%">
+<caption><span class="caption-text">Table: Risk Fields</span><a class="headerlink" href="#id25" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -815,22 +830,22 @@ Available types include:</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<figure class="align-default" id="id24">
+<figure class="align-default" id="id26">
 <a class="reference internal image-reference" href="../_images/isms_risk_create.png"><img alt="../_images/isms_risk_create.png" src="../_images/isms_risk_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Risk</strong> form</span><a class="headerlink" href="#id24" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Risk</strong> form</span><a class="headerlink" href="#id26" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p><strong>Example of a configured Risk</strong></p>
-<figure class="align-default" id="id25">
+<figure class="align-default" id="id27">
 <a class="reference internal image-reference" href="../_images/isms_risk_example.png"><img alt="../_images/isms_risk_example.png" src="../_images/isms_risk_example.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Example of a <strong>Risk</strong></span><a class="headerlink" href="#id25" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Example of a <strong>Risk</strong></span><a class="headerlink" href="#id27" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -843,24 +858,24 @@ Available types include:</p>
 </section>
 </section>
 <section id="controls">
-<h2><a class="toc-backref" href="#id52" role="doc-backlink">Controls</a><a class="headerlink" href="#controls" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id54" role="doc-backlink">Controls</a><a class="headerlink" href="#controls" title="Link to this heading"></a></h2>
 <p id="isms-controls-anchor"><strong>Controls</strong> represent specific actions, procedures, or mechanisms designed to reduce or eliminate identified
 <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a> within the ISMS framework. <strong>Controls</strong> can originate from internal policies,
 regulatory requirements, or industry standards.</p>
 <p>To manage <strong>Controls</strong>, navigate to <strong>Toolbox -&gt; ISMS -&gt; Controls</strong>.</p>
-<figure class="align-default" id="id26">
+<figure class="align-default" id="id28">
 <a class="reference internal image-reference" href="../_images/isms_control_overview.png"><img alt="../_images/isms_control_overview.png" src="../_images/isms_control_overview.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: <strong>Controls</strong> overview</span><a class="headerlink" href="#id26" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: <strong>Controls</strong> overview</span><a class="headerlink" href="#id28" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p>Each <strong>Control</strong> includes the following fields:</p>
-<table class="docutils align-center" id="id27" style="width: 90%">
-<caption><span class="caption-text">Table: Fields for Controls</span><a class="headerlink" href="#id27" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id29" style="width: 90%">
+<caption><span class="caption-text">Table: Fields for Controls</span><a class="headerlink" href="#id29" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -914,11 +929,11 @@ mitigated or handled.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<figure class="align-default" id="id28">
+<figure class="align-default" id="id30">
 <a class="reference internal image-reference" href="../_images/isms_control_create.png"><img alt="../_images/isms_control_create.png" src="../_images/isms_control_create.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Control</strong> form</span><a class="headerlink" href="#id28" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Control</strong> form</span><a class="headerlink" href="#id30" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -934,7 +949,7 @@ mitigated or handled.</p>
 </div>
 </section>
 <section id="risk-assessments">
-<h2><a class="toc-backref" href="#id53" role="doc-backlink">Risk Assessments</a><a class="headerlink" href="#risk-assessments" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id55" role="doc-backlink">Risk Assessments</a><a class="headerlink" href="#risk-assessments" title="Link to this heading"></a></h2>
 <p id="isms-risk-assessments-anchor"><strong>Risk Assessments</strong> are a central part of the ISMS process. They provide a detailed analysis of how
 <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a> impact specific components (e.g., assets, systems, or groups) and define how those
 <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a> are managed, mitigated, or accepted through risk treatment.</p>
@@ -942,7 +957,7 @@ mitigated or handled.</p>
 <div class="line"><br /></div>
 </div>
 <section id="accessing-risk-assessments">
-<h3><a class="toc-backref" href="#id54" role="doc-backlink">Accessing Risk Assessments</a><a class="headerlink" href="#accessing-risk-assessments" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id56" role="doc-backlink">Accessing Risk Assessments</a><a class="headerlink" href="#accessing-risk-assessments" title="Link to this heading"></a></h3>
 <p>Risk Assessments are NOT located under the <strong>Toolbox -&gt; ISMS</strong> section. Instead, they are contextually accessible
 through the following entry points:</p>
 <p>From an <a class="reference internal" href="cmdb_concepts.html#objects-anchor"><span class="std std-ref">Object</span></a> detailed view</p>
@@ -957,11 +972,11 @@ through the following entry points:</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<figure class="align-default" id="id29">
+<figure class="align-default" id="id31">
 <a class="reference internal image-reference" href="../_images/isms_risk_assessment_open.png"><img alt="../_images/isms_risk_assessment_open.png" src="../_images/isms_risk_assessment_open.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: <strong>Risk Assessments</strong> shown in a Risk detailed view</span><a class="headerlink" href="#id29" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: <strong>Risk Assessments</strong> shown in a Risk detailed view</span><a class="headerlink" href="#id31" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -977,15 +992,15 @@ through the following entry points:</p>
 </div>
 </section>
 <section id="create-risk-assessment">
-<h3><a class="toc-backref" href="#id55" role="doc-backlink">Create Risk Assessment</a><a class="headerlink" href="#create-risk-assessment" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id57" role="doc-backlink">Create Risk Assessment</a><a class="headerlink" href="#create-risk-assessment" title="Link to this heading"></a></h3>
 <p>The Risk Assessment form is logically divided into several sequential sections. At the top of the form, the
 user selects the associated <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risk</span></a> and the related <a class="reference internal" href="cmdb_concepts.html#objects-anchor"><span class="std std-ref">Object</span></a> or
 <a class="reference internal" href="cmdb_concepts.html#object-groups-anchor"><span class="std std-ref">ObjectGroup</span></a>.</p>
-<figure class="align-default" id="id30">
+<figure class="align-default" id="id32">
 <a class="reference internal image-reference" href="../_images/isms_risk_assessment_form_1_5.png"><img alt="../_images/isms_risk_assessment_form_1_5.png" src="../_images/isms_risk_assessment_form_1_5.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form</span><a class="headerlink" href="#id30" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form</span><a class="headerlink" href="#id32" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>The remaining form is divided into the following key sections:</p>
@@ -999,8 +1014,8 @@ actions or treatments have been applied. The assessment relies on the selection 
 initial <a class="reference internal" href="#isms-risk-class-anchor"><span class="std std-ref">Risk Class</span></a>, along with key metadata such as responsible individuals and
 assessment date.</p>
 <p class="rubric">Fields in this Section</p>
-<table class="docutils align-center" id="id31" style="width: 100%">
-<caption><span class="caption-text">Table: Fields for Risk Assessment (Before Treatment)</span><a class="headerlink" href="#id31" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id33" style="width: 100%">
+<caption><span class="caption-text">Table: Fields for Risk Assessment (Before Treatment)</span><a class="headerlink" href="#id33" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1044,11 +1059,11 @@ related to the assessment.</p></td>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id32">
+<figure class="align-default" id="id34">
 <a class="reference internal image-reference" href="../_images/isms_risk_assessment_form_2_5.png"><img alt="../_images/isms_risk_assessment_form_2_5.png" src="../_images/isms_risk_assessment_form_2_5.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Risk Assessment (Before Treatment)</span><a class="headerlink" href="#id32" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Risk Assessment (Before Treatment)</span><a class="headerlink" href="#id34" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -1060,8 +1075,8 @@ in the assessment. Depending on the selected treatment option, appropriate respo
 requirements must be provided. In addition, relevant <a class="reference internal" href="#isms-controls-anchor"><span class="std std-ref">Controls</span></a> can be assigned to this
 treatment (more details at <a class="reference internal" href="#isms-control-assignment-anchor"><span class="std std-ref">Control Assignment</span></a>).</p>
 <p class="rubric">Fields in this Section</p>
-<table class="docutils align-center" id="id33" style="width: 100%">
-<caption><span class="caption-text">Table: Fields for Risk Treatment</span><a class="headerlink" href="#id33" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id35" style="width: 100%">
+<caption><span class="caption-text">Table: Fields for Risk Treatment</span><a class="headerlink" href="#id35" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1124,11 +1139,11 @@ Priority levels include:</p>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id34">
+<figure class="align-default" id="id36">
 <a class="reference internal image-reference" href="../_images/isms_risk_assessment_form_3_5.png"><img alt="../_images/isms_risk_assessment_form_3_5.png" src="../_images/isms_risk_assessment_form_3_5.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Risk Treatment</span><a class="headerlink" href="#id34" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Risk Treatment</span><a class="headerlink" href="#id36" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -1139,8 +1154,8 @@ Priority levels include:</p>
 been implemented. It helps evaluate the effectiveness of the applied <a class="reference internal" href="#isms-controls-anchor"><span class="std std-ref">Controls</span></a>
 and the update risk exposure.</p>
 <p class="rubric">Fields in this Section</p>
-<table class="docutils align-center" id="id35" style="width: 100%">
-<caption><span class="caption-text">Table: Fields for Risk Assessment (After Treatment)</span><a class="headerlink" href="#id35" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id37" style="width: 100%">
+<caption><span class="caption-text">Table: Fields for Risk Assessment (After Treatment)</span><a class="headerlink" href="#id37" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1165,11 +1180,11 @@ of the treatment strategy.</p>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id36">
+<figure class="align-default" id="id38">
 <a class="reference internal image-reference" href="../_images/isms_risk_assessment_form_4_5.png"><img alt="../_images/isms_risk_assessment_form_4_5.png" src="../_images/isms_risk_assessment_form_4_5.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Risk Assessment (After Treatment)</span><a class="headerlink" href="#id36" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Risk Assessment (After Treatment)</span><a class="headerlink" href="#id38" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -1179,8 +1194,8 @@ of the treatment strategy.</p>
 <p>The Audit Information section is used to verify the effectiveness of the risk treatment measures.
 It allows documentation of the audit process, including when it took place, who performed it, and the results.</p>
 <p class="rubric">Fields in this Section</p>
-<table class="docutils align-center" id="id37" style="width: 100%">
-<caption><span class="caption-text">Table: Fields for Audit Information</span><a class="headerlink" href="#id37" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id39" style="width: 100%">
+<caption><span class="caption-text">Table: Fields for Audit Information</span><a class="headerlink" href="#id39" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1200,11 +1215,11 @@ improvements.</p></td>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id38">
+<figure class="align-default" id="id40">
 <a class="reference internal image-reference" href="../_images/isms_risk_assessment_form_5_5.png"><img alt="../_images/isms_risk_assessment_form_5_5.png" src="../_images/isms_risk_assessment_form_5_5.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Audit Information</span><a class="headerlink" href="#id38" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Create <strong>Risk Assessment</strong> form - Audit Information</span><a class="headerlink" href="#id40" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -1229,7 +1244,7 @@ stage during the treatment lifecycle.</p>
 </section>
 </section>
 <section id="control-assignments">
-<h2><a class="toc-backref" href="#id56" role="doc-backlink">Control Assignments</a><a class="headerlink" href="#control-assignments" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id58" role="doc-backlink">Control Assignments</a><a class="headerlink" href="#control-assignments" title="Link to this heading"></a></h2>
 <p id="isms-control-assignment-anchor">Control Assignments link <a class="reference internal" href="#isms-controls-anchor"><span class="std std-ref">Controls</span></a> to specific
 <a class="reference internal" href="#isms-risk-assessments-anchor"><span class="std std-ref">Risk Assessments</span></a>, documenting how individual controls are
 intended to mitigate identified <a class="reference internal" href="#isms-risk-anchor"><span class="std std-ref">Risks</span></a>. These assignments support traceability,
@@ -1238,7 +1253,7 @@ accountability, and audit readiness.</p>
 <div class="line"><br /></div>
 </div>
 <section id="assignment-methods">
-<h3><a class="toc-backref" href="#id57" role="doc-backlink">Assignment Methods</a><a class="headerlink" href="#assignment-methods" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id59" role="doc-backlink">Assignment Methods</a><a class="headerlink" href="#assignment-methods" title="Link to this heading"></a></h3>
 <p><a class="reference internal" href="#isms-controls-anchor"><span class="std std-ref">Controls</span></a> can be assigned in two ways:</p>
 <ol class="arabic">
 <li><p><strong>Within the Risk Assessment Form</strong></p>
@@ -1257,10 +1272,10 @@ selecting a target <a class="reference internal" href="#isms-risk-assessments-an
 </div>
 </section>
 <section id="assignment-fields">
-<h3><a class="toc-backref" href="#id58" role="doc-backlink">Assignment Fields</a><a class="headerlink" href="#assignment-fields" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id60" role="doc-backlink">Assignment Fields</a><a class="headerlink" href="#assignment-fields" title="Link to this heading"></a></h3>
 <p>Each control assignment includes the following information:</p>
-<table class="docutils align-default" id="id39" style="width: 100%">
-<caption><span class="caption-text">Table: Fields for Control Assignments</span><a class="headerlink" href="#id39" title="Link to this table"></a></caption>
+<table class="docutils align-default" id="id41" style="width: 100%">
+<caption><span class="caption-text">Table: Fields for Control Assignments</span><a class="headerlink" href="#id41" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 70.0%" />
@@ -1297,11 +1312,11 @@ This is selected from an extendable option set</p></td>
 </tr>
 </tbody>
 </table>
-<figure class="align-default" id="id40">
+<figure class="align-default" id="id42">
 <a class="reference internal image-reference" href="../_images/isms_control_assignment.png"><img alt="../_images/isms_control_assignment.png" src="../_images/isms_control_assignment.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Picure: Assigning a Control to a <strong>Risk Assessment</strong> from <strong>Control</strong> detailed view</span><a class="headerlink" href="#id40" title="Link to this image"></a></p>
+<p><span class="caption-text">Picure: Assigning a Control to a <strong>Risk Assessment</strong> from <strong>Control</strong> detailed view</span><a class="headerlink" href="#id42" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="line-block">
@@ -1309,7 +1324,7 @@ This is selected from an extendable option set</p></td>
 </div>
 </section>
 <section id="benefits-of-assignments">
-<h3><a class="toc-backref" href="#id59" role="doc-backlink">Benefits of Assignments</a><a class="headerlink" href="#benefits-of-assignments" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id61" role="doc-backlink">Benefits of Assignments</a><a class="headerlink" href="#benefits-of-assignments" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Centralized tracking</strong> of control usage across multiple risks</p></li>
 <li><p><strong>Clear accountability</strong> through assignment of responsible individuals or groups</p></li>
@@ -1321,6 +1336,318 @@ This is selected from an extendable option set</p></td>
 <p class="admonition-title">Note</p>
 <p>Control assignments enhance transparency and ensure that risk treatments are actionable and verifiable.</p>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
+<section id="isms-reporting">
+<h2><a class="toc-backref" href="#id62" role="doc-backlink">ISMS Reporting</a><a class="headerlink" href="#isms-reporting" title="Link to this heading"></a></h2>
+<p>The ISMS Reporting module provides four essential reports to support transparency, oversight, and compliance within
+your Information Security Management System:</p>
+<ol class="arabic simple">
+<li><p>Risk Matrix</p></li>
+<li><p>Risk Treatment Plan</p></li>
+<li><p>Statement of Applicability (SoA)</p></li>
+<li><p>Risk Assessments Overview</p></li>
+</ol>
+<p>Each report delivers valuable insights into the risk landscape and the status of mitigation efforts across
+the organization.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="id1">
+<h3><a class="toc-backref" href="#id63" role="doc-backlink">Risk Matrix</a><a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>The <strong>Risk Matrix</strong> report is a visual representation of the distribution of risk levels across all risk assessments.
+It helps organizations understand the concentration of risks by likelihood and impact before and after treatment.
+This report includes <strong>three matrix views</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Risk Matrix Before Treatment</strong>
+- Displays all risk assessments using their calculated risk <em>before treatment</em>.
+- Risks are plotted in the matrix based on the maximum impact and likelihood before any mitigation actions.</p></li>
+<li><p><strong>Risk Matrix (Current State)</strong>
+- This view gives a live perspective on where risks currently stand based on actual mitigation progress.
+- Dynamically summarizes risks based on their current implementation status.
+- For risk assessments where the <strong>implementation state is not “Implemented”</strong>, the <strong>pre-treatment risk</strong> is used.
+- For risk assessments where the <strong>implementation state is “Implemented”</strong>, the <strong>post-treatment risk</strong> is used.</p></li>
+<li><p><strong>Risk Matrix After Treatment</strong>
+- Displays all risk assessments using their calculated risk <em>after treatment</em>.
+- Useful for demonstrating residual risk and effectiveness of mitigation controls.</p></li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Interactive Capabilities</strong>
+- Clicking on a number in any cell of the matrix opens a filtered list of corresponding risk assessments
+- This allows users to drill down into the specific risks contributing to each matrix position</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Export Functionality</strong>
+- All three matrices can be exported as <strong>PDF files</strong>, preserving color coding and layout for use in audits,
+compliance reviews, and presentations.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Benefits</strong></p>
+<ul class="simple">
+<li><p>Provides clear visibility into the distribution and severity of risks.</p></li>
+<li><p>Enables data-driven decision-making on where to focus risk treatment resources.</p></li>
+<li><p>Supports audit readiness with PDF exports.</p></li>
+<li><p>Enhances transparency by linking matrix cells directly to underlying risk records.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="risk-treatment-plan">
+<h3><a class="toc-backref" href="#id64" role="doc-backlink">Risk Treatment Plan</a><a class="headerlink" href="#risk-treatment-plan" title="Link to this heading"></a></h3>
+<p>The <strong>Risk Treatment Plan</strong> report provides a detailed and actionable overview of all risk assessments, grouped and
+structured by the associated risk object. This report supports security planning, implementation tracking, and audit
+preparation by linking risks to their treatment strategies and control implementations.</p>
+<p>This report joins information from multiple sources:</p>
+<ul class="simple">
+<li><p>The <strong>Risk</strong> itself</p></li>
+<li><p>The corresponding <strong>Risk Assessment</strong></p></li>
+<li><p>The assigned <strong>Object or Object Group</strong></p></li>
+<li><p>The associated <strong>Controls/Measures</strong></p></li>
+</ul>
+<p>The table is <strong>ordered and grouped by Risk Object</strong>, giving stakeholders a clear view of what needs to be addressed per
+asset or asset group.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Displayed Columns</strong></p>
+<p>Each row in the report includes the following fields:</p>
+<ul class="simple">
+<li><p><strong>Risk → Name</strong></p></li>
+<li><p><strong>Risk → Identifier</strong></p></li>
+<li><p><strong>Risk → Category</strong></p></li>
+<li><p><strong>Risk → Affected Protection Goals</strong></p></li>
+<li><p><strong>Risk Assessment → Object</strong>
+- Displays the summary if an object is assigned, or the name if an object group is assigned.</p></li>
+<li><p><strong>Risk Assessment → Object Type</strong>
+- Displays the type label for a regular object or “Object Group” if applicable.</p></li>
+<li><p><strong>Risk Assessment → Risk Before Treatment</strong>
+- Includes background color based on the risk class.</p></li>
+<li><p><strong>Risk Assessment → Risk Treatment Option</strong>
+- One of: Avoid, Accept, Reduce, Transfer/Share.</p></li>
+<li><p><strong>Risk Assessment → Responsible Person</strong>
+- Name of the assigned person or person group responsible for treatment.</p></li>
+<li><p><strong>Risk Assessment → Planned Implementation Date</strong></p></li>
+<li><p><strong>Risk Assessment → Risk After Treatment</strong>
+- Includes background color based on the risk class.</p></li>
+<li><p><strong>Risk Assessment → Implementation Status</strong></p></li>
+<li><p><strong>Control/Measure → Title</strong>
+- Lists all assigned controls as bullet points in the same table cell.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Grouping Logic</strong>
+-   Rows are grouped by the <strong>assigned object or object group</strong>, allowing users to quickly understand the risk exposure
+and mitigation strategy per entity.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Export and Usability</strong>
+- The report is optimized for screen viewing and PDF export, making it suitable for planning sessions, implementation tracking, and compliance documentation.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Benefits</strong></p>
+<ul class="simple">
+<li><p>Offers a clear and comprehensive view of how risks are treated across the organization.</p></li>
+<li><p>Supports accountability with tracking of responsible persons and implementation timelines.</p></li>
+<li><p>Enables grouping by asset for practical follow-up and risk governance.</p></li>
+<li><p>Useful for audits, internal reviews, and continuous improvement efforts in ISMS implementation.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="statement-of-applicability-soa">
+<h3><a class="toc-backref" href="#id65" role="doc-backlink">Statement of Applicability (SoA)</a><a class="headerlink" href="#statement-of-applicability-soa" title="Link to this heading"></a></h3>
+<p>The <strong>Statement of Applicability (SoA)</strong> report provides a structured overview of all available controls and measures,
+starting with those defined in the <strong>ISO/IEC 27001:2022</strong> catalog (if imported). This report is central to demonstrating
+the organization’s control selection, applicability decisions, and implementation progress.</p>
+<p>The SoA is particularly useful for audits, compliance validation, and internal control tracking, serving as a living
+document that reflects the current state of your Information Security Management System (ISMS).</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Control Inclusion and Sorting</strong></p>
+<ul class="simple">
+<li><p>The report <strong>always starts</strong> with the controls/measures that have the source set to <strong>“ISO 27001:2022”</strong>.</p></li>
+<li><p>These are <strong>sorted by their Identifier</strong> to preserve catalog structure and readability.</p></li>
+<li><p>All other controls (from other sources or manually created) follow afterward.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Displayed Columns</strong></p>
+<p>Each control/measure is displayed in a row with the following columns:</p>
+<ul class="simple">
+<li><p><strong>Title</strong> - The title or short name of the control.</p></li>
+<li><p><strong>Identifier</strong> - The catalog identifier (e.g., A.5.1, A.6.2).</p></li>
+<li><p><strong>Chapter</strong> - The chapter or grouping reference of the control.</p></li>
+<li><p><strong>Is Applicable</strong> - Boolean indicating whether the control applies in the organization’s context.</p></li>
+<li><p><strong>Reason</strong> - Justification when a control is marked as not applicable.</p></li>
+<li><p><strong>Implementation State</strong> - The current overall implementation status (e.g., Planned, In Progress, Implemented).</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>(Optional) Assignment Implementation State</strong></p>
+<p>In some cases, there may be multiple <strong>control assignments</strong> per control. The report may be extended in the future
+to reflect the <strong>implementation states per assignment</strong> (e.g., per asset or per risk treatment). This requires
+careful display logic to avoid clutter and ensure clarity. A future design may include:</p>
+<ul class="simple">
+<li><p>A nested list of assignment statuses</p></li>
+<li><p>Aggregated summaries (e.g., “3 out of 5 implementations completed”)</p></li>
+<li><p>Filterable columns or expandable rows</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Export and Usability</strong></p>
+<ul class="simple">
+<li><p>The SoA can be exported to <strong>PDF</strong> for compliance documentation or to <strong>Excel/CSV</strong> for operational tracking.</p></li>
+<li><p>Designed to align with ISO/IEC 27001:2022 audit expectations.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Benefits</strong></p>
+<ul class="simple">
+<li><p>Demonstrates due diligence in selecting and documenting control applicability.</p></li>
+<li><p>Provides a clear link between compliance goals and practical implementation.</p></li>
+<li><p>Supports transparency and traceability for internal and external audits.</p></li>
+<li><p>Forms a foundational component of any ISMS documentation package.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="id2">
+<h3><a class="toc-backref" href="#id66" role="doc-backlink">Risk Assessments</a><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>The <strong>Risk Assessments</strong> report provides a comprehensive overview of all existing risk assessments within the ISMS,
+enriched with contextual data from the linked risk and associated object or object group. This report is essential for
+tracking, analyzing, and auditing the organization’s risk landscape across all assets and risk objects.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Displayed Columns</strong></p>
+<p>This report includes the full set of attributes from the <strong>Risk Assessment</strong>, enriched with related information from
+the connected <strong>Risk</strong> and <strong>Assigned Object</strong>:</p>
+<ul class="simple">
+<li><p><strong>Risk Title</strong> - Title of the linked risk.</p></li>
+<li><p><strong>Affected Protection Goals</strong> - Comma-separated list of protection goals related to the risk.</p></li>
+<li><p><strong>Risk Category</strong> - Categorization label of the risk.</p></li>
+<li><p><strong>Assigned Object Summary / Object Group Title</strong> - Depending on the assignment.</p></li>
+<li><p><strong>Object Type / “Object Group”</strong> - Label of the object type or “Object group”.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Impact and Likelihood Values (Before Treatment)</strong></p>
+<p>For each <strong>impact category</strong> and <strong>likelihood</strong>, the report displays:</p>
+<ul class="simple">
+<li><p><cite>&lt;Calculation Base&gt; - &lt;Impact Level&gt;</cite>
+Example: <cite>4 - critical</cite>, <cite>5 - catastrophic</cite>, <cite>3 - possible</cite>.</p></li>
+</ul>
+<p>Each impact category appears as a separate column in the report.</p>
+<ul class="simple">
+<li><p><strong>Calculated Risk (Before Treatment)</strong> - Numeric or qualitative value, colored according to the risk class.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Core Risk Assessment Attributes</strong></p>
+<ul class="simple">
+<li><p><strong>Risk Assessor</strong></p></li>
+<li><p><strong>Risk Owner</strong></p></li>
+<li><p><strong>Interviewed Persons</strong> - Comma-separated list</p></li>
+<li><p><strong>Date of Risk Assessment</strong></p></li>
+<li><p><strong>Additional Information</strong></p></li>
+<li><p><strong>Risk Treatment Option</strong></p></li>
+<li><p><strong>Responsible Person</strong></p></li>
+<li><p><strong>Risk Treatment Description</strong></p></li>
+<li><p><strong>Planned Implementation Date</strong></p></li>
+<li><p><strong>Implementation Status</strong></p></li>
+<li><p><strong>Implementation Finished On</strong></p></li>
+<li><p><strong>Required Resources</strong></p></li>
+<li><p><strong>Implementation Costs</strong></p></li>
+<li><p><strong>Priority</strong></p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Impact and Likelihood Values (After Treatment)</strong></p>
+<p>Similar to the “before treatment” values, each impact category and likelihood is shown <strong>after treatment</strong>, using the same format and columns.</p>
+<ul class="simple">
+<li><p><strong>Calculated Risk (After Treatment)</strong> - Value with background color indicating the risk class.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Audit Information</strong></p>
+<ul class="simple">
+<li><p><strong>Audit Done On</strong> - Date of audit.</p></li>
+<li><p><strong>Auditor</strong> - Person who performed the audit.</p></li>
+<li><p><strong>Audit Result</strong> - Free-text or selection result field.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Filtering Options</strong></p>
+<p>To support focused analysis, users can filter the report using:</p>
+<ul class="simple">
+<li><p><strong>Affected Protection Goals</strong></p></li>
+<li><p><strong>Risk Category</strong></p></li>
+<li><p><strong>Calculated Risk Class (Before Treatment)</strong></p></li>
+<li><p><strong>Calculated Risk Class (After Treatment)</strong></p></li>
+<li><p><strong>Risk Assessor</strong></p></li>
+<li><p><strong>Risk Owner</strong></p></li>
+<li><p><strong>Risk Treatment Option</strong></p></li>
+<li><p><strong>Responsible Person</strong></p></li>
+<li><p><strong>Implementation Status</strong></p></li>
+<li><p><strong>Priority</strong></p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Benefits</strong></p>
+<ul class="simple">
+<li><p>Enables a deep dive into individual and collective risk assessments.</p></li>
+<li><p>Supports compliance, audit preparation, and continuous risk monitoring.</p></li>
+<li><p>Facilitates targeted mitigation through comprehensive filtering and grouping.</p></li>
+<li><p>Allows export and traceability across different treatment stages.</p></li>
+</ul>
 </section>
 </section>
 </section>

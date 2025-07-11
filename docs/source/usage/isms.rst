@@ -1021,3 +1021,310 @@ Benefits of Assignments
 
 .. note::
    Control assignments enhance transparency and ensure that risk treatments are actionable and verifiable.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+=======================================================================================================================
+
+| 
+
+ISMS Reporting
+==============
+
+The ISMS Reporting module provides four essential reports to support transparency, oversight, and compliance within
+your Information Security Management System:
+
+1. Risk Matrix
+2. Risk Treatment Plan
+3. Statement of Applicability (SoA)
+4. Risk Assessments Overview
+
+Each report delivers valuable insights into the risk landscape and the status of mitigation efforts across
+the organization.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Risk Matrix
+-----------
+
+The **Risk Matrix** report is a visual representation of the distribution of risk levels across all risk assessments.
+It helps organizations understand the concentration of risks by likelihood and impact before and after treatment.
+This report includes **three matrix views**:
+
+1. **Risk Matrix Before Treatment**
+   - Displays all risk assessments using their calculated risk *before treatment*.
+   - Risks are plotted in the matrix based on the maximum impact and likelihood before any mitigation actions.
+
+2. **Risk Matrix (Current State)**
+   - This view gives a live perspective on where risks currently stand based on actual mitigation progress.
+   - Dynamically summarizes risks based on their current implementation status.
+   - For risk assessments where the **implementation state is not “Implemented”**, the **pre-treatment risk** is used.
+   - For risk assessments where the **implementation state is “Implemented”**, the **post-treatment risk** is used.
+
+3. **Risk Matrix After Treatment**
+   - Displays all risk assessments using their calculated risk *after treatment*.
+   - Useful for demonstrating residual risk and effectiveness of mitigation controls.
+
+| 
+
+**Interactive Capabilities**
+- Clicking on a number in any cell of the matrix opens a filtered list of corresponding risk assessments
+- This allows users to drill down into the specific risks contributing to each matrix position
+
+| 
+
+**Export Functionality**
+- All three matrices can be exported as **PDF files**, preserving color coding and layout for use in audits,
+compliance reviews, and presentations.
+
+| 
+
+**Benefits**
+
+- Provides clear visibility into the distribution and severity of risks.
+- Enables data-driven decision-making on where to focus risk treatment resources.
+- Supports audit readiness with PDF exports.
+- Enhances transparency by linking matrix cells directly to underlying risk records.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Risk Treatment Plan
+-------------------
+
+The **Risk Treatment Plan** report provides a detailed and actionable overview of all risk assessments, grouped and
+structured by the associated risk object. This report supports security planning, implementation tracking, and audit
+preparation by linking risks to their treatment strategies and control implementations.
+
+This report joins information from multiple sources:
+
+- The **Risk** itself
+- The corresponding **Risk Assessment**
+- The assigned **Object or Object Group**
+- The associated **Controls/Measures**
+
+The table is **ordered and grouped by Risk Object**, giving stakeholders a clear view of what needs to be addressed per
+asset or asset group.
+
+| 
+
+**Displayed Columns**
+
+Each row in the report includes the following fields:
+
+* **Risk → Name**  
+* **Risk → Identifier**  
+* **Risk → Category**  
+* **Risk → Affected Protection Goals**
+* **Risk Assessment → Object**  
+  - Displays the summary if an object is assigned, or the name if an object group is assigned.
+* **Risk Assessment → Object Type**  
+  - Displays the type label for a regular object or “Object Group” if applicable.
+* **Risk Assessment → Risk Before Treatment**  
+  - Includes background color based on the risk class.
+* **Risk Assessment → Risk Treatment Option**  
+  - One of: Avoid, Accept, Reduce, Transfer/Share.
+* **Risk Assessment → Responsible Person**  
+  - Name of the assigned person or person group responsible for treatment.
+* **Risk Assessment → Planned Implementation Date**
+* **Risk Assessment → Risk After Treatment**  
+  - Includes background color based on the risk class.
+* **Risk Assessment → Implementation Status**
+* **Control/Measure → Title**  
+  - Lists all assigned controls as bullet points in the same table cell.
+
+| 
+
+**Grouping Logic**
+-   Rows are grouped by the **assigned object or object group**, allowing users to quickly understand the risk exposure
+and mitigation strategy per entity.
+
+| 
+
+**Export and Usability**
+- The report is optimized for screen viewing and PDF export, making it suitable for planning sessions, implementation tracking, and compliance documentation.
+
+| 
+
+**Benefits**
+
+- Offers a clear and comprehensive view of how risks are treated across the organization.
+- Supports accountability with tracking of responsible persons and implementation timelines.
+- Enables grouping by asset for practical follow-up and risk governance.
+- Useful for audits, internal reviews, and continuous improvement efforts in ISMS implementation.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Statement of Applicability (SoA)
+--------------------------------
+
+The **Statement of Applicability (SoA)** report provides a structured overview of all available controls and measures,
+starting with those defined in the **ISO/IEC 27001:2022** catalog (if imported). This report is central to demonstrating
+the organization's control selection, applicability decisions, and implementation progress.
+
+The SoA is particularly useful for audits, compliance validation, and internal control tracking, serving as a living
+document that reflects the current state of your Information Security Management System (ISMS).
+
+| 
+
+**Control Inclusion and Sorting**
+
+- The report **always starts** with the controls/measures that have the source set to **"ISO 27001:2022"**.
+- These are **sorted by their Identifier** to preserve catalog structure and readability.
+- All other controls (from other sources or manually created) follow afterward.
+
+| 
+
+**Displayed Columns**
+
+Each control/measure is displayed in a row with the following columns:
+
+* **Title** - The title or short name of the control.
+* **Identifier** - The catalog identifier (e.g., A.5.1, A.6.2).
+* **Chapter** - The chapter or grouping reference of the control.
+* **Is Applicable** - Boolean indicating whether the control applies in the organization's context.
+* **Reason** - Justification when a control is marked as not applicable.
+* **Implementation State** - The current overall implementation status (e.g., Planned, In Progress, Implemented).
+
+| 
+
+**(Optional) Assignment Implementation State**
+
+In some cases, there may be multiple **control assignments** per control. The report may be extended in the future
+to reflect the **implementation states per assignment** (e.g., per asset or per risk treatment). This requires
+careful display logic to avoid clutter and ensure clarity. A future design may include:
+
+- A nested list of assignment statuses
+- Aggregated summaries (e.g., "3 out of 5 implementations completed")
+- Filterable columns or expandable rows
+
+| 
+
+**Export and Usability**
+
+- The SoA can be exported to **PDF** for compliance documentation or to **Excel/CSV** for operational tracking.
+- Designed to align with ISO/IEC 27001:2022 audit expectations.
+
+| 
+
+**Benefits**
+
+- Demonstrates due diligence in selecting and documenting control applicability.
+- Provides a clear link between compliance goals and practical implementation.
+- Supports transparency and traceability for internal and external audits.
+- Forms a foundational component of any ISMS documentation package.
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Risk Assessments
+----------------
+
+The **Risk Assessments** report provides a comprehensive overview of all existing risk assessments within the ISMS,
+enriched with contextual data from the linked risk and associated object or object group. This report is essential for
+tracking, analyzing, and auditing the organization's risk landscape across all assets and risk objects.
+
+| 
+
+**Displayed Columns**
+
+This report includes the full set of attributes from the **Risk Assessment**, enriched with related information from
+the connected **Risk** and **Assigned Object**:
+
+* **Risk Title** - Title of the linked risk.
+* **Affected Protection Goals** - Comma-separated list of protection goals related to the risk.
+* **Risk Category** - Categorization label of the risk.
+* **Assigned Object Summary / Object Group Title** - Depending on the assignment.
+* **Object Type / “Object Group”** - Label of the object type or “Object group”.
+
+| 
+
+**Impact and Likelihood Values (Before Treatment)**
+
+For each **impact category** and **likelihood**, the report displays:
+
+* `<Calculation Base> - <Impact Level>`  
+  Example: `4 - critical`, `5 - catastrophic`, `3 - possible`.
+
+Each impact category appears as a separate column in the report.
+
+* **Calculated Risk (Before Treatment)** - Numeric or qualitative value, colored according to the risk class.
+
+| 
+
+**Core Risk Assessment Attributes**
+
+* **Risk Assessor**
+* **Risk Owner**
+* **Interviewed Persons** - Comma-separated list
+* **Date of Risk Assessment**
+* **Additional Information**
+* **Risk Treatment Option**
+* **Responsible Person**
+* **Risk Treatment Description**
+* **Planned Implementation Date**
+* **Implementation Status**
+* **Implementation Finished On**
+* **Required Resources**
+* **Implementation Costs**
+* **Priority**
+
+| 
+
+**Impact and Likelihood Values (After Treatment)**
+
+Similar to the "before treatment" values, each impact category and likelihood is shown **after treatment**, using the same format and columns.
+
+* **Calculated Risk (After Treatment)** - Value with background color indicating the risk class.
+
+| 
+
+**Audit Information**
+
+* **Audit Done On** - Date of audit.
+* **Auditor** - Person who performed the audit.
+* **Audit Result** - Free-text or selection result field.
+
+| 
+
+**Filtering Options**
+
+To support focused analysis, users can filter the report using:
+
+* **Affected Protection Goals**
+* **Risk Category**
+* **Calculated Risk Class (Before Treatment)**
+* **Calculated Risk Class (After Treatment)**
+* **Risk Assessor**
+* **Risk Owner**
+* **Risk Treatment Option**
+* **Responsible Person**
+* **Implementation Status**
+* **Priority**
+
+| 
+
+**Benefits**
+
+- Enables a deep dive into individual and collective risk assessments.
+- Supports compliance, audit preparation, and continuous risk monitoring.
+- Facilitates targeted mitigation through comprehensive filtering and grouping.
+- Allows export and traceability across different treatment stages.

@@ -114,12 +114,13 @@ class MediaFilesManager(BaseManager):
         """
         try:
             result = self.fs.get_last_version(**metadata)
+
+            return result.read() if blob else result._file
         except NoFile:
             return None
         except Exception as err:
             LOGGER.debug("[get_file] Exception: %s, ErrorType: %s",err, type(err))
-
-        return result.read() if blob else result._file
+            return None
 
 
     def get_many_media_files(self, metadata, **params: dict):
