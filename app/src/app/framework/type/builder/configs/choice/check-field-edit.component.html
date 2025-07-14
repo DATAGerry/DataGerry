@@ -104,4 +104,20 @@
         />
         <small class="form-text text-muted">Small helper popup.</small>
     </div>
+
+    <div class="form-group col-md-12">
+        <label>Default value:</label>
+        <div class="custom-control custom-checkbox">
+          <input
+            type="checkbox"
+            class="custom-control-input"
+            [formControl]="valueControl"
+            id="defaultChecked"
+            (ngModelChange)="onInputChange($event, 'value')"
+          />
+          <label class="custom-control-label" for="defaultChecked">Checked by default</label>
+        </div>
+        <small class="form-text text-muted">If selected, this checkbox will be checked by default.</small>
+      </div>
+      
 </div>
