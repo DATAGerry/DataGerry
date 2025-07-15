@@ -8,8 +8,180 @@ Changelogs
 
 | 
 
-TODO: Version 3.0.0
-===================
+=======================================================================================================================
+
+| 
+
+Version 3.0.0
+=============
+
+| 
+
+New Features
+------------
+
+| 
+
+:ref:`Reporting System <reports-anchor>`
+
+-  Introduced a new **Reporting** module accessible via :menuselection:`Toolbox --> Reporting`
+-  Enables creation, management, and execution of custom reports on CMDB object data
+-  Users can define reports per object type (CmdbType) with:
+
+   -  Custom report name and user-defined category
+   -  Field selection for fine-grained control over report content
+   -  Optional filter logic using nested AND/OR conditions
+   -  Multi-value field rendering options: per row or per column
+
+-  Added a separate interface to manage report categories
+-  Reports can be executed directly in the UI and downloaded as **CSV**
+-  Report results are tailored for flexible documentation, audit support, or export use cases
+
+| 
+
+:ref:`Webhooks <webhooks-anchor>`
+
+-  Introduced support for **Webhooks** to enable real-time integrations with external systems
+-  Accessible via :menuselection:`Toolbox --> Webhooks`
+-  Webhooks can be configured with:
+
+   -  A custom name and description
+   -  The target URL to which event data should be sent
+   -  Trigger types (create, update, delete) to define when the webhook should fire
+
+-  Supports **POST** requests with JSON payloads for seamless integration with APIs
+-  Webhook execution logs are available for debugging and monitoring delivery status
+-  Designed for automation, event-driven workflows, and external system synchronization
+
+| 
+
+Initial release of the ISMS (Information Security Management System) module
+---------------------------------------------------------------------------
+
+  - Introduced a comprehensive module for managing information security risks based on ISO 27001 concepts
+  - Provides full configurability of core :ref:`ISMS <isms-anchor>` elements including:
+    
+    - Protection goals
+    - :ref:`Risk Classes <isms-risk-class-anchor>` and matrices
+    - :ref:`Likelihoods <isms-likelihood-anchor>`, :ref:`Impacts <isms-impact-anchor>` and
+      :ref:`Impact Categories <isms-impact-categories-anchor>`
+    - :ref:`Threats <isms-threat-anchor>` and :ref:`Vulnerabilities <isms-vulnerability-anchor>`
+    - :ref:`Controls and measures <isms-controls-anchor>`
+
+  - Added support for modeling and assessing :ref:`Risks <isms-risk-anchor>`
+  - :ref:`Risk Assessments <isms-risk-assessments-anchor>` can be assigned to specific :ref:`Objects <objects-anchor>`
+    or :ref:`ObjectGroups <object-groups-anchor>` and include lifecycle data such as implementation status and
+    treatment options
+  - Allows linking of controls to risks and tracking of implementation progress
+  - Statement of Applicability (SOA) functionality for managing control applicability and implementation
+  - Includes built-in reporting features for overviews like risk matrices, treatment plans, SOA, and detailed assessments
+  - Introduced the concept of **Persons** and **Person Groups** for mapping real-world responsibilities within assessments
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Backward incompatible changes
+-----------------------------
+
+-   We are replacing the existing exportD service with OpenCelium, an integration platform that enables seamless
+    communication between applications via APIs. OpenCelium will allow us to deliver data flexibly and in real time via
+    webhooks, improving data flow and integration capabilities across our ecosystem
+-   Another part of this change is the removal of RabbitMQ which will no longer be a dependency when installing
+    DataGerry
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Changes
+-------
+
+-   New design and structure of the DataGerry documentation
+-   API routes are now being documented using the OpenAPI format, beginning with this release. This is an ongoing
+    process and will be expanded in future updates
+-   Tests were added to various frontend components (ongoing process)
+-   Improved and optimized validation workflows when creating and editing :ref:`Types <types-anchor>`
+-   Object links between two :ref:`Objects <objects-anchor>` are no limit to once
+-   Enforced uniqueness of the **Email** field when creating or updating users to prevent duplicate entries
+-   Improved error message texts for backend responses to be more informative (ongoing process)
+-   Improved visual feedback for invalid fields and sections when creating/editing a :ref:`Type <types-anchor>`
+-   The special control **Reference** has now its required fields highlighted
+-   Several APi routes were improved with proper error handling and extended error messages (ongoing process)
+-   Refactored several components and workflows in Angular frontend to optimize speed and resource usage (onging process)
+-   Refactored several workflows and classes in Backend to optimize speed and resource usage (ongoing process)
+-   Added a "Back" button in the "Referenced by"-tab of :ref:`Object <objects-anchor>` detailed views
+-   Added default value selection for Checkbox basic controls
+-   A new basic control type has been added to the :ref:Types <types-anchor> creation/edit form: the Numeric Field,
+    which strictly accepts numeric input values
+-   :ref:`Types <types-anchor>` cannot be deleted if :ref:`Reports <reports-anchor>` exist which are using it
+-   A spinner has been added while the Frontned is waiting for API responses from the Backend
+-   The "Enter"-Key can now be used on the login page to trigger the "Login" button
+-   Login credentials are now preserved on an incorrect login attempt
+-   Added a toggle button to hide/show the password on the login page
+
+| 
+
+=======================================================================================================================
+
+| 
+
+Bugfixes
+--------
+
+-   [**DAT-568**] Fixed a bug where the creation date of :ref:`Objects <objects-anchor>` overwritten by the edit date
+    when editing an :ref:`Object <objects-anchor>`
+-   [**DAT-859**] Fixed a bug where duplicate identifiers were saved for :ref:`Type <types-anchor>` controls
+-   [**DAT-860**] Fixed a bug where duplicate identifiers were saved for :ref:`Type <types-anchor>` sections
+-   [**DAT-883**] Fixed a bug where invalid characters could be entered in the name property when a
+    :ref:`Type <types-anchor>` is created
+-   [**DAT-898**] Fixed a bug where incorrect section names were applied when setting multiple section names to "Empty"
+    while creating a :ref:`Type <types-anchor>`
+-   [**DAT-967**] Fixed a bug where the list of documents sometiems was not updated when a document was deleted
+    in the :ref:`File Explorer <file-explorer-anchor>`
+-   [**DAT-968**] Fixed a bug where the Frontend crashed when saving a new
+    :ref:`Section Template <section-templates-anchor>`
+-   [**DAT-979**] Fixed an issue where options from a removed reference type selection remained visible in the summary
+    section
+-   [**DAT-983**] Fixed an issue when Rapidly Clicking Delete Button in :ref:`File Explorer <file-explorer-anchor>`
+    crashed the frontend
+-   [**DAT-984**] Fixed an issue where the file upload count was not correctly displayed in the
+    :ref:`File Explorer <file-explorer-anchor>`
+-   [**DAT-985**] Fixed an issue where the uploaded files were not displayed in the
+    :ref:`File Explorer <file-explorer-anchor>`
+-   [**DAT-989**] Fixed a bug where adding a :ref:`Multi Data Sections <mds-anchor>` to a :ref:`Type <types-anchor>`
+    with three existing sections caused one section to be incorrectly converted into a
+    :ref:`Multi Data Sections <mds-anchor>`
+-   [**DAT-992**] Fixed an intermittent issue where performing a clean action on a :ref:`Type <types-anchor>` could
+    cause the application to crash
+-   [**DAT-1007**] Fixed an issue where accessing **Settings -> Database Properties** could result in an error with
+    an unclear error message
+-   [**DAT-1019**] Fixed an issue where fields in the :ref:`Type <types-anchor>` creation form lost its index when
+    the identifier was empty
+-   [**DAT-1022**] Fixed an issue where the special control **Reference** could only be dragged once and the got locked
+-   [**DAT-1036**] Fixed a bug where identifiers were incorrectly validated against labels, causing uniqueness errors
+    when both fields had identical values
+-   [**DAT-1040**] Fixed a bug where sometimes deleting **UserGroups** caused an error
+-   [**DAT-1042**] Fixed a bug where newly added :ref:`Types <types-anchor>` where not displayed in the sidebar until
+    the page was refreshed manually
+-   [**DAT-1063**] Fixed a bug where an incorrect path was used when clicking the back button in the **View Logs Page**
+-   [**DAT-1077**] Fixed a bug where in section templates, updating the label of an existing section does not reflect
+    the change. This issue also occured while creating a new section label
+-   [**DAT-1139**] Fixed a bug where the "Unclean" action of :ref:`Types <types-anchor>` resulted in an error under
+    certain circumstances
+-   [**DAT-1179**] Fixed a bug where under certain circumstances the creation of :ref:`Locations <locations-anchor>`
+    failed
+-   [**DAT-1188**] Fixed a bug where under certain circumstances a new :ref:`Type <types-anchor>` could not be created(
+    "Save" - button stayed disabled) when a Reference special control was dragged into a section
+-   [**DAT-1204**] Fixed a bug which occured during imports from CSV files
+
+| 
+
+=======================================================================================================================
 
 | 
 
@@ -209,6 +381,10 @@ Python Package Bumps
 -  **sphinxcontrib-serializinghtml** to **1.1.10** (from 1.1.9)
 -  **urllib** to **2.2.1** (from 2.0.7)
 -  **xhtml2pdf** to **0.2.15** (from 0.2.13)
+
+| 
+
+=======================================================================================================================
 
 | 
 
@@ -432,6 +608,10 @@ Python Package Bumps
 
 Version 2.0.0
 =============
+
+| 
+
+=======================================================================================================================
 
 | 
 

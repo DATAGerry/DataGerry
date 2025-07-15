@@ -69,7 +69,8 @@ and manage any type of asset or configuration data.
     :caption: Sources
     :maxdepth: 2
 
-    sources/sources
+    sources/download
+    sources/repository
     sources/changelog
 
 =======================================================================================================================

@@ -2,6 +2,8 @@
 Webhooks
 ********
 
+.. _webhooks-anchor:
+
 Webhooks allow for seamless integration with external systems by automatically sending HTTP POST requests when
 specific events occur within the application. This enables automated workflows, real-time synchronization,
 and external monitoring.

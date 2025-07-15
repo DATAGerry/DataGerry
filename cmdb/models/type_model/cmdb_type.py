@@ -76,6 +76,7 @@ class CmdbType(CmdbDAO):
                  label: str = None,
                  description: str = None,
                  ci_explorer_label: str = None,
+                 ci_explorer_color: str = None,
                  acl: AccessControlList = None):
         """
         Initializes a CmdbType
@@ -97,6 +98,7 @@ class CmdbType(CmdbDAO):
             label (str): A user-friendly label for the CmdbType. Defaults to a title-cased version of the name
             description (str, optional): A description of the CmdbType
             ci_explorer_label (str): Label displayed in the CI Explorer
+            ci_explorer_color (str): Color of the CmdbType in the CI Explorer
             acl (AccessControlList, optional): AccessControlList for the CmdbType. Defaults to none
 
         Raises:
@@ -117,6 +119,7 @@ class CmdbType(CmdbDAO):
             self.render_meta = render_meta
             self.fields = fields or []
             self.ci_explorer_label = ci_explorer_label
+            self.ci_explorer_color = ci_explorer_color
             self.acl = acl
 
             super().__init__(public_id=public_id)
@@ -164,6 +167,7 @@ class CmdbType(CmdbDAO):
                 render_meta = TypeRenderMeta.from_data(data.get('render_meta', {})),
                 fields = data.get('fields') or [],
                 ci_explorer_label = data.get('ci_explorer_label'),
+                ci_explorer_color = data.get('ci_explorer_color'),
                 acl = AccessControlList.from_data(data.get('acl', {})),
             )
         except Exception as err:
@@ -201,6 +205,7 @@ class CmdbType(CmdbDAO):
                 'render_meta': TypeRenderMeta.to_json(instance.render_meta),
                 'fields': instance.fields,
                 'ci_explorer_label': instance.ci_explorer_label,
+                'ci_explorer_color': instance.ci_explorer_color,
                 'acl': AccessControlList.to_json(instance.acl),
             }
         except Exception as err:
