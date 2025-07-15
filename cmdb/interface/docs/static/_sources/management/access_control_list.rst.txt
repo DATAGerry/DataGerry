@@ -103,7 +103,6 @@ When activated, the menu is enabled and groups can be added to an ACL with the r
 
 .. figure:: img/acl/object_type_builder_acl_setup.png
     :width: 600
-    :alt: While object acl configure
 
     Figure 21: While object acl configure
 
@@ -113,7 +112,6 @@ Listing the same group with different permissions in the same list is not possib
 
 .. figure:: img/acl/object_type_builder_acl_example.png
     :width: 600
-    :alt: Inserted object acl
 
     Figure 22: Inserted object acl
 

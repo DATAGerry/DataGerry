@@ -316,5 +316,11 @@ def get_cmdb_type_schema() -> dict:
             'required': False,
             'nullable': True,
             'empty': True,
-        }
+        },
+        'ci_explorer_color': { # Stores the color which should be used in the CI Explorer representation
+            'type': 'string',
+            'required': False,
+            'nullable': True,
+            'empty': True,
+        },
     }

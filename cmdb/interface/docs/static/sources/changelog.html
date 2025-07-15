@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="TODO: Swagger REST API" href="../rest_api/rest_api.html" />
-    <link rel="prev" title="TODO: Administration" href="sources.html" /> 
+    <link rel="prev" title="TODO: Repository" href="repository.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -87,25 +87,33 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Sources</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="sources.html">TODO: Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">TODO: Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repository.html">TODO: Repository</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelogs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#todo-version-3-0-0">TODO: Version 3.0.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-2-0">Version 2.2.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-3-0-0">Version 3.0.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-release-of-the-isms-information-security-management-system-module">Initial release of the ISMS (Information Security Management System) module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backward-incompatible-changes">Backward incompatible changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#changes">Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-1-0">Version 2.1.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-2-0">Version 2.2.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">New Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Bugfixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-0-0">Version 2.0.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-1-0">Version 2.1.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id4">New Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id5">Bugfixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id6">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-0-0">Version 2.0.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Changes</a></li>
 </ul>
 </li>
 </ul>
@@ -153,8 +161,83 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="todo-version-3-0-0">
-<h2>TODO: Version 3.0.0<a class="headerlink" href="#todo-version-3-0-0" title="Link to this heading"></a></h2>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="version-3-0-0">
+<h2>Version 3.0.0<a class="headerlink" href="#version-3-0-0" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="new-features">
+<h3>New Features<a class="headerlink" href="#new-features" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><a class="reference internal" href="../usage/reports.html#reports-anchor"><span class="std std-ref">Reporting System</span></a></p>
+<ul class="simple">
+<li><p>Introduced a new <strong>Reporting</strong> module accessible via <span class="menuselection">Toolbox ‣ Reporting</span></p></li>
+<li><p>Enables creation, management, and execution of custom reports on CMDB object data</p></li>
+<li><p>Users can define reports per object type (CmdbType) with:</p>
+<ul>
+<li><p>Custom report name and user-defined category</p></li>
+<li><p>Field selection for fine-grained control over report content</p></li>
+<li><p>Optional filter logic using nested AND/OR conditions</p></li>
+<li><p>Multi-value field rendering options: per row or per column</p></li>
+</ul>
+</li>
+<li><p>Added a separate interface to manage report categories</p></li>
+<li><p>Reports can be executed directly in the UI and downloaded as <strong>CSV</strong></p></li>
+<li><p>Report results are tailored for flexible documentation, audit support, or export use cases</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><a class="reference internal" href="../usage/webhooks.html#webhooks-anchor"><span class="std std-ref">Webhooks</span></a></p>
+<ul class="simple">
+<li><p>Introduced support for <strong>Webhooks</strong> to enable real-time integrations with external systems</p></li>
+<li><p>Accessible via <span class="menuselection">Toolbox ‣ Webhooks</span></p></li>
+<li><p>Webhooks can be configured with:</p>
+<ul>
+<li><p>A custom name and description</p></li>
+<li><p>The target URL to which event data should be sent</p></li>
+<li><p>Trigger types (create, update, delete) to define when the webhook should fire</p></li>
+</ul>
+</li>
+<li><p>Supports <strong>POST</strong> requests with JSON payloads for seamless integration with APIs</p></li>
+<li><p>Webhook execution logs are available for debugging and monitoring delivery status</p></li>
+<li><p>Designed for automation, event-driven workflows, and external system synchronization</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="initial-release-of-the-isms-information-security-management-system-module">
+<h3>Initial release of the ISMS (Information Security Management System) module<a class="headerlink" href="#initial-release-of-the-isms-information-security-management-system-module" title="Link to this heading"></a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Introduced a comprehensive module for managing information security risks based on ISO 27001 concepts</p></li>
+<li><p>Provides full configurability of core <a class="reference internal" href="../usage/isms.html#isms-anchor"><span class="std std-ref">ISMS</span></a> elements including:</p>
+<ul>
+<li><p>Protection goals</p></li>
+<li><p><a class="reference internal" href="../usage/isms.html#isms-risk-class-anchor"><span class="std std-ref">Risk Classes</span></a> and matrices</p></li>
+<li><p><a class="reference internal" href="../usage/isms.html#isms-likelihood-anchor"><span class="std std-ref">Likelihoods</span></a>, <a class="reference internal" href="../usage/isms.html#isms-impact-anchor"><span class="std std-ref">Impacts</span></a> and
+<a class="reference internal" href="../usage/isms.html#isms-impact-categories-anchor"><span class="std std-ref">Impact Categories</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/isms.html#isms-threat-anchor"><span class="std std-ref">Threats</span></a> and <a class="reference internal" href="../usage/isms.html#isms-vulnerability-anchor"><span class="std std-ref">Vulnerabilities</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/isms.html#isms-controls-anchor"><span class="std std-ref">Controls and measures</span></a></p></li>
+</ul>
+</li>
+<li><p>Added support for modeling and assessing <a class="reference internal" href="../usage/isms.html#isms-risk-anchor"><span class="std std-ref">Risks</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/isms.html#isms-risk-assessments-anchor"><span class="std std-ref">Risk Assessments</span></a> can be assigned to specific <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a>
+or <a class="reference internal" href="../usage/cmdb_concepts.html#object-groups-anchor"><span class="std std-ref">ObjectGroups</span></a> and include lifecycle data such as implementation status and
+treatment options</p></li>
+<li><p>Allows linking of controls to risks and tracking of implementation progress</p></li>
+<li><p>Statement of Applicability (SOA) functionality for managing control applicability and implementation</p></li>
+<li><p>Includes built-in reporting features for overviews like risk matrices, treatment plans, SOA, and detailed assessments</p></li>
+<li><p>Introduced the concept of <strong>Persons</strong> and <strong>Person Groups</strong> for mapping real-world responsibilities within assessments</p></li>
+</ul>
+</div></blockquote>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -163,13 +246,126 @@
 <div class="line"><br /></div>
 </div>
 </section>
+<section id="backward-incompatible-changes">
+<h3>Backward incompatible changes<a class="headerlink" href="#backward-incompatible-changes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>We are replacing the existing exportD service with OpenCelium, an integration platform that enables seamless
+communication between applications via APIs. OpenCelium will allow us to deliver data flexibly and in real time via
+webhooks, improving data flow and integration capabilities across our ecosystem</p></li>
+<li><p>Another part of this change is the removal of RabbitMQ which will no longer be a dependency when installing
+DataGerry</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="changes">
+<h3>Changes<a class="headerlink" href="#changes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>New design and structure of the DataGerry documentation</p></li>
+<li><p>API routes are now being documented using the OpenAPI format, beginning with this release. This is an ongoing
+process and will be expanded in future updates</p></li>
+<li><p>Tests were added to various frontend components (ongoing process)</p></li>
+<li><p>Improved and optimized validation workflows when creating and editing <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a></p></li>
+<li><p>Object links between two <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a> are no limit to once</p></li>
+<li><p>Enforced uniqueness of the <strong>Email</strong> field when creating or updating users to prevent duplicate entries</p></li>
+<li><p>Improved error message texts for backend responses to be more informative (ongoing process)</p></li>
+<li><p>Improved visual feedback for invalid fields and sections when creating/editing a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a></p></li>
+<li><p>The special control <strong>Reference</strong> has now its required fields highlighted</p></li>
+<li><p>Several APi routes were improved with proper error handling and extended error messages (ongoing process)</p></li>
+<li><p>Refactored several components and workflows in Angular frontend to optimize speed and resource usage (onging process)</p></li>
+<li><p>Refactored several workflows and classes in Backend to optimize speed and resource usage (ongoing process)</p></li>
+<li><p>Added a “Back” button in the “Referenced by”-tab of <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Object</span></a> detailed views</p></li>
+<li><p>Added default value selection for Checkbox basic controls</p></li>
+<li><p>A new basic control type has been added to the :ref:Types &lt;types-anchor&gt; creation/edit form: the Numeric Field,
+which strictly accepts numeric input values</p></li>
+<li><p><a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a> cannot be deleted if <a class="reference internal" href="../usage/reports.html#reports-anchor"><span class="std std-ref">Reports</span></a> exist which are using it</p></li>
+<li><p>A spinner has been added while the Frontned is waiting for API responses from the Backend</p></li>
+<li><p>The “Enter”-Key can now be used on the login page to trigger the “Login” button</p></li>
+<li><p>Login credentials are now preserved on an incorrect login attempt</p></li>
+<li><p>Added a toggle button to hide/show the password on the login page</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>[<strong>DAT-568</strong>] Fixed a bug where the creation date of <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a> overwritten by the edit date
+when editing an <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Object</span></a></p></li>
+<li><p>[<strong>DAT-859</strong>] Fixed a bug where duplicate identifiers were saved for <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> controls</p></li>
+<li><p>[<strong>DAT-860</strong>] Fixed a bug where duplicate identifiers were saved for <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> sections</p></li>
+<li><p>[<strong>DAT-883</strong>] Fixed a bug where invalid characters could be entered in the name property when a
+<a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> is created</p></li>
+<li><p>[<strong>DAT-898</strong>] Fixed a bug where incorrect section names were applied when setting multiple section names to “Empty”
+while creating a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a></p></li>
+<li><p>[<strong>DAT-967</strong>] Fixed a bug where the list of documents sometiems was not updated when a document was deleted
+in the <a class="reference internal" href="../usage/file_explorer.html#file-explorer-anchor"><span class="std std-ref">File Explorer</span></a></p></li>
+<li><p>[<strong>DAT-968</strong>] Fixed a bug where the Frontend crashed when saving a new
+<a class="reference internal" href="../usage/section_templates.html#section-templates-anchor"><span class="std std-ref">Section Template</span></a></p></li>
+<li><p>[<strong>DAT-979</strong>] Fixed an issue where options from a removed reference type selection remained visible in the summary
+section</p></li>
+<li><p>[<strong>DAT-983</strong>] Fixed an issue when Rapidly Clicking Delete Button in <a class="reference internal" href="../usage/file_explorer.html#file-explorer-anchor"><span class="std std-ref">File Explorer</span></a>
+crashed the frontend</p></li>
+<li><p>[<strong>DAT-984</strong>] Fixed an issue where the file upload count was not correctly displayed in the
+<a class="reference internal" href="../usage/file_explorer.html#file-explorer-anchor"><span class="std std-ref">File Explorer</span></a></p></li>
+<li><p>[<strong>DAT-985</strong>] Fixed an issue where the uploaded files were not displayed in the
+<a class="reference internal" href="../usage/file_explorer.html#file-explorer-anchor"><span class="std std-ref">File Explorer</span></a></p></li>
+<li><p>[<strong>DAT-989</strong>] Fixed a bug where adding a <a class="reference internal" href="../usage/multi_data_sections.html#mds-anchor"><span class="std std-ref">Multi Data Sections</span></a> to a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a>
+with three existing sections caused one section to be incorrectly converted into a
+<a class="reference internal" href="../usage/multi_data_sections.html#mds-anchor"><span class="std std-ref">Multi Data Sections</span></a></p></li>
+<li><p>[<strong>DAT-992</strong>] Fixed an intermittent issue where performing a clean action on a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> could
+cause the application to crash</p></li>
+<li><p>[<strong>DAT-1007</strong>] Fixed an issue where accessing <strong>Settings -&gt; Database Properties</strong> could result in an error with
+an unclear error message</p></li>
+<li><p>[<strong>DAT-1019</strong>] Fixed an issue where fields in the <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> creation form lost its index when
+the identifier was empty</p></li>
+<li><p>[<strong>DAT-1022</strong>] Fixed an issue where the special control <strong>Reference</strong> could only be dragged once and the got locked</p></li>
+<li><p>[<strong>DAT-1036</strong>] Fixed a bug where identifiers were incorrectly validated against labels, causing uniqueness errors
+when both fields had identical values</p></li>
+<li><p>[<strong>DAT-1040</strong>] Fixed a bug where sometimes deleting <strong>UserGroups</strong> caused an error</p></li>
+<li><p>[<strong>DAT-1042</strong>] Fixed a bug where newly added <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a> where not displayed in the sidebar until
+the page was refreshed manually</p></li>
+<li><p>[<strong>DAT-1063</strong>] Fixed a bug where an incorrect path was used when clicking the back button in the <strong>View Logs Page</strong></p></li>
+<li><p>[<strong>DAT-1077</strong>] Fixed a bug where in section templates, updating the label of an existing section does not reflect
+the change. This issue also occured while creating a new section label</p></li>
+<li><p>[<strong>DAT-1139</strong>] Fixed a bug where the “Unclean” action of <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a> resulted in an error under
+certain circumstances</p></li>
+<li><p>[<strong>DAT-1179</strong>] Fixed a bug where under certain circumstances the creation of <a class="reference internal" href="../usage/locations.html#locations-anchor"><span class="std std-ref">Locations</span></a>
+failed</p></li>
+<li><p>[<strong>DAT-1188</strong>] Fixed a bug where under certain circumstances a new <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> could not be created(
+“Save” - button stayed disabled) when a Reference special control was dragged into a section</p></li>
+<li><p>[<strong>DAT-1204</strong>] Fixed a bug which occured during imports from CSV files</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
 <section id="version-2-2-0">
 <h2>Version 2.2.0<a class="headerlink" href="#version-2-2-0" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="new-features">
-<h3>New Features<a class="headerlink" href="#new-features" title="Link to this heading"></a></h3>
+<section id="id1">
+<h3>New Features<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -196,8 +392,8 @@ configuration</p></li>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="bugfixes">
-<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading"></a></h3>
+<section id="id2">
+<h3>Bugfixes<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Fixed a wrongfully thrown error when generating a PDF from DocAPI
 although the PDF was generated correctly</p></li>
@@ -241,8 +437,8 @@ redirection instead of showing the password</p></li>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="changes">
-<h3>Changes<a class="headerlink" href="#changes" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Changes<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>RHEL 8</p>
 <ul class="simple">
 <li><p>DATAGERRY is no longer compatible with <strong>RHEL8</strong>. The build package
@@ -373,6 +569,10 @@ exceptions</p></li>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
 <section id="version-2-1-0">
@@ -380,8 +580,8 @@ exceptions</p></li>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="id1">
-<h3>New Features<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3>New Features<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -415,8 +615,8 @@ installations on debian systems</p></li>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="id2">
-<h3>Bugfixes<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="id5">
+<h3>Bugfixes<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Object Links are now deleted when one of the objects is deleted</p></li>
 <li><p>In type configurations the field “Reference type selections” for the
@@ -457,8 +657,8 @@ Logs) which should now work</p></li>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="id3">
-<h3>Changes<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>Changes<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>DATAGerry Assistant</p>
 <ul class="simple">
 <li><p>Created types are now placed in categories instead of being added
@@ -607,8 +807,12 @@ the newest Version of DATAGERRY</p></li>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="id4">
-<h3>New Features<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="id7">
+<h3>New Features<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -634,8 +838,8 @@ Assistant</strong>) so that it is possible to start it manually</p></li>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="id5">
-<h3>Bugfixes<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>Bugfixes<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Fixed a bug displaying popup boxes behind the gray overlay background</p></li>
 <li><p>Fixed an error where the progress bar of a toast was not
@@ -683,8 +887,8 @@ and still showing the deleted type</p></li>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="id6">
-<h3>Changes<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>Changes<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Rework of the Feedback-Form (<strong>Toolbox =&gt; Feedback</strong>)</p></li>
 <li><p>When creating or editing a type it is no longer possible to proceed
@@ -796,7 +1000,7 @@ type</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="sources.html" class="btn btn-neutral float-left" title="TODO: Administration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="repository.html" class="btn btn-neutral float-left" title="TODO: Repository" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../rest_api/rest_api.html" class="btn btn-neutral float-right" title="TODO: Swagger REST API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

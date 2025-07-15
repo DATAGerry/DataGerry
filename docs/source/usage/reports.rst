@@ -2,6 +2,8 @@
 Reports
 *******
 
+.. _reports-anchor:
+
 To access reports, navigate to **Toolbox -> Reporting**. This page provides an overview of all created reports.
 
 Above the report overview table, you will find two buttons:

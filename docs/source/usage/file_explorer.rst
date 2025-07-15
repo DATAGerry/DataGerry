@@ -2,6 +2,8 @@
 File Explorer
 *************
 
+.. _file-explorer-anchor:
+
 The **File Explorer**, accessible via :menuselection:`Toolbox --> Explorer`, provides a structured interface for
 managing files and folders within the system. It enables users to upload, organize, and maintain documents and
 related resources in a hierarchical folder tree.

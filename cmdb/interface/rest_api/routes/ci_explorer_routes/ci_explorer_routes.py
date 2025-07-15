@@ -219,6 +219,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 "title": root_title,
                 "type_info": {
                     "type_id": root_type_info['public_id'],
+                    "type_color": root_type_info.get('ci_explorer_color'),
                     "label": root_type_info['label'],
                     "icon": root_type_info['render_meta'].get('icon'),
                     "fields": root_type_info.get('fields', {}),
@@ -260,7 +261,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 continue
 
             linked_object = linked_objects.get(linked_id)
-            linked_type = types_by_id.get(linked_type_id)
+            linked_type: dict = types_by_id.get(linked_type_id)
 
             if not linked_object or not linked_type:
                 continue
@@ -271,6 +272,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 "title": node_title,
                 "type_info": {
                     "type_id": linked_type['public_id'],
+                    "type_color": linked_type.get('ci_explorer_color'),
                     "label": linked_type['label'],
                     "icon": linked_type['render_meta'].get('icon'),
                     "fields": linked_type.get('fields', {}),
