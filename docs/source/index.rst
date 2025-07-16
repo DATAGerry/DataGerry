@@ -69,8 +69,9 @@ and manage any type of asset or configuration data.
     :caption: Sources
     :maxdepth: 2
 
-    sources/download
-    sources/repository
+    Download Packages <https://buildkite.com/organizations/becon-gmbh/packages>
+    Download Docker <https://hub.docker.com/r/becongmbh/datagerry>
+    Repository <https://github.com/DATAGerry/DATAGerry>
     sources/changelog
 
 =======================================================================================================================

@@ -39,6 +39,7 @@ from cmdb.models.object_relation_model import CmdbObjectRelation
 from cmdb.models.log_model import CmdbObjectRelationLog
 from cmdb.models.object_group_model import CmdbObjectGroup
 from cmdb.models.extendable_option_model import CmdbExtendableOption
+from cmdb.models.ci_explorer_model.ci_explorer_profile import CmdbCiExplorerProfile
 from cmdb.models.isms_model import (
     IsmsRiskClass,
     IsmsLikelihood,
@@ -62,6 +63,7 @@ __COLLECTIONS__ = [
     CmdbObject,
     CmdbType,
     CmdbCategory,
+    CmdbCiExplorerProfile,
     CmdbMetaLog,
     CmdbObjectLink,
     CmdbLocation,

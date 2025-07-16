@@ -55,8 +55,19 @@ New Features
 
 | 
 
-Initial release of the ISMS (Information Security Management System) module
----------------------------------------------------------------------------
+ :ref:`n:m (many-to-many) Relations <nm-relations-anchor>` between :ref:`Types <types-anchor>`
+
+  - Added the ability to configure n:m reference fields, allowing :ref:`Objects <objects-anchor>` to be linked to
+    multiple other :ref:`Objects <objects-anchor>` and vice versa
+  - Enables advanced modeling scenarios such as associating multiple users with multiple systems, or linking services
+    across multiple infrastructures
+  - Includes support for bidirectional navigation and optional display of related data in both linked
+    :ref:`Types <types-anchor>`
+
+| 
+
+Release of the ISMS (Information Security Management System) module
+-------------------------------------------------------------------
 
   - Introduced a comprehensive module for managing information security risks based on ISO 27001 concepts
   - Provides full configurability of core :ref:`ISMS <isms-anchor>` elements including:
@@ -101,28 +112,39 @@ Backward incompatible changes
 Changes
 -------
 
+**Documentation**
+
 -   New design and structure of the DataGerry documentation
 -   API routes are now being documented using the OpenAPI format, beginning with this release. This is an ongoing
     process and will be expanded in future updates
+
+**Frontend**
+
 -   Tests were added to various frontend components (ongoing process)
+-   Design changes for the detailed view of :ref:`Objects <objects-anchor>`
 -   Improved and optimized validation workflows when creating and editing :ref:`Types <types-anchor>`
--   Object links between two :ref:`Objects <objects-anchor>` are no limit to once
+-   Object links between two :ref:`Objects <objects-anchor>` are now limited to once
 -   Enforced uniqueness of the **Email** field when creating or updating users to prevent duplicate entries
--   Improved error message texts for backend responses to be more informative (ongoing process)
--   Improved visual feedback for invalid fields and sections when creating/editing a :ref:`Type <types-anchor>`
--   The special control **Reference** has now its required fields highlighted
--   Several APi routes were improved with proper error handling and extended error messages (ongoing process)
--   Refactored several components and workflows in Angular frontend to optimize speed and resource usage (onging process)
--   Refactored several workflows and classes in Backend to optimize speed and resource usage (ongoing process)
+-   Refactored several components and workflows in Angular frontend to optimize speed and resource usage
+    (onging process)
 -   Added a "Back" button in the "Referenced by"-tab of :ref:`Object <objects-anchor>` detailed views
--   Added default value selection for Checkbox basic controls
--   A new basic control type has been added to the :ref:Types <types-anchor> creation/edit form: the Numeric Field,
+-   The special control **Reference** has now its required fields highlighted
+-   Improved visual feedback for invalid fields and sections when creating/editing a :ref:`Type <types-anchor>`
+-   A new basic control type has been added to the :ref:`Types <types-anchor>` creation/edit form: the Numeric Field,
     which strictly accepts numeric input values
 -   :ref:`Types <types-anchor>` cannot be deleted if :ref:`Reports <reports-anchor>` exist which are using it
 -   A spinner has been added while the Frontned is waiting for API responses from the Backend
 -   The "Enter"-Key can now be used on the login page to trigger the "Login" button
 -   Login credentials are now preserved on an incorrect login attempt
 -   Added a toggle button to hide/show the password on the login page
+-   Added a default value field for basic control **Checkbox**
+
+**Backend**
+
+-   New backend startup routine checks if all required collections are exisiting in the database
+-   Improved error message texts for backend responses to be more informative (ongoing process)
+-   Several APi routes were improved with proper error handling and extended error messages (ongoing process)
+-   Refactored several workflows and classes in Backend to optimize speed and resource usage (ongoing process)
 
 | 
 
@@ -178,6 +200,18 @@ Bugfixes
 -   [**DAT-1188**] Fixed a bug where under certain circumstances a new :ref:`Type <types-anchor>` could not be created(
     "Save" - button stayed disabled) when a Reference special control was dragged into a section
 -   [**DAT-1204**] Fixed a bug which occured during imports from CSV files
+-   [**DAT-1274**] Fixed a bug that, under certain conditions, caused the application to crash when opening the
+    ObjectLogs
+-   [**DAT-1281**] Fixed a bug that caused the application to crash if a :ref:`Type <types-anchor>` ,which contains a
+    :ref:`Locations <locations-anchor>`, was viewed
+-   [**DAT-1407**] Fixed :ref:`Object <objects-anchor>` exporters mapping public_id to object_id
+-   [**DAT-1545**] Fixed an issue with incorrectly referenced type summary fields when specific input patterns are used
+-   [**DAT-1625**] Fixed an issue where hidden fields of :ref:`Multi Data Sections <mds-anchor>` were not saved upon
+    editing an :ref:`Objects <objects-anchor>`
+-   [**DAT-1655**] Fixed an issue where the special control **Reference** label was not saved correctly inside of
+    :ref:`Section Templates <section-templates-anchor>`
+-   [**DAT-1831**] Fixed a bug where incorrect data was shown inside of reference sections of
+    :ref:`Objects <objects-anchor>`
 
 | 
 

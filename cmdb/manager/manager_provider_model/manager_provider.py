@@ -22,6 +22,7 @@ from flask import current_app
 from cmdb.manager.manager_provider_model.manager_type_enum import ManagerType
 from cmdb.manager import (
     CategoriesManager,
+    CiExplorerProfileManager,
     DocapiTemplatesManager,
     LogsManager,
     UsersManager,
@@ -108,6 +109,7 @@ class ManagerProvider:
         """
         manager_classes = {
             ManagerType.CATEGORIES: CategoriesManager,
+            ManagerType.CI_EXPLORER_PROFILE: CiExplorerProfileManager,
             ManagerType.OBJECTS: ObjectsManager,
             ManagerType.LOGS: LogsManager,
             ManagerType.DOCAPI_TEMPLATES: DocapiTemplatesManager,

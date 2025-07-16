@@ -48,6 +48,7 @@ class ManagerType(Enum):
     OBJECT_GROUP = 'ObjectGroupsManager'
     PERSON = 'PersonsManager'
     PERSON_GROUP = 'PersonGroupsManager'
+    CI_EXPLORER_PROFILE = 'CiExplorerProfileManager'
 
     #ISMS Managers
     RISK_CLASS = 'RiskClassManager'
