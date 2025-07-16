@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinxcontrib.httpdomain',
     'sphinx_rtd_theme',
+    'sphinx_new_tab_link',
 ]
 
 # Napoleon settings

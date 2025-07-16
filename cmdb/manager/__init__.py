@@ -41,6 +41,7 @@ from cmdb.manager.object_groups_manager import ObjectGroupsManager
 from cmdb.manager.user_settings_manager import UserSettingsManager
 from cmdb.manager.persons_manager import PersonsManager
 from cmdb.manager.person_groups_manager import PersonGroupsManager
+from cmdb.manager.ci_explorer_profile_manager import CiExplorerProfileManager
 
 # System Managers
 from cmdb.manager.system_manager.settings_manager import SettingsManager
@@ -62,6 +63,7 @@ from cmdb.manager.isms_manager.control_measure_assignment_manager import Control
 
 __all__ = [
     'CategoriesManager',
+    'CiExplorerProfileManager',
     'DocapiTemplatesManager',
     'GroupsManager',
     'LocationsManager',

@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="TODO: Swagger REST API" href="../rest_api/rest_api.html" />
-    <link rel="prev" title="TODO: Repository" href="repository.html" /> 
+    <link rel="prev" title="Website" href="../media/media.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -87,12 +87,13 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Sources</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="download.html">TODO: Download</a></li>
-<li class="toctree-l1"><a class="reference internal" href="repository.html">TODO: Repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://buildkite.com/organizations/becon-gmbh/packages" rel="noreferrer" target="_blank">Download Packages</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://hub.docker.com/r/becongmbh/datagerry" rel="noreferrer" target="_blank">Download Docker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/DATAGerry/DATAGerry" rel="noreferrer" target="_blank">Repository</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelogs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#version-3-0-0">Version 3.0.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#initial-release-of-the-isms-information-security-management-system-module">Initial release of the ISMS (Information Security Management System) module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-of-the-isms-information-security-management-system-module">Release of the ISMS (Information Security Management System) module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backward-incompatible-changes">Backward incompatible changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#changes">Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
@@ -212,9 +213,25 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<blockquote>
+<div><p><a class="reference internal" href="../usage/n_m_relations.html#nm-relations-anchor"><span class="std std-ref">n:m (many-to-many) Relations</span></a> between <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Added the ability to configure n:m reference fields, allowing <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a> to be linked to
+multiple other <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a> and vice versa</p></li>
+<li><p>Enables advanced modeling scenarios such as associating multiple users with multiple systems, or linking services
+across multiple infrastructures</p></li>
+<li><p>Includes support for bidirectional navigation and optional display of related data in both linked
+<a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a></p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
-<section id="initial-release-of-the-isms-information-security-management-system-module">
-<h3>Initial release of the ISMS (Information Security Management System) module<a class="headerlink" href="#initial-release-of-the-isms-information-security-management-system-module" title="Link to this heading"></a></h3>
+<section id="release-of-the-isms-information-security-management-system-module">
+<h3>Release of the ISMS (Information Security Management System) module<a class="headerlink" href="#release-of-the-isms-information-security-management-system-module" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul class="simple">
 <li><p>Introduced a comprehensive module for managing information security risks based on ISO 27001 concepts</p></li>
@@ -265,29 +282,39 @@ DataGerry</p></li>
 </section>
 <section id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Link to this heading"></a></h3>
+<p><strong>Documentation</strong></p>
 <ul class="simple">
 <li><p>New design and structure of the DataGerry documentation</p></li>
 <li><p>API routes are now being documented using the OpenAPI format, beginning with this release. This is an ongoing
 process and will be expanded in future updates</p></li>
+</ul>
+<p><strong>Frontend</strong></p>
+<ul class="simple">
 <li><p>Tests were added to various frontend components (ongoing process)</p></li>
+<li><p>Design changes for the detailed view of <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a></p></li>
 <li><p>Improved and optimized validation workflows when creating and editing <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a></p></li>
-<li><p>Object links between two <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a> are no limit to once</p></li>
+<li><p>Object links between two <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a> are now limited to once</p></li>
 <li><p>Enforced uniqueness of the <strong>Email</strong> field when creating or updating users to prevent duplicate entries</p></li>
-<li><p>Improved error message texts for backend responses to be more informative (ongoing process)</p></li>
-<li><p>Improved visual feedback for invalid fields and sections when creating/editing a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a></p></li>
-<li><p>The special control <strong>Reference</strong> has now its required fields highlighted</p></li>
-<li><p>Several APi routes were improved with proper error handling and extended error messages (ongoing process)</p></li>
-<li><p>Refactored several components and workflows in Angular frontend to optimize speed and resource usage (onging process)</p></li>
-<li><p>Refactored several workflows and classes in Backend to optimize speed and resource usage (ongoing process)</p></li>
+<li><p>Refactored several components and workflows in Angular frontend to optimize speed and resource usage
+(onging process)</p></li>
 <li><p>Added a “Back” button in the “Referenced by”-tab of <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Object</span></a> detailed views</p></li>
-<li><p>Added default value selection for Checkbox basic controls</p></li>
-<li><p>A new basic control type has been added to the :ref:Types &lt;types-anchor&gt; creation/edit form: the Numeric Field,
+<li><p>The special control <strong>Reference</strong> has now its required fields highlighted</p></li>
+<li><p>Improved visual feedback for invalid fields and sections when creating/editing a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a></p></li>
+<li><p>A new basic control type has been added to the <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a> creation/edit form: the Numeric Field,
 which strictly accepts numeric input values</p></li>
 <li><p><a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Types</span></a> cannot be deleted if <a class="reference internal" href="../usage/reports.html#reports-anchor"><span class="std std-ref">Reports</span></a> exist which are using it</p></li>
 <li><p>A spinner has been added while the Frontned is waiting for API responses from the Backend</p></li>
 <li><p>The “Enter”-Key can now be used on the login page to trigger the “Login” button</p></li>
 <li><p>Login credentials are now preserved on an incorrect login attempt</p></li>
 <li><p>Added a toggle button to hide/show the password on the login page</p></li>
+<li><p>Added a default value field for basic control <strong>Checkbox</strong></p></li>
+</ul>
+<p><strong>Backend</strong></p>
+<ul class="simple">
+<li><p>New backend startup routine checks if all required collections are exisiting in the database</p></li>
+<li><p>Improved error message texts for backend responses to be more informative (ongoing process)</p></li>
+<li><p>Several APi routes were improved with proper error handling and extended error messages (ongoing process)</p></li>
+<li><p>Refactored several workflows and classes in Backend to optimize speed and resource usage (ongoing process)</p></li>
 </ul>
 <div class="line-block">
 <div class="line"><br /></div>
@@ -345,6 +372,18 @@ failed</p></li>
 <li><p>[<strong>DAT-1188</strong>] Fixed a bug where under certain circumstances a new <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> could not be created(
 “Save” - button stayed disabled) when a Reference special control was dragged into a section</p></li>
 <li><p>[<strong>DAT-1204</strong>] Fixed a bug which occured during imports from CSV files</p></li>
+<li><p>[<strong>DAT-1274</strong>] Fixed a bug that, under certain conditions, caused the application to crash when opening the
+ObjectLogs</p></li>
+<li><p>[<strong>DAT-1281</strong>] Fixed a bug that caused the application to crash if a <a class="reference internal" href="../usage/cmdb_concepts.html#types-anchor"><span class="std std-ref">Type</span></a> ,which contains a
+<a class="reference internal" href="../usage/locations.html#locations-anchor"><span class="std std-ref">Locations</span></a>, was viewed</p></li>
+<li><p>[<strong>DAT-1407</strong>] Fixed <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Object</span></a> exporters mapping public_id to object_id</p></li>
+<li><p>[<strong>DAT-1545</strong>] Fixed an issue with incorrectly referenced type summary fields when specific input patterns are used</p></li>
+<li><p>[<strong>DAT-1625</strong>] Fixed an issue where hidden fields of <a class="reference internal" href="../usage/multi_data_sections.html#mds-anchor"><span class="std std-ref">Multi Data Sections</span></a> were not saved upon
+editing an <a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a></p></li>
+<li><p>[<strong>DAT-1655</strong>] Fixed an issue where the special control <strong>Reference</strong> label was not saved correctly inside of
+<a class="reference internal" href="../usage/section_templates.html#section-templates-anchor"><span class="std std-ref">Section Templates</span></a></p></li>
+<li><p>[<strong>DAT-1831</strong>] Fixed a bug where incorrect data was shown inside of reference sections of
+<a class="reference internal" href="../usage/cmdb_concepts.html#objects-anchor"><span class="std std-ref">Objects</span></a></p></li>
 </ul>
 <div class="line-block">
 <div class="line"><br /></div>
@@ -1000,7 +1039,7 @@ type</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="repository.html" class="btn btn-neutral float-left" title="TODO: Repository" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../media/media.html" class="btn btn-neutral float-left" title="Website" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../rest_api/rest_api.html" class="btn btn-neutral float-right" title="TODO: Swagger REST API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

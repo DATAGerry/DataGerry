@@ -21,94 +21,136 @@ import ast
 from flask import abort, request
 from werkzeug.exceptions import HTTPException
 
-from cmdb.manager import ObjectsManager, TypesManager, RelationsManager, ObjectRelationsManager
+from cmdb.manager import (
+    ObjectsManager,
+    TypesManager,
+    RelationsManager,
+    ObjectRelationsManager,
+    CiExplorerProfileManager,
+)
+from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
-from cmdb.models.isms_model import IsmsImpact
-from cmdb.models.ci_explorer_model import NodeType
+from cmdb.models.object_model import CmdbObject
+from cmdb.models.type_model import CmdbType
+from cmdb.models.ci_explorer_model import NodeType, CmdbCiExplorerProfile
 
+from cmdb.framework.results import IterationResult
 from cmdb.interface.blueprints import APIBlueprint
+from cmdb.interface.rest_api.responses.response_parameters import CollectionParameters
 from cmdb.interface.route_utils import insert_request_user, verify_api_access
 from cmdb.interface.rest_api.api_level_enum import ApiLevel
 from cmdb.interface.rest_api.responses import (
     DefaultResponse,
+    InsertSingleResponse,
+    GetMultiResponse,
+    UpdateSingleResponse,
+    DeleteSingleResponse,
+)
+
+from cmdb.errors.manager.ci_explorer_profile_manager import (
+    CiExplorerProfileManagerInsertError,
+    CiExplorerProfileManagerGetError,
+    CiExplorerProfileManagerUpdateError,
+    CiExplorerProfileManagerDeleteError,
+    CiExplorerProfileManagerIterationError,
 )
 # -------------------------------------------------------------------------------------------------------------------- #
 
 LOGGER = logging.getLogger(__name__)
 
 ci_explorer_blueprint = APIBlueprint('ci_explorer', __name__)
-# -------------------------------------------------------------------------------------------------------------------- #
+# --------------------------------------------------- CRUD - CREATE -------------------------------------------------- #
 
-@ci_explorer_blueprint.route('/tooltip/<int:public_id>', methods=['PUT', 'PATCH'])
+@ci_explorer_blueprint.route('/profile', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def update_tooltip(public_id: int, data: dict, request_user: CmdbUser):
+@ci_explorer_blueprint.validate(CmdbCiExplorerProfile.SCHEMA)
+def insert_cmdb_ci_explorer_profile(data: dict, request_user: CmdbUser):
     """
-    HTTP `PUT`/`PATCH` route to update the ci_explorer_tooltip of an CmdbObject from the CI Explorer
+    HTTP `POST` route to insert an CmdbCiExplorerProfile into the database
 
     Args:
-        public_id (int): public_id of the CmdbObject which should be updated
-        data (dict): New tooltip data ({'ci_explorer_tooltip': <string>})
+        data (CmdbCiExplorerProfile.SCHEMA): Data of the CmdbCiExplorerProfile which should be inserted
         request_user (CmdbUser): User requesting this data
 
     Returns:
-        DefaultResponse: The Tooltip which was set for the CmdbObject
+        InsertSingleResponse: The new CmdbCiExplorerProfile and its public_id
     """
     try:
-        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        ci_explorer_profile_manager: CiExplorerProfileManager = ManagerProvider.get_manager(
+                                                                            ManagerType.CI_EXPLORER_PROFILE,
+                                                                            request_user
+                                                                         )
 
-        to_update_object: IsmsImpact = objects_manager.get_object(public_id)
+        result_id = ci_explorer_profile_manager.insert_item(data)
 
-        if not to_update_object:
-            abort(404, f"The Object with ID:{public_id} was not found!")
+        created_profile = ci_explorer_profile_manager.get_item(result_id, as_dict=True)
 
-        to_update_object['ci_explorer_tooltip'] = data.get('ci_explorer_tooltip')
+        if created_profile:
+            return InsertSingleResponse(created_profile, result_id).make_response()
 
-        objects_manager.update_object(public_id, to_update_object)
-
-        return DefaultResponse(data).make_response()
-    except HTTPException as http_err:
-        raise http_err
+        abort(404, "Could not retrieve the created CiExplorer Profile from the database!")
+    except CiExplorerProfileManagerInsertError as err:
+        LOGGER.error("[insert_cmdb_ci_explorer_profile] CiExplorerProfileManagerInsertError: %s", err, exc_info=True)
+        abort(400, "Failed to insert the new CiExplorer Profile in the database!")
+    except CiExplorerProfileManagerGetError as err:
+        LOGGER.error("[insert_cmdb_ci_explorer_profile] CiExplorerProfileManagerGetError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve the created CiExplorer Profile from the database!")
     except Exception as err:
-        LOGGER.error("[update_tooltip] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"An internal server error occured while updating the Tooltip for Object-ID: {public_id}!")
+        LOGGER.error("[insert_cmdb_ci_explorer_profile] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while creating the CiExplorer Profile!")
 
+# ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
-@ci_explorer_blueprint.route('/type_label/<int:public_id>', methods=['PUT', 'PATCH'])
+@ci_explorer_blueprint.route('/profile', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def update_type_label(public_id: int, data: dict, request_user: CmdbUser):
+@ci_explorer_blueprint.parse_collection_parameters()
+def get_cmdb_ci_explorer_profiles(params: CollectionParameters, request_user: CmdbUser):
     """
-    HTTP `PUT`/`PATCH` route to update the ci_explorer_label for a CmdbType
+    HTTP `GET`/`HEAD` route for getting multiple CmdbCiExplorerProfiles
 
     Args:
-        public_id (int): public_id of the CmdbType which should be updated
-        data (dict): New label data ({'ci_explorer_label': <string>})
+        params (CollectionParameters): Filter for requested CmdbCiExplorerProfiles
         request_user (CmdbUser): User requesting this data
 
     Returns:
-        DefaultResponse: The Label which was set for the CmdbType
+        GetMultiResponse: All the CmdbCiExplorerProfiles matching the CollectionParameters
     """
     try:
-        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+        body = request.method == 'HEAD'
 
-        to_update_type: IsmsImpact = types_manager.get_type(public_id)
+        ci_explorer_profile_manager: CiExplorerProfileManager = ManagerProvider.get_manager(
+                                                                            ManagerType.CI_EXPLORER_PROFILE,
+                                                                            request_user
+                                                                         )
 
-        if not to_update_type:
-            abort(404, f"The Type with ID:{public_id} was not found!")
+        builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
-        to_update_type['ci_explorer_label'] = data.get('ci_explorer_label')
+        iteration_result: IterationResult[CmdbCiExplorerProfile] = ci_explorer_profile_manager.iterate_items(
+                                                                        builder_params
+                                                                   )
+        explorer_profiles_list = [CmdbCiExplorerProfile.to_json(explorer_profile) for explorer_profile
+                                 in iteration_result.results]
 
-        types_manager.update_type(public_id, to_update_type)
+        api_response = GetMultiResponse(explorer_profiles_list,
+                                        iteration_result.total,
+                                        params,
+                                        request.url,
+                                        body)
 
-        return DefaultResponse(data).make_response()
-    except HTTPException as http_err:
-        raise http_err
+        return api_response.make_response()
+    except CiExplorerProfileManagerIterationError as err:
+        LOGGER.error("[get_cmdb_ci_explorer_profiles] CiExplorerProfileManagerIterationError: %s", err, exc_info=True)
+        abort(400, "Failed to retrieve CiExplorer Profiles from the database!")
     except Exception as err:
-        LOGGER.error("[update_type_label] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, f"An internal server error occured while updating the Label for Type-ID: {public_id}!")
+        LOGGER.error("[get_cmdb_ci_explorer_profiles] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal server error occured while retrieving CiExplorer Profiles!")
+
+
+
 
 
 @ci_explorer_blueprint.route('/items', methods=['GET'])
@@ -134,7 +176,6 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
         target_type = request.args.get("target_type", default="BOTH").upper()
         with_root = request.args.get("with_root", default="false").lower() == "true"
 
-        # Parse filters from query args
         types_filter = parse_int_list_filter("types_filter")
         relations_filter = parse_int_list_filter("relations_filter")
 
@@ -142,54 +183,58 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
             abort(400, "Missing ID of target Object!")
 
         if not NodeType.is_valid(target_type):
-            abort(400, f"Invalid target_type '{target_type}'. Must be one of: {', '.join(NodeType.__members__.keys())}")
+            abort(400, f"Invalid target_type '{target_type}'. Need one of: {', '.join(NodeType.__members__.keys())}")
 
         objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
         types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
         relations_manager: RelationsManager = ManagerProvider.get_manager(ManagerType.RELATIONS, request_user)
         object_relations_manager: ObjectRelationsManager = ManagerProvider.get_manager(
-            ManagerType.OBJECT_RELATIONS,
-            request_user
-        )
+                                                                            ManagerType.OBJECT_RELATIONS,
+                                                                            request_user
+                                                                        )
 
-        # Retrieve target object & type info for root if needed
         root_object = objects_manager.get_object(target_id) if with_root else None
         root_type_info = types_manager.get_type(root_object['type_id']) if root_object else None
 
-        # Retrieve object relations involving the target_id
         object_relations = list(object_relations_manager.find(
-            criteria={
-                "$or": [
-                    {"relation_parent_id": target_id},
-                    {"relation_child_id": target_id}
-                ]
-            }
+            criteria={"$or": [
+                {"relation_parent_id": target_id},
+                {"relation_child_id": target_id}
+            ]}
         ))
 
-        # Apply relation filter if present
         if relations_filter:
             object_relations = [rel for rel in object_relations if rel['relation_id'] in relations_filter]
 
-        # Retrieve all relations
         relation_ids = set(rel['relation_id'] for rel in object_relations)
         relations_list = relations_manager.find(criteria={"public_id": {"$in": list(relation_ids)}})
         relations_by_id = {rel['public_id']: rel for rel in relations_list}
 
-        # Collect all linked object ids
         linked_object_ids = set()
-        for orr in object_relations:
-            if orr['relation_parent_id'] != target_id:
-                linked_object_ids.add(orr['relation_parent_id'])
-            if orr['relation_child_id'] != target_id:
-                linked_object_ids.add(orr['relation_child_id'])
+        for rel in object_relations:
+            if rel['relation_parent_id'] != target_id:
+                linked_object_ids.add(rel['relation_parent_id'])
+            if rel['relation_child_id'] != target_id:
+                linked_object_ids.add(rel['relation_child_id'])
 
         linked_objects_cursor = objects_manager.find(criteria={"public_id": {"$in": list(linked_object_ids)}})
         linked_objects = {obj['public_id']: obj for obj in linked_objects_cursor}
 
-
+        # Apply types_filter to both linked_objects and relations
         if types_filter:
+            allowed_object_ids = {
+                obj_id for obj_id, obj in linked_objects.items()
+                if obj.get("type_id") in types_filter
+            }
+
+            object_relations = [
+                rel for rel in object_relations
+                if rel['relation_parent_id'] in allowed_object_ids or rel['relation_child_id'] in allowed_object_ids
+            ]
+
             linked_objects = {
-                obj_id: obj for obj_id, obj in linked_objects.items() if obj.get("type_id") in types_filter
+                obj_id: obj for obj_id, obj in linked_objects.items()
+                if obj_id in allowed_object_ids
             }
 
         type_ids = {obj['type_id'] for obj in linked_objects.values()}
@@ -199,17 +244,15 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
         types_list = types_manager.find(criteria={"public_id": {"$in": list(type_ids)}})
         types_by_id = {t['public_id']: t for t in types_list}
 
-        # Helper to get CI Explorer label title
         def get_title(obj: dict, obj_type: dict):
-            label_field_name = obj_type.get('ci_explorer_label')
-            if not label_field_name:
+            label_field = obj_type.get('ci_explorer_label')
+            if not label_field:
                 return None
-            for f in obj.get('fields', []):
-                if f.get('name') == label_field_name:
-                    return f.get('value')
+            for field in obj.get('fields', []):
+                if field.get('name') == label_field:
+                    return field.get('value')
             return None
 
-        # Prepare response container
         response = {}
 
         if with_root and root_object and root_type_info:
@@ -220,14 +263,13 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 "type_info": {
                     "type_id": root_type_info['public_id'],
                     "type_color": root_type_info.get('ci_explorer_color'),
-                    "label": root_type_info['label'],
+                    "label": root_type_info.get('label'),
                     "icon": root_type_info['render_meta'].get('icon'),
                     "fields": root_type_info.get('fields', {}),
                 },
                 "relation_color": None,
             }
 
-        # Use dicts to ensure uniqueness of nodes
         child_nodes = {}
         child_edges = []
         parent_nodes = {}
@@ -261,7 +303,7 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 continue
 
             linked_object = linked_objects.get(linked_id)
-            linked_type: dict = types_by_id.get(linked_type_id)
+            linked_type = types_by_id.get(linked_type_id)
 
             if not linked_object or not linked_type:
                 continue
@@ -299,7 +341,6 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
                 parent_nodes[linked_id] = node_dict
                 parent_edges.append(edge_dict)
 
-        # Assign unique nodes and all edges to response
         if target_type in (NodeType.BOTH, NodeType.CHILD):
             response['children_nodes'] = list(child_nodes.values())
             response['child_edges'] = child_edges
@@ -308,11 +349,170 @@ def get_ci_explorer_nodes_edges(request_user: CmdbUser):
             response['parent_edges'] = parent_edges
 
         return DefaultResponse(response).make_response()
+
     except HTTPException as http_err:
         raise http_err
     except Exception as err:
         LOGGER.error("[get_ci_explorer_nodes_edges] Exception: %s. Type: %s", err, type(err), exc_info=True)
         abort(500, "An internal server error occured while retrieving CI Explorer nodes and edges!")
+
+# --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
+
+@ci_explorer_blueprint.route('/tooltip/<int:public_id>', methods=['PUT', 'PATCH'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+def update_tooltip(public_id: int, data: dict, request_user: CmdbUser):
+    """
+    HTTP `PUT`/`PATCH` route to update the ci_explorer_tooltip of an CmdbObject from the CI Explorer
+
+    Args:
+        public_id (int): public_id of the CmdbObject which should be updated
+        data (dict): New tooltip data ({'ci_explorer_tooltip': <string>})
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        DefaultResponse: The Tooltip which was set for the CmdbObject
+    """
+    try:
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+
+        to_update_object: CmdbObject = objects_manager.get_object(public_id)
+
+        if not to_update_object:
+            abort(404, f"The Object with ID:{public_id} was not found!")
+
+        to_update_object['ci_explorer_tooltip'] = data.get('ci_explorer_tooltip')
+
+        objects_manager.update_object(public_id, to_update_object)
+
+        return DefaultResponse(data).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[update_tooltip] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while updating the Tooltip for Object-ID: {public_id}!")
+
+
+@ci_explorer_blueprint.route('/type_label/<int:public_id>', methods=['PUT', 'PATCH'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+def update_type_label(public_id: int, data: dict, request_user: CmdbUser):
+    """
+    HTTP `PUT`/`PATCH` route to update the ci_explorer_label for a CmdbType
+
+    Args:
+        public_id (int): public_id of the CmdbType which should be updated
+        data (dict): New label data ({'ci_explorer_label': <string>})
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        DefaultResponse: The Label which was set for the CmdbType
+    """
+    try:
+        types_manager: TypesManager = ManagerProvider.get_manager(ManagerType.TYPES, request_user)
+
+        to_update_type: CmdbType = types_manager.get_type(public_id)
+
+        if not to_update_type:
+            abort(404, f"The Type with ID:{public_id} was not found!")
+
+        to_update_type['ci_explorer_label'] = data.get('ci_explorer_label')
+
+        types_manager.update_type(public_id, to_update_type)
+
+        return DefaultResponse(data).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as err:
+        LOGGER.error("[update_type_label] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while updating the Label for Type-ID: {public_id}!")
+
+# --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
+
+@ci_explorer_blueprint.route('/profile/<int:public_id>', methods=['PUT', 'PATCH'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@ci_explorer_blueprint.validate(CmdbCiExplorerProfile.SCHEMA)
+def update_cmdb_ci_explorer_profile(public_id: int, data: dict, request_user: CmdbUser):
+    """
+    HTTP `PUT`/`PATCH` route to update a single CmdbCiExplorerProfile
+
+    Args:
+        public_id (int): public_id of the CmdbCiExplorerProfile which should be updated
+        data (CmdbCiExplorerProfile.SCHEMA): New CmdbCiExplorerProfile data
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        UpdateSingleResponse: The new data of the CmdbCiExplorerProfile
+    """
+    try:
+        ci_explorer_profile_manager: CiExplorerProfileManager = ManagerProvider.get_manager(
+                                                                            ManagerType.CI_EXPLORER_PROFILE,
+                                                                            request_user
+                                                                         )
+
+        to_update_explorer_profile: CmdbCiExplorerProfile = ci_explorer_profile_manager.get_item(public_id)
+
+        if not to_update_explorer_profile:
+            abort(404, f"The CiExplorer Profile with ID:{public_id} was not found!")
+
+
+        ci_explorer_profile_manager.update_item(public_id, CmdbCiExplorerProfile.from_data(data))
+
+        return UpdateSingleResponse(data).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except CiExplorerProfileManagerGetError as err:
+        LOGGER.error("[update_cmdb_ci_explorer_profile] CiExplorerProfileManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the CiExplorer Profile with ID: {public_id} from the database!")
+    except CiExplorerProfileManagerUpdateError as err:
+        LOGGER.error("[update_cmdb_ci_explorer_profile] CiExplorerProfileManagerUpdateError: %s", err, exc_info=True)
+        abort(400, f"Failed to update the CiExplorer Profile with ID: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[update_cmdb_ci_explorer_profile] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while updating the CiExplorer Profile with ID: {public_id}!")
+
+# --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
+
+@ci_explorer_blueprint.route('/profile/<int:public_id>', methods=['DELETE'])
+@insert_request_user
+@verify_api_access(required_api_level=ApiLevel.LOCKED)
+def delete_cmdb_ci_explorer_profile(public_id: int, request_user: CmdbUser):
+    """
+    HTTP `DELETE` route to delete a single CmdbCiExplorerProfile
+
+    Args:
+        public_id (int): public_id of the CmdbCiExplorerProfile which should be deleted
+        request_user (CmdbUser): User requesting this data
+
+    Returns:
+        DeleteSingleResponse: The deleted CmdbCiExplorerProfile data
+    """
+    try:
+        ci_explorer_profile_manager: CiExplorerProfileManager = ManagerProvider.get_manager(
+                                                                            ManagerType.CI_EXPLORER_PROFILE,
+                                                                            request_user
+                                                                         )
+
+        to_delete_explorer_profile: CmdbCiExplorerProfile = ci_explorer_profile_manager.get_item(public_id)
+
+        if not to_delete_explorer_profile:
+            abort(404, f"The CiExplorer Profile with ID:{public_id} was not found!")
+
+        ci_explorer_profile_manager.delete_item(public_id)
+
+        return DeleteSingleResponse(to_delete_explorer_profile).make_response()
+    except HTTPException as http_err:
+        raise http_err
+    except CiExplorerProfileManagerDeleteError as err:
+        LOGGER.error("[delete_cmdb_ci_explorer_profile] CiExplorerProfileManagerDeleteError: %s", err, exc_info=True)
+        abort(400, f"Failed to delete the CiExplorer Profile with ID:{public_id}!")
+    except CiExplorerProfileManagerGetError as err:
+        LOGGER.error("[delete_cmdb_ci_explorer_profile] CiExplorerProfileManagerGetError: %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve the CiExplorer Profile with ID:{public_id} from the database!")
+    except Exception as err:
+        LOGGER.error("[delete_cmdb_ci_explorer_profile] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal server error occured while deleting the CiExplorer Profile with ID: {public_id}!")
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 

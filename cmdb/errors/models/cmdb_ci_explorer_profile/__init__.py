@@ -14,13 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-This module provide all classes for the CI Explorer logics
+This module provides all errors for CmdbCiExplorerProfiles
 """
-from .node_type_enum import NodeType
-from .ci_explorer_profile import CmdbCiExplorerProfile
+from .cmdb_ci_explorer_profile_errors import (
+    CmdbCiExplorerProfileError,
+    CmdbCiExplorerProfileInitError,
+    CmdbCiExplorerProfileInitFromDataError,
+    CmdbCiExplorerProfileToJsonError,
+)
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __all__ = [
-    'NodeType',
-    'CmdbCiExplorerProfile',
+    'CmdbCiExplorerProfileError',
+    'CmdbCiExplorerProfileInitError',
+    'CmdbCiExplorerProfileInitFromDataError',
+    'CmdbCiExplorerProfileToJsonError',
 ]

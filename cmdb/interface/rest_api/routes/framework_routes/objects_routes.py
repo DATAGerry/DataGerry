@@ -423,7 +423,9 @@ def group_cmdb_objects_by_type_id(value: str, request_user: CmdbUser):
                                                         AccessControlPermission.READ)
 
         for index, document in enumerate(cursor):
-            document['label'] = objects_manager.get_object_type(document['_id']).label
+            cur_type = objects_manager.get_object_type(document['_id'])
+            document['label'] = cur_type.label
+            document['type_color'] = cur_type.ci_explorer_color
             result.append(document)
 
             if index + 1 == 5:  # Stop after processing 5 items
