@@ -1,6 +1,6 @@
-********************
-TODO: Administration
-********************
+**************
+Administration
+**************
 
 | 
 
@@ -8,8 +8,11 @@ TODO: Administration
 
 | 
 
-TODO: Autostart
-===============
+Autostart
+=========
+
+.. note::
+    This section is still under construction !
 
 | 
 
@@ -73,8 +76,11 @@ configuration.
 
 | 
 
-TODO: Backup
-============
+Backup
+======
+
+.. note::
+    This section is still under construction !
 
 | 
 
@@ -82,7 +88,10 @@ TODO: Backup
 
 | 
 
-TODO: Restore
-=============
+Restore
+=======
+
+.. note::
+    This section is still under construction !
 
 | 
