@@ -20,23 +20,25 @@
 
 get:
     tags:
-        - CmdbObjects
-    summary: Retrieve a single CmdbObject
+        - Objects
+        - Cloud
+        - OnPremise
+    summary: Retrieve a single Object [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.object.view**
         <br><hr><br>
-        Returns the CmdbObject with the given **public_id**
+        Returns the Object with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbObject which should be retrieved
+          description: The **public_id** of the Object which should be retrieved
           required: true
           schema:
               type: integer
     operationId: get_cmdb_object
     responses:
         "200":
-            description: Returns the **CmdbObject with render information** with the given **public_id**
+            description: Returns the **Object with render information** with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -54,7 +56,7 @@ get:
                                 type: string
                                 example: "Could not retrive object"
         "500":
-            description: Could not render the object
+            description: Internal server error
             content:
                 application/json:
                     schema:
@@ -62,7 +64,7 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not render the object"
+                                example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                     UPDATE OBJECT                                                    #
@@ -70,16 +72,16 @@ get:
 
 put:
     tags:
-        - CmdbObjects
-    summary: Update a single CmdbObject
+        - Objects
+    summary: Update a single Object [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.object.edit**
         <br><hr><br>
-        Updates the CmdbObject with the given **public_id**
+        Updates the Object with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbObject which should be updated
+          description: The **public_id** of the Object which should be updated
           required: true
           schema:
               type: integer
@@ -92,7 +94,7 @@ put:
     operationId: update_object
     responses:
         "200":
-            description: Returns the updated CmdbObject with the given **public_id**
+            description: Returns the updated Object with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -119,23 +121,23 @@ put:
 
 delete: 
     tags:
-        - CmdbObjects
-    summary: Delete a single CmdbObject
+        - Objects
+    summary: Delete a single Object [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.object.delete**
         <br><hr><br>
-        Deletes the CmdbObject with the given **public_id**
+        Deletes the Object with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbObject which should be deleted
+          description: The **public_id** of the Object which should be deleted
           required: true
           schema:
               type: integer
     operationId: delete_object
     responses:
         "200":
-            description: Returns true if the CmdbObject with the given **public_id** was deleted
+            description: Returns true if the Object with the given **public_id** was deleted
             content:
                 application/json:
                     schema:

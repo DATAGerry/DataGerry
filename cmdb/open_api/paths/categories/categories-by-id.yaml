@@ -20,23 +20,25 @@
 
 get:
     tags:
-        - CmdbCategories
-    summary: Retrieve a single CmdbCategory
+        - Categories
+        - Cloud
+        - OnPremise
+    summary: Retrieve a single Category [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.category.view**
         <br><hr><br>
-        Returns the CmdbCategory with the given **public_id**
+        Returns the Category with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbCategory which should be retrieved
+          description: The **public_id** of the Category which should be retrieved
           required: true
           schema:
               type: integer
     operationId: get_cmdb_category
     responses:
         "200":
-            description: Returns the CmdbCategory with the given **public_id**
+            description: Returns the Category with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -45,7 +47,7 @@ get:
                             result:
                                 $ref: "../../components/schemas/CmdbCategory.yaml"
         "400":
-            description: Failed to retrive the requested CmdbCategory from the database!
+            description: Failed to retrive the requested Category from the database!
             content:
                 application/json:
                     schema:
@@ -53,9 +55,9 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Failed to retrive the requested CmdbCategory from the database!"
+                                example: "Failed to retrive the requested Category from the database!"
         "404":
-            description: The CmdbCategory with the given public_id was not found!
+            description: The Category with the given public_id was not found!
             content:
                 application/json:
                     schema:
@@ -63,7 +65,7 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "The CmdbCategory with the given public_id was not found!"
+                                example: "The Category with the given public_id was not found!"
         "500":
             description: Internal server error
             content:
@@ -81,16 +83,18 @@ get:
 
 put:
     tags:
-        - CmdbCategories
-    summary: Update a single CmdbCategory
+        - Categories
+        - Cloud
+        - OnPremise
+    summary: Update a single Category [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.category.edit**
         <br><hr><br>
-        Updates the CmdbCategory with the given **public_id**
+        Updates the Category with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbCategory which should be updated
+          description: The **public_id** of the Category which should be updated
           required: true
           schema:
               type: integer
@@ -103,7 +107,7 @@ put:
     operationId: update_cmdb_category
     responses:
         "200":
-            description: Returns the updated CmdbCategory with the given **public_id**
+            description: Returns the updated Category with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -115,8 +119,8 @@ put:
             description: |
                 Multiple cases are possible:
                 <br>
-                - Failed to retrieve the target CmdbCategory from the database
-                - Failed to update the requested CmdbCategory
+                - Failed to retrieve the target Category from the database
+                - Failed to update the requested Category
             content:
                 application/json:
                     schema:
@@ -124,9 +128,9 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Could not update the CmdbCategory"
+                                example: "Could not update the Category"
         "404":
-            description: The CmdbCategory with the given public_id was not found!
+            description: The Category with the given public_id was not found!
             content:
                 application/json:
                     schema:
@@ -134,7 +138,7 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "The CmdbCategory with the given public_id was not found!"
+                                example: "The Category with the given public_id was not found!"
         "500":
             description: Internal server error
             content:
@@ -152,23 +156,25 @@ put:
 
 delete: 
     tags:
-        - CmdbCategories
-    summary: Delete a single CmdbCategory
+        - Categories
+        - Cloud
+        - OnPremise
+    summary: Delete a single Category [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.category.delete**
         <br><hr><br>
-        Deletes the CmdbCategory with the given **public_id**
+        Deletes the Category with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbCategory which should be deleted
+          description: The **public_id** of the Category which should be deleted
           required: true
           schema:
               type: integer
     operationId: delete_cmdb_category
     responses:
         "200":
-            description: Returns the deleted CmdbCategory with the given **public_id**
+            description: Returns the deleted Category with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -180,9 +186,9 @@ delete:
             description: |
                 Multiple cases are possible:
                 <br>
-                - Could not retrieve the target CmdbCategory from the database
-                - Could not retrieve a child CmdbCategory which need to be updated
-                - Failed to update the CmdbCategory
+                - Could not retrieve the target Category from the database
+                - Could not retrieve a child Category which need to be updated
+                - Failed to update the Category
             content:
                 application/json:
                     schema:
@@ -190,9 +196,9 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve a CmdbCategory"
+                                example: "Could not retrieve a Category"
         "404":
-            description: The CmdbCategory with the given public_id was not found!
+            description: The Category with the given public_id was not found!
             content:
                 application/json:
                     schema:
@@ -200,13 +206,13 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "The CmdbCategory with the given public_id was not found!"
+                                example: "The Category with the given public_id was not found!"
         "500":
             description: |
                 Multiple cases are possible:
                 <br>
                 - Internal server error
-                - A child CmdbCategory could not be updated
+                - A child Category could not be updated
             content:
                 application/json:
                     schema:

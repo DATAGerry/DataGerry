@@ -28,12 +28,12 @@ properties:
             - type: object
               additionalProperties: true
         default: null
-        description: The filter criteria can be a list of dictionaries, a dictionary or empty, depending on the use case.
+        description: The filter criteria can be a list of dictionaries, a dictionary or empty, depending on the use case
     limit:
         type: integer
         default: 10
         nullable: true
-        description: Limits the number of results which should be retrieved. A limit of 0 equals unlimited.
+        description: Limits the number of results which should be retrieved. A limit of 0 equals unlimited
     sort:
         type: string
         default: "public_id"

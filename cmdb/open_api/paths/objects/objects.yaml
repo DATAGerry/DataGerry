@@ -20,12 +20,14 @@
 
 post:
     tags: 
-        -  CmdbObjects
-    summary: Insert a new CmdbObject
+        - Objects
+        - Cloud
+        - OnPremise
+    summary: Insert a new Object [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.object.add**
         <br><hr><br>
-        Inserts a new CmdbObject into the database.
+        Inserts a new Object into the database.
         <br><br>
         The **public_id**, **author_id** and **creation_time** properties will be automatically created and don't need to be provided.
     operationId: insert_cmdb_object
@@ -37,7 +39,7 @@ post:
                     $ref: '../../components/schemas/CmdbObject.yaml'
     responses:
         "200":
-            description: New CmdbObject was created and the **public_id** of it is returned.
+            description: New Object was created and the **public_id** of it is returned.
             content:
                 application/json:
                     schema:
@@ -82,23 +84,25 @@ post:
 
 get:
     tags: 
-        -  CmdbObjects
-    summary: Retrieve multiple CmdbObjects
+        - Objects
+        - Cloud
+        - OnPremise
+    summary: Retrieve multiple Objects [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.object.view**
         <br><hr><br>
-        Returns all CmdbObjects if no **CollectionParameters** are passed
+        Returns all Objects if no **CollectionParameters** are passed
     parameters: 
         - name: CollectionParameters
           in: query
-          description: Parameters for filtering, limiting, sorting, and pagination of CmdbObjects
+          description: Parameters for filtering, limiting, sorting, and pagination of Objects
           required: false
           schema:
             $ref: '../../components/schemas/CollectionParameters.yaml'
     operationId: get_cmdb_objects
     responses:
         "200":
-            description: Returns a **list of CmdbObjects with render information** matching the filter criteria
+            description: Returns a **list of Objects with render information** matching the filter criteria
             content:
                 application/json:
                     schema:
@@ -121,20 +125,6 @@ get:
                             error:
                                 type: string
                                 example: "Could not iterate the objects"
-        "404":
-            description: |
-                Multiple cases are possible:
-                <br>
-                - No objects found
-                - Could not retrive objects
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            error:
-                                type: string
-                                example: "Could not retrive objects"
         "500":
             description: Internal server error
             content:

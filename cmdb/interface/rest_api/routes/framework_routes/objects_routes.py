@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -196,8 +196,7 @@ def insert_cmdb_object(request_user: CmdbUser):
             #TODO: ERROR-FIX
             LOGGER.error("[insert_cmdb_object] Failed to create ObjectLog. Error: %s", error)
 
-        api_response = DefaultResponse(new_object_id)
-        return api_response.make_response()
+        return DefaultResponse(new_object_id).make_response()
     except HTTPException as http_err:
         raise http_err
     except ObjectsManagerInsertError as err:
@@ -208,10 +207,10 @@ def insert_cmdb_object(request_user: CmdbUser):
         abort(400, "Failed to retrieve Object related data from the database!")
     except AccessDeniedError as err:
         LOGGER.error("[insert_cmdb_object] AccessDeniedError: %s", err, exc_info=True)
-        abort(403, "No permission to insert the object!")
+        abort(403, "No permission to insert the Object!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the Object!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -219,7 +218,7 @@ def insert_cmdb_object(request_user: CmdbUser):
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @objects_blueprint.protect(auth=True, right='base.framework.object.view')
-def get_cmdb_object(public_id, request_user: CmdbUser):
+def get_cmdb_object(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET` route to retrieve a single CmdbObject with render information
 
@@ -252,7 +251,7 @@ def get_cmdb_object(public_id, request_user: CmdbUser):
                                        ).result()
         except Exception as err:
             LOGGER.error("[get_cmdb_object] Error: %s , Type: %s", err, type(err), exc_info=True)
-            abort(500, "Object could not be rendered!")
+            abort(500, f"Object with ID: {public_id} could not be rendered!")
 
         return DefaultResponse(render_result).make_response()
     except HTTPException as http_err:
@@ -265,7 +264,7 @@ def get_cmdb_object(public_id, request_user: CmdbUser):
         abort(403, "No permission to retrieve the object!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the Object with ID: {public_id}!")
 
 
 @objects_blueprint.route('/', methods=['GET', 'HEAD'])
@@ -327,7 +326,7 @@ def get_cmdb_objects(params: CollectionParameters, request_user: CmdbUser):
         abort(400, "Failed to retrieve Objects from the database!")
     except Exception as err:
         LOGGER.error("[get_cmdb_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving Objects from the database!")
 
 
 @objects_blueprint.route('/count', methods=['GET'])
@@ -378,11 +377,10 @@ def get_native_cmdb_object(public_id: int, request_user: CmdbUser):
 
         object_instance = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
 
-        if object_instance:
-            api_response = DefaultResponse(object_instance)
-            return api_response.make_response()
+        if not object_instance:
+            abort(404, f"The Object with ID:{public_id} was not found!")
 
-        abort(404, f"The Object with ID:{public_id} was not found!")
+        return DefaultResponse(object_instance).make_response()
     except HTTPException as http_err:
         raise http_err
     except ObjectsManagerGetError as err:
@@ -393,7 +391,7 @@ def get_native_cmdb_object(public_id: int, request_user: CmdbUser):
         abort(403, "No permission to retrieve the object!")
     except Exception as err:
         LOGGER.error("[get_native_cmdb_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving the native Object with ID: {public_id}!")
 
 
 @objects_blueprint.route('/group/<string:value>', methods=['GET'])
@@ -403,6 +401,9 @@ def get_native_cmdb_object(public_id: int, request_user: CmdbUser):
 def group_cmdb_objects_by_type_id(value: str, request_user: CmdbUser):
     """
     Groups CmdbObjects by their type_id and returns a structured response
+    
+    Note:
+        Only used for the dashboard chart
 
     Args:
         value (str): The value used for grouping CmdbObjects
@@ -440,7 +441,7 @@ def group_cmdb_objects_by_type_id(value: str, request_user: CmdbUser):
         abort(400, "Failed to retrieve Objects from the database!")
     except Exception as err:
         LOGGER.error("[group_cmdb_objects_by_type_id] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while trying to retrieve data for dashboard chart!")
 
 
 @objects_blueprint.route('/<int:public_id>/mds_reference', methods=['GET'])
@@ -491,7 +492,9 @@ def get_cmdb_object_mds_reference(public_id: int, request_user: CmdbUser):
         abort(403, "No permission for this action!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_mds_reference] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500,
+            f"An internal server error occured while retrieving the MDS reference for Object with ID: {public_id}!"
+        )
 
 
 @objects_blueprint.route('/<int:public_id>/mds_references', methods=['GET'])
@@ -550,10 +553,10 @@ def get_cmdb_object_mds_references(public_id: int, request_user: CmdbUser):
         abort(403, "No permission for this action!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_mds_references] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving MDS references!")
 
 
-@objects_blueprint.route('/<int:public_id>/references', methods=['GET', 'HEAD'])
+@objects_blueprint.route('/references/<int:public_id>', methods=['GET', 'HEAD'])
 @objects_blueprint.parse_collection_parameters(view='native')
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -628,7 +631,7 @@ def get_cmdb_object_references(public_id: int, params: CollectionParameters, req
         abort(403, "No permission for this action!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_references] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error while retrieving references for Object with ID: {public_id}!")
 
 
 @objects_blueprint.route('/state/<int:public_id>', methods=['GET'])
@@ -652,12 +655,10 @@ def get_cmdb_object_state(public_id: int, request_user: CmdbUser):
         target_object_data = objects_manager.get_object(public_id, request_user, AccessControlPermission.READ)
         target_object: CmdbObject = CmdbObject.from_data(target_object_data)
 
-        if target_object:
-            api_response = DefaultResponse(target_object.active)
+        if not target_object:
+            abort(404, f"Object with ID:{public_id} not found!")
 
-            return api_response.make_response()
-
-        abort(404, f"Object with ID:{public_id} not found!")
+        return DefaultResponse(target_object.active).make_response()
     except HTTPException as http_err:
         raise http_err
     except ObjectsManagerGetError as err:
@@ -667,8 +668,7 @@ def get_cmdb_object_state(public_id: int, request_user: CmdbUser):
         abort(403, "Access denied: You do not have sufficient permissions to perform this action!")
     except Exception as err:
         LOGGER.error("[get_cmdb_object_state] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
-
+        abort(500, f"An internal server error while retrieving the object state of ID:{public_id}!")
 
 
 @objects_blueprint.route('/clean/<int:public_id>', methods=['GET', 'HEAD'])
@@ -692,7 +692,7 @@ def get_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
         type_instance = objects_manager.get_object_type(public_id)
 
         if not type_instance:
-            abort(500, f"Type with ID {public_id} not found!")
+            abort(500, f"Type with ID: {public_id} not found!")
 
         builder_params = BuilderParameters({'type_id': public_id},
                                            limit=0,
@@ -721,7 +721,7 @@ def get_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
         abort(400, "Failed to retrieve Objects from the database!")
     except Exception as err:
         LOGGER.error("[get_unstructured_cmdb_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while retrieving unstructured Objects!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -850,9 +850,7 @@ def update_cmdb_object(public_id: int, data: dict, request_user: CmdbUser):
                 #TODO: ERROR-FIX
                 LOGGER.error("[update_cmdb_object] Failed to create Log. Error: %s", error)
 
-        api_response = UpdateMultiResponse(results=results)
-
-        return api_response.make_response()
+        return UpdateMultiResponse(results=results).make_response()
     except HTTPException as http_err:
         raise http_err
     except ObjectsManagerGetError as err:
@@ -865,7 +863,7 @@ def update_cmdb_object(public_id: int, data: dict, request_user: CmdbUser):
         abort(403, "Access denied: You do not have sufficient permissions to perform this action!")
     except Exception as err:
         LOGGER.error("[update_cmdb_object] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating Object with ID:{public_id}!")
 
 
 @objects_blueprint.route('/state/<int:public_id>', methods=['PUT'])
@@ -893,6 +891,7 @@ def update_cmdb_object_state(public_id: int, request_user: CmdbUser):
         webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
 
         state = None
+
         if isinstance(request.json, bool):
             state = request.json
         else:
@@ -977,7 +976,7 @@ def update_cmdb_object_state(public_id: int, request_user: CmdbUser):
         abort(403, "Access denied: You do not have sufficient permissions to perform this action!")
     except Exception as err:
         LOGGER.error("[update_cmdb_object_state] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating Object state of ID:{public_id}!")
 
 
 #TODO: REFACOTR-FIX (reduce complexity)
@@ -1002,7 +1001,7 @@ def update_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
         update_type_instance = objects_manager.get_object_type(public_id)
 
         if not update_type_instance:
-            abort(500, "Type of Object not found in database!")
+            abort(500, "Type not found in database!")
 
         type_fields = update_type_instance.fields
 
@@ -1093,7 +1092,7 @@ def update_unstructured_cmdb_objects(public_id: int, request_user: CmdbUser):
         abort(400, "Failed to update the Object in the database!")
     except Exception as err:
         LOGGER.error("[update_unstructured_cmdb_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while updating unstructured Objects!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -1334,7 +1333,7 @@ def delete_cmdb_object_with_child_locations(public_id: int, request_user: CmdbUs
         LOGGER.error(
             "[delete_cmdb_object_with_child_locations] Exception: %s. Type: %s", err, type(err), exc_info=True
         )
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while deleting Object with child Locations!")
 
 
 #TODO: REFACTOR-FIX (reduce complexity)
@@ -1459,7 +1458,7 @@ def delete_object_with_child_objects(public_id: int, request_user: CmdbUser):
         abort(500, "Failed to delete the Object in the database!")
     except Exception as err:
         LOGGER.error("[delete_object_with_child_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while deleting an Object with child Objects!")
 
 
 @objects_blueprint.route('/delete/<string:public_ids>', methods=['DELETE'])
@@ -1592,7 +1591,7 @@ def delete_many_cmdb_objects(public_ids: str, request_user: CmdbUser):
         abort(500, "Failed to delete the Object in the database!")
     except Exception as err:
         LOGGER.error("[delete_many_cmdb_objects] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while deleting multiple Objects!")
 
 # -------------------------------------------------- HELPER METHODS -------------------------------------------------- #
 
@@ -1689,3 +1688,5 @@ def delete_invalid_object_relations(public_id: int,
             LOGGER.error(
                 "[delete_invalid_object_relations] Failed to create an ObjectRelationLog: %s", error, exc_info=True
             )
+        except Exception as err:
+            LOGGER.error("[delete_invalid_object_relations] Exception: %s. Type: %s", err, type(err), exc_info=True)

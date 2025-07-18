@@ -361,7 +361,7 @@ export class ObjectService<T = CmdbObject | RenderResult> implements ApiServiceP
         httpParams = httpParams.set('view', view);
         options.params = httpParams;
 
-        return this.api.callGet<Array<R>>(`${this.servicePrefix}/${publicID}/references`, options).pipe(
+        return this.api.callGet<Array<R>>(`${this.servicePrefix}/references/${publicID}`, options).pipe(
             map((apiResponse: HttpResponse<APIGetMultiResponse<T>>) => {
                 return apiResponse.body;
             })

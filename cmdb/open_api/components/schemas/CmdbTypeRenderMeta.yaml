@@ -15,23 +15,23 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                  CmdbTypeRenderMeta                                                  #
+#                                                    TypeRenderMeta                                                    #
 # -------------------------------------------------------------------------------------------------------------------- #
 type: object
 properties:
     icon:
         type: string
         nullable: true
-        description: Icon of the CmdbType
+        description: Icon of the Type
     sections:
         type: array
-        description: All sections of the CmdbType
+        description: All sections of the Type
         items:
             type: object
             properties:
                 type:
                     type: string
-                    description: Type of the section
+                    description: Type of the section (like section or multi-data-section)
                 name:
                     type: string
                     description: Unique name of the section

@@ -20,12 +20,14 @@
 
 post:
     tags:
-        - CmdbSectionTemplates
-    summary: Insert a new CmdbSectionTemplate
+        - Section Templates
+        - Cloud
+        - OnPremise
+    summary: Insert a new Section Template [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.sectionTemplate.add**
         <br><hr><br>
-        Inserts a new CmdbSectionTemplate into the database
+        Inserts a new Section Template into the database
         <br><br>
         The **public_id** property will be automatically created and don't need to be provided.
     operationId: create_section_template
@@ -37,14 +39,14 @@ post:
                     $ref: "../../components/schemas/CmdbSectionTemplate.yaml"
     responses:
         "200":
-            description: The **public_id** of created CmdbSectionTemplate
+            description: The **public_id** of created Section Template
             content:
                 application/json:
                     schema:
                         type: integer
                         example: 24
         "400":
-            description: CmdbSectionTemplate could not be created
+            description: Section Template could not be created
             content:
                 application/json:
                     schema:
@@ -52,7 +54,7 @@ post:
                         properties:
                             error:
                                 type: string
-                                example: "CmdbSectionTemplate could not be created"
+                                example: "Section Template could not be created"
         "500":
             description: An unexpected error occured
             content:
@@ -70,23 +72,25 @@ post:
 
 get:
     tags: 
-        -  CmdbSectionTemplates
-    summary: Retrieve multiple CmdbSectionTemplates
+        - Section Templates
+        - Cloud
+        - OnPremise
+    summary: Retrieve multiple Section Templates [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.sectionTemplate.view**
         <br><hr><br>
-        Returns all CmdbSectionTemplates if no **CollectionParameters** are passed
+        Returns all Section Templates if no **CollectionParameters** are passed
     parameters: 
         - name: CollectionParameters
           in: query
-          description: Parameters for filtering, limiting, sorting, and pagination of CmdbSectionTemplates
+          description: Parameters for filtering, limiting, sorting, and pagination of Section Templates
           required: false
           schema:
             $ref: '../../components/schemas/CollectionParameters.yaml'
     operationId: get_all_section_templates
     responses:
         "200":
-            description: Returns a **list of CmdbSectionTemplates** matching the filter criteria
+            description: Returns a **list of Section Templates** matching the filter criteria
             content:
                 application/json:
                     schema:
@@ -96,7 +100,7 @@ get:
                                 $ref: '../../components/schemas/CmdbSectionTemplate.yaml'
                             total:
                                 type: integer
-                                description: The amount of CmdbSectionTemplates
+                                description: The amount of Section Templates
         "400":
             description: Could not retrieve SectionTemplates
             content:

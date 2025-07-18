@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,23 +20,25 @@
 
 get:
     tags:
-        - CmdbTypes
-    summary: Retrieve a single CmdbType
+        - Types
+        - Cloud
+        - OnPremise
+    summary: Retrieve a single Type [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.type.view**
         <br><hr><br>
-        Returns the CmdbType with the given **public_id**
+        Returns the Type with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbType which should be retrieved
+          description: The **public_id** of the Type which should be retrieved
           required: true
           schema:
               type: integer
     operationId: get_cmdb_type
     responses:
         "200":
-            description: Returns the CmdbType with the given **public_id**
+            description: Returns the Type with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -45,7 +47,7 @@ get:
                             result:
                                 $ref: "../../components/schemas/CmdbType.yaml"
         "400":
-            description: Failed to retrieve the requested CmdbType
+            description: Failed to retrieve the requested Type
             content:
                 application/json:
                     schema:
@@ -53,9 +55,9 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Failed to retrieve the requested CmdbType"
+                                example: "Failed to retrieve the requested Type"
         "404":
-            description: The requested CmdbType was not found
+            description: The requested Type was not found
             content:
                 application/json:
                     schema:
@@ -63,7 +65,7 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "The requested CmdbType was not found"
+                                example: "The requested Type was not found"
         "500":
             description: Internal server error
             content:
@@ -81,16 +83,18 @@ get:
 
 put:
     tags:
-        - CmdbTypes
-    summary: Update a single CmdbType
+        - Types
+        - Cloud
+        - OnPremise
+    summary: Update a single Type [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.type.edit**
         <br><hr><br>
-        Updates the CmdbType with the given **public_id**
+        Updates the Type with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbType which should be updated
+          description: The **public_id** of the Type which should be updated
           required: true
           schema:
               type: integer
@@ -103,7 +107,7 @@ put:
     operationId: update_cmdb_type
     responses:
         "200":
-            description: Returns the updated CmdbType with the given **public_id**
+            description: Returns the updated Type with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -112,7 +116,7 @@ put:
                             result:
                                 $ref: "../../components/schemas/CmdbType.yaml"
         "400":
-            description: Failed to update the requested CmdbType
+            description: Failed to update the requested Type
             content:
                 application/json:
                     schema:
@@ -120,9 +124,9 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Failed to update the requested CmdbType"
+                                example: "Failed to update the requested Type"
         "404":
-            description: The requested CmdbType was not found
+            description: The requested Type was not found
             content:
                 application/json:
                     schema:
@@ -130,7 +134,7 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "The requested CmdbType was not found"
+                                example: "The requested Type was not found"
         "500":
             description: Internal server error
             content:
@@ -148,23 +152,25 @@ put:
 
 delete: 
     tags:
-        - CmdbTypes
-    summary: Delete a single CmdbType
+        - Types
+        - Cloud
+        - OnPremise
+    summary: Delete a single Type [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.type.delete**
         <br><hr><br>
-        Deletes the CmdbType with the given **public_id**
+        Deletes the Type with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbType which should be deleted
+          description: The **public_id** of the Type which should be deleted
           required: true
           schema:
               type: integer
     operationId: delete_type
     responses:
         "200":
-            description: Returns the CmdbType with the given **public_id** which was deleted
+            description: Returns the Type with the given **public_id** which was deleted
             content:
                 application/json:
                     schema:
@@ -173,7 +179,7 @@ delete:
                             raw:
                                 $ref: "../../components/schemas/CmdbType.yaml"
         "400":
-            description: Failed to delete the CmdbType
+            description: Failed to delete the Type
             content:
                 application/json:
                     schema:
@@ -181,9 +187,9 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Failed to delete the CmdbType"
+                                example: "Failed to delete the Type"
         "404":
-            description: The requested CmdbType was not found
+            description: The requested Type was not found
             content:
                 application/json:
                     schema:
@@ -191,7 +197,7 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "The requested CmdbType was not found"
+                                example: "The requested Type was not found"
         "500":
             description: Internal server error
             content:

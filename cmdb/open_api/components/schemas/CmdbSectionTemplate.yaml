@@ -15,33 +15,33 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                  CmdbSectionTemplate                                                 #
+#                                                  Section Templates                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 type: object
 properties:
     public_id:
         type: integer
-        description: The public_id of the CmdbSectionTemplate
+        description: The public_id of the Section Template
     is_global:
         type: boolean
         default: false
-        description: If true the CmdbSectionTemplate is a global template, else it is a default template
+        description: If true the Section Template is a global template, else it is a default template
     predefined:
         type: boolean
         default: false
-        description: If true then this CmdbSectionTemplate is provided by DataGerry and is not deletable
+        description: If true then this Section Template is provided by DataGerry and is not deletable
     name:
         type: string
         nullable: false
-        description: The name of the CmdbSectionTemplate
+        description: The name of the Section Template
     label:
         type: string
         nullable: false
-        description: The displayed label of the CmdbSectionTemplate
+        description: The displayed label of the Section Template
     type:
         type: string
         default: "section"
-        description: The type of the CmdbSectionTemplate, current only 'section' is available
+        description: The type of the Section Template, current only 'section' is available
     fields:
         type: array
         items:

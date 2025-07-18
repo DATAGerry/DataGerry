@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,29 +20,31 @@
 
 get:
     tags:
-        - CmdbSectionTemplates
-    summary: Retrieve a single CmdbSectionTemplate
+        - Section Templates
+        - Cloud
+        - OnPremise
+    summary: Retrieve a single Section Template [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.sectionTemplate.view**
         <br><hr><br>
-        Returns the CmdbSectionTemplate with the given **public_id**
+        Returns the Section Template with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbSectionTemplate which should be retrieved
+          description: The **public_id** of the Section Template which should be retrieved
           required: true
           schema:
               type: integer
     operationId: get_section_template
     responses:
         "200":
-            description: Returns the CmdbSectionTemplate with the given **public_id**
+            description: Returns the Section Template with the given **public_id**
             content:
                 application/json:
                     schema:
                         $ref: "../../components/schemas/CmdbSectionTemplate.yaml"
         "400":
-            description: Could not retrive the requested CmdbSectionTemplate
+            description: Failed to retrive the requested Section Template
             content:
                 application/json:
                     schema:
@@ -50,7 +52,27 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrive the requested CmdbSectionTemplate"
+                                example: "Failed to retrive the requested Section Template"
+        "404":
+            description: Section Template not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Section Template not found"
+        "500":
+            description: An unexpected error occured
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error!"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                                UPDATE SECTION TEMPLATE                                               #
@@ -58,16 +80,18 @@ get:
 
 put:
     tags:
-        - CmdbSectionTemplates
-    summary: Update a single CmdbSectionTemplate
+        - Section Templates
+        - Cloud
+        - OnPremise
+    summary: Update a single Section Template [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.sectionTemplate.edit**
         <br><hr><br>
-        Updates the CmdbSectionTemplate with the given **public_id**
+        Updates the Section Template with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbSectionTemplate which should be updated
+          description: The **public_id** of the Section Template which should be updated
           required: true
           schema:
               type: integer
@@ -80,7 +104,7 @@ put:
     operationId: update_section_template
     responses:
         "200":
-            description: Returns true if the CmdbSectionTemplate was updated
+            description: Returns true if the Section Template was updated
             content:
                 application/json:
                     schema:
@@ -90,7 +114,7 @@ put:
                                 type: boolean
                                 example: true
         "400":
-            description: Could not update the requested CmdbSectionTemplate
+            description: Could not update the requested Section Template
             content:
                 application/json:
                     schema:
@@ -98,9 +122,9 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Could not update the CmdbSectionTemplate"
+                                example: "Could not update the Section Template"
         "404":
-            description: Could not retrieve the requested CmdbSectionTemplate
+            description: Section Template not found
             content:
                 application/json:
                     schema:
@@ -108,7 +132,7 @@ put:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve the CmdbSectionTemplate"
+                                example: "Section Template not found"
         "500":
             description: An unexpected error occured
             content:
@@ -126,23 +150,25 @@ put:
 
 delete: 
     tags:
-        - CmdbSectionTemplates
-    summary: Delete a single CmdbSectionTemplate
+        - Section Templates
+        - Cloud
+        - OnPremise
+    summary: Delete a single Section Template [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.sectionTemplate.delete**
         <br><hr><br>
-        Deletes the **CmdbSectionTemplate** with the given **public_id**
+        Deletes the **Section Template** with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the **CmdbSectionTemplate** which should be deleted
+          description: The **public_id** of the **Section Template** which should be deleted
           required: true
           schema:
               type: integer
     operationId: delete_section_template
     responses:
         "200":
-            description: Returns true if the **CmdbSectionTemplate** with the given **public_id** was deleted
+            description: Returns true if the **Section Template** with the given **public_id** was deleted
             content:
                 application/json:
                     schema:
@@ -152,9 +178,9 @@ delete:
             description: |
                 Multiple cases are possible:
                 <br>
-                - Trying to delete a predefined **CmdbSectionTemplate**
-                - Could not retrive the **CmdbSectionTemplate**
-                - Could not delete the **CmdbSectionTemplate**
+                - Trying to delete a predefined **Section Template**
+                - Could not retrive the **Section Template**
+                - Could not delete the **Section Template**
             content:
                 application/json:
                     schema:
@@ -162,7 +188,7 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Could not delete the CmdbSectionTemplate"
+                                example: "Could not delete the Section Template"
         "500":
             description: An unexpected error occured
             content:

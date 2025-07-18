@@ -15,49 +15,49 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                     CmdbCategory                                                     #
+#                                                       Category                                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 type: object
 properties:
     public_id:
         type: integer
-        description: The public_id of the CmdbCategory
+        description: The public_id of the Category
     name:
         type: string
         pattern: '(\w+)-*(\w)([\w-]*)' # Kebab case validation
-        description: The unique name of the CmdbCategory in kebab case
+        description: The unique name of the Category in kebab case
         example: "example-name"
     label:
         type: string
-        description: Label of the CmdbCategory
+        description: Label of the Category
         example: "Sample Label"
     parent:
         type: integer
         nullable: true
         default: null
-        description: The public_id of the parent CmdbCategory, if any
+        description: The public_id of the parent Category, if any
     types:
         type: array
         items:
             type: integer
             default: []
-            description: List of public_ids of CmdbTypes assigned to this CmdbCategory
+            description: List of public_ids of Types assigned to this Category
     meta:
         type: object
         properties:
             icon:
                 type: string
                 default: ""
-                description: Icon displayed next to the CmdbCategory
+                description: Icon displayed next to the Category
             order:
                 type: integer
                 nullable: true
                 default: null
-                description: Order of the CmdbCategory in the sidebar
+                description: Order of the Category in the sidebar
     creation_time:
         type: string
         format: date-time
-        description: The timestamp of when the CmdbCategory was created
+        description: The timestamp of when the Category was created
         example: "2025-01-23T14:19:29.957+00:00"
 required:
 - name

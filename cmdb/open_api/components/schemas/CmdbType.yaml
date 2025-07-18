@@ -15,57 +15,57 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                       CmdbType                                                       #
+#                                                         Type                                                         #
 # -------------------------------------------------------------------------------------------------------------------- #
 type: object
 properties:
     public_id:
         type: integer
-        description: The public_id of the CmdbType
+        description: The public_id of the Type
     name:
         type: string
         pattern: '(\\w+)-*(\\w)([\\w-]*)'
-        description: The unique name of the CmdbType
+        description: The unique name of the Type
     label:
         type: string
-        description: The displayed label of the CmdbType
+        description: The displayed label of the Type
     author_id:
         type: integer
-        description: The public_id of the CmdbUser who created this CmdbType
+        description: The public_id of the User who created this Type
     editor_id:
         type: integer
         nullable: true
-        description: The public_id of the CmdbUser who was the last to edit this CmdbType
+        description: The public_id of the User who was the last to edit this Type
     selectable_as_parent:
         type: boolean
         default: true
-        description: If this CmdbType has a Location Field then this defines if this CmdbType can be selected as a parent Location
+        description: If this Type has a Location Field then this defines if this Type can be selected as a parent Location
     global_template_ids:
         type: array
-        description: A list of global CmdbSectionTemplate public_ids which are used by this CmdbType
+        description: A list of global Section Template public_ids which are used by this Type
         items:
             type: string
     active:
         type: boolean
         default: true
-        description: The activation status of this CmdbType, true equals active
+        description: The activation status of this Type, true equals active
     fields:
         type: array
         items:
             $ref: './CmdbTypeField.yaml'
     version:
         type: string
-        description: The version of the CmdbType (starts with 1.0.0s)
+        description: The version of the Type (starts with 1.0.0)
     description:
         type: string
         nullable: true
-        description: Descthription of the CmdbType
+        description: Descthription of the Type
     render_meta:
         $ref: './CmdbTypeRenderMeta.yaml'
     acl:
         type: object
         additionalProperties: true
-        description: AccessControlList of the CmdbType
+        description: Access Control List of the Type
         properties:
           activated:
             type: boolean

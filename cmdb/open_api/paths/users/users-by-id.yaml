@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,23 +20,25 @@
 
 get:
     tags:
-        - CmdbUsers
-    summary: Retrieve a single CmdbUser
+        - Users
+        - Cloud
+        - OnPremise
+    summary: Retrieve a single User [Cloud] [OnPremise]
     description: |
         Required User Right: **base.user-management.user.view**
         <br><hr><br>
-        Returns the **CmdbUser** with the given **public_id**
+        Returns the **User** with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the **CmdbUser** which should be retrieved
+          description: The **public_id** of the **User** which should be retrieved
           required: true
           schema:
               type: integer
     operationId: get_user
     responses:
         "200":
-            description: Returns the **CmdbUser** with the given **public_id**
+            description: Returns the **User** with the given **public_id**
             content:
                 application/json:
                     schema:
@@ -45,7 +47,7 @@ get:
                             result:
                                 $ref: "../../components/schemas/CmdbUser.yaml"
         "400":
-            description: Failed to retrieve the requested **CmdbUser**
+            description: Failed to retrieve the requested **User**
             content:
                 application/json:
                     schema:
@@ -55,7 +57,7 @@ get:
                                 type: string
                                 example: "Failed to retrieve the requested User from the database"
         "404":
-            description: The **CmdbUser** was not found
+            description: The **User** was not found
             content:
                 application/json:
                     schema:
