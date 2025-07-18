@@ -15,49 +15,59 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                  DELETE MANY OBJECTS                                                 #
+#                                              GET - REFERENCES OF OBJECT                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
-
-delete:
-    tags:
+get:
+    tags: 
         - Objects
-        - Cloud
         - OnPremise
-    summary: Delete multiple Objects [Cloud] [OnPremise]
+    summary: Retrieve referenced Objects of an Object [OnPremise]
     description: |
-        Required User Right: **base.framework.object.delete**
+        Required User Right: **base.framework.object.view**
         <br><hr><br>
-        Deletes multiple Objects with the provided public_ids
+        Returns all References of an Object if no **CollectionParameters** are passed
+        <br><hr><br>
     parameters:
-        - name: public_ids
+        - name: public_id
           in: path
-          description: |
-              public_ids of the Objects which should be deleted, seperated by a comma
-              <br><br>
-              Example: `1,2,3`
+          description: The **public_id** of the Objectfor which the referenced Objects should be retrieved
           required: true
           schema:
-              type: string
-              example: "7,14"
-    operationId: delete_many_cmdb_objects
+              type: integer
+        - name: CollectionParameters
+          in: query
+          description: Parameters for filtering, limiting, sorting, and pagination of Objects
+          required: false
+          schema:
+            $ref: '../../components/schemas/CollectionParameters.yaml'
+        - name: view
+          in: query
+          description: |
+            'native': list of native Objects
+            'render': list of rendered Objects
+          required: false
+          schema:
+                type: integer
+    operationId: get_cmdb_object_references
     responses:
         "200":
-            description: Returns a true for each Object that was deleted
+            description: |
+                view='native': Returns a **list of Objects** matching the filter criteria
+                view='render': **list of Objects with render information** matching the filter criteria
             content:
                 application/json:
                     schema:
                         type: object
                         properties:
-                            successfully:
+                            results:
                                 type: array
                                 items:
-                                    type: boolean
+                                    $ref: '../../components/schemas/CmdbObject.yaml'
+                            total:
+                                type: integer
+                                description: the total amount of results
         "400":
-            description: |
-                Multiple cases are possible:
-                <br>
-                - The public_ids are not provided as string in format '1,2,3'
-                - Object with given **public_id** could not be deleted
+            description: Could not iterate the objects
             content:
                 application/json:
                     schema:
@@ -65,25 +75,9 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "The public_ids are not provided as string in format '1,2,3'"
-        "403":
-            $ref: '../../components/responses.yaml#/Forbidden'
-        "404":
-            description: Object with the given **public_id** was not found
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            error:
-                                type: string
-                                example: "Could not retrive the requested object"
+                                example: "Could not iterate the objects"
         "500":
-            description: |
-                Multiple cases are possible:
-                <br>
-                - Internal server error
-                - Object could not be rendered
+            description: Internal server error
             content:
                 application/json:
                     schema:
@@ -91,4 +85,4 @@ delete:
                         properties:
                             error:
                                 type: string
-                                example: "Could not render an object"
+                                example: "Internal server error"

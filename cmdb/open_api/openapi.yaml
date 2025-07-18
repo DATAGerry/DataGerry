@@ -21,7 +21,10 @@ info:
         DataGerry Cloud API documentation
         <br><hr><br>
         The API requires **BasicAuth** (Email and Password) and the **API-Key** of the subscription which is provided in the Service Portal.
-    version: 2.3.0
+        <br><br><br>
+        The last two sections list all the Routes available for the **Cloud version** and those available for the **OnPremise version**
+        <br><br><hr>
+    version: 3.0.0
     license:
         name: GNU Affero General Public License
         url: https://www.gnu.org/licenses/gpl-3.0
@@ -31,20 +34,22 @@ servers:
       description: DataGerry API Entrypoint
 
 tags:
-    - name: CmdbObjects
-      description: API Routes related to **CmdbObjects**
-    - name: CmdbTypes 
-      description: API Routes related to **CmdbTypes**
-    - name: CmdbCategories
-      description: API Routes related to **CmdbCategories**
-    - name: CmdbSectionTemplates
-      description: API Routes related to **CmdbSectionTemplates**
-    - name: CmdbUsers
-      description: API Routes related to **CmdbUsers**
+    - name: Objects
+      description: API Routes related to **Objects**
+    - name: Types 
+      description: API Routes related to **Types**
+    - name: Categories
+      description: API Routes related to **Categories**
+    - name: Section Templates
+      description: API Routes related to **Section Templates**
+    - name: Users
+      description: API Routes related to **Users**
 
 paths:
     /objects:
         $ref: "./paths/objects/objects.yaml"
+    /objects/count:
+        $ref: "./paths/objects/objects-count.yaml"
     /objects/{public_id}:
         $ref: "./paths/objects/objects-by-id.yaml"
     /objects/native/{public_id}:
@@ -53,6 +58,8 @@ paths:
         $ref: "./paths/objects/objects-many.yaml"
     /objects/state/{public_id}:
         $ref: "./paths/objects/objects-state.yaml"
+    /objects/references/{public_id}:
+        $ref: "./paths/objects/objects-references.yaml"
     /types:
         $ref: "./paths/types/types.yaml"
     /types/{public_id}:
@@ -74,21 +81,21 @@ paths:
 
 components:
     schemas:
-        CmdbObject:
+        Object:
             $ref: "./components/schemas/CmdbObject.yaml"
-        CmdbCategory:
+        Category:
             $ref: "./components/schemas/CmdbCategory.yaml"
-        CmdbType:
+        Type:
             $ref: "./components/schemas/CmdbType.yaml"
-        CmdbTypeField:
+        TypeField:
             $ref: "./components/schemas/CmdbTypeField.yaml"
-        CmdbTypeRenderMeta:
+        TypeRenderMeta:
             $ref: "./components/schemas/CmdbTypeRenderMeta.yaml"
-        CmdbSectionTemplate:
+        SectionTemplate:
             $ref: "./components/schemas/CmdbSectionTemplate.yaml"
         MultiDataSection:
             $ref: "./components/schemas/MultiDataSection.yaml"
-        CmdbUser:
+        User:
             $ref: "./components/schemas/CmdbUser.yaml"
         CollectionParameters:
             $ref: "./components/schemas/CollectionParameters.yaml"

@@ -15,44 +15,29 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                       GET USERS                                                      #
+#                                                   GET OBJECTS COUNT                                                  #
 # -------------------------------------------------------------------------------------------------------------------- #
-
 get:
-    tags:
-        - Users
+    tags: 
+        - Objects
         - Cloud
         - OnPremise
-    summary: Retrieve multiple Users [Cloud] [OnPremise]
+    summary: Retrieve the amount of Objects in the database [Cloud] [OnPremise]
     description: |
-        Required User Right: **base.user-management.user.view**
+        Required User Right: **base.framework.object.view**
         <br><hr><br>
-        Returns all **Users** if no **CollectionParameters** are passed
-    operationId: get_users
-    parameters:
-        - name: CollectionParameters
-          in: query
-          description: Parameters for filtering, limiting, sorting, and pagination of **Users**
-          required: false
-          schema:
-              $ref: "../../components/schemas/CollectionParameters.yaml"
+        Retrieve the amount of Objects in the database
+    operationId: get_cmdb_object_count
     responses:
         "200":
-            description: Returns a **list of Users** matching the filter criteria
+            description: Returns amount of Objects in the database
             content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            results:
-                                type: array
-                                items:
-                                    $ref: "../../components/schemas/CmdbUser.yaml"
-                            total:
-                                type: integer
-                                description: The amount of Users returned
+              application/json:
+                  schema:
+                      type: integer
+                      example: 12
         "400":
-            description: Could not iterate **Users**
+            description: Failed to retrive the amount of Objects
             content:
                 application/json:
                     schema:
@@ -60,9 +45,9 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Could not iterate Users"
+                                example: "Failed to retrive the amount of Objects"
         "500":
-            description: An unexpected error occured
+            description: Internal server error
             content:
                 application/json:
                     schema:
@@ -70,4 +55,4 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Internal server error!"
+                                example: "Internal server error"

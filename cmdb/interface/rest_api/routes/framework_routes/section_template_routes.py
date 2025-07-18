@@ -93,7 +93,8 @@ def create_section_template(params: dict, request_user: CmdbUser):
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
 @section_template_blueprint.protect(auth=True, right='base.framework.sectionTemplate.view')
 def get_all_section_templates(params: CollectionParameters, request_user: CmdbUser):
-    """Returns all CmdbSectionTemplates based on the params
+    """
+    Returns all CmdbSectionTemplates based on the params
 
     Args:
         params (CollectionParameters): Parameters to identify documents in database
@@ -142,16 +143,19 @@ def get_section_template(public_id: int, request_user: CmdbUser):
 
     try:
         section_template_instance = template_manager.get_section_template(public_id)
+
+        if not section_template_instance:
+            abort(404, f"SectionTemplate with ID: {public_id} not found!")
+
+        return DefaultResponse(section_template_instance).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except BaseManagerGetError as err:
         LOGGER.debug("[get_section_template] %s", err)
-        abort(400, f"Could not retrieve SectionTemplate with public_id: {public_id}!")
-
-    if not section_template_instance:
-        section_template_instance = []
-
-    api_response = DefaultResponse(section_template_instance)
-
-    return api_response.make_response()
+        abort(400, f"Failed to retrieve SectionTemplate with public_id: {public_id}!")
+    except Exception as err:
+        LOGGER.error("[get_all_section_templates] Exception: %s. Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal Server Error occured while retrieving SectionTemplate with ID: {public_id}!")
 
 
 @section_template_blueprint.route('/<int:public_id>/count', methods=['GET'])

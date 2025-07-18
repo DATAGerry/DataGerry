@@ -15,39 +15,42 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                      CmdbObject                                                      #
+#                                                        Object                                                        #
 # -------------------------------------------------------------------------------------------------------------------- #
 type: object
 properties:
     public_id:
         type: integer
-        description: The public_id of the CmdbObject
+        description: The public_id of the Object
         example: 1
     type_id:
         type: integer
-        description: The public_id of the CmdbType from which this instance was created
+        description: The public_id of the Type from which this instance was created
         example: 2
     version:
         type: string
         default: 1.0.0
-        description: Version of the CmdbObject
+        description: Version of the Object
+    ci_explorer_tooltip:
+        type: string
+        description: Tooltip to show for this Object in the CI Explorer when it is hovered
     author_id:
         type: integer
         nullable: true
-        description: The public_id of the CmdbUser who created this CmdbObject
+        description: The public_id of the User who created this Object
         example: 3
     creation_time:
         type: object
         nullable: true
-        description: The timestamp of when the CmdbObject was created
+        description: The timestamp of when the Object was created
     last_edit_time:
         type: object
         nullable: true
-        description: The timestamp of when the CmdbObject was edited the last time
+        description: The timestamp of when the Object was edited the last time
     active:
         type: boolean
         default: true
-        description: The activation status of the CmdbObject, true equals active
+        description: The activation status of the Object, true equals active
     fields:
         type: array
         description: Here are the fields and corresponding values of non MultiDataSections saved

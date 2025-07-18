@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,12 +20,14 @@
 
 post:
     tags: 
-        -  CmdbTypes
-    summary: Insert a new CmdbType
+        - Types
+        - Cloud
+        - OnPremise
+    summary: Insert a new Type [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.type.add**
         <br><hr><br>
-        Inserts a new CmdbType into the database.
+        Inserts a new Type into the database.
         <br><br>
         The **public_id** and **creation_time** properties will be automatically created and don't need to be provided.
     operationId: insert_cmdb_type
@@ -37,7 +39,7 @@ post:
                     $ref: '../../components/schemas/CmdbType.yaml'
     responses:
         "200":
-            description: The assigned **public_id** and the created CmdbType are returned
+            description: The assigned **public_id** and the created Type are returned
             content:
                 application/json:
                     schema:
@@ -45,7 +47,7 @@ post:
                         properties:
                             result_id:
                                 type: integer
-                                description: "The **public_id** of the created CmdbType"
+                                description: "The **public_id** of the created Type"
                                 example: 12345
                             raw:
                                 $ref: "../../components/schemas/CmdbType.yaml"
@@ -53,8 +55,8 @@ post:
             description: |
                 Multiple cases are possible:
                 <br>
-                - The CmdbType could not be inserted
-                - CmdbType with given **public_id** already exists
+                - The Type could not be inserted
+                - Type with given **public_id** already exists
             content:
                 application/json:
                     schema:
@@ -62,9 +64,9 @@ post:
                         properties:
                             error:
                                 type: string
-                                example: "CmdbType with given **public_id** already exists"
+                                example: "Type with given **public_id** already exists"
         "404":
-            description: Could not retrieve the created CmdbType from database
+            description: Could not retrieve the created Type from database
             content:
                 application/json:
                     schema:
@@ -72,7 +74,7 @@ post:
                         properties:
                             error:
                                 type: string
-                                example: "Could not retrieve the created CmdbType from database"
+                                example: "Could not retrieve the created Type from database"
         "500":
             description: Internal server error
             content:
@@ -90,23 +92,23 @@ post:
 
 get:
     tags:
-        - CmdbTypes
-    summary: Retrieve multiple CmdbTypes
+        - Types
+    summary: Retrieve multiple Types [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.type.view**
         <br><hr><br>
-        Returns all CmdbTypes if no **CollectionParameters** are passed
+        Returns all Types if no **CollectionParameters** are passed
     operationId: get_types
     parameters:
         - name: CollectionParameters
           in: query
-          description: Parameters for filtering, limiting, sorting, and pagination of CmdbTypes
+          description: Parameters for filtering, limiting, sorting, and pagination of Types
           required: false
           schema:
             $ref: '../../components/schemas/CollectionParameters.yaml'
     responses:
         "200":
-            description: Returns a **list of CmdbTypes** matching the filter criteria
+            description: Returns a **list of Types** matching the filter criteria
             content:
                 application/json:
                     schema:
@@ -118,9 +120,9 @@ get:
                                     $ref: '../../components/schemas/CmdbType.yaml'
                             total:
                                 type: integer
-                                description: Total amount of returned CmdbTypes
+                                description: Total amount of returned Types
         "400":
-            description: Failed to retrieve CmdbTypes from database
+            description: Failed to retrieve Types from database
             content:
                 application/json:
                     schema:
@@ -128,7 +130,7 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Failed to retrieve CmdbTypes from database"
+                                example: "Failed to retrieve Types from database"
         "500":
             description: Internal server error
             content:

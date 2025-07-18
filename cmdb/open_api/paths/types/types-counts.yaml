@@ -1,4 +1,4 @@
-# DATAGERRY - OpenSource Enterprise CMDB
+# DataGerry - OpenSource Enterprise CMDB
 # Copyright (C) 2025 becon GmbH
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,30 +20,32 @@
 
 get:
     tags:
-        - CmdbTypes
-    summary: Retrieve the amount of CmdbObjects of the CmdbType
+        - Types
+        - Cloud
+        - OnPremise
+    summary: Retrieve the amount of Objects of the Type [Cloud] [OnPremise]
     description: |
         Required User Right: **base.framework.type.read**
         <br><hr><br>
-        Returns amount of CmdbObjects of CmdbType with the given **public_id**
+        Returns amount of Objects of Type with the given **public_id**
     parameters:
         - name: public_id
           in: path
-          description: The **public_id** of the CmdbType for which the objects should be counted
+          description: The **public_id** of the Type for which the objects should be counted
           required: true
           schema:
               type: integer
     operationId: count_objects_of_type
     responses:
         "200":
-            description: Returns the amount of CmdbObjects with the corresponding CmdbType
+            description: Returns the amount of Objects with the corresponding Type
             content:
                 application/json:
                     schema:
                         type: integer
                         example: 23
         "400":
-            description: Failed to count the CmdbObjects
+            description: Failed to count the Objects
             content:
                 application/json:
                     schema:
@@ -51,7 +53,7 @@ get:
                         properties:
                             error:
                                 type: string
-                                example: "Failed to count the CmdbObjects"
+                                example: "Failed to count the Objects"
         "500":
             description: Internal server error
             content:
