@@ -16,8 +16,6 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-
-
 /* -------- basic primitives -------------------------------------------- */
 export interface Field {
     name: string;
@@ -49,6 +47,7 @@ export interface Field {
     label: string;
     icon: string; 
     fields: TypeFieldDef[];
+    type_color: string;
   }
   
   /* -------- Hierarchy helpers --------------------------- */

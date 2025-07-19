@@ -69,6 +69,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public showRelationModal = false;
   public loadingRelations = false;
   public showRelationRoleDialog = false;
+  isGraphView: boolean = false;
+
 
   // Relation selection
   public availableRelations: CmdbRelation[] = [];
@@ -794,5 +796,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackByRelationId(index: number, group: RelationGroup): number {
     return group?.relationId;
+  }
+
+
+  toggleView(showGraph: boolean): void {
+    this.isGraphView = showGraph;
   }
 }

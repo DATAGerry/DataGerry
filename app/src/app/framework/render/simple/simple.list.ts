@@ -24,12 +24,14 @@ import { RefSimpleComponent } from './special/ref-simple.component';
 import { LocationSimpleComponent } from './special/location-simple.component';
 import { DateSimpleComponent } from './date/date-simple.component';
 import { RefSectionSimpleComponent } from './special/ref-section-simple.component';
+import NumberComponent from '../fields/math/number.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export const simpleComponents: { [type: string]: any } = {
     'text': TextSimpleComponent,
     'password': PasswordSimpleComponent,
     'textarea': TextSimpleComponent,
+    'number': NumberComponent,
     'checkbox': CheckboxSimpleComponent,
     'radio': RadioSimpleComponent,
     'select': SelectSimpleComponent,

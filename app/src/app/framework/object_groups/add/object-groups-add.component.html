@@ -1,8 +1,7 @@
 
 
 <div class="container">
-  <h2 class="mb-3">{{ isEditMode ? 'Edit' : 'Add' }} Object Group</h2>
-
+  <h2 class="mb-3">{{ isViewMode ? 'View' : isEditMode ? 'Edit' : 'Add' }} Object Group</h2>  
   <form #groupForm="ngForm" autocomplete="off" class="needs-validation" (ngSubmit)="onSave()">
     <!-- Group Name -->
     <div class="form-group">

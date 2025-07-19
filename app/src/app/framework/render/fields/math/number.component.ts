@@ -39,3 +39,5 @@ export class NumberComponent extends RenderFieldComponent {
   }
 
 }
+
+export { NumberComponent as default };

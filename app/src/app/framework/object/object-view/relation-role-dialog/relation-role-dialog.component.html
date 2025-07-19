@@ -103,7 +103,7 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="back()">Cancel</button>
-        <button class="btn btn-primary" (click)="confirm()" [disabled]="isConfirmDisabled()" *ngIf="mode !== CmdbMode.View">
+        <button class="btn btn-success" (click)="confirm()" [disabled]="isConfirmDisabled()" *ngIf="mode !== CmdbMode.View">
           {{ mode === CmdbMode.Edit ? 'Update Relationship' : 'Confirm Creation' }}
         </button>
       </div>
