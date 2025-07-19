@@ -21,6 +21,7 @@ import {
 } from 'src/app/framework/services/object-relation.service';
 import { UserService } from 'src/app/management/services/user.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface FlatOptionItem {
   value: number;
@@ -86,8 +87,7 @@ export class RelationRoleDialogComponent implements OnInit, OnDestroy {
     private objectRelationService: ObjectRelationService,
     private userService: UserService,
     private cdr: ChangeDetectorRef,
-    private loaderService: LoaderService
-  ) {
+    private loaderService: LoaderService) {
     this.form = this.fb.group({
       parent: [null],
       child: [null]

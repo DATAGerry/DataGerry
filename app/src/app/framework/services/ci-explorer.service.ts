@@ -13,51 +13,110 @@ import { ApiCallService } from 'src/app/services/api-call.service';
 
 
 
-@Injectable({
-  providedIn: 'root',
-})
+// @Injectable({
+//   providedIn: 'root',
+// })
+// export class CiExplorerService extends BaseApiService<never> {
+//   public servicePrefix = 'ci_explorer/items';
+
+//   constructor(protected api: ApiCallService) {
+//     super(api);
+//   }
+
+//   /* ------------------------------------------------------------------
+//      initial page-load  (root + 1-level parents & children)
+//      ------------------------------------------------------------------ */
+//   loadWithRoot(targetId: number): Observable<GraphRespWithRoot> {
+//     const url =
+//       `${this.servicePrefix}` +
+//       `?target_id=${targetId}` +
+//       `&target_type=BOTH` +
+//       `&with_root=true`;
+
+//     return this.handleGetRequest<GraphRespWithRoot>(url);
+//   }
+
+//   /* ------------------------------------------------------------------
+//      expand CHILDRen of a node
+//      ------------------------------------------------------------------ */
+//   expandChild(targetId: number): Observable<GraphRespChildren> {
+//     const url =
+//       `${this.servicePrefix}` +
+//       `?target_id=${targetId}` +
+//       `&target_type=CHILD` +
+//       `&with_root=false`;
+
+//     return this.handleGetRequest<GraphRespChildren>(url);
+//   }
+
+//   /* ------------------------------------------------------------------
+//      expand PARENTS of a node
+//      ------------------------------------------------------------------ */
+//   expandParent(targetId: number): Observable<GraphRespParents> {
+//     const url =
+//       `${this.servicePrefix}` +
+//       `?target_id=${targetId}` +
+//       `&target_type=PARENT` +
+//       `&with_root=false`;
+
+//     return this.handleGetRequest<GraphRespParents>(url);
+//   }
+// }
+
+
+
+@Injectable({ providedIn: 'root' })
 export class CiExplorerService extends BaseApiService<never> {
   public servicePrefix = 'ci_explorer/items';
 
-  constructor(protected api: ApiCallService) {
-    super(api);
+  /* --------------------------------------------------------------- */
+  /* helpers                                                         */
+  /* --------------------------------------------------------------- */
+  private buildFilters(types: number[], relations: number[]): string {
+    let qs = '';
+    if (types?.length)      { qs += `&types_filter=[${types.join(',')}]`; }
+    if (relations?.length)  { qs += `&relations_filter=[${relations.join(',')}]`; }
+    return qs;
   }
 
-  /* ------------------------------------------------------------------
-     initial page-load  (root + 1-level parents & children)
-     ------------------------------------------------------------------ */
-  loadWithRoot(targetId: number): Observable<GraphRespWithRoot> {
+  /* ---------------- initial root + 1-hop ------------------------- */
+  loadWithRoot(
+    targetId: number,
+    types: number[] = [],
+    relations: number[] = []
+  ): Observable<GraphRespWithRoot> {
     const url =
-      `${this.servicePrefix}` +
-      `?target_id=${targetId}` +
-      `&target_type=BOTH` +
-      `&with_root=true`;
+      `${this.servicePrefix}?target_id=${targetId}` +
+      `&target_type=BOTH&with_root=true` +
+      this.buildFilters(types, relations);
 
     return this.handleGetRequest<GraphRespWithRoot>(url);
   }
 
-  /* ------------------------------------------------------------------
-     expand CHILDRen of a node
-     ------------------------------------------------------------------ */
-  expandChild(targetId: number): Observable<GraphRespChildren> {
+  /* ---------------- expand children ------------------------------ */
+  expandChild(
+    targetId: number,
+    types: number[] = [],
+    relations: number[] = []
+  ): Observable<GraphRespChildren> {
     const url =
-      `${this.servicePrefix}` +
-      `?target_id=${targetId}` +
-      `&target_type=CHILD` +
-      `&with_root=false`;
+      `${this.servicePrefix}?target_id=${targetId}` +
+      `&target_type=CHILD&with_root=false` +
+      this.buildFilters(types, relations);
 
     return this.handleGetRequest<GraphRespChildren>(url);
   }
 
-  /* ------------------------------------------------------------------
-     expand PARENTS of a node
-     ------------------------------------------------------------------ */
-  expandParent(targetId: number): Observable<GraphRespParents> {
+  /* ---------------- expand parents ------------------------------- */
+  expandParent(
+    targetId: number,
+    types: number[] = [],
+    relations: number[] = []
+  ): Observable<GraphRespParents> {
     const url =
-      `${this.servicePrefix}` +
-      `?target_id=${targetId}` +
-      `&target_type=PARENT` +
-      `&with_root=false`;
+      `${this.servicePrefix}?target_id=${targetId}` +
+      `&target_type=PARENT&with_root=false` +
+      this.buildFilters(types, relations);
 
     return this.handleGetRequest<GraphRespParents>(url);
   }

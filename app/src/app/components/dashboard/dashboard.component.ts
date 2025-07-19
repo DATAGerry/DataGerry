@@ -368,9 +368,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         finalize(() => this.loaderService.hide()))
             .subscribe({
                 next: (values) => {
+                    console.log('Values for object chart:', values);
                     for (const obj of values) {
                         this.labelsObject.push(obj.label);
-                        this.colorsObject.push(this.getRandomColor());
+                        this.colorsObject.push(obj.type_color);
                         this.itemsObject.push(obj.count);
                     }
                 },

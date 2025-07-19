@@ -86,6 +86,7 @@ export class CmdbType implements CmdbDao {
     public render_meta: CmdbTypeMeta;
     public fields: Array<any> = [];
     public ci_explorer_label?: string = null; 
+    public ci_explorer_color?: string = null;
     public acl?: AccessControlList;
 
 

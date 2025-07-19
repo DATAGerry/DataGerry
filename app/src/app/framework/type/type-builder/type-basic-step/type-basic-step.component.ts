@@ -17,7 +17,7 @@
 */
 
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { checkTypeExistsValidator, TypeService } from '../../../services/type.service';
 import { CmdbMode } from '../../../modes.enum';
 import { ReplaySubject } from 'rxjs';
@@ -50,10 +50,12 @@ export class TypeBasicStepComponent extends TypeBuilderStepComponent implements 
         label: this.typeInstance.label,
         description: this.typeInstance.description,
         active: this.typeInstance.active,
-        icon: this.typeInstance.render_meta.icon
+        icon: this.typeInstance.render_meta.icon,
+        ci_explorer_color: instance.ci_explorer_color || '#8896a5'  // fallback
       });
     }
   }
+
 
   constructor(private typeService: TypeService) {
     super();
@@ -62,9 +64,11 @@ export class TypeBasicStepComponent extends TypeBuilderStepComponent implements 
       label: new UntypedFormControl('', Validators.required),
       description: new UntypedFormControl(''),
       active: new UntypedFormControl(true),
-      icon: new UntypedFormControl('fa fa-cube')
+      icon: new UntypedFormControl('fa fa-cube'),
+      ci_explorer_color: new UntypedFormControl('#8896a5')
     });
   }
+
 
   public ngOnInit(): void {
     if (this.mode === CmdbMode.Create) {
@@ -82,12 +86,23 @@ export class TypeBasicStepComponent extends TypeBuilderStepComponent implements 
     });
   }
 
+
+  public ngOnDestroy(): void {
+    this.subscriber.next();
+    this.subscriber.complete();
+  }
+
+
+  /**
+   * Assigns the form values to the type instance.
+   */
   public assign(changes): void {
     this.typeInstance.name = changes.name;
     this.typeInstance.label = changes.label;
     this.typeInstance.description = changes.description;
     this.typeInstance.active = changes.active;
     this.typeInstance.render_meta.icon = changes.icon;
+    this.typeInstance.ci_explorer_color = changes.ci_explorer_color;
   }
 
   public get icon(): UntypedFormControl {
@@ -106,9 +121,13 @@ export class TypeBasicStepComponent extends TypeBuilderStepComponent implements 
     return this.form.get('description') as UntypedFormControl;
   }
 
-  public ngOnDestroy(): void {
-    this.subscriber.next();
-    this.subscriber.complete();
-  }
 
+  /**
+   * Sets a random color for the type's CI Explorer color field.
+   */
+  public setRandomColor(): void {
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    this.form.get('ci_explorer_color').setValue(randomColor);
+  }
+  
 }

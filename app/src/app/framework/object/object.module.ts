@@ -80,6 +80,7 @@ import { RelationLogListComponent } from './components/object-relation-log-list/
 import { ChangesModalComponent } from './modals/object-relation-changes-modal/changes-modal.component';
 import { RiskAssessmentModule } from 'src/app/toolbox/isms/risk-assessment/risk-assesment.module';
 import { GraphEditorComponent } from './object-view/graph-editor/graph-editor.component';
+import { NodeDetailsModalComponent } from './object-view/graph-editor/modals/node-details-modal.component';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -127,7 +128,8 @@ import { GraphEditorComponent } from './object-view/graph-editor/graph-editor.co
         RelationRoleDialogComponent,
         RelationLogListComponent,
         ChangesModalComponent,
-        GraphEditorComponent
+        GraphEditorComponent,
+        NodeDetailsModalComponent
        ],
     imports: [
         CommonModule,
