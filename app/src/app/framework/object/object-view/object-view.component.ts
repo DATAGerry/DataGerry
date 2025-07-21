@@ -41,6 +41,7 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 import { CmdbObject } from '../../models/cmdb-object';
 import { ExtendedRelation, RelationGroup, ExtendedObjectRelationInstance, ObjectRelationInstance } from '../../models/object.model';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { environment } from 'src/environments/environment';
 
 
 
@@ -104,6 +105,8 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public isLoading$ = this.loaderService.isLoading$;
 
+  public isFeaurePreviewModeEnabled = false;
+
   /* --------------------------------------------------- LIFECYCLE METHODS -------------------------------------------------- */
 
   constructor(
@@ -124,6 +127,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.isFeaurePreviewModeEnabled = environment.featurePreviewMode
     this.objectViewSubject.pipe(takeUntil(this.unsubscribe)).subscribe({
       next: (result) => {
         this.renderResult = result;

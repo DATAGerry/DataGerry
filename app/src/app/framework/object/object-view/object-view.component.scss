@@ -294,13 +294,13 @@ body {
       
       // Active state (filled) - using your CMDB blue theme
       &.btn-primary {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, #e1653b, #e94d18);
         color: white;
-        border: 1px solid #3b82f6;
+        border: 1px solid #e94d18;
         box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         
         &:hover {
-          background: linear-gradient(135deg, #1d4ed8, #1e40af);
+          background: linear-gradient(135deg, #c06243, #eb815e);
           transform: translateY(-1px);
           box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
           border-color: #1d4ed8;
