@@ -1,120 +1,211 @@
-// /*
-// * DATAGERRY - OpenSource Enterprise CMDB
-// * Copyright (C) 2025 becon GmbH
-// *
-// * This program is free software: you can redistribute it and/or modify
-// * it under the terms of the GNU Affero General Public License as
-// * published by the Free Software Foundation, either version 3 of the
-// * License, or (at your option) any later version.
-// *
-// * This program is distributed in the hope that it will be useful,
-// * but WITHOUT ANY WARRANTY; without even the implied warranty of
-// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// * GNU Affero General Public License for more details.
-// *
-// * You should have received a copy of the GNU Affero General Public License
-// * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-// */
-import { Injectable, isDevMode } from '@angular/core';
+/*
+* DATAGERRY - OpenSource Enterprise CMDB
+* Copyright (C) 2025 becon GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+import { Injectable } from '@angular/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, lastValueFrom } from 'rxjs';
+import { map, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ConnectionService {
-
-  private readonly devPort = 4000;
-  private connectionSubject: BehaviorSubject<string | null>;
-  public  readonly connection: Observable<string | null>;
-
+  private connection$ = new BehaviorSubject<string>('');
   private connectionStatus = false;
   private http: HttpClient;
+  private readonly LOCAL_DEFAULT_PORT = 4000;
 
-  /* ───── getters ───── */
-  get status(): boolean            { return this.connectionStatus; }
-  get currentConnection(): string | null { return this.connectionSubject.value; }
+  /** Emits true once a non-empty URL is available */
+  public readonly connectionReady$: Observable<boolean> =
+    this.connection$.pipe(map(v => !!v), distinctUntilChanged());
 
-  /* ───── life-cycle ───── */
-  constructor(private backend: HttpBackend) {
+  get currentConnection(): string { return this.connection$.value; }
+  get status(): boolean { return this.connectionStatus; }
+
+  constructor(backend: HttpBackend) {
     this.http = new HttpClient(backend);
 
-    const stored  = environment.cloudMode ? null : localStorage.getItem('connection');
-    const initial = stored && stored !== '"null"' ? JSON.parse(stored) : null;
-
-    this.connectionSubject = new BehaviorSubject<string | null>(initial);
-    this.connection        = this.connectionSubject.asObservable();
-
-
-    if (environment.cloudMode && !this.currentConnection) {
-      this.setConnectionURL(environment.protocol, environment.apiUrl, environment.apiPort);
-      this.validateAsync();                                   // runs in background
+    if (environment.cloudMode) {
+      // ─── CLOUD MODE: from env file──────────────────
+      const url = this.buildUrl(
+        environment.protocol,
+        environment.apiUrl,
+        environment.apiPort
+      );
+      this.connection$.next(url);
+      this.validateAsync();
+      return;
     }
 
+    const raw = localStorage.getItem('connection');
+    const stored =
+      raw && raw !== '"null"'
+        ? (JSON.parse(raw) as string)
+        : '';
 
-    if (!environment.cloudMode && !this.currentConnection) {
+    if (stored) {
+      this.connection$.next(stored);
+      this.validateAsync();
+    } else {
       this.injectLocalDefault();
     }
+  }
 
-    if (!environment.cloudMode &&  this.currentConnection) {
+
+  /**
+   *  Sets the connection URL and updates the local storage.
+   * @param protocol 
+   * @param host 
+   * @param port 
+   * @param skipValidate 
+   */
+  public setConnectionURL(
+    protocol: string,
+    host: string,
+    port: number,
+    skipValidate = false
+  ): void {
+    const url = this.buildUrl(protocol, host, port);
+
+    localStorage.setItem('connection', JSON.stringify(url));
+
+    this.connection$.next(url);
+
+    if (!skipValidate) {
       this.validateAsync();
     }
   }
 
+  /**
+   *  Tests a custom URL by making a GET request to the REST endpoint.
+   * @param protocol 
+   * @param host 
+   * @param port 
+   * @returns 
+   */
+  public async testCustomURL(
+    protocol: string,
+    host: string,
+    port: number
+  ): Promise<any> {
+    const base = this.buildUrl(protocol, host, port);
+    const testUrl = `${base}/rest/`;
+    return lastValueFrom(this.http.get<any>(testUrl));
+  }
 
-  /** Called from the Connect screen once the user hits “Use connection”. */
-  public setConnectionURL(protocol: string, host: string, port: number): void {
-    host = host.replace(/^https?:\/\//, '');                  // strip any protocol
-    const href = port === 0 ? `${protocol}://${host}`
-                            : `${protocol}://${host}:${port}`;
+  /** Quick boolean test of current connection */
+  public async testConnection(): Promise<boolean> {
+    try {
+      await this.connect();
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
 
-    localStorage.setItem('connection', JSON.stringify(href));
-    this.connectionSubject.next(href);
+  /**
+   * Clears the current connection URL from local storage
+   */
+  public clearConnection(): void {
+    localStorage.removeItem('connection');
+    this.connection$.next('');
+    this.connectionStatus = false;
+  }
+
+  /** For your API calls */
+  public getApiBaseUrl(): string {
+    const base = this.currentConnection
+      ? `${this.currentConnection}`
+      : '';
+    return base;
+  }
+
+  // ─── PRIVATE ─────────────────────────────────────────────────────
+
+  /**
+   * Builds a URL from the given protocol, host, and port.
+   * @param protocol 
+   * @param host 
+   * @param port 
+   * @returns 
+   */
+  private buildUrl(protocol: string, host: string, port: number): string {
+    const h = host.replace(/^https?:\/\//, '');
+    return port
+      ? `${protocol}://${h}:${port}`
+      : `${protocol}://${h}`;
+  }
+
+
+  /**
+   * Injects a local default connection URL into local storage and updates the connection observable.
+   */
+  private injectLocalDefault(): void {
+    const protocol = window.location.protocol.replace(':', '');
+    const hostname = window.location.hostname;
+    const port = this.LOCAL_DEFAULT_PORT;
+
+    const url = this.buildUrl(protocol, hostname, port);
+
+    localStorage.setItem('connection', JSON.stringify(url));
+    this.connection$.next(url);
+
     this.validateAsync();
   }
 
-    /** Tests the current connection URL and returns the response. */
-  public async testCustomURL(protocol: string, host: string, port: number) {
-    const url = `${protocol}://${host}:${port}/rest/`;
-    return await lastValueFrom(this.http.get<any>(url));
-  }
 
-  /** Convenience for components that just want a boolean. */
-  public async testConnection(): Promise<boolean> {
-    try { await this.connect(); return true; }
-    catch { return false; }
-  }
-
-  /* ───── private helpers ───── */
-
-  /** Injects a sensible default only for non-cloud builds. */
-  private injectLocalDefault(): void {
-    if (isDevMode()) {
-      this.setConnectionURL('http', '127.0.0.1', this.devPort);
-    } else {
-      this.setConnectionURL(
-        window.location.protocol.substring(0, window.location.protocol.length - 1),
-        window.location.hostname,
-        +window.location.port
-      );
-    }
-  }
-
-  /** Background ping; keeps the `status` flag healthy. */
+  /**
+   *  Validates the current connection asynchronously.
+   * @returns Validates the current connection by attempting to connect to the REST endpoint.
+   */
   private async validateAsync(): Promise<void> {
-    try {
-      await this.connect();
-      this.connectionStatus = true;
-    } catch {
+    const base = this.currentConnection;
+
+    if (!base) {
       this.connectionStatus = false;
-      localStorage.removeItem('connection');
-      this.connectionSubject.next(null);
+      return;
+    }
+
+    try {
+      await this.connectTo(base);
+      this.connectionStatus = true;
+    } catch (err) {
+      this.connectionStatus = false;
+      if (!environment.cloudMode) {
+        this.clearConnection();
+      }
     }
   }
 
 
-    /** Connects to the current URL and returns the response. */
-  private async connect() {
-    const url = `${this.currentConnection}/rest/`;
-    return await lastValueFrom(this.http.get<any>(url));
+  /**
+   *  Connects to the REST endpoint of the given base URL.
+   * @param base 
+   * @returns 
+   */
+  private connectTo(base: string) {
+    const url = `${base}/rest/`;
+    return lastValueFrom(this.http.get<any>(url));
+  }
+
+  /**
+   *  Connects to the current connection URL.
+   * @returns 
+   */
+  private connect() {
+    return this.connectTo(this.currentConnection);
   }
 }

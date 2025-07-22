@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     public subscriptions: Array<any> = [];
     public showSubscriptions = false;
-    public isLoading = false; 
+    public isLoading = false;
 
     private loginSubscription: Subscription = new Subscription();
 
@@ -98,9 +98,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             username: new UntypedFormControl(
                 '',
                 isCloudMode
-                  ? [Validators.required,  strictEmailValidator]
-                  : [Validators.required]
-              ),
+                    ? [Validators.required, strictEmailValidator]
+                    : [Validators.required]
+            ),
             password: new UntypedFormControl('', [Validators.required]),
             subscription: new UntypedFormControl(null)
         });
@@ -127,7 +127,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         this.loginSubscription = this.authenticationService
             .login(this.userName, this.userPW)
-            .pipe(first(), finalize(()=> this.loaderService?.hide()))
+            .pipe(first(), finalize(() => this.loaderService?.hide()))
             .subscribe({
                 next: (response: LoginResponse | Array<any>) => {
 
@@ -136,7 +136,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         this.isLoading = true;
                         this.subscriptions = response;
                         setTimeout(() => {
-                            this.isLoading = false; 
+                            this.isLoading = false;
                             this.showSubscriptions = true;
                             this.loginForm?.get('subscription')?.reset(null);
                         }, 1000);
@@ -153,6 +153,14 @@ export class LoginComponent implements OnInit, OnDestroy {
                     }
                 },
                 error: (err) => {
+                    const isNullPath = err.url?.includes('/null/rest');
+                    if (!environment.cloudMode && err?.status === 404 || err?.status === 0) {
+                        this.router?.navigate(['/connect']);
+                        this.isLoading = false;
+                    } else if (environment.cloudMode && isNullPath) {
+                        localStorage?.removeItem('connection');
+                    }
+
                     this.isLoading = false;
                     this.toastService?.error(err?.error?.message)
                     this.render?.addClass(document?.getElementById('login-logo'), 'shake');
@@ -215,7 +223,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
     }
 
-    
+
     /**
      * Returns the placeholder text for the login input field.
      * @returns 'Email' if in cloud mode, otherwise 'Username'.
@@ -223,7 +231,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     get userIdentifierPlaceholder(): string {
         return environment?.cloudMode ? 'Email' : 'Username';
     }
-    
+
 
     /**
      * Go back to login fields
@@ -233,11 +241,11 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loginForm?.get('subscription')?.reset(null);
     }
 
-    
+
     /**
      * Toggles the visibility of the password input field.
      */
     public togglePasswordVisibility(): void {
         this.passwordVisible = !this.passwordVisible;
-      }
+    }
 }

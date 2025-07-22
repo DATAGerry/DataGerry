@@ -37,9 +37,9 @@ export class ConnectComponent implements OnInit, OnDestroy {
     private readonly defaultPort: number = 4000;
     private readonly defaultProtocol: string = 'http';
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-/*                                                     LIFE CYCLE                                                     */
-/* ------------------------------------------------------------------------------------------------------------------ */
+    /* ------------------------------------------------------------------------------------------------------------------ */
+    /*                                                     LIFE CYCLE                                                     */
+    /* ------------------------------------------------------------------------------------------------------------------ */
 
     public constructor(private domRender: Renderer2, private connService: ConnectionService, private router: Router) {
         this.connectionForm = new UntypedFormGroup({
@@ -59,7 +59,7 @@ export class ConnectComponent implements OnInit, OnDestroy {
         this.domRender.removeClass(document.body, 'embedded');
     }
 
-/* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
+    /* ------------------------------------------------- HELPER METHODS ------------------------------------------------- */
 
     public async checkConnection() {
         const formData = this.connectionForm.getRawValue();
@@ -78,6 +78,10 @@ export class ConnectComponent implements OnInit, OnDestroy {
 
     public useConnection() {
         this.connService.setConnectionURL(this.connectionValues.protocol, this.connectionValues.host, this.connectionValues.port);
-        this.router.navigate(['/']);
+        this.router.navigate(['/']).then(() => {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
     }
 }
