@@ -15,9 +15,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # set environment variables
-BUILDVAR_VERSION = 2.2.0
-BUILDVAR_VERSION_EXT = 2.2.0
-BUILDVAR_DOCKER_TAG = 2.2.0
+BUILDVAR_VERSION = 3.0.0
 BIN_PYINSTALLER = pyinstaller
 
 # Sphinx
@@ -58,15 +56,15 @@ requirements:
 
 
 # substitue BUILD variables
-.PHONY: buildvars
-buildvars:
-	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION_EXT}/g' cmdb/__init__.py
-	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION_EXT}/g' docs/source/conf.py
+# .PHONY: buildvars
+# buildvars:
+# 	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION}/g' cmdb/__init__.py
+# 	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION}/g' docs/source/conf.py
 
 
-# create documentation
+# create documentation #DISABLED:  buildvars after requirements
 .PHONY: docs
-docs: requirements buildvars
+docs: requirements
 	${BIN_SPHINX} -b html -a ${DIR_DOCS_SOURCE} ${DIR_DOCS_BUILD}
 	cp -R ${DIR_DOCS_BUILD}/* ${DIR_DOCS_TARGET}
 
@@ -74,20 +72,23 @@ docs: requirements buildvars
 # create webapp
 .PHONY: webapp
 webapp:
+#	cd ${DIR_WEB_SOURCE} && ${BIN_NPM} install
+#	cd ${DIR_WEB_SOURCE} && ${BIN_NPM} run prod
 	${BIN_NPM} install --prefix ${DIR_WEB_SOURCE}
 	${BIN_NPM} run prod --prefix ${DIR_WEB_SOURCE}
 	cp -R ${DIR_WEB_BUILD}/* ${DIR_WEB_TARGET}
 
 
-# create onefile binary of DataGerry
+# create onefile binary of DataGerry #DISABLED:  buildvars after requirements
 .PHONY: bin
-bin: requirements buildvars docs webapp
+bin: requirements docs webapp
 	${BIN_PYINSTALLER} --name datagerry --onefile \
 		--distpath ${DIR_BIN_BUILD} \
 		--workpath ${DIR_TEMP} \
-		--hidden-import cmdb.updater.versions.updater_20200512 \
-		--hidden-import cmdb.updater.versions.updater_20200513 \
-		--hidden-import cmdb.updater.versions.updater_20240603 \
+		--hidden-import cmdb.database.updater.versions.updater_20200512 \
+		--hidden-import cmdb.database.updater.versions.updater_20200513 \
+		--hidden-import cmdb.database.updater.versions.updater_20240603 \
+		--hidden-import cmdb.database.updater.versions.updater_20250619 \
 		--hidden-import cmdb.framework.exporter \
 		--hidden-import cmdb.framework.exporter.format \
 		--hidden-import cmdb.interface.gunicorn \
@@ -163,7 +164,7 @@ docker: rpm
 	mkdir -p ${DIR_DOCKER_BUILD}/src/files
 	cp contrib/docker/Dockerfile ${DIR_DOCKER_BUILD}/src
 	cp ${DIR_RPM_BUILD}/RPMS/x86_64/DATAGERRY-*.rpm ${DIR_DOCKER_BUILD}/src/files
-	docker build -f ${DIR_DOCKER_BUILD}/src/Dockerfile -t becongmbh/datagerry:${BUILDVAR_DOCKER_TAG} ${DIR_DOCKER_BUILD}/src
+	docker build -f ${DIR_DOCKER_BUILD}/src/Dockerfile -t becongmbh/datagerry:${BUILDVAR_VERSION} ${DIR_DOCKER_BUILD}/src
 
 
 # execute tests

@@ -19,7 +19,8 @@ Implementation of SearchPipelineBuilder
 import logging
 
 from cmdb.manager.query_builder import PipelineBuilder, SearchReferencesPipelineBuilder
-from cmdb.manager import ObjectsManager, CategoriesManager
+from cmdb.manager import CategoriesManager
+from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
 
 from cmdb.models.user_model import CmdbUser
 from cmdb.framework.search.search_param import SearchParam
@@ -88,14 +89,16 @@ class SearchPipelineBuilder(PipelineBuilder):
 
 
     def build(self, params: list[SearchParam],
-              objects_manager: ObjectsManager = None,
               user: CmdbUser = None,
               permission: AccessControlPermission = None,
               active_flag: bool = False) -> list[dict]:
-        """Build a pipeline query out of frontend params"""
+        """
+        Build a pipeline query out of frontend params
+        """
+        # LOGGER.debug(f"[build] params: {params}")
         # clear pipeline
         self.clear()
-        categories_manager = CategoriesManager(objects_manager.dbm)
+        categories_manager: CategoriesManager = ManagerProvider.get_manager(ManagerType.CATEGORIES, user)
 
         # load reference fields in runtime.
         self.pipeline = SearchReferencesPipelineBuilder().build()
@@ -113,6 +116,7 @@ class SearchPipelineBuilder(PipelineBuilder):
         # type builds
         disjunction_query = []
         type_params = [_ for _ in params if _.search_form == 'type']
+
         for param in type_params:
             if param.settings and len(param.settings.get('types', [])) > 0:
                 type_id_in = self.in_('type_id', param.settings['types'])
@@ -120,6 +124,7 @@ class SearchPipelineBuilder(PipelineBuilder):
                     disjunction_query.append(type_id_in)
                 else:
                     self.add_pipe(self.match_(type_id_in))
+
         if len(disjunction_query) > 0:
             self.add_pipe(self.match_(self.or_(disjunction_query)))
 
@@ -135,11 +140,14 @@ class SearchPipelineBuilder(PipelineBuilder):
 
         # public builds
         id_params = [_ for _ in params if _.search_form == 'publicID']
+
         for param in id_params:
+            # if isinstance(param.search_text, int):
             self.add_pipe(self.match_({'public_id': int(param.search_text)}))
 
         # permission builds
         if user and permission:
             self.pipeline = [*self.pipeline, *(AccessControlQueryBuilder().build(group_id=int(user.group_id),
                                                                                  permission=permission))]
+
         return self.pipeline

@@ -123,7 +123,7 @@ class MediaFilesManager(BaseManager):
             return None
 
 
-    def get_many_media_files(self, metadata, **params: dict):
+    def get_many_media_files(self, metadata: dict, **params: dict):
         """
         Retrieves multiple media files matching the given metadata
 
@@ -141,7 +141,7 @@ class MediaFilesManager(BaseManager):
             results = []
             records_total = self.fs.find(filter=metadata).retrieved
 
-            iterator: GridOutCursor = self.fs.find(filter=metadata, **params)
+            iterator: GridOutCursor = self.fs.find(filter=metadata)#**params)
             for grid in iterator:
                 results.append(MediaFile.to_json(MediaFile(**grid._file)))
 
@@ -179,7 +179,7 @@ class MediaFilesManager(BaseManager):
         """
         try:
             data['uploadDate'] = datetime.now(timezone.utc)
-            self.update(criteria={'public_id':data['public_id']}, data=data)
+            self.update(criteria={'public_id':data['public_id']}, data=data, col="media.libary.files")
 
             return data
         except Exception as err:

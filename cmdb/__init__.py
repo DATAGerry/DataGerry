@@ -21,7 +21,7 @@ import time
 # -------------------------------------------------------------------------------------------------------------------- #
 
 __title__ = 'DATAGERRY'
-__version__ = '2.2.0'
+__version__ = '3.0.0'
 __author__ = 'becon GmbH'
 __license__ = 'AGPLv3'
 __copyright__ = 'Copyright 2025 becon GmbH'

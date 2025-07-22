@@ -35,14 +35,15 @@ LOGGER = logging.getLogger(__name__)
 #                                               SearcherFramework - CLASS                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
 class SearcherFramework:
-    """Framework searcher implementation for object search"""
+    """
+    Framework searcher implementation for object search
+    """
     DEFAULT_LIMIT: int = 10
     DEFAULT_REGEX: str = ''
 
 
     def __init__(self, objects_manager: ObjectsManager):
         self.objects_manager = objects_manager
-        super().__init__(objects_manager)
 
 
     def aggregate(self, pipeline: list[dict],
@@ -133,5 +134,7 @@ class SearcherFramework:
 
     def search(self, query: dict, request_user: CmdbUser = None, limit: int = DEFAULT_LIMIT,
                skip: int = 0) -> SearchResult[RenderResult]:
-        """Uses mongodb find query system"""
+        """
+        Uses mongodb find query system
+        """
         raise NotImplementedError()

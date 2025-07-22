@@ -414,6 +414,7 @@ class BaseManager:
                *args,
                add_to_set: bool = True,
                plain: bool = False,
+               col: str = None,
                **kwargs) -> UpdateResult:
         """
         Updates a document in the database with the specified criteria and new data
@@ -436,7 +437,9 @@ class BaseManager:
                           matched and modified
         """
         try:
-            return self.dbm.update(self.collection, self.db_name, criteria, data, *args, add_to_set, plain, **kwargs)
+            collection = col if col else self.collection
+
+            return self.dbm.update(collection, self.db_name, criteria, data, *args, add_to_set, plain, **kwargs)
         except DocumentUpdateError as err:
             raise BaseManagerUpdateError(err) from err
 
