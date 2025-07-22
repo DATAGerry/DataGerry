@@ -214,6 +214,7 @@ def update_file(request_user: CmdbUser):
         reference_attachment = json.loads(request.args.get('attachment'))
 
         data = media_files_manager.get_file(metadata={'public_id': new_file_data['public_id']})
+
         data['public_id'] = new_file_data['public_id']
         data['filename'] = new_file_data['filename']
         data['metadata'] = new_file_data['metadata']

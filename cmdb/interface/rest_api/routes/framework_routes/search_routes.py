@@ -102,7 +102,7 @@ def search_framework(request_user: CmdbUser):
                   with HTTP 204 if an error occurs during search aggregation
     """
     try:
-        objects_manager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
+        objects_manager: ObjectsManager = ManagerProvider.get_manager(ManagerType.OBJECTS, request_user)
 
         try:
             limit = request.args.get('limit', SearcherFramework.DEFAULT_LIMIT, int)
@@ -118,7 +118,9 @@ def search_framework(request_user: CmdbUser):
                 search_parameters = json.loads(search_params)
             elif request.method == 'POST':
                 search_params = json.loads(request.data)
+                # LOGGER.debug(f"POST search_params: {search_params}")
                 search_parameters = SearchParam.from_request(search_params)
+                # LOGGER.debug(f"POST search_parameters: {search_parameters}")
             else:
                 abort(405, f"Method: {request.method} not allowed!")
         except Exception as err:
@@ -130,7 +132,6 @@ def search_framework(request_user: CmdbUser):
             builder = SearchPipelineBuilder()
 
             query: list[dict] = builder.build(search_parameters,
-                                            objects_manager,
                                             user=request_user,
                                             permission=AccessControlPermission.READ,
                                             active_flag=only_active)
