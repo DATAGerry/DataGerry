@@ -41,7 +41,7 @@ export class FooterComponent implements OnInit, OnDestroy {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
     public constructor(private connectionService: ConnectionService, private timeoutService: SessionTimeoutService) {
-        this.docUrl = `${ connectionService.currentConnection }/docs`;
+        this.docUrl = `${ connectionService.getApiBaseUrl() }/docs`;
     }
 
 

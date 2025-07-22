@@ -140,7 +140,7 @@ export class AuthService<T = any> implements ApiServicePrefix {
 
         return this.http
             .post<LoginResponse | Array<SubscriptionItem>>(
-                `${this.connectionService.currentConnection}/${this.restPrefix}/${this.servicePrefix}/login`,
+                `${this.connectionService.getApiBaseUrl()}/${this.restPrefix}/${this.servicePrefix}/login`,
                 data,
                 httpOptions
             )
@@ -172,7 +172,7 @@ export class AuthService<T = any> implements ApiServicePrefix {
     public selectSubscription(payload: any): Observable<LoginResponse> {
         return this.http
             .post<LoginResponse>(
-                `${this.connectionService.currentConnection}/${this.restPrefix}/${this.servicePrefix}/login`,
+                `${this.connectionService.getApiBaseUrl()}/${this.restPrefix}/${this.servicePrefix}/login`,
                 payload,
                 httpOptions
             )

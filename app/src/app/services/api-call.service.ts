@@ -92,7 +92,7 @@ export class ApiCallService {
 
 
     constructor(private http: HttpClient, private connectionService: ConnectionService) {
-        this.apiURL = `${ this.connectionService.currentConnection }/${ this.apiPrefix }/`;
+        this.apiURL = `${ this.connectionService.getApiBaseUrl() }/${ this.apiPrefix }/`;
     }
 
 /* -------------------------------------------------- HTTP METHODS -------------------------------------------------- */
