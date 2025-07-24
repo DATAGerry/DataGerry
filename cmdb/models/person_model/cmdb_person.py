@@ -46,7 +46,7 @@ class CmdbPerson(CmdbDAO):
             'type': 'integer',
             'min': 1,
         },
-        'display_name': {
+        'display_name': { # Displayed name of the Person
             'type': 'string',
             'required': True,
             'empty': False

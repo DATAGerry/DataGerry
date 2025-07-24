@@ -15,6 +15,73 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
+#                                                      CREATE USER                                                     #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+post:
+    tags: 
+        - Users
+        - OnPremise
+    summary: Insert a new User [Cloud] [OnPremise]
+    description: |
+        Required User Right: **base.user-management.user.add**
+        <br><hr><br>
+        Inserts a new User into the database
+        <br><br>
+        The **public_id** property will be automatically created and don't need to be provided
+    operationId: insert_cmdb_user
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: '../../components/schemas/CmdbUser.yaml'
+    responses:
+        "200":
+            description: The assigned **public_id** and the created User is returned
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            result_id:
+                                type: integer
+                                description: "The **public_id** of the created User"
+                                example: 12345
+                            raw:
+                                $ref: "../../components/schemas/CmdbUser.yaml"
+        "400":
+            description: The User could not be inserted
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "The User could not be inserted"
+        "404":
+            description: Could not retrieve the created User from database
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Could not retrieve the created User from database"
+        "500":
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Internal server error"
+
+# -------------------------------------------------------------------------------------------------------------------- #
 #                                                       GET USERS                                                      #
 # -------------------------------------------------------------------------------------------------------------------- #
 

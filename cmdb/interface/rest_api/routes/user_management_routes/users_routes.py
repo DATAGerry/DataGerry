@@ -130,12 +130,11 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
 
         #Confirm that user is created
         created_user = users_manager.get_user(result_id)
-        if created_user:
-            api_response = InsertSingleResponse(CmdbUser.to_json(created_user), result_id)
 
-            return api_response.make_response()
+        if not created_user:
+            abort(404, "Could not retrieve the created User from the database!")
 
-        abort(404, "Could not retrieve the created User from the database!")
+        return InsertSingleResponse(CmdbUser.to_json(created_user), result_id).make_response()
     except HTTPException as http_err:
         raise http_err
     except UsersManagerInsertError as err:
@@ -146,7 +145,7 @@ def insert_cmdb_user(data: dict, request_user: CmdbUser):
         abort(500, "Failed to retrieve the created User from the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the new User!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
@@ -182,10 +181,10 @@ def get_cmdb_users(params: CollectionParameters, request_user: CmdbUser):
         return api_response.make_response()
     except UsersManagerIterationError as err:
         LOGGER.error("[get_cmdb_users] %s", err, exc_info=True)
-        abort(400, "Could not iterate the requested users!")
+        abort(400, "Could not iterate the requested Users!")
     except Exception as err:
         LOGGER.error("[get_cmdb_users] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while iterating the requested Users!")
 
 
 @users_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
@@ -207,12 +206,10 @@ def get_cmdb_user(public_id: int, request_user: CmdbUser):
 
         requested_user = users_manager.get_user(public_id)
 
-        if requested_user:
-            api_response = GetSingleResponse(CmdbUser.to_json(requested_user), body=request.method == 'HEAD')
+        if not requested_user:
+            abort(404, f"The User with ID:{public_id} was not found!")
 
-            return api_response.make_response()
-
-        abort(404, f"The User with ID:{public_id} was not found!")
+        return GetSingleResponse(CmdbUser.to_json(requested_user), body=request.method == 'HEAD').make_response()
     except HTTPException as http_err:
         raise http_err
     except UsersManagerGetError as err:
@@ -220,7 +217,7 @@ def get_cmdb_user(public_id: int, request_user: CmdbUser):
         abort(400, f"Failed to retrieve the User with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[get_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while retrieving User with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
@@ -245,16 +242,14 @@ def update_cmdb_user(public_id: int, data: dict, request_user: CmdbUser):
 
         to_update_user = users_manager.get_user(public_id)
 
-        if to_update_user:
-            user = CmdbUser.from_data(data=data)
+        if not to_update_user:
+            abort(404, f"The User with ID:{public_id} was not found!")
 
-            users_manager.update_user(public_id, user)
+        user = CmdbUser.from_data(data=data)
 
-            api_response = UpdateSingleResponse(CmdbUser.to_json(user))
+        users_manager.update_user(public_id, user)
 
-            return api_response.make_response()
-
-        abort(404, f"The User with ID:{public_id} was not found!")
+        return UpdateSingleResponse(CmdbUser.to_json(user)).make_response()
     except HTTPException as http_err:
         raise http_err
     except UsersManagerUpdateError as err:
@@ -262,7 +257,7 @@ def update_cmdb_user(public_id: int, data: dict, request_user: CmdbUser):
         abort(400, f"Failed to update the User with public_id: {public_id}!")
     except Exception as err:
         LOGGER.error("[update_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while updating the User with ID:{public_id}!")
 
 
 @users_blueprint.route('/<int:public_id>/password', methods=['PATCH'])
@@ -277,7 +272,7 @@ def change_cmdb_user_password(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of the CmdbUser
 
     Returns:
-        UpdateSingleResponse:  The CmdbUser with new password
+        UpdateSingleResponse: The CmdbUser with new password
     """
     try:
         users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
@@ -285,27 +280,25 @@ def change_cmdb_user_password(public_id: int, request_user: CmdbUser):
 
         to_update_user = users_manager.get_user(public_id)
 
-        if to_update_user:
-            password = security_manager.generate_hmac(request.json.get('password'))
-            to_update_user.password = password
-            users_manager.update_user(public_id, to_update_user)
+        if not to_update_user:
+            abort(404, f"The User with ID:{public_id} was not found!")
 
-            api_response = UpdateSingleResponse(CmdbUser.to_json(to_update_user))
+        password = security_manager.generate_hmac(request.json.get('password'))
+        to_update_user.password = password
+        users_manager.update_user(public_id, to_update_user)
 
-            return api_response.make_response()
-
-        abort(404, f"The User with ID:{public_id} was not found!")
+        return UpdateSingleResponse(CmdbUser.to_json(to_update_user)).make_response()
     except HTTPException as http_err:
         raise http_err
     except UsersManagerGetError as err:
         LOGGER.error("[change_cmdb_user_password] %s", err, exc_info=True)
-        abort(400, f"Failed to retrieve the User with ID: {public_id}")
+        abort(400, f"Failed to retrieve the User with ID: {public_id}!")
     except UsersManagerUpdateError as err:
         LOGGER.error("[change_cmdb_user_password] %s", err, exc_info=True)
         abort(400, f"Failed to change the password for User with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[change_cmdb_user_password] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while changing the password for User with ID: {public_id}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
@@ -328,13 +321,12 @@ def delete_cmdb_user(public_id: int, request_user: CmdbUser):
 
         to_delete_user = users_manager.get_user(public_id)
 
-        if to_delete_user:
-            users_manager.delete_user(public_id)
+        if not to_delete_user:
+            abort(404, f"The User with ID:{public_id} was not found!")
 
-            api_response = DeleteSingleResponse(raw=CmdbUser.to_json(to_delete_user))
-            return api_response.make_response()
+        users_manager.delete_user(public_id)
 
-        abort(404, f"The User with ID:{public_id} was not found!")
+        return DeleteSingleResponse(raw=CmdbUser.to_json(to_delete_user)).make_response()
     except HTTPException as http_err:
         raise http_err
     except UsersManagerDeleteError as err:
@@ -345,4 +337,4 @@ def delete_cmdb_user(public_id: int, request_user: CmdbUser):
         abort(404, f"Failed to retrieve the User with ID: {public_id}!")
     except Exception as err:
         LOGGER.error("[delete_cmdb_user] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, f"An internal server error occured while trying to delete the User with ID: {public_id}!")

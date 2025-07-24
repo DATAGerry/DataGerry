@@ -60,6 +60,14 @@ properties:
         type: string
         nullable: true
         description: Descthription of the Type
+    ci_explorer_label:
+        type: string
+        nullable: true
+        description: Stores the name of the field which should be used as the Label in the CI Explorer
+    ci_explorer_color:
+        type: string
+        nullable: true
+        description: Stores the color which should be used in the CI Explorer representation
     render_meta:
         $ref: './CmdbTypeRenderMeta.yaml'
     acl:

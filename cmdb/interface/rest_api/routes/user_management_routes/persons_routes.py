@@ -57,7 +57,7 @@ person_blueprint = APIBlueprint('person', __name__)
 
 @person_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @person_blueprint.protect(auth=True, right='base.user-management.person.add')
 @person_blueprint.validate(CmdbPerson.SCHEMA)
 def insert_cmdb_person(data: dict, request_user: CmdbUser):
@@ -84,10 +84,10 @@ def insert_cmdb_person(data: dict, request_user: CmdbUser):
 
         created_person = persons_manager.get_item(result_id, as_dict=True)
 
-        if created_person:
-            return InsertSingleResponse(created_person, result_id).make_response()
+        if not created_person:
+            abort(404, "Could not retrieve the created Person from the database!")
 
-        abort(404, "Could not retrieve the created Person from the database!")
+        return InsertSingleResponse(created_person, result_id).make_response()
     except HTTPException as http_err:
         raise http_err
     except PersonsManagerInsertError as err:
@@ -104,7 +104,7 @@ def insert_cmdb_person(data: dict, request_user: CmdbUser):
 
 @person_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @person_blueprint.protect(auth=True, right='base.user-management.person.view')
 @person_blueprint.parse_collection_parameters()
 def get_cmdb_persons(params: CollectionParameters, request_user: CmdbUser):
@@ -145,7 +145,7 @@ def get_cmdb_persons(params: CollectionParameters, request_user: CmdbUser):
 
 @person_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @person_blueprint.protect(auth=True, right='base.user-management.person.view')
 def get_cmdb_person(public_id: int, request_user: CmdbUser):
     """
@@ -180,7 +180,7 @@ def get_cmdb_person(public_id: int, request_user: CmdbUser):
 
 @person_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @person_blueprint.protect(auth=True, right='base.user-management.person.edit')
 @person_blueprint.validate(CmdbPerson.SCHEMA)
 def update_cmdb_person(public_id: int, data: dict, request_user: CmdbUser):
@@ -233,7 +233,7 @@ def update_cmdb_person(public_id: int, data: dict, request_user: CmdbUser):
 
 @person_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @person_blueprint.protect(auth=True, right='base.user-management.person.delete')
 def delete_cmdb_person(public_id: int, request_user: CmdbUser):
     """

@@ -44,6 +44,14 @@ tags:
       description: API Routes related to **Section Templates**
     - name: Users
       description: API Routes related to **Users**
+    - name: Persons
+      description: API Routes related to **Persons**
+    - name: PersonGroups
+      description: API Routes related to **PersonGroups**
+    - name: ISMS-Threats
+      description: API Routes related to ISMS **Threats**
+    - name: ISMS-Vulnerabilities
+      description: API Routes related to ISMS **Vulnerabilities**
 
 paths:
     /objects:
@@ -78,6 +86,24 @@ paths:
         $ref: "./paths/users/users.yaml"
     /users/{public_id}:
         $ref: "./paths/users/users-by-id.yaml"
+    /users/{public_id}/password:
+        $ref: "./paths/users/users-password.yaml"
+    /persons:
+        $ref: "./paths/persons/persons.yaml"
+    /persons/{public_id}:
+        $ref: "./paths/persons/persons-by-id.yaml"
+    /person_groups:
+        $ref: "./paths/person_groups/person-groups.yaml"
+    /person_groups/{public_id}:
+        $ref: "./paths/person_groups/person-groups-by-id.yaml"
+    /isms/vulnerabilities:
+        $ref: "./paths/isms/vulnerabilities/vulnerabilities.yaml"
+    /isms/vulnerabilities/{public_id}:
+        $ref: "./paths/isms/vulnerabilities/vulnerabilities-by-id.yaml"
+    /isms/threats:
+        $ref: "./paths/isms/threats/threats.yaml"
+    /isms/threats/{public_id}:
+        $ref: "./paths/isms/threats/threats-by-id.yaml"
 
 components:
     schemas:
@@ -97,8 +123,16 @@ components:
             $ref: "./components/schemas/MultiDataSection.yaml"
         User:
             $ref: "./components/schemas/CmdbUser.yaml"
+        Person:
+            $ref: "./components/schemas/CmdbPerson.yaml"
+        PersonGroup:
+            $ref: "./components/schemas/CmdbPersonGroup.yaml"
         CollectionParameters:
             $ref: "./components/schemas/CollectionParameters.yaml"
+        ISMS-Threat:
+            $ref: "./components/schemas/isms/IsmsThreat.yaml"
+        ISMS-Vulnerability:
+            $ref: "./components/schemas/isms/IsmsVulnerability.yaml"
     securitySchemes:
         $ref: "./components/security.yaml"
 

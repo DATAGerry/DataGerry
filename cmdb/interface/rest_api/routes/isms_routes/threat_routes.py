@@ -58,7 +58,7 @@ threat_blueprint = APIBlueprint('threat', __name__)
 
 @threat_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @threat_blueprint.protect(auth=True, right='base.isms.threat.add')
 @threat_blueprint.validate(IsmsThreat.SCHEMA)
 def insert_isms_threat(data: dict, request_user: CmdbUser):
@@ -99,7 +99,7 @@ def insert_isms_threat(data: dict, request_user: CmdbUser):
 
 @threat_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @threat_blueprint.protect(auth=True, right='base.isms.threat.view')
 @threat_blueprint.parse_collection_parameters()
 def get_isms_threats(params: CollectionParameters, request_user: CmdbUser):
@@ -140,7 +140,7 @@ def get_isms_threats(params: CollectionParameters, request_user: CmdbUser):
 
 @threat_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @threat_blueprint.protect(auth=True, right='base.isms.threat.view')
 def get_isms_threat(public_id: int, request_user: CmdbUser):
     """
@@ -175,7 +175,7 @@ def get_isms_threat(public_id: int, request_user: CmdbUser):
 
 @threat_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @threat_blueprint.protect(auth=True, right='base.isms.threat.edit')
 @threat_blueprint.validate(IsmsThreat.SCHEMA)
 def update_isms_threat(public_id: int, data: dict, request_user: CmdbUser):
@@ -217,7 +217,7 @@ def update_isms_threat(public_id: int, data: dict, request_user: CmdbUser):
 
 @threat_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @threat_blueprint.protect(auth=True, right='base.isms.threat.delete')
 def delete_isms_threat(public_id: int, request_user: CmdbUser):
     """
