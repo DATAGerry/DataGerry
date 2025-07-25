@@ -58,7 +58,7 @@ impact_blueprint = APIBlueprint('impacts', __name__)
 
 @impact_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @impact_blueprint.protect(auth=True, right='base.isms.impact.add')
 @impact_blueprint.validate(IsmsImpact.SCHEMA)
 def insert_isms_impact(data: dict, request_user: CmdbUser):
@@ -120,7 +120,7 @@ def insert_isms_impact(data: dict, request_user: CmdbUser):
 
 @impact_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @impact_blueprint.protect(auth=True, right='base.isms.impact.view')
 @impact_blueprint.parse_collection_parameters()
 def get_isms_impacts(params: CollectionParameters, request_user: CmdbUser):
@@ -161,7 +161,7 @@ def get_isms_impacts(params: CollectionParameters, request_user: CmdbUser):
 
 @impact_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @impact_blueprint.protect(auth=True, right='base.isms.impact.view')
 def get_isms_impact(public_id: int, request_user: CmdbUser):
     """
@@ -196,7 +196,7 @@ def get_isms_impact(public_id: int, request_user: CmdbUser):
 
 @impact_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @impact_blueprint.protect(auth=True, right='base.isms.impact.edit')
 @impact_blueprint.validate(IsmsImpact.SCHEMA)
 def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
@@ -250,7 +250,7 @@ def update_isms_impact(public_id: int, data: dict, request_user: CmdbUser):
 
 @impact_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @impact_blueprint.protect(auth=True, right='base.isms.impact.delete')
 def delete_isms_impact(public_id: int, request_user: CmdbUser):
     """

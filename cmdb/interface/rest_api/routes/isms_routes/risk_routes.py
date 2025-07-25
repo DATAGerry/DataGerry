@@ -57,7 +57,7 @@ risk_blueprint = APIBlueprint('risk', __name__)
 
 @risk_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_blueprint.protect(auth=True, right='base.isms.risk.add')
 @risk_blueprint.validate(IsmsRisk.SCHEMA)
 def insert_isms_risk(data: dict, request_user: CmdbUser):
@@ -105,7 +105,7 @@ def insert_isms_risk(data: dict, request_user: CmdbUser):
 
 @risk_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_blueprint.protect(auth=True, right='base.isms.risk.view')
 @risk_blueprint.parse_collection_parameters()
 def get_isms_risks(params: CollectionParameters, request_user: CmdbUser):
@@ -146,7 +146,7 @@ def get_isms_risks(params: CollectionParameters, request_user: CmdbUser):
 
 @risk_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_blueprint.protect(auth=True, right='base.isms.risk.view')
 def get_isms_risk(public_id: int, request_user: CmdbUser):
     """
@@ -181,7 +181,7 @@ def get_isms_risk(public_id: int, request_user: CmdbUser):
 
 @risk_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_blueprint.protect(auth=True, right='base.isms.risk.edit')
 @risk_blueprint.validate(IsmsRisk.SCHEMA)
 def update_isms_risk(public_id: int, data: dict, request_user: CmdbUser):
@@ -230,7 +230,7 @@ def update_isms_risk(public_id: int, data: dict, request_user: CmdbUser):
 
 @risk_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_blueprint.protect(auth=True, right='base.isms.risk.delete')
 def delete_isms_risk(public_id: int, request_user: CmdbUser):
     """
