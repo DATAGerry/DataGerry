@@ -57,7 +57,7 @@ control_measure_blueprint = APIBlueprint('control_measure', __name__)
 
 @control_measure_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_blueprint.protect(auth=True, right='base.isms.controlMeasure.add')
 @control_measure_blueprint.validate(IsmsControlMeasure.SCHEMA)
 def insert_isms_control_measure(data: dict, request_user: CmdbUser):
@@ -99,7 +99,7 @@ def insert_isms_control_measure(data: dict, request_user: CmdbUser):
 
 @control_measure_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_blueprint.protect(auth=True, right='base.isms.controlMeasure.view')
 @control_measure_blueprint.parse_collection_parameters()
 def get_isms_control_measures(params: CollectionParameters, request_user: CmdbUser):
@@ -142,7 +142,7 @@ def get_isms_control_measures(params: CollectionParameters, request_user: CmdbUs
 
 @control_measure_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_blueprint.protect(auth=True, right='base.isms.controlMeasure.view')
 def get_isms_control_measure(public_id: int, request_user: CmdbUser):
     """
@@ -178,7 +178,7 @@ def get_isms_control_measure(public_id: int, request_user: CmdbUser):
 
 @control_measure_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_blueprint.protect(auth=True, right='base.isms.controlMeasure.edit')
 @control_measure_blueprint.validate(IsmsControlMeasure.SCHEMA)
 def update_isms_control_measure(public_id: int, data: dict, request_user: CmdbUser):
@@ -221,7 +221,7 @@ def update_isms_control_measure(public_id: int, data: dict, request_user: CmdbUs
 
 @control_measure_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_blueprint.protect(auth=True, right='base.isms.controlMeasure.delete')
 def delete_isms_control_measure(public_id: int, request_user: CmdbUser):
     """

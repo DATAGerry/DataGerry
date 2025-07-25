@@ -58,7 +58,7 @@ protection_goal_blueprint = APIBlueprint('protection_goal', __name__)
 
 @protection_goal_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @protection_goal_blueprint.protect(auth=True, right='base.isms.protectionGoal.add')
 @protection_goal_blueprint.validate(IsmsProtectionGoal.SCHEMA)
 def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
@@ -111,7 +111,7 @@ def insert_isms_protection_goal(data: dict, request_user: CmdbUser):
 
 @protection_goal_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @protection_goal_blueprint.protect(auth=True, right='base.isms.protectionGoal.view')
 @protection_goal_blueprint.parse_collection_parameters()
 def get_isms_protection_goals(params: CollectionParameters, request_user: CmdbUser):
@@ -156,7 +156,7 @@ def get_isms_protection_goals(params: CollectionParameters, request_user: CmdbUs
 
 @protection_goal_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @protection_goal_blueprint.protect(auth=True, right='base.isms.protectionGoal.view')
 def get_isms_protection_goal(public_id: int, request_user: CmdbUser):
     """
@@ -194,7 +194,7 @@ def get_isms_protection_goal(public_id: int, request_user: CmdbUser):
 
 @protection_goal_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @protection_goal_blueprint.protect(auth=True, right='base.isms.protectionGoal.edit')
 @protection_goal_blueprint.validate(IsmsProtectionGoal.SCHEMA)
 def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUser):
@@ -251,7 +251,7 @@ def update_isms_protection_goal(public_id: int, data: dict, request_user: CmdbUs
 
 @protection_goal_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @protection_goal_blueprint.protect(auth=True, right='base.isms.protectionGoal.delete')
 def delete_isms_protection_goal(public_id: int, request_user: CmdbUser):
     """

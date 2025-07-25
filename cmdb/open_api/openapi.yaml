@@ -36,7 +36,7 @@ servers:
 tags:
     - name: Objects
       description: API Routes related to **Objects**
-    - name: Types 
+    - name: Types
       description: API Routes related to **Types**
     - name: Categories
       description: API Routes related to **Categories**
@@ -48,10 +48,26 @@ tags:
       description: API Routes related to **Persons**
     - name: PersonGroups
       description: API Routes related to **PersonGroups**
+    - name: ISMS-RiskClasses
+      description: API Routes related to ISMS **RiskClasses**
+    - name: ISMS-Likelihoods
+      description: API Routes related to ISMS **Likelihoods**
+    - name: ISMS-Impacts
+      description: API Routes related to ISMS **Impacts**
+    - name: ISMS-ImpactCategories
+      description: API Routes related to ISMS **ImpactCategories**
+    - name: ISMS-ProtectionGoals
+      description: API Routes related to ISMS **ProtectionGoals**
+    - name: ISMS-RiskMatrix
+      description: API Routes related to ISMS **RiskMatrix**
+    - name: ISMS-Risks
+      description: API Routes related to ISMS **Risks**
     - name: ISMS-Threats
       description: API Routes related to ISMS **Threats**
     - name: ISMS-Vulnerabilities
       description: API Routes related to ISMS **Vulnerabilities**
+    - name: ISMS-Controls
+      description: API Routes related to ISMS **Controls**
 
 paths:
     /objects:
@@ -96,14 +112,48 @@ paths:
         $ref: "./paths/person_groups/person-groups.yaml"
     /person_groups/{public_id}:
         $ref: "./paths/person_groups/person-groups-by-id.yaml"
-    /isms/vulnerabilities:
-        $ref: "./paths/isms/vulnerabilities/vulnerabilities.yaml"
-    /isms/vulnerabilities/{public_id}:
-        $ref: "./paths/isms/vulnerabilities/vulnerabilities-by-id.yaml"
+    /isms/risk_classes:
+        $ref: "./paths/isms/risk_classes/risk-classes.yaml"
+    /isms/risk_classes/{public_id}:
+        $ref: "./paths/isms/risk_classes/risk-classes-by-id.yaml"
+    /isms/risk_classes/multiple:
+        $ref: "./paths/isms/risk_classes/risk-classes-multiple.yaml"
+    /isms/likelihoods:
+        $ref: "./paths/isms/likelihoods/likelihoods.yaml"
+    /isms/likelihoods/{public_id}:
+        $ref: "./paths/isms/likelihoods/likelihoods-by-id.yaml"
+    /isms/impacts:
+        $ref: "./paths/isms/impacts/impacts.yaml"
+    /isms/impacts/{public_id}:
+        $ref: "./paths/isms/impacts/impacts-by-id.yaml"
+    /isms/impact_categories:
+        $ref: "./paths/isms/impact_categories/impact-categories.yaml"
+    /isms/impact_categories/{public_id}:
+        $ref: "./paths/isms/impact_categories/impact-categories-by-id.yaml"
+    /isms/impact_categories/multiple:
+        $ref: "./paths/isms/impact_categories/impact-categories-multiple.yaml"
+    /isms/protection_goals:
+        $ref: "./paths/isms/protection_goals/protection-goals.yaml"
+    /isms/protection_goals/{public_id}:
+        $ref: "./paths/isms/protection_goals/protection-goals-by-id.yaml"
+    /isms/risk_matrix/{public_id}:
+        $ref: "./paths/isms/risk_matrix/risk-matrix-by-id.yaml"
+    /isms/risks:
+        $ref: "./paths/isms/risks/risks.yaml"
+    /isms/risks/{public_id}:
+        $ref: "./paths/isms/risks/risks-by-id.yaml"
     /isms/threats:
         $ref: "./paths/isms/threats/threats.yaml"
     /isms/threats/{public_id}:
         $ref: "./paths/isms/threats/threats-by-id.yaml"
+    /isms/vulnerabilities:
+        $ref: "./paths/isms/vulnerabilities/vulnerabilities.yaml"
+    /isms/vulnerabilities/{public_id}:
+        $ref: "./paths/isms/vulnerabilities/vulnerabilities-by-id.yaml"
+    /isms/control_measures:
+        $ref: "./paths/isms/controls/controls.yaml"
+    /isms/control_measures/{public_id}:
+        $ref: "./paths/isms/controls/controls-by-id.yaml"
 
 components:
     schemas:
@@ -129,10 +179,26 @@ components:
             $ref: "./components/schemas/CmdbPersonGroup.yaml"
         CollectionParameters:
             $ref: "./components/schemas/CollectionParameters.yaml"
+        ISMS-RiskClass:
+            $ref: "./components/schemas/isms/IsmsRiskClass.yaml"
+        ISMS-Likelihood:
+            $ref: "./components/schemas/isms/IsmsLikelihood.yaml"
+        ISMS-Impact:
+            $ref: "./components/schemas/isms/IsmsImpact.yaml"
+        ISMS-ImpactCategory:
+            $ref: "./components/schemas/isms/IsmsImpactCategory.yaml"
+        ISMS-ProtectionGoal:
+            $ref: "./components/schemas/isms/IsmsProtectionGoal.yaml"
+        ISMS-RiskMatrix:
+            $ref: "./components/schemas/isms/IsmsRiskMatrix.yaml"
+        ISMS-Risk:
+            $ref: "./components/schemas/isms/IsmsRisk.yaml"
         ISMS-Threat:
             $ref: "./components/schemas/isms/IsmsThreat.yaml"
         ISMS-Vulnerability:
             $ref: "./components/schemas/isms/IsmsVulnerability.yaml"
+        ISMS-Control:
+            $ref: "./components/schemas/isms/IsmsControl.yaml"
     securitySchemes:
         $ref: "./components/security.yaml"
 

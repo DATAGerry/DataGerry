@@ -15,30 +15,30 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                 CREATE - ISMS THREAT                                                 #
+#                                                 CREATE - ISMS CONTROL                                                #
 # -------------------------------------------------------------------------------------------------------------------- #
 post:
   tags: 
-      - ISMS-Threats
+      - ISMS-Controls
       - Cloud
       - OnPremise
-  summary: Insert a new Threat [Cloud] [OnPremise]
+  summary: Insert a new Control [Cloud] [OnPremise]
   description: |
-      Required User Right: **base.isms.threat.add**
+      Required User Right: **base.isms.controlMeasure.add**
       <br><hr><br>
-      Inserts a new Threat into the database
+      Inserts a new Control into the database
       <br><br>
       The **public_id** property will be automatically created and don't need to be provided
-  operationId: insert_isms_threat
+  operationId: insert_isms_control_measure
   requestBody:
       required: true
       content:
           application/json:
               schema:
-                  $ref: "../../../components/schemas/isms/IsmsThreat.yaml"
+                  $ref: "../../../components/schemas/isms/IsmsControl.yaml"
   responses:
       "200":
-          description: The assigned **public_id** and the created Threat is returned
+          description: The assigned **public_id** and the created Control is returned
           content:
               application/json:
                   schema:
@@ -46,12 +46,12 @@ post:
                       properties:
                           result_id:
                               type: integer
-                              description: "The **public_id** of the created Threat"
+                              description: "The **public_id** of the created Control"
                               example: 12345
                           raw:
-                              $ref: "../../../components/schemas/isms/IsmsThreat.yaml"
+                              $ref: "../../../components/schemas/isms/IsmsControl.yaml"
       "400":
-          description: The Threat could not be inserted
+          description: The Control could not be inserted
           content:
               application/json:
                   schema:
@@ -59,9 +59,9 @@ post:
                       properties:
                           error:
                               type: string
-                              example: "The Threat could not be inserted"
+                              example: "The Control could not be inserted"
       "404":
-          description: Could not retrieve the created Threat from database
+          description: Could not retrieve the created Control from database
           content:
               application/json:
                   schema:
@@ -69,7 +69,7 @@ post:
                       properties:
                           error:
                               type: string
-                              example: "Could not retrieve the created Threat from database"
+                              example: "Could not retrieve the created Control from database"
       "500":
           description: Internal server error
           content:
@@ -82,30 +82,30 @@ post:
                               example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                  GET - ISMS THREATS                                                  #
+#                                                  GET - ISMS CONTROLS                                                 #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 get:
   tags:
-      - ISMS-Threats
+      - ISMS-Controls
       - Cloud
       - OnPremise
-  summary: Retrieve multiple Threats [Cloud] [OnPremise]
+  summary: Retrieve multiple Control [Cloud] [OnPremise]
   description: |
-      Required User Right: **base.isms.threat.view**
+      Required User Right: **base.isms.controlMeasure.view**
       <br><hr><br>
-      Returns all **Threats** if no **CollectionParameters** are passed
-  operationId: get_isms_threats
+      Returns all **Control** if no **CollectionParameters** are passed
+  operationId: get_isms_control_measures
   parameters:
       - name: CollectionParameters
         in: query
-        description: Parameters for filtering, limiting, sorting, and pagination of **Threats**
+        description: Parameters for filtering, limiting, sorting, and pagination of **Control**
         required: false
         schema:
             $ref: "../../../components/schemas/CollectionParameters.yaml"
   responses:
       "200":
-          description: Returns a **list of Threats** matching the filter criteria
+          description: Returns a **list of Control** matching the filter criteria
           content:
               application/json:
                   schema:
@@ -114,12 +114,12 @@ get:
                           results:
                               type: array
                               items:
-                                  $ref: "../../../components/schemas/isms/IsmsThreat.yaml"
+                                  $ref: "../../../components/schemas/isms/IsmsControl.yaml"
                           total:
                               type: integer
-                              description: The amount of Threats returned
+                              description: The amount of Control returned
       "400":
-          description: Could not iterate **Threats**
+          description: Could not iterate **Control**
           content:
               application/json:
                   schema:
@@ -127,7 +127,7 @@ get:
                       properties:
                           error:
                               type: string
-                              example: "Could not iterate Threats"
+                              example: "Could not iterate Control"
       "500":
           description: An unexpected error occured
           content:

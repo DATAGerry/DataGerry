@@ -49,7 +49,7 @@ risk_matrix_blueprint = APIBlueprint('risk_matrices', __name__)
 
 @risk_matrix_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_matrix_blueprint.protect(auth=True, right='base.isms.riskMatrix.view')
 def get_isms_risk_matrix(public_id: int, request_user: CmdbUser):
     """
@@ -87,7 +87,7 @@ def get_isms_risk_matrix(public_id: int, request_user: CmdbUser):
 
 @risk_matrix_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_matrix_blueprint.protect(auth=True, right='base.isms.riskMatrix.edit')
 @risk_matrix_blueprint.validate(IsmsRiskMatrix.SCHEMA)
 def update_isms_risk_matrix(public_id: int, data: dict, request_user: CmdbUser):

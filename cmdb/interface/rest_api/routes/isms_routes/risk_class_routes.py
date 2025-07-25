@@ -59,7 +59,7 @@ risk_class_blueprint = APIBlueprint('risk_classes', __name__)
 
 @risk_class_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.add')
 @risk_class_blueprint.validate(IsmsRiskClass.SCHEMA)
 def insert_isms_risk_class(data: dict, request_user: CmdbUser):
@@ -107,7 +107,7 @@ def insert_isms_risk_class(data: dict, request_user: CmdbUser):
 
 @risk_class_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.view')
 @risk_class_blueprint.parse_collection_parameters()
 def get_isms_risk_classes(params: CollectionParameters, request_user: CmdbUser):
@@ -148,7 +148,7 @@ def get_isms_risk_classes(params: CollectionParameters, request_user: CmdbUser):
 
 @risk_class_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.view')
 def get_isms_risk_class(public_id: int, request_user: CmdbUser):
     """
@@ -183,7 +183,7 @@ def get_isms_risk_class(public_id: int, request_user: CmdbUser):
 
 @risk_class_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.edit')
 @risk_class_blueprint.validate(IsmsRiskClass.SCHEMA)
 def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
@@ -224,7 +224,7 @@ def update_isms_risk_class(public_id: int, data: dict, request_user: CmdbUser):
 
 @risk_class_blueprint.route('/multiple', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.edit')
 def update_multiple_isms_risk_classes(request_user: CmdbUser):
     """
@@ -284,7 +284,6 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
                 )
 
         return DefaultResponse(results).make_response()
-
     except HTTPException as http_err:
         raise http_err
     except Exception as err:
@@ -295,7 +294,7 @@ def update_multiple_isms_risk_classes(request_user: CmdbUser):
 
 @risk_class_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_class_blueprint.protect(auth=True, right='base.isms.riskClass.delete')
 def delete_isms_risk_class(public_id: int, request_user: CmdbUser):
     """
