@@ -67,7 +67,7 @@ extendable_option_blueprint = APIBlueprint('extendable_options', __name__)
 
 @extendable_option_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @extendable_option_blueprint.protect(auth=True, right='base.framework.extendableOption.add')
 @extendable_option_blueprint.validate(CmdbExtendableOption.SCHEMA)
 def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
@@ -124,7 +124,7 @@ def insert_cmdb_extendable_option(data: dict, request_user: CmdbUser):
 
 @extendable_option_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @extendable_option_blueprint.protect(auth=True, right='base.framework.extendableOption.view')
 @extendable_option_blueprint.parse_collection_parameters()
 def get_cmdb_extendable_options(params: CollectionParameters, request_user: CmdbUser):
@@ -171,7 +171,7 @@ def get_cmdb_extendable_options(params: CollectionParameters, request_user: Cmdb
 
 @extendable_option_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @extendable_option_blueprint.protect(auth=True, right='base.framework.extendableOption.view')
 def get_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
     """
@@ -209,7 +209,7 @@ def get_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
 
 @extendable_option_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @extendable_option_blueprint.protect(auth=True, right='base.framework.extendableOption.edit')
 @extendable_option_blueprint.validate(CmdbExtendableOption.SCHEMA)
 def update_cmdb_extendable_option(public_id: int, data: dict, request_user: CmdbUser):
@@ -277,7 +277,7 @@ def update_cmdb_extendable_option(public_id: int, data: dict, request_user: Cmdb
 
 @extendable_option_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @extendable_option_blueprint.protect(auth=True, right='base.framework.extendableOption.delete')
 def delete_cmdb_extendable_option(public_id: int, request_user: CmdbUser):
     """

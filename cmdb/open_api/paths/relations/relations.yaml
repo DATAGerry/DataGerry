@@ -15,30 +15,31 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                 CREATE - ISMS CONTROL                                                #
+#                                                    CREATE RELATION                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
+
 post:
   tags: 
-      - ISMS-Controls
+      - Relations
       - Cloud
       - OnPremise
-  summary: Insert a new Control [Cloud] [OnPremise]
+  summary: Insert a new Relation [Cloud] [OnPremise]
   description: |
-      Required User Right: **base.isms.controlMeasure.add**
+      Required User Right: **base.framework.relation.add**
       <br><hr><br>
-      Inserts a new Control into the database
+      Inserts a new Relation into the database
       <br><br>
       The **public_id** property will be automatically created and don't need to be provided
-  operationId: insert_isms_control_measure
+  operationId: insert_cmdb_relation
   requestBody:
       required: true
       content:
           application/json:
               schema:
-                  $ref: "../../../components/schemas/isms/IsmsControl.yaml"
+                  $ref: '../../components/schemas/CmdbRelation.yaml'
   responses:
       "200":
-          description: The assigned **public_id** and the created Control is returned
+          description: The assigned **public_id** and the created Relation is returned
           content:
               application/json:
                   schema:
@@ -46,12 +47,12 @@ post:
                       properties:
                           result_id:
                               type: integer
-                              description: "The **public_id** of the created Control"
+                              description: "The **public_id** of the created Relation"
                               example: 12345
                           raw:
-                              $ref: "../../../components/schemas/isms/IsmsControl.yaml"
+                              $ref: "../../components/schemas/CmdbRelation.yaml"
       "400":
-          description: The Control could not be inserted
+          description: The Relation could not be inserted
           content:
               application/json:
                   schema:
@@ -59,9 +60,9 @@ post:
                       properties:
                           error:
                               type: string
-                              example: "The Control could not be inserted"
+                              example: "The Relation could not be inserted"
       "404":
-          description: Could not retrieve the created Control from database
+          description: Could not retrieve the created Relation from database
           content:
               application/json:
                   schema:
@@ -69,7 +70,7 @@ post:
                       properties:
                           error:
                               type: string
-                              example: "Could not retrieve the created Control from database"
+                              example: "Could not retrieve the created Relation from database"
       "500":
           description: Internal server error
           content:
@@ -82,30 +83,30 @@ post:
                               example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                  GET - ISMS CONTROLS                                                 #
+#                                                    GET - RELATIONS                                                   #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 get:
   tags:
-      - ISMS-Controls
+      - Relations
       - Cloud
       - OnPremise
-  summary: Retrieve multiple Control [Cloud] [OnPremise]
+  summary: Retrieve multiple Relations [Cloud] [OnPremise]
   description: |
-      Required User Right: **base.isms.controlMeasure.view**
+      Required User Right: **base.framework.relation.view**
       <br><hr><br>
-      Returns all **Control** if no **CollectionParameters** are passed
-  operationId: get_isms_control_measures
+      Returns all **Relations** if no **CollectionParameters** are passed
+  operationId: get_cmdb_relations
   parameters:
       - name: CollectionParameters
         in: query
-        description: Parameters for filtering, limiting, sorting, and pagination of **Control**
+        description: Parameters for filtering, limiting, sorting, and pagination of **Relations**
         required: false
         schema:
-            $ref: "../../../components/schemas/CollectionParameters.yaml"
+            $ref: "../../components/schemas/CollectionParameters.yaml"
   responses:
       "200":
-          description: Returns a **list of Control** matching the filter criteria
+          description: Returns a **list of Relations** matching the filter criteria
           content:
               application/json:
                   schema:
@@ -114,12 +115,12 @@ get:
                           results:
                               type: array
                               items:
-                                  $ref: "../../../components/schemas/isms/IsmsControl.yaml"
+                                  $ref: "../../components/schemas/CmdbRelation.yaml"
                           total:
                               type: integer
-                              description: The amount of Controls returned
+                              description: The amount of Relations returned
       "400":
-          description: Could not iterate **Control**
+          description: Could not iterate **Relations**
           content:
               application/json:
                   schema:
@@ -127,7 +128,7 @@ get:
                       properties:
                           error:
                               type: string
-                              example: "Could not iterate Control"
+                              example: "Could not iterate Relations"
       "500":
           description: An unexpected error occured
           content:
