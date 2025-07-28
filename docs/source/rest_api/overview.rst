@@ -1,4 +1,4 @@
 Swagger UI
 ======================
 
-`Zur Swagger API-Dokumentation <swagger.html>`_
+`Zur Swagger API-Dokumentation <../swagger.html>`_
