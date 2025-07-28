@@ -1,4 +1,5 @@
-TODO: Swagger REST API
+redoc REST API
 ======================
 
-| 
+.. redoc::
+   :spec: api.yaml
