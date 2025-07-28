@@ -1,5 +1,4 @@
-redoc REST API
+REST API
 ======================
 
-.. redoc::
-   :spec: source/rest_api/test.yaml
+`Zur Swagger UI API-Dokumentation <_static/swagger.html>`_
