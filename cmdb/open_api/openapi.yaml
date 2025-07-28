@@ -22,7 +22,7 @@ info:
         <br><hr><br>
         The API requires **BasicAuth** (Email and Password) and the **API-Key** of the subscription which is provided in the Service Portal.
         <br><br><br>
-        The last two sections list all the Routes available for the **Cloud version** and those available for the **OnPremise version**
+        The last two sections list all the routes available for the **Cloud version** and those available for the **OnPremise version**
         <br><br><hr>
     version: 3.0.0
     license:
