@@ -80,8 +80,7 @@ and manage any type of asset or configuration data.
     :caption: REST API
     :maxdepth: 2
 
-    rest_api/swagger
-    swagger
+    rest_api/index
 
 =======================================================================================================================
 
