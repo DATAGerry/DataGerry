@@ -56,15 +56,15 @@ requirements:
 
 
 # substitue BUILD variables
-# .PHONY: buildvars
-# buildvars:
-# 	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION}/g' cmdb/__init__.py
-# 	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION}/g' docs/source/conf.py
+.PHONY: buildvars
+buildvars:
+	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION}/g' cmdb/__init__.py
+	sed -i 's/@@DG_BUILDVAR_VERSION@@/${BUILDVAR_VERSION}/g' docs/source/conf.py
 
 
-# create documentation #DISABLED:  buildvars after requirements
+# create documentation
 .PHONY: docs
-docs: requirements
+docs: requirements buildvars
 	${BIN_SPHINX} -b html -a ${DIR_DOCS_SOURCE} ${DIR_DOCS_BUILD}
 	cp -R ${DIR_DOCS_BUILD}/* ${DIR_DOCS_TARGET}
 
@@ -79,9 +79,9 @@ webapp:
 	cp -R ${DIR_WEB_BUILD}/* ${DIR_WEB_TARGET}
 
 
-# create onefile binary of DataGerry #DISABLED:  buildvars after requirements
+# create onefile binary of DataGerry
 .PHONY: bin
-bin: requirements docs webapp
+bin: requirements buildvars docs webapp
 	${BIN_PYINSTALLER} --name datagerry --onefile \
 		--distpath ${DIR_BIN_BUILD} \
 		--workpath ${DIR_TEMP} \

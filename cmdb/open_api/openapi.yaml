@@ -68,6 +68,10 @@ tags:
       description: API Routes related to ISMS **Vulnerabilities**
     - name: ISMS-Controls
       description: API Routes related to ISMS **Controls**
+    - name: ISMS-RiskAssessments
+      description: API Routes related to ISMS **RiskAssessments**
+    - name: ISMS-ControlAssignments
+      description: API Routes related to ISMS **ControlAssignments**
 
 paths:
     /objects:
@@ -154,6 +158,16 @@ paths:
         $ref: "./paths/isms/controls/controls.yaml"
     /isms/control_measures/{public_id}:
         $ref: "./paths/isms/controls/controls-by-id.yaml"
+    /isms/risk_assessments:
+        $ref: "./paths/isms/risk_assessments/risk-assessments.yaml"
+    /isms/risk_assessments/{public_id}:
+        $ref: "./paths/isms/risk_assessments/risk-assessments-by-id.yaml"
+    /isms/risk_assessments/duplicate/{duplicate_mode}/{public_ids}:
+        $ref: "./paths/isms/risk_assessments/risk-assessments-duplicate.yaml"
+    # /isms/control_measure_assignments:
+    #     $ref: "./paths/isms/control_assignments/control-assignments.yaml"
+    # /isms/control_measure_assignments/{public_id}:
+    #     $ref: "./paths/isms/control_assignments/control-assignments-by-id.yaml"
 
 components:
     schemas:
@@ -199,6 +213,10 @@ components:
             $ref: "./components/schemas/isms/IsmsVulnerability.yaml"
         ISMS-Control:
             $ref: "./components/schemas/isms/IsmsControl.yaml"
+        ISMS-RiskAssessment:
+            $ref: "./components/schemas/isms/IsmsRiskAssessment.yaml"
+        ISMS-ControlAssignment:
+            $ref: "./components/schemas/isms/IsmsControlAssignment.yaml"
     securitySchemes:
         $ref: "./components/security.yaml"
 

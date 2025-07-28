@@ -67,7 +67,7 @@ risk_assessment_blueprint = APIBlueprint('risk_assessment', __name__)
 
 @risk_assessment_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.add')
 @risk_assessment_blueprint.validate(IsmsRiskAssessment.SCHEMA)
 def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
@@ -127,7 +127,7 @@ def insert_isms_risk_assessment(data: dict, request_user: CmdbUser):
 
 @risk_assessment_blueprint.route('/duplicate/<string:duplicate_mode>/<string:public_ids>', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.add')
 @risk_assessment_blueprint.validate(IsmsRiskAssessment.SCHEMA)
 def duplicate_isms_risk_assessment(data: dict, request_user: CmdbUser, duplicate_mode: str, public_ids: str):
@@ -219,7 +219,7 @@ def duplicate_isms_risk_assessment(data: dict, request_user: CmdbUser, duplicate
 
 @risk_assessment_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.view')
 @risk_assessment_blueprint.parse_collection_parameters()
 def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUser):
@@ -408,7 +408,7 @@ def get_isms_risk_assessments(params: CollectionParameters, request_user: CmdbUs
 
 @risk_assessment_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.view')
 def get_isms_risk_assessment(public_id: int, request_user: CmdbUser):
     """
@@ -446,7 +446,7 @@ def get_isms_risk_assessment(public_id: int, request_user: CmdbUser):
 
 @risk_assessment_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.edit')
 @risk_assessment_blueprint.validate(IsmsRiskAssessment.SCHEMA)
 def update_isms_risk_assessment(public_id: int, data: dict, request_user: CmdbUser):
@@ -526,7 +526,7 @@ def update_isms_risk_assessment(public_id: int, data: dict, request_user: CmdbUs
 
 @risk_assessment_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @risk_assessment_blueprint.protect(auth=True, right='base.isms.riskAssessment.delete')
 def delete_isms_risk_assessment(public_id: int, request_user: CmdbUser):
     """
