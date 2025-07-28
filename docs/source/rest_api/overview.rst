@@ -1,4 +1,4 @@
 Swagger UI
 ======================
 
-asdfas
+`Zur Swagger API-Dokumentation <swagger.html>`_
