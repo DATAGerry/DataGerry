@@ -1,2 +1,2 @@
 .. redoc::
-   :spec: rest_api/openapi.yaml
+   :spec: rest_api/test.yaml
