@@ -79,8 +79,8 @@ and manage any type of asset or configuration data.
 .. toctree::
     :caption: REST API
     :maxdepth: 2
-
-    rest_api/openapi.yaml
+    .. redoc::
+        :spec: rest_api/openapi.yaml
 
 =======================================================================================================================
 
