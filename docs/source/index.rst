@@ -80,7 +80,7 @@ and manage any type of asset or configuration data.
     :caption: REST API
     :maxdepth: 2
 
-    rest_api/rest_api
+    rest_api/rest_api.rst
 
 =======================================================================================================================
 
