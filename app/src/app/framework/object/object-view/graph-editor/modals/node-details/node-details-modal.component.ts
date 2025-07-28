@@ -23,8 +23,8 @@ import {
     Input,
 } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { GraphNode } from '../interfaces/graph.interfaces';
-import { LAYOUT_CONFIG } from '../constants/graph.constants';
+import { GraphNode } from '../../interfaces/graph.interfaces';
+import { LAYOUT_CONFIG } from '../../constants/graph.constants';
 
 function normalise(v: unknown): unknown {
     return v === null || v === undefined || v === '' ? 'N/A' : v;
@@ -37,38 +37,17 @@ function normalise(v: unknown): unknown {
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class NodeDetailsModalComponent implements AfterViewInit {
+    @Input() nodeTypeConfigs:
+        | Map<string, { icon: string; gradient: string }>
+        | null = null;
+
+
     readonly LAYOUT_CONFIG = LAYOUT_CONFIG;
 
     /** always-rendered array; we fill it in loadNode() */
     customFields: Array<{ key: string; value: any }> = [];
-
-    /** guard to know when view is ready */
     private viewInit = false;
-
     private _node: GraphNode | null = null;
-    get node(): GraphNode | null {
-        return this._node;
-    }
-
-    /** call this _after_ open() to populate data */
-    loadNode(n: GraphNode | null): void {
-        this._node = n;
-
-        const built: Array<{ key: string; value: any }> = [];
-        (n?.fields ?? []).forEach((f, i) =>
-            built.push({ key: f.name ?? `field ${i + 1}`, value: normalise(f.value) })
-        );
-        (n?.metadata ?? []).forEach((m, i) =>
-            built.push({ key: m.name ?? `meta ${i + 1}`, value: normalise(m.value) })
-        );
-
-        // new reference to force change detection
-        this.customFields = [...built];
-
-        if (this.viewInit) {
-            this.cdr.detectChanges();
-        }
-    }
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -77,23 +56,83 @@ export class NodeDetailsModalComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.viewInit = true;
-        // if loadNode was called before viewInit, we need one render now
-        this.cdr.detectChanges();
     }
 
-    /** font-awesome icon lookup */
+
+    /**
+     *  Load a GraphNode into the modal.
+     * @param n the GraphNode to load
+     */
+    loadNode(n: GraphNode | null): void {
+        this._node = n;
+
+        // Always start fresh - clear any existing fields
+        this.customFields = [];
+
+
+        // Create a map of field names to labels from type_info
+        const fieldLabelMap = new Map<string, string>();
+        if (n?.ciNode?.type_info?.fields) {
+            n.ciNode.type_info.fields.forEach(typeField => {
+                fieldLabelMap.set(typeField.name, typeField.label);
+            });
+        }
+
+
+        const built: Array<{ key: string; value: any }> = [];
+
+        // ONLY process fields from ciNode.linked_object.fields
+        if (n?.ciNode?.linked_object?.fields) {
+            const processedLabels = new Map<string, any>();
+
+            n.ciNode.linked_object.fields.forEach((field) => {
+
+                const fieldLabel = fieldLabelMap.get(field.name);
+                if (!fieldLabel) {
+                    return;
+                }
+
+                if (processedLabels.has(fieldLabel)) {
+                    return;
+                }
+
+                processedLabels.set(fieldLabel, field.value);
+
+                built.push({
+                    key: fieldLabel,
+                    value: normalise(field.value)
+                });
+
+            });
+        }
+
+        // Set new reference to force change detection
+        this.customFields = [...built];
+
+        if (this.viewInit) {
+            this.cdr.detectChanges();
+        }
+    }
+
+
+    /**
+     * Returns the icon for a node type.
+     * @param type The type of the node.
+     * @returns The icon string or an empty string if no icon is found.
+     */
     getNodeTypeIcon(type?: string | null): string {
         return (
-            this.nodeTypeConfigs?.get(type!)?.icon ||
-            'fas fa-question'
+            this.nodeTypeConfigs?.get(type!)?.icon
         );
     }
+
+
+    get node(): GraphNode | null {
+        return this._node;
+    }
+
 
     trackByKey(_: number, f: { key: string }): string {
         return f.key;
     }
-
-    @Input() nodeTypeConfigs:
-        | Map<string, { icon: string; gradient: string }>
-        | null = null;
 }

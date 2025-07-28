@@ -17,6 +17,7 @@
 */
 import { Injectable } from '@angular/core';
 import {
+    CIEdge,
     CINode,
     GraphRespChildren,
     GraphRespParents
@@ -24,12 +25,13 @@ import {
 import { GraphNode, Connection } from '../interfaces/graph.interfaces';
 import { GraphDataService } from './graph-data.service';
 import { firstValueFrom } from 'rxjs';
+import { ConnectionTrackerService } from './connection-tracker.service';
 
 
 @Injectable()
 export class GraphExpansionService {
 
-    constructor(private graphData: GraphDataService) { }
+    constructor(private graphData: GraphDataService, private connectionTracker: ConnectionTrackerService) { }
 
     async expandNodeInstance(
         ui: GraphNode,
@@ -42,9 +44,12 @@ export class GraphExpansionService {
     ): Promise<void> {
         ui.isLoading = true;
         ui.expanded = true;
+        const nodeCountBefore = nodes.length;
 
         try {
             await this.fetchAndAttach(cn, ui, nodes, connections, typesFilter, relationsFilter, nodeTypeConfigs);
+            this.trackExpansionConnections(ui, nodeCountBefore, nodes);
+
         } finally {
             ui.isLoading = false;
         }
@@ -57,6 +62,7 @@ export class GraphExpansionService {
     ): void {
         const victims = this.getDescendantInstancesFromSpecificNode(ui, nodes, connections);
         const uidsToRemove = victims?.map(n => n.uid);
+        this.connectionTracker.removeConnectionsForCollapsedNodes(uidsToRemove);
         this.graphData?.removeNodeInstancesByUID(nodes, connections, uidsToRemove);
         ui.expanded = false;
     }
@@ -78,6 +84,7 @@ export class GraphExpansionService {
             typesFilter?.includes(n?.type_info?.type_id);
 
         try {
+            const allExpansionEdges: CIEdge[] = [];
             const newUIDs: string[] = [];
 
             // PARENTS (level -1, -2, …)
@@ -93,6 +100,12 @@ export class GraphExpansionService {
                 );
                 const parents = this.graphData?.getNodes(res, 'parent')?.filter(wantType);
                 parents?.forEach(p => { p.level = ui?.level - 1; (p as any).direction = 'parent'; });
+
+                const parentEdges = this.graphData.getEdges(res, 'parent');
+
+                parentEdges.forEach(edge => {
+                    allExpansionEdges.push(edge); // Just collect edges, don't index yet
+                });
 
                 const before = nodes?.length;
                 this.graphData?.mergeNodes(nodes, parents, nodeTypeConfigs);
@@ -126,6 +139,12 @@ export class GraphExpansionService {
                 const kids = this.graphData?.getNodes(res, 'child').filter(wantType);
                 kids.forEach(k => { k.level = ui?.level + 1; (k as any).direction = 'child'; });
 
+                const childEdges = this.graphData.getEdges(res, 'child');
+
+                childEdges.forEach(edge => {
+                    allExpansionEdges.push(edge); // Just collect edges, don't index yet
+                });
+
                 const before = nodes?.length;
                 this.graphData?.mergeNodes(nodes, kids, nodeTypeConfigs);
                 const added = nodes?.slice(before);
@@ -143,9 +162,9 @@ export class GraphExpansionService {
                 });
             }
 
+            (this as any).lastExpansionEdges = allExpansionEdges;
 
         } catch (err) {
-            console.error('expand error', err);
             ui.expanded = false;
         } finally {
             this.graphData?.setSkipBackendEdges(false);
@@ -197,4 +216,33 @@ export class GraphExpansionService {
 
         return out;
     }
+
+    private trackExpansionConnections(
+        expandedNode: GraphNode,
+        nodeCountBefore: number,
+        allNodes: GraphNode[]
+    ): void {
+        const expansionEdges: CIEdge[] = (this as any).lastExpansionEdges || [];
+
+        if (expansionEdges.length === 0) {
+            return;
+        }
+
+        const nodeInstanceMap = new Map<string, GraphNode>();
+        allNodes.forEach(node => {
+            nodeInstanceMap.set(node.uid, node);
+        });
+
+        expansionEdges.forEach(edge => {
+            const meta = Array.isArray(edge.metadata) ? edge.metadata[0] : edge.metadata;
+        });
+
+        this.connectionTracker.addConnectionsFromExpansion(
+            expansionEdges,
+            nodeInstanceMap
+        );
+
+        delete (this as any).lastExpansionEdges;
+    }
+
 }

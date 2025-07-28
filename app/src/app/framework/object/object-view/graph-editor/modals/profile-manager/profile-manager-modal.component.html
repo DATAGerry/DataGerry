@@ -1,0 +1,222 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+        <i class="fas fa-bookmark"></i>
+        Manage Filter Profiles
+    </h4>
+    <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="modal-layout">
+        <aside class="modal-sidebar">
+            <div class="profile-configuration">
+                <section class="config-section">
+                    <h5 class="config-heading">
+                        <i class="fas fa-plus"></i>
+                        {{ editMode ? 'Edit Profile' : 'Create Profile' }}
+                    </h5>
+                    <div class="config-content">
+                        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+                            <div class="form-group">
+                                <label class="input-label">Profile Name *</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    formControlName="name"
+                                    placeholder="Enter profile name"
+                                    [class.is-invalid]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+                                <div class="invalid-feedback" *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+                                    Profile name is required
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="input-label">CI Types</label>
+                                <app-form-select 
+                                    formControlName="types_filter" 
+                                    [items]="typeOptions" 
+                                    bindLabel="display_name" 
+                                    bindValue="public_id"
+                                    [multiple]="true" 
+                                    placeholder="Select CI type(s)">
+                                </app-form-select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="input-label">Relations</label>
+                                <app-form-select 
+                                    formControlName="relations_filter" 
+                                    [items]="relationOptions" 
+                                    bindLabel="display_name"
+                                    bindValue="public_id" 
+                                    [multiple]="true" 
+                                    placeholder="Select relation type(s)">
+                                </app-form-select>
+                            </div>
+
+                            <!-- <div class="form-actions">
+                                <button type="button" 
+                                        class="btn btn-secondary" 
+                                        (click)="cancelEdit()" 
+                                        *ngIf="editMode">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="btn btn-primary" 
+                                        [disabled]="profileForm.invalid">
+                                    {{ editMode ? 'Update' : 'Create' }}
+                                </button>
+
+                                
+                            </div> -->
+                            <div class="form-actions d-flex gap-2">
+                                <app-button 
+                                  *ngIf="editMode"
+                                  [bootstrapClass]="'btn-secondary'" 
+                                  label="Cancel" 
+                                  type="button" 
+                                  (clicked)="cancelEdit()">
+                                </app-button>
+                              
+                                <app-button 
+                                  [bootstrapClass]="'btn-success'" 
+                                  [label]="editMode ? 'Update' : 'Create'" 
+                                  type="submit" 
+                                  [disabled]="profileForm.invalid">
+                                </app-button>
+                              </div>
+                              
+                        </form>
+                    </div>
+                </section>
+
+                <section class="config-section">
+                    <h5 class="config-heading">
+                        <i class="fas fa-info-circle"></i>
+                        Profile Summary
+                    </h5>
+                    <div class="config-content">
+                        <div class="form-group">
+                            <label class="input-label">Total Profiles</label>
+                            <input class="form-control" type="text" [disabled]="true" [value]="profiles.length" />
+                        </div>
+                        <div class="form-group" *ngIf="editingProfile">
+                            <label class="input-label">Editing</label>
+                            <input class="form-control" type="text" [disabled]="true" [value]="editingProfile.name" />
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </aside>
+
+        <main class="modal-content-main">
+            <div class="profile-details-content">
+                <fieldset class="form-fieldset">
+                    <legend class="form-legend">
+                        <i class="fas fa-list"></i>
+                        Existing Profiles
+                    </legend>
+                    
+                    <div class="profiles-list" *ngIf="profiles.length > 0; else noProfiles">
+                        <div class="profile-item" 
+                             *ngFor="let profile of profiles; trackBy: trackByProfileId"
+                             [class.editing]="editingProfile?.public_id === profile.public_id">
+                            
+                            <div class="profile-header">
+                                <div class="profile-name-section">
+                                    <h6 class="profile-name">{{ profile.name }}</h6>
+                                    <div class="profile-stats">
+                                        <span class="status-indicator" *ngIf="profile.types_filter?.length">
+                                            <i class="fas fa-cube"></i>
+                                            {{ profile.types_filter.length }} types
+                                        </span>
+                                        <span class="status-indicator" *ngIf="profile.relations_filter?.length">
+                                            <i class="fas fa-share-alt"></i>
+                                            {{ profile.relations_filter.length }} relations
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- <div class="profile-actions">
+                                    <button class="icon-margin btn-run" 
+                                            (click)="applyProfile(profile)"
+                                            title="Apply this profile">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="icon-margin btn-edit" 
+                                            (click)="startEdit(profile)"
+                                            title="Edit profile">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+
+                                    <i class="far fa-edit icon-margin btn-edit" (click)="startEdit(profile)" title="Edit Report"></i>
+                                    <button class="btn-delete" 
+                                            (click)="deleteProfile(profile)"
+                                            title="Delete profile">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div> -->
+
+
+                                <div class="profile-actions">
+                                    <!-- <i class="fas fa-play icon-margin btn-run"
+                                
+                                       [title]="'Apply this profile'"
+                                       (click)="applyProfile(profile)">
+                                    </i> -->
+                                    <i class="far fa-edit icon-margin btn-edit"
+                                       (click)="startEdit(profile)"
+                                       title="Edit profile">
+                                    </i>
+                                    <i class="far fa-trash-alt btn-delete"
+                                       (click)="deleteProfile(profile)"
+                                       title="Delete profile">
+                                    </i>
+                                  </div>
+                                  
+                            </div>
+                            
+                            <div class="profile-details" *ngIf="profile.types_filter?.length || profile.relations_filter?.length">
+                                <div class="detail-grid">
+                                    <div class="detail-item" *ngIf="profile.types_filter?.length">
+                                        <label class="detail-label">Types:</label>
+                                        <span class="detail-value">{{ getTypeNames(profile.types_filter).join(', ') }}</span>
+                                    </div>
+                                    <div class="detail-item" *ngIf="profile.relations_filter?.length">
+                                        <label class="detail-label">Relations:</label>
+                                        <span class="detail-value">{{ getRelationNames(profile.relations_filter).join(', ') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state when no profiles -->
+                    <ng-template #noProfiles>
+                        <div class="empty-attributes-state">
+                            <i class="fas fa-bookmark" style="font-size: 1.5rem; color: #888;"></i>
+                            <p class="text-muted" style="margin-top: 0.5rem;">No Filter Profiles Available</p>
+                            <p class="text-muted" style="font-size: 0.875rem;">Create your first profile to get started</p>
+                        </div>
+                    </ng-template>
+                </fieldset>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="close()">Close</button>
+</div> -->
+
+<div class="modal-footer">
+    <app-button 
+      [bootstrapClass]="'btn-warning'" 
+      label="Close" 
+      type="button" 
+      (clicked)="close()">
+    </app-button>
+  </div>
+  

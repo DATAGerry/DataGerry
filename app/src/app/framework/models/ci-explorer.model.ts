@@ -71,6 +71,7 @@ export interface Field {
   
   /* -------- Edge & relation metadata ----------------------------------- */
   export interface RelationMeta {
+    relation_id: number;
     relation_name?: string;
     relation_label?: string;
     relation_icon?: string;
