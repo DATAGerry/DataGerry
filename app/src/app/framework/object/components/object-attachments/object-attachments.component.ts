@@ -16,7 +16,7 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FileSaverService } from 'ngx-filesaver';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal, NgbModalConfig, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -39,7 +39,7 @@ export class ObjectAttachmentsComponent implements OnInit, OnDestroy {
   private modalRef: NgbModalRef;
 
   constructor(private fileService: FileService, private fileSaverService: FileSaverService,
-              private route: ActivatedRoute, private modalService: NgbModal, private config: NgbModalConfig) {
+              private route: ActivatedRoute, private modalService: NgbModal, private config: NgbModalConfig, private cdr: ChangeDetectorRef) {
     this.route.params.subscribe((params) => {
       this.metadata.reference = Number(params.publicID);
       this.metadata.reference_type = 'object';
@@ -61,19 +61,24 @@ export class ObjectAttachmentsComponent implements OnInit, OnDestroy {
   }
 
 
-  public showAttachments() {
+  public showAttachments(): void {
+    console.log('showAttachments called');
     this.modalRef = this.modalService.open(AttachmentsListModalComponent);
     this.modalRef.componentInstance.metadata = this.metadata;
-    this.modalRef.result.then((result) => {
-      this.fetchAttachments()
-    });
+  
+    // Whether closed with Done/x (resolve) or Close button (reject), always re-fetch
+    this.modalRef.result
+      .then(() => this.fetchAttachments())
+      .catch(() => this.fetchAttachments());
   }
+  
 
 
   private fetchAttachments(): void {
     this.fileService.getAllFilesList(this.metadata).subscribe((resp: APIGetMultiResponse<FileElement>) => {
       this.attachments = resp.results;
       this.attachmentsTotal = this.attachments.length;
+      this.cdr.markForCheck();
     });
   }
 

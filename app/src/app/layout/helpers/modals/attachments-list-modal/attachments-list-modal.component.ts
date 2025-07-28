@@ -17,7 +17,7 @@
 */
 
 
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit } from '@angular/core';
 import { FileMetadata } from '../../../components/file-explorer/model/metadata';
 import { FileElement } from '../../../components/file-explorer/model/file-element';
 import { CollectionParameters } from '../../../../services/models/api-parameter';
@@ -28,6 +28,8 @@ import { ToastService } from '../../../toast/toast.service';
 import { InfiniteScrollService } from '../../../services/infinite-scroll.service';
 import { APIGetMultiResponse } from '../../../../services/models/api-response';
 import { FilemanagerModalComponent } from '../filemanager-modal/filemanager-modal.component';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'cmdb-attachments-list-modal',
@@ -42,6 +44,8 @@ export class AttachmentsListModalComponent implements OnInit {
   public recordsTotal: number = 0;
 
   private modalRef: NgbModalRef;
+  public isLoading$ = this.loaderService.isLoading$;
+
 
   /**
    * Detecting scroll direction
@@ -49,12 +53,12 @@ export class AttachmentsListModalComponent implements OnInit {
   private page: number = 0;
   private lastPage: number;
   private readonly tag: string = 'attachmentListScroll';
-  private readonly defaultApiParameter: CollectionParameters = {page: 1, limit: 100, order: 1};
+  private readonly defaultApiParameter: CollectionParameters = { page: 1, limit: 100, order: 1 };
 
 
   constructor(private fileService: FileService, private fileSaverService: FileSaverService,
-              private modalService: NgbModal, public activeModal: NgbActiveModal, private toast: ToastService,
-              private scrollService: InfiniteScrollService) { }
+    private modalService: NgbModal, public activeModal: NgbActiveModal, private toast: ToastService,
+    private scrollService: InfiniteScrollService, private cdr: ChangeDetectorRef, private loaderService: LoaderService) { }
 
   /**
    * Checks whether further data should be loaded
@@ -82,7 +86,13 @@ export class AttachmentsListModalComponent implements OnInit {
    * @param onScroll Control if it is a new file upload
    */
   public getFiles(apiParameters?: CollectionParameters, onScroll: boolean = false): void {
+    this.loaderService.show();
     this.fileService.getAllFilesList(this.metadata, apiParameters ? apiParameters : this.defaultApiParameter)
+    .pipe(
+      finalize(() => {
+        this.loaderService.hide();
+        this.cdr.markForCheck();
+      }))
       .subscribe((data: APIGetMultiResponse<FileElement>) => {
         if (onScroll) {
           this.attachments.push(...data.results);
@@ -111,10 +121,13 @@ export class AttachmentsListModalComponent implements OnInit {
    * or new files form local File Explorer
    */
   public addAttachments() {
-    this.modalRef = this.modalService.open(FilemanagerModalComponent, {size: 'xl'});
+    this.modalRef = this.modalService.open(FilemanagerModalComponent, { size: 'xl' });
     this.modalRef.componentInstance.localMetadata = this.metadata;
     this.modalRef.result.then(() => {
-      this.getFiles(this.defaultApiParameter, false);
+      setTimeout(() => {
+        this.getFiles(this.defaultApiParameter, false);
+        this.cdr.markForCheck();
+      }, 1000)
     });
   }
 
@@ -133,7 +146,8 @@ export class AttachmentsListModalComponent implements OnInit {
    * @param fileElement current selected file
    */
   public deleteFile(fileElement: FileElement) {
-    const {reference, reference_type} = this.metadata;
+    this.loaderService.show();
+    const { reference, reference_type } = this.metadata;
     const newReference = typeof reference === 'number' ? [reference] : reference;
     const tempReference = fileElement.metadata.reference ? fileElement.metadata.reference : [];
     fileElement.metadata.reference = typeof tempReference === 'number' ?
@@ -142,8 +156,12 @@ export class AttachmentsListModalComponent implements OnInit {
     fileElement.metadata.reference = fileElement.metadata.reference.filter(x => x !== reference);
 
     this.fileService.putFile(fileElement, true).subscribe((resp) => {
-      this.getFiles(this.defaultApiParameter);
-      this.toast.info(`File was successfully solved: ${resp.filename}`);
+      setTimeout(() => {
+        this.getFiles(this.defaultApiParameter);
+        this.toast.info(`File was successfully solved: ${resp.filename}`);
+        this.cdr.markForCheck();
+        this.loaderService.hide();
+      }, 1000)
     });
   }
 }

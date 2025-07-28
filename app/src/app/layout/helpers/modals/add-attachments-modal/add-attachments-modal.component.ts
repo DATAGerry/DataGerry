@@ -22,11 +22,12 @@ import { ToastService } from '../../../toast/toast.service';
 import { GeneralModalComponent } from '../general-modal/general-modal.component';
 import { CollectionParameters } from '../../../../services/models/api-parameter';
 import { APIGetMultiResponse } from '../../../../services/models/api-response';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 import { FileMetadata } from '../../../components/file-explorer/model/metadata';
 import { FileElement } from '../../../components/file-explorer/model/file-element';
 import { FileService } from '../../../components/file-explorer/service/file.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'cmdb-add-attachments-modal',
@@ -48,12 +49,15 @@ export class AddAttachmentsModalComponent implements OnInit, OnDestroy {
   public newFiles: FileElement[] = [];
   private readonly defaultApiParameter: CollectionParameters = { page: 1, limit: 100, order: 1 };
 
+  public isLoading$ = this.loaderService.isLoading$;
 
   constructor(private fileService: FileService,
-    private modalService: NgbModal, public activeModal: NgbActiveModal, private toast: ToastService) { }
+    private modalService: NgbModal, public activeModal: NgbActiveModal, private toast: ToastService,   private loaderService: LoaderService
+  ) { }
 
   public ngOnInit(): void {
-    this.fileService.getAllFilesList(this.metadata).subscribe((data: APIGetMultiResponse<FileElement>) => {
+    this.loaderService.show();
+    this.fileService.getAllFilesList(this.metadata).pipe(finalize(() => this.loaderService.hide())).subscribe((data: APIGetMultiResponse<FileElement>) => {
       this.attachments.push(...data.results);
     });
   }
@@ -66,7 +70,9 @@ export class AddAttachmentsModalComponent implements OnInit, OnDestroy {
    * @param onScroll Control if it is a new file upload
    */
   public getFiles(apiParameters?: CollectionParameters, onScroll: boolean = false): void {
+    this.loaderService.show();
     this.fileService.getAllFilesList(this.metadata, apiParameters ? apiParameters : this.defaultApiParameter)
+    .pipe(finalize(() => this.loaderService.hide()))
       .subscribe((data: APIGetMultiResponse<FileElement>) => {
         if (onScroll) {
           this.attachments.push(...data.results);
@@ -111,8 +117,10 @@ export class AddAttachmentsModalComponent implements OnInit, OnDestroy {
    * @param value filename
    */
   private checkFileExist(value) {
+    this.loaderService.show();
     return new Promise((resolve) => {
       this.fileService.getFileElement(value, this.metadata).pipe(
+        finalize(() => this.loaderService.hide()),
         takeUntil(this.unSubscribe))
         .subscribe({
           next: () => resolve(true),
@@ -140,16 +148,18 @@ export class AddAttachmentsModalComponent implements OnInit, OnDestroy {
    * @param file current file for update
    */
   private postFile(file: any) {
+    this.loaderService.show();
     this.newFiles.push(file)
     file.inProcess = true;
     this.inProcess = true;
     this.attachments = [file].concat(this.attachments);
     this.fileService.postFile(file, this.metadata)
+    .pipe(finalize(() => this.loaderService.hide()))
       .subscribe({
         next: () => {
           this.getFiles(this.defaultApiParameter);
         },
-        error: (err) => console.log(err)
+        error: (err) => this.toast.error(err?.error?.message),
       }
       );
   }
