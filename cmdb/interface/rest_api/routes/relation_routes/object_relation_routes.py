@@ -64,7 +64,7 @@ object_relations_blueprint = APIBlueprint('object_relations', __name__)
 
 @object_relations_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.add')
 @object_relations_blueprint.validate(CmdbObjectRelation.SCHEMA)
 def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
@@ -144,7 +144,7 @@ def insert_cmdb_object_relation(data: dict, request_user: CmdbUser):
 
 @object_relations_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.view')
 @object_relations_blueprint.parse_collection_parameters()
 def get_cmdb_object_relations(params: CollectionParameters, request_user: CmdbUser):
@@ -190,7 +190,7 @@ def get_cmdb_object_relations(params: CollectionParameters, request_user: CmdbUs
 
 @object_relations_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.view')
 def get_cmdb_object_relation(public_id: int, request_user: CmdbUser):
     """
@@ -230,7 +230,7 @@ def get_cmdb_object_relation(public_id: int, request_user: CmdbUser):
 
 @object_relations_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.edit')
 @object_relations_blueprint.validate(CmdbObjectRelation.SCHEMA)
 def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUser):
@@ -324,7 +324,7 @@ def update_cmdb_object_relation(public_id: int, data: dict, request_user: CmdbUs
 
 @object_relations_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_relations_blueprint.protect(auth=True, right='base.framework.objectRelation.delete')
 def delete_cmdb_object_relation(public_id: int, request_user: CmdbUser):
     """

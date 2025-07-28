@@ -57,7 +57,7 @@ object_group_blueprint = APIBlueprint('object_group', __name__)
 
 @object_group_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_group_blueprint.protect(auth=True, right='base.framework.objectGroup.add')
 @object_group_blueprint.validate(CmdbObjectGroup.SCHEMA)
 def insert_cmdb_object_group(data: dict, request_user: CmdbUser):
@@ -101,7 +101,7 @@ def insert_cmdb_object_group(data: dict, request_user: CmdbUser):
 
 @object_group_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_group_blueprint.protect(auth=True, right='base.framework.objectGroup.view')
 @object_group_blueprint.parse_collection_parameters()
 def get_cmdb_object_groups(params: CollectionParameters, request_user: CmdbUser):
@@ -146,7 +146,7 @@ def get_cmdb_object_groups(params: CollectionParameters, request_user: CmdbUser)
 
 @object_group_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_group_blueprint.protect(auth=True, right='base.framework.objectGroup.view')
 def get_cmdb_object_group(public_id: int, request_user: CmdbUser):
     """
@@ -184,7 +184,7 @@ def get_cmdb_object_group(public_id: int, request_user: CmdbUser):
 
 @object_group_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_group_blueprint.protect(auth=True, right='base.framework.objectGroup.edit')
 @object_group_blueprint.validate(CmdbObjectGroup.SCHEMA)
 def update_cmdb_object_group(public_id: int, data: dict, request_user: CmdbUser):
@@ -229,7 +229,7 @@ def update_cmdb_object_group(public_id: int, data: dict, request_user: CmdbUser)
 
 @object_group_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @object_group_blueprint.protect(auth=True, right='base.framework.objectGroup.delete')
 def delete_cmdb_object_group(public_id: int, request_user: CmdbUser):
     """

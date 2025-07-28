@@ -64,7 +64,7 @@ control_measure_assignment_blueprint = APIBlueprint('control_measure_assignment'
 
 @control_measure_assignment_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_assignment_blueprint.protect(auth=True, right='base.isms.controlMeasureAssignment.add')
 @control_measure_assignment_blueprint.validate(IsmsControlMeasureAssignment.SCHEMA)
 def insert_isms_control_measure_assignment(data: dict, request_user: CmdbUser):
@@ -114,7 +114,7 @@ def insert_isms_control_measure_assignment(data: dict, request_user: CmdbUser):
 
 @control_measure_assignment_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_assignment_blueprint.protect(auth=True, right='base.isms.controlMeasureAssignment.view')
 @control_measure_assignment_blueprint.parse_collection_parameters()
 def get_isms_control_measure_assignments(params: CollectionParameters, request_user: CmdbUser):
@@ -269,7 +269,7 @@ def get_isms_control_measure_assignments(params: CollectionParameters, request_u
 
 @control_measure_assignment_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_assignment_blueprint.protect(auth=True, right='base.isms.controlMeasureAssignment.view')
 def get_isms_control_measure_assignment(public_id: int, request_user: CmdbUser):
     """
@@ -313,7 +313,7 @@ def get_isms_control_measure_assignment(public_id: int, request_user: CmdbUser):
 
 @control_measure_assignment_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_assignment_blueprint.protect(auth=True, right='base.isms.controlMeasureAssignment.edit')
 @control_measure_assignment_blueprint.validate(IsmsControlMeasureAssignment.SCHEMA)
 def update_isms_control_measure_assignment(public_id: int, data: dict, request_user: CmdbUser):
@@ -366,7 +366,7 @@ def update_isms_control_measure_assignment(public_id: int, data: dict, request_u
 
 @control_measure_assignment_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @control_measure_assignment_blueprint.protect(auth=True, right='base.isms.controlMeasureAssignment.delete')
 def delete_isms_control_measure_assignment(public_id: int, request_user: CmdbUser):
     """

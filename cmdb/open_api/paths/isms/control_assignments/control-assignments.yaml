@@ -15,30 +15,30 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                 CREATE - ISMS CONTROL                                                #
+#                                           CREATE - ISMS CONTROL ASSIGNMENT                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 post:
   tags: 
-      - ISMS-Controls
+      - ISMS-ControlAssignments
       - Cloud
       - OnPremise
-  summary: Insert a new Control [Cloud] [OnPremise]
+  summary: Insert a new ControlAssignment [Cloud] [OnPremise]
   description: |
-      Required User Right: **base.isms.controlMeasure.add**
+      Required User Right: **base.isms.controlMeasureAssignment.add**
       <br><hr><br>
-      Inserts a new Control into the database
+      Inserts a new ControlAssignment into the database
       <br><br>
       The **public_id** property will be automatically created and don't need to be provided
-  operationId: insert_isms_control_measure
+  operationId: insert_isms_control_measure_assignment
   requestBody:
       required: true
       content:
           application/json:
               schema:
-                  $ref: "../../../components/schemas/isms/IsmsControl.yaml"
+                  $ref: "../../../components/schemas/isms/IsmsControlAssignment.yaml"
   responses:
       "200":
-          description: The assigned **public_id** and the created Control is returned
+          description: The assigned **public_id** and the created ControlAssignment is returned
           content:
               application/json:
                   schema:
@@ -46,12 +46,12 @@ post:
                       properties:
                           result_id:
                               type: integer
-                              description: "The **public_id** of the created Control"
+                              description: "The **public_id** of the created ControlAssignment"
                               example: 12345
                           raw:
-                              $ref: "../../../components/schemas/isms/IsmsControl.yaml"
+                              $ref: "../../../components/schemas/isms/IsmsControlAssignment.yaml"
       "400":
-          description: The Control could not be inserted
+          description: The ControlAssignment could not be inserted
           content:
               application/json:
                   schema:
@@ -59,9 +59,9 @@ post:
                       properties:
                           error:
                               type: string
-                              example: "The Control could not be inserted"
+                              example: "The ControlAssignment could not be inserted"
       "404":
-          description: Could not retrieve the created Control from database
+          description: Could not retrieve the created ControlAssignment from database
           content:
               application/json:
                   schema:
@@ -69,7 +69,7 @@ post:
                       properties:
                           error:
                               type: string
-                              example: "Could not retrieve the created Control from database"
+                              example: "Could not retrieve the created ControlAssignment from database"
       "500":
           description: Internal server error
           content:
@@ -82,30 +82,30 @@ post:
                               example: "Internal server error"
 
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                  GET - ISMS CONTROLS                                                 #
+#                                            GET - ISMS CONTROL ASSIGNMENTS                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 get:
   tags:
-      - ISMS-Controls
+      - ISMS-ControlAssignments
       - Cloud
       - OnPremise
-  summary: Retrieve multiple Control [Cloud] [OnPremise]
+  summary: Retrieve multiple ControlAssignments [Cloud] [OnPremise]
   description: |
-      Required User Right: **base.isms.controlMeasure.view**
+      Required User Right: **base.isms.controlMeasureAssignment.view**
       <br><hr><br>
-      Returns all **Control** if no **CollectionParameters** are passed
-  operationId: get_isms_control_measures
+      Returns all **ControlAssignments** if no **CollectionParameters** are passed
+  operationId: get_isms_control_measure_assignments
   parameters:
       - name: CollectionParameters
         in: query
-        description: Parameters for filtering, limiting, sorting, and pagination of **Control**
+        description: Parameters for filtering, limiting, sorting, and pagination of **ControlAssignments**
         required: false
         schema:
             $ref: "../../../components/schemas/CollectionParameters.yaml"
   responses:
       "200":
-          description: Returns a **list of Control** matching the filter criteria
+          description: Returns a **list of ControlAssignments** matching the filter criteria
           content:
               application/json:
                   schema:
@@ -114,12 +114,12 @@ get:
                           results:
                               type: array
                               items:
-                                  $ref: "../../../components/schemas/isms/IsmsControl.yaml"
+                                  $ref: "../../../components/schemas/isms/IsmsControlAssignment.yaml"
                           total:
                               type: integer
-                              description: The amount of Controls returned
+                              description: The amount of ControlAssignments returned
       "400":
-          description: Could not iterate **Control**
+          description: Could not iterate **ControlAssignments**
           content:
               application/json:
                   schema:
@@ -127,7 +127,7 @@ get:
                       properties:
                           error:
                               type: string
-                              example: "Could not iterate Control"
+                              example: "Could not iterate ControlAssignments"
       "500":
           description: An unexpected error occured
           content:
