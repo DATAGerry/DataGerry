@@ -33,39 +33,139 @@
 
   <!--  Filter Bar (Collapsible) -->
   <div class="filter-bar-container" [class.visible]="showFilterBar">
-    <form [formGroup]="filterForm" class="enhanced-filter-bar">
-      <div class="filter-section">
-        <div class="filter-group">
-          <label class="filter-label">
-            <span class="material-icons">category</span>
-            CI Types
-          </label>
-          <app-form-select formControlName="types" [items]="typeOptionList" bindLabel="display_name"
-            bindValue="public_id" [multiple]="true" placeholder="Select CI type(s)" class="filter-select">
-          </app-form-select>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">
-            <span class="material-icons">share</span>
-            Relations
-          </label>
-          <app-form-select formControlName="relations" [items]="relationOptionList" bindLabel="display_name"
-            bindValue="public_id" [multiple]="true" placeholder="Select relation type(s)" class="filter-select">
-          </app-form-select>
+    <div class="enhanced-filter-bar">
+
+      <div class="filter-mode-toggle">
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn" [class.active]="filterMode === 'manual'"
+            (click)="switchFilterMode('manual')">
+            <span class="material-icons">tune</span>
+            Manual Filters
+          </button>
+          <button type="button" class="toggle-btn" [class.active]="filterMode === 'profile'"
+            (click)="switchFilterMode('profile')">
+            <span class="material-icons">bookmark</span>
+            Filter Profiles
+          </button>
         </div>
       </div>
 
-      <div class="filter-actions">
-        <!-- Reset Button -->
-        <app-button [bootstrapClass]="'btn-secondary'" label="Apply" type="button" (clicked)="applyFilters()">
-        </app-button>
-        <!-- Submit Button -->
-        <app-button [bootstrapClass]="'btn-success'" [label]="'Clear'" type="submit" (clicked)="clearFilters()">
-        </app-button>
+      <!-- <div *ngIf="filterMode === 'manual'">
+        <form [formGroup]="filterForm" class="enhanced-filter-content">
+          <div class="filter-section">
+            <div class="filter-group">
+              <label class="filter-label">
+                <span class="material-icons">category</span>
+                CI Types
+              </label>
+              <app-form-select formControlName="types" [items]="typeOptionList" bindLabel="display_name"
+                bindValue="public_id" [multiple]="true" placeholder="Select CI type(s)" class="filter-select">
+              </app-form-select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">
+                <span class="material-icons">share</span>
+                Relations
+              </label>
+              <app-form-select formControlName="relations" [items]="relationOptionList" bindLabel="display_name"
+                bindValue="public_id" [multiple]="true" placeholder="Select relation type(s)" class="filter-select">
+              </app-form-select>
+            </div>
+            <div class="filter-actions" style="justify-content: space-evenly;">
+              <div>
+                <label class="filter-label" style="height: 22px !important; ">
+
+                </label>
+                <app-button [bootstrapClass]="'btn-success'" label="Apply" type="button" (clicked)="applyFilters()">
+                </app-button>
+                <app-button [bootstrapClass]="'btn-secondary ml-2'" label="Save as Profile" type="button" (clicked)="saveCurrentFiltersAsProfile()">
+              </app-button>
+                <app-button [bootstrapClass]="'btn-outline-danger ml-2'" [label]="'Clear'" type="button"
+                  (clicked)="clearFilters()">
+                </app-button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div> -->
+
+      <div *ngIf="filterMode === 'manual'" class="enhanced-filter-content">
+        <form [formGroup]="filterForm">
+          <div class="manual-filter-selector" style="align-items: center !important;">
+            <div class="filter-inputs-section">
+              <div class="filter-group">
+                <label class="filter-label">
+                  <span class="material-icons">category</span>
+                  CI Types
+                </label>
+                <app-form-select formControlName="types" [items]="typeOptionList" bindLabel="display_name"
+                  bindValue="public_id" [multiple]="true" placeholder="Select CI type(s)" class="filter-select">
+                </app-form-select>
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-label">
+                  <span class="material-icons">share</span>
+                  Relations
+                </label>
+                <app-form-select formControlName="relations" [items]="relationOptionList" bindLabel="display_name"
+                  bindValue="public_id" [multiple]="true" placeholder="Select relation type(s)" class="filter-select">
+                </app-form-select>
+              </div>
+            </div>
+
+            <div class="filter-actions">
+              <div>
+                <label class="filter-label" style="height: 7px !important">
+                </label>
+                <div>
+                  <app-button [bootstrapClass]="'btn-success'" label="Apply" type="button" (clicked)="applyFilters()">
+                  </app-button>
+                  <app-button [bootstrapClass]="'btn-secondary ml-2'" label="Save as Profile" type="button"
+                    (clicked)="saveCurrentFiltersAsProfile()">
+                  </app-button>
+                  <app-button [bootstrapClass]="'btn-outline-danger ml-2'" label="Clear" type="button"
+                    (clicked)="clearFilters()">
+                  </app-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
-    </form>
+
+      <div *ngIf="filterMode === 'profile'" class="enhanced-filter-content">
+        <div class="profile-selector">
+          <div class="filter-group flex-grow">
+            <label class="filter-label">
+              <span class="material-icons">bookmark</span>
+              Select Profile
+            </label>
+
+            <div style="display: flex; gap: 20px;">
+              <app-form-select [(ngModel)]="selectedProfileId" [items]="profiles" bindLabel="name" bindValue="public_id"
+                placeholder="Choose a filter profile" class="filter-select" style="flex: 1; min-width: 300px;">
+              </app-form-select>
+
+              <div class="profile-actions" style="display: flex; gap: 10px;">
+                <app-button [bootstrapClass]="'btn-success'" label="Apply Profile" type="button"
+                  (clicked)="applyProfile()" [disabled]="!selectedProfileId">
+                </app-button>
+
+                <app-button [bootstrapClass]="'btn-secondary'" label="Manage Profiles" type="button"
+                  (clicked)="openProfileManager()">
+                </app-button>
+
+                <app-button [bootstrapClass]="'btn-outline-danger'" label="Clear" type="button"
+                  (clicked)="clearFilters()">
+                </app-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
 
   <!-- Main Graph Area -->
   <div class="graph-viewport" #graphContainer [class.panning]="isPanning" (mousedown)="onCanvasMouseDown($event)">
@@ -118,9 +218,9 @@
 
 
         <!-- Connection Paths -->
-        <g class="connections-group">
-          <path *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey"  [attr.d]="calculatePath(conn)" class="connection-path"
-            [class.valid]="conn.isValid" [class.invalid]="!conn.isValid"
+        <!-- <g class="connections-group">
+          <path *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey" [attr.d]="calculatePath(conn)"
+            class="connection-path" [class.valid]="conn.isValid" [class.invalid]="!conn.isValid"
             [class.data-flow]="conn.dataFlow && showDataFlow"
             [class.selected]="selectedConnection?.from === conn.from && selectedConnection?.to === conn.to"
             [class.highlighted]="isConnectionHighlighted(conn)"
@@ -129,6 +229,21 @@
             [attr.marker-end]="conn.isValid ? (conn.dataFlow && showDataFlow ? 'url(#arrow-data-flow)' : 'url(#arrow-valid)') : 'url(#arrow-invalid)'"
             (click)="selectConnection(conn)" (mouseenter)="hoveredConnection = conn"
             (mouseleave)="hoveredConnection = null" />
+        </g> -->
+
+
+        <!-- Connection Paths -->
+        <g class="connections-group">
+          <path *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey" [attr.d]="calculatePath(conn)"
+            class="connection-path clickable-connection" [class.valid]="conn.isValid" [class.invalid]="!conn.isValid"
+            [class.data-flow]="conn.dataFlow && showDataFlow"
+            [class.selected]="selectedConnection?.from === conn.from && selectedConnection?.to === conn.to"
+            [class.highlighted]="isConnectionHighlighted(conn)"
+            [attr.stroke]="conn.isValid ? 'url(#valid-gradient)' : 'url(#invalid-gradient)'"
+            [attr.stroke-width]="getConnectionStrokeWidth(conn)"
+            [attr.marker-end]="conn.isValid ? (conn.dataFlow && showDataFlow ? 'url(#arrow-data-flow)' : 'url(#arrow-valid)') : 'url(#arrow-invalid)'"
+            (click)="onConnectionClick(conn, $event)" (mouseenter)="hoveredConnection = conn"
+            (mouseleave)="hoveredConnection = null" style="cursor: pointer;" />
         </g>
 
 
@@ -148,12 +263,13 @@
 
       <!-- Enhanced Nodes Layer -->
       <div class="nodes-container">
-        <div *ngFor="let node of filteredNodes; trackBy: trackByNodeId" class="ci-node no-select" [class.selected]="selectedNodes.has(node.id)"
-          [class.expanded]="node.expanded" [class.loading]="node.isLoading" [class.root-node]="node.isRoot"
-          [class.highlighted]="isNodeHighlighted(node)" [style.left.px]="node.x" [style.top.px]="node.y"
-          [style.width.px]="LAYOUT_CONFIG.nodeWidth" [style.height.px]="LAYOUT_CONFIG.nodeHeight"
-          [style.display]="shouldShowNode(node) ? 'block' : 'none'" (mousedown)="onNodeMouseDown($event, node)"
-          (click)="selectNode(node, $event)" (dblclick)="toggleExpand(node, $event)" (contextmenu)="onRightClick($event, node)"
+        <div *ngFor="let node of filteredNodes; trackBy: trackByNodeId" class="ci-node no-select"
+          [class.selected]="selectedNodes.has(node.id)" [class.expanded]="node.expanded"
+          [class.loading]="node.isLoading" [class.root-node]="node.isRoot" [class.highlighted]="isNodeHighlighted(node)"
+          [style.left.px]="node.x" [style.top.px]="node.y" [style.width.px]="LAYOUT_CONFIG.nodeWidth"
+          [style.height.px]="LAYOUT_CONFIG.nodeHeight" [style.display]="shouldShowNode(node) ? 'block' : 'none'"
+          (mousedown)="onNodeMouseDown($event, node)" (click)="selectNode(node, $event)"
+          (dblclick)="toggleExpand(node, $event)" (contextmenu)="onRightClick($event, node)"
           (mouseenter)="hoveredNode = node" (mouseleave)="hoveredNode = null">
           <!--  Node Header -->
           <div class="node-header" [style.background]="node.color">
@@ -193,7 +309,8 @@
           <div class="node-actions">
             <button class="action-btn expand-btn"
               *ngIf="(node.hasChildren || node.hasParents) && !node.isLoading && !node.isRoot"
-              (click)="toggleExpand(node, $event); $event.stopPropagation()" [title]="node.expanded ? 'Collapse' : 'Expand'">
+              (click)="toggleExpand(node, $event); $event.stopPropagation()"
+              [title]="node.expanded ? 'Collapse' : 'Expand'">
               <span class="material-icons">
                 {{ node.expanded ? 'unfold_less' : 'unfold_more' }}
               </span>

@@ -71,6 +71,8 @@ export interface Connection {
   metadata?: any;
 }
 
+
+
 export interface NodeGroup {
   level: number;
   nodes: GraphNode[];
@@ -92,3 +94,58 @@ export interface PerformanceMetrics {
   renderTime: number;
   fps: number;
 }
+
+export interface FilterProfile {
+    public_id?: number;
+    name: string;
+    types_filter: number[];
+    relations_filter: number[];
+  }
+
+
+
+  export interface ConnectionData {
+    from: number;
+    to: number;
+    metadata: {
+      relation_id: number;
+      relation_name: string;
+      relation_label: string;
+      relation_icon: string;
+      relation_color: string;
+    };
+  }
+  
+  export interface NodeConnectionDetails {
+    sourceNode: {
+      id: number;
+      label: string;
+      type: string;
+      color: string;
+    };
+    targetNode: {
+      id: number;
+      label: string;
+      type: string;
+      color: string;
+    };
+    connections: ConnectionData[];
+    direction: 'incoming' | 'outgoing' | 'bidirectional';
+  }
+
+
+  export interface UidBasedConnection {
+      fromNodeId: number;
+      toNodeId: number;
+      fromUid: string;
+      toUid: string;
+      metadata: {
+          relation_id: number;
+          relation_name: string;
+          relation_label: string;
+          relation_color: string;
+          relation_icon?: string;
+      };
+      source: 'initial' | 'expansion';
+      instanceId: number; // Unique identifier for each edge instance
+  }

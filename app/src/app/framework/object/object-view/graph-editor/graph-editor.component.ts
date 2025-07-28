@@ -30,6 +30,7 @@ import { Subject, fromEvent } from 'rxjs';
 import { takeUntil, debounceTime, finalize } from 'rxjs/operators';
 import { getTextColorBasedOnBackground } from 'src/app/core/utils/color-utils';
 import {
+  CIEdge,
   CINode,
   GraphRespWithRoot,
 } from 'src/app/framework/models/ci-explorer.model';
@@ -40,7 +41,8 @@ import {
   GraphNode,
   Connection,
   NodeGroup,
-  PerformanceMetrics
+  PerformanceMetrics,
+  FilterProfile
 } from './interfaces/graph.interfaces';
 import { LAYOUT_CONFIG, KEYBOARD_SHORTCUTS } from './constants/graph.constants';
 import { GraphDataService } from './services/graph-data.service';
@@ -51,7 +53,11 @@ import { GraphFilterService } from './services/graph-filter.service';
 import { GraphPathService } from './services/graph-path.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NodeDetailsModalComponent } from './modals/node-details-modal.component';
+import { NodeDetailsModalComponent } from './modals/node-details/node-details-modal.component';
+import { ProfileManagerModalComponent } from './modals/profile-manager/profile-manager-modal.component';
+import { GraphProfileService } from './services/graph-profile.service';
+import { ConnectionDetailsModalComponent } from './modals/connection-details/connection-details-modal.component';
+import { ConnectionTrackerService } from './services/connection-tracker.service';
 
 @Component({
   selector: 'app-graph-editor',
@@ -78,7 +84,11 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
   typesLoaded: boolean = false;
   showFilterBar = false;
   filterForm: FormGroup;
-  filterMode: 'OR' | 'AND' = 'OR';
+  // filterMode: 'OR' | 'AND' = 'OR';
+
+  filterMode: 'manual' | 'profile' = 'manual';
+  profiles: FilterProfile[] = [];
+  selectedProfileId: number | null = null;
 
   // Filter options
   typeOptionList: { public_id: number; display_name: string }[] = [];
@@ -169,7 +179,9 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     private graphFilter: GraphFilterService,
     private graphPath: GraphPathService,
     private loaderService: LoaderService,
-    private modalService: NgbModal
+    private profileService: GraphProfileService,
+    private modalService: NgbModal,
+    private connectionTracker: ConnectionTrackerService
   ) {
     this.filterForm = this.fb?.group({
       types: [[]],
@@ -189,14 +201,15 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     this.destroy$?.next();
     this.destroy$?.complete();
     this.graphData?.destroy();
+    this.connectionTracker?.clear();
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
   }
 
   /**
-  * Sets up form subscriptions to update filter state when form values change.
-  */
+    * Sets up form subscriptions to update filter state when form values change.
+    */
   private setupFormSubscriptions(): void {
     this.filterForm?.get('types')!
       ?.valueChanges?.subscribe(v => this.typesFilter = v || []);
@@ -205,8 +218,8 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Sets up event listeners for keyboard shortcuts and window resize.
-  */
+    * Sets up event listeners for keyboard shortcuts and window resize.
+    */
   private setupEventListeners(): void {
     fromEvent<KeyboardEvent>(document, 'keydown')
       ?.pipe(takeUntil(this.destroy$))
@@ -217,9 +230,10 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
       ?.subscribe(() => this.handleResize());
   }
 
+
   /**
-  * Handles window resize events to adjust the graph viewport.
-  */
+    * Handles window resize events to adjust the graph viewport.
+    */
   private startPerformanceMonitoring(): void {
     const measurePerformance = (timestamp: number) => {
       if (this.lastFrameTime) {
@@ -235,15 +249,6 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     this.animationFrameId = requestAnimationFrame(measurePerformance);
   }
 
-  // Keyboard handling
-  // private handleKeyboard(event: KeyboardEvent): void {
-  //   const key = this.getKeyCombo(event);
-  //   const handlerName = KEYBOARD_SHORTCUTS[key as keyof typeof KEYBOARD_SHORTCUTS];
-  //   if (handlerName && typeof (this as any)[handlerName] === 'function') {
-  //     event?.preventDefault();
-  //     (this as any)[handlerName]();
-  //   }
-  // }
 
   /**
   * Handles keyboard shortcuts for graph interactions.
@@ -287,6 +292,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
       this.nodeGroups.length = 0;
       // this.breadcrumbs.length = 0;
       this.graphData?.clearAllData();
+      this.connectionTracker.clear();
     }
 
     const t0 = performance?.now();
@@ -444,6 +450,9 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     this.performHierarchicalLayout();
     this.updateNodeStates();
 
+    const allInitialEdges = [...this.graphData.getEdges(r, 'parent'), ...this.graphData.getEdges(r, 'child')];
+    allInitialEdges.forEach(edge => this.graphData.storeAndIndexEdge(edge));
+    this.connectionTracker.storeInitialConnections(allInitialEdges, this.graphData.getNodeInstanceMap());
     this.centerViewport();
   }
 
@@ -535,6 +544,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     });
     this.typesFilter = [];
     this.relationsFilter = [];
+    this.loadInitialGraph(true);
   }
 
 
@@ -695,6 +705,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
         ui, cn, this.nodes, this.connections,
         this.typesFilter, this.relationsFilter, this.nodeTypeConfigs
       );
+
       this.connections = this.graphPath?.validateConnections(this.connections, this.graphData?.getNodeInstanceMap());
       this.performHierarchicalLayout();
       this.updateNodeStates();
@@ -1068,22 +1079,6 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     this.isMultiSelecting = false;
   }
 
-  // Context menu
-  // onRightClick(e: MouseEvent, node: GraphNode): void {
-  //   e?.preventDefault();
-  //   if (node.isRoot) {
-  //     this.contextMenuVisible = false;
-  //     return;
-  //   }
-
-  //   this.selectNode(node);
-  //   this.contextMenuX = e?.clientX;
-  //   this.contextMenuY = e?.clientY;
-  //   this.contextMenuVisible = true;
-  //   this.createMenuVisible = false;
-  // }
-
-
   /**
   * Handles right-click events on a node to show the context menu.
   * @param e The MouseEvent triggered by the right-click.
@@ -1248,22 +1243,53 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     return Object;
   }
 
+
+  /**
+   * Gets the configuration for a specific node type.
+   * @param type The type of the node to get the configuration for.
+   * @returns An object containing the icon and gradient for the node type.
+   */
   getNodeTypeConfig(type: string): { icon: string; gradient: string } {
-    return this.nodeTypeConfigs?.get(type) || { icon: 'help', gradient: '#666' };
+    return this.nodeTypeConfigs?.get(type);
   }
 
+
+  /**
+   * Gets a node by its ID.
+   * @param id The ID of the node to find.
+   * @returns The GraphNode if found, otherwise undefined.
+   */
   getNodeById(id: number): GraphNode | undefined {
-    return this.nodes?.find(n => n.id === id);
+    return this.nodes?.find(n => n?.id === id);
   }
 
+
+  /**
+   * Gets a node by its ID and level.
+   * This is useful for hierarchical graphs where nodes can have the same ID but different levels.
+   * @param id The ID of the node to find.
+   * @param level The level of the node to find.
+   * @returns The GraphNode if found, otherwise undefined.
+   */
   getNodeByIdAndLevel(id: number, level: number): GraphNode | undefined {
     return this.nodes?.find(n => n?.id === id && n?.level === level);
   }
 
+
+  /**
+   * Gets the list of available node types from the node type configurations.
+   * @returns An array of strings representing the available node types.
+   */
   get availableNodeTypes(): string[] {
     return Array.from(this.nodeTypeConfigs?.keys());
   }
 
+
+  /**
+   * Checks if a node is highlighted based on search results or hovered connection.
+   * @param node 
+   * @returns 
+   */
   isNodeHighlighted(node: GraphNode): boolean {
     return this.searchResults?.includes(node) ||
       (this.hoveredConnection &&
@@ -1271,6 +1297,12 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
           this.hoveredConnection?.to === node?.id));
   }
 
+
+  /**
+   * Checks if a connection is highlighted based on the hovered or selected node.
+   * @param conn 
+   * @returns 
+   */
   isConnectionHighlighted(conn: Connection): boolean {
     return (this.hoveredNode &&
       (conn?.from === this.hoveredNode?.id ||
@@ -1368,49 +1400,6 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  // Utility methods
-  private handleResize(): void {
-    this.centerViewport();
-  }
-
-  private showNotification(message: string, type: 'info' | 'success' | 'error' = 'info'): void {
-  }
-
-  private showErrorNotification(message: string): void {
-    this.showNotification(message, 'error');
-  }
-
-  // Navigation keyboard shortcuts
-  navigateUp(): void { this.navigateNodes('up'); }
-  navigateDown(): void { this.navigateNodes('down'); }
-  navigateLeft(): void { this.navigateNodes('left'); }
-  navigateRight(): void { this.navigateNodes('right'); }
-
-
-  // private focusSearch(): void {
-  //   const searchInput = document?.querySelector('.search-input') as HTMLInputElement;
-  //   if (searchInput) {
-  //     searchInput?.focus();
-  //     searchInput?.select();
-  //   }
-  // }
-
-
-  /**
-   * trackBy for nodes: prevents re-rendering unchanged nodes
-   */
-  trackByNodeId(_index: number, node: GraphNode): number {
-    return node.id;
-  }
-
-
-  /**
-    * trackBy for connections: use a stable key per edge
-    */
-  trackByConnKey(_index: number, conn: Connection): string {
-    return `${conn.from}-${conn.to}-${conn.relationLabel}`;
-  }
-
 
   /**
     * Open the node details modal with the given node.
@@ -1425,8 +1414,354 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.loadNode(node);
     modalRef.componentInstance.nodeTypeConfigs = this.nodeTypeConfigs;
 
-    /* optional: handle close / dismiss if you need */
-    modalRef.result.catch(() => {/* user closed the modal */ });
+    modalRef.result.catch(() => {/*  closed the modal */ });
   }
 
+
+  /**
+   * Opens the profile manager modal to manage filter profiles.
+   */
+  openProfileManager(): void {
+    const modalRef = this.modalService.open(ProfileManagerModalComponent, {
+      size: 'xl',
+      backdrop: 'static',
+      scrollable: true
+    });
+
+    // Pass the filter options to the modal
+    modalRef.componentInstance.initializeOptions(this.typeOptionList, this.relationOptionList);
+
+    // Handle the result when a profile is applied
+    modalRef.result.then((selectedProfile: FilterProfile) => {
+      if (selectedProfile) {
+        this.typesFilter = selectedProfile.types_filter || [];
+        this.relationsFilter = selectedProfile.relations_filter || [];
+        this.loadInitialGraph(true);
+        this.showNotification(`Applied profile: ${selectedProfile.name}`, 'success');
+      }
+      // Always refresh profiles list after modal closes (whether profile was applied or not)
+      this.loadProfiles();
+    }).catch(() => {
+      // Modal was dismissed - still refresh the profiles list
+      this.loadProfiles();
+    });
+  }
+
+
+  /**
+   * Switches the filter mode between manual and profile-based filtering.
+   * @param mode 
+   */
+  switchFilterMode(mode: 'manual' | 'profile'): void {
+    this.filterMode = mode;
+    if (mode === 'profile') {
+      this.loadProfiles();
+    }
+  }
+
+
+  /**
+   * Loads the available profiles from the profile service.
+   */
+  private loadProfiles(): void {
+    this.loaderService.show();
+    this.profileService.getProfiles()
+      .pipe(finalize(() => this.loaderService.hide()))
+      .subscribe({
+        next: profiles => this.profiles = profiles,
+        error: (err) => this.showErrorNotification(err?.error?.message)
+      });
+  }
+
+
+  /**
+   * Applies the selected profile's filters to the graph.
+   */
+  applyProfile(): void {
+    const profile = this.profiles.find(p => p.public_id === this.selectedProfileId);
+    if (profile) {
+      this.typesFilter = profile.types_filter || [];
+      this.relationsFilter = profile.relations_filter || [];
+      this.loadInitialGraph(true);
+      this.showNotification(`Applied profile: ${profile.name}`, 'success');
+    }
+  }
+
+
+  /**
+   * Saves the current filters as a new profile.
+   * @returns True if there are no active filters, false otherwise.
+   */
+  saveCurrentFiltersAsProfile(): void {
+    if (!this.hasActiveFilters()) {
+      this.showNotification('No filters to save', 'info');
+      return;
+    }
+
+    const modalRef = this.modalService.open(ProfileManagerModalComponent, {
+      size: 'xl',
+      backdrop: 'static'
+    });
+
+    modalRef.componentInstance.initializeOptions(this.typeOptionList, this.relationOptionList);
+
+    // Pre-fill with current filters
+    modalRef.componentInstance.profileForm.patchValue({
+      name: '',
+      types_filter: this.typesFilter,
+      relations_filter: this.relationsFilter
+    });
+  }
+
+
+  /**
+   *  Handles click events on a connection.
+   * @param conn 
+   * @param e 
+   * @returns 
+   */
+  onConnectionClick(conn: Connection, e: MouseEvent): void {
+    e.stopPropagation();
+
+    const fromNode = this.getNodeByUid(conn.fromUid!);
+    const toNode = this.getNodeByUid(conn.toUid!);
+
+    if (!fromNode || !toNode) {
+      return;
+    }
+
+    // Try to get indexed connections 
+    const indexedConnections = this.graphData.getAllEdgesBetween(conn.from, conn.to);
+
+    if (indexedConnections.length > 0) {
+      this.openConnectionModalWithIndexedData(fromNode, toNode, indexedConnections);
+    } else {
+      // Try UID tracker as fallback
+      if (conn.fromUid && conn.toUid) {
+        const trackedConnections = this.connectionTracker.getConnectionsBetweenUids(conn.fromUid, conn.toUid);
+        if (trackedConnections.length > 0) {
+          this.openUidBasedConnectionModal(fromNode, toNode, trackedConnections);
+          return;
+        }
+      }
+
+      this.openConnectionModalWithUIData(fromNode, toNode, conn);
+    }
+  }
+
+
+  /**
+   *  Opens the connection details modal with data from the UI.
+   * @param fromNode 
+   * @param toNode 
+   * @param conn 
+   */
+  private openConnectionModalWithUIData(
+    fromNode: GraphNode,
+    toNode: GraphNode,
+    conn: Connection
+  ): void {
+    const modalRef = this.modalService.open(ConnectionDetailsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      scrollable: true
+    });
+
+    modalRef.componentInstance.sourceNode = {
+      id: fromNode.id,
+      label: fromNode.label,
+      type: fromNode.type,
+      color: fromNode.color,
+      level: fromNode.level
+    };
+
+    modalRef.componentInstance.targetNode = {
+      id: toNode.id,
+      label: toNode.label,
+      type: toNode.type,
+      color: toNode.color,
+      level: toNode.level
+    };
+
+    // Single connection from UI data
+    modalRef.componentInstance.connections = [{
+      from: conn.from,
+      to: conn.to,
+      fromLevel: fromNode.level,
+      toLevel: toNode.level,
+      fromUid: conn.fromUid,
+      toUid: conn.toUid,
+      metadata: {
+        relation_id: 0,
+        relation_name: conn.relationLabel,
+        relation_label: conn.relationLabel,
+        relation_color: conn.relationColor,
+        relation_icon: conn.relationIcon
+      }
+    }];
+
+    modalRef.componentInstance.direction = fromNode.level < toNode.level ? 'outgoing' : 'incoming';
+  }
+
+
+  /**
+   * Opens the UID-based connection modal with tracked connections.
+   * @param fromNode 
+   * @param toNode 
+   * @param trackedConnections 
+   */
+  private openUidBasedConnectionModal(
+    fromNode: any, // GraphNode from nodeInstanceMap (passed from UI)
+    toNode: any,   // GraphNode from nodeInstanceMap (passed from UI)  
+    trackedConnections: any[]
+  ): void {
+
+    const modalRef = this.modalService.open(ConnectionDetailsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      scrollable: true
+    });
+
+
+    modalRef.componentInstance.sourceNode = {
+      id: fromNode.id,
+      label: fromNode.label,
+      type: fromNode.type,
+      color: fromNode.color,
+      level: fromNode.level
+    };
+
+    modalRef.componentInstance.targetNode = {
+      id: toNode.id,
+      label: toNode.label,
+      type: toNode.type,
+      color: toNode.color,
+      level: toNode.level
+    };
+
+    modalRef.componentInstance.connections = trackedConnections.map(conn => ({
+      from: conn.fromNodeId,
+      to: conn.toNodeId,
+      fromLevel: fromNode.level,
+      toLevel: toNode.level,
+      fromUid: conn.fromUid,
+      toUid: conn.toUid,
+      metadata: conn.metadata
+    }));
+
+    modalRef.componentInstance.direction = fromNode.level < toNode.level ? 'outgoing' : 'incoming';
+  }
+
+
+
+
+  /**
+   *  Opens the connection details modal with indexed connections data.
+   * @param fromNode 
+   * @param toNode 
+   * @param indexedConnections 
+   */
+  private openConnectionModalWithIndexedData(
+    fromNode: GraphNode,
+    toNode: GraphNode,
+    indexedConnections: CIEdge[]
+  ): void {
+    const modalRef = this.modalService.open(ConnectionDetailsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      scrollable: true
+    });
+
+    modalRef.componentInstance.sourceNode = {
+      id: fromNode.id,
+      label: fromNode.label,
+      type: fromNode.type,
+      color: fromNode.color,
+      level: fromNode.level
+    };
+
+    modalRef.componentInstance.targetNode = {
+      id: toNode.id,
+      label: toNode.label,
+      type: toNode.type,
+      color: toNode.color,
+      level: toNode.level
+    };
+
+    // Convert indexed connections to modal format
+    modalRef.componentInstance.connections = indexedConnections.map(edge => {
+      const meta = Array.isArray(edge.metadata) ? edge.metadata[0] : edge.metadata;
+      return {
+        from: edge.from,
+        to: edge.to,
+        fromLevel: fromNode.level,
+        toLevel: toNode.level,
+        fromUid: '', // Not needed for indexed data
+        toUid: '',   // Not needed for indexed data
+        metadata: {
+          relation_id: meta?.relation_id,
+          relation_name: meta?.relation_name,
+          relation_label: meta?.relation_label,
+          relation_color: meta?.relation_color,
+          relation_icon: meta?.relation_icon
+        }
+      };
+    });
+
+    modalRef.componentInstance.direction = fromNode.level < toNode.level ? 'outgoing' : 'incoming';
+  }
+
+
+  /**
+   * Checks if there are any active filters applied to the graph.
+   * @returns True if there are active filters, false otherwise.
+   */
+  hasActiveFilters(): boolean {
+    return (this.typesFilter?.length > 0) || (this.relationsFilter?.length > 0);
+  }
+
+
+  /**
+   *  Gets a node by its UID from the graph data.
+   * @param uid 
+   * @returns 
+   */
+
+  private getNodeByUid(uid: string): GraphNode | undefined {
+    return this.graphData.getNodeInstanceMap().get(uid);
+  }
+
+
+  /**
+  * trackBy for nodes: prevents re-rendering unchanged nodes
+  */
+  trackByNodeId(_index: number, node: GraphNode): number {
+    return node.id;
+  }
+
+
+  /**
+    * trackBy for connections: use a stable key per edge
+    */
+  trackByConnKey(_index: number, conn: Connection): string {
+    return `${conn.from}-${conn.to}-${conn.relationLabel}`;
+  }
+
+    // Utility methods
+    private handleResize(): void {
+      this.centerViewport();
+    }
+  
+    private showNotification(message: string, type: 'info' | 'success' | 'error' = 'info'): void {
+    }
+  
+    private showErrorNotification(message: string): void {
+      this.showNotification(message, 'error');
+    }
+  
+    // Navigation keyboard shortcuts
+    navigateUp(): void { this.navigateNodes('up'); }
+    navigateDown(): void { this.navigateNodes('down'); }
+    navigateLeft(): void { this.navigateNodes('left'); }
+    navigateRight(): void { this.navigateNodes('right'); }
 }
