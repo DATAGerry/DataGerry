@@ -1,8 +1,8 @@
 [Unit]
 Description=DATAGERRY - Enterprise grade OpenSource CMDB
-Wants=rabbitmq-server.service mongod.service
+Wants=mongod.service
 Requires=network.target
-After=rabbitmq-server.service mongod.service network.target
+After=mongod.service network.target
 
 [Service]
 User=datagerry
