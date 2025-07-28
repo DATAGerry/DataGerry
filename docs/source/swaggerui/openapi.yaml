@@ -22,7 +22,7 @@ info:
         <br><hr><br>
         The API requires **BasicAuth** (Email and Password) and the **API-Key** of the subscription which is provided in the Service Portal.
         <br><br><br>
-        The last two sections list all the Routes available for the **Cloud version** and those available for the **OnPremise version**
+        The last two sections list all the routes available for the **Cloud version** and those available for the **OnPremise version**
         <br><br><hr>
     version: 3.0.0
     license:
@@ -36,6 +36,8 @@ servers:
 tags:
     - name: Objects
       description: API Routes related to **Objects**
+    - name: ObjectGroups
+      description: API Routes related to **ObjectGroups**
     - name: Types
       description: API Routes related to **Types**
     - name: Categories
@@ -48,6 +50,10 @@ tags:
       description: API Routes related to **Persons**
     - name: PersonGroups
       description: API Routes related to **PersonGroups**
+    - name: Relations
+      description: API Routes related to **Relations**
+    - name: ObjectRelations
+      description: API Routes related to **ObjectRelations**
     - name: ISMS-RiskClasses
       description: API Routes related to ISMS **RiskClasses**
     - name: ISMS-Likelihoods
@@ -72,6 +78,8 @@ tags:
       description: API Routes related to ISMS **RiskAssessments**
     - name: ISMS-ControlAssignments
       description: API Routes related to ISMS **ControlAssignments**
+    - name: ExtendableOptions
+      description: API Routes related to **ExtendableOptions**
 
 paths:
     /objects:
@@ -88,6 +96,10 @@ paths:
         $ref: "./paths/objects/objects-state.yaml"
     /objects/references/{public_id}:
         $ref: "./paths/objects/objects-references.yaml"
+    /object_groups:
+        $ref: "./paths/object_groups/object-groups.yaml"
+    /object_groups/{public_id}:
+        $ref: "./paths/object_groups/object-groups-by-id.yaml"
     /types:
         $ref: "./paths/types/types.yaml"
     /types/{public_id}:
@@ -116,6 +128,18 @@ paths:
         $ref: "./paths/person_groups/person-groups.yaml"
     /person_groups/{public_id}:
         $ref: "./paths/person_groups/person-groups-by-id.yaml"
+    /relations:
+        $ref: "./paths/relations/relations.yaml"
+    /relations/{public_id}:
+        $ref: "./paths/relations/relations-by-id.yaml"
+    /object_relations:
+        $ref: "./paths/object_relations/object-relations.yaml"
+    /object_relations/{public_id}:
+        $ref: "./paths/object_relations/object-relations-by-id.yaml"
+    /extendable_options:
+        $ref: "./paths/extendable_options/extendable-options.yaml"
+    /extendable_options/{public_id}:
+        $ref: "./paths/extendable_options/extendable-options-by-id.yaml"
     /isms/risk_classes:
         $ref: "./paths/isms/risk_classes/risk-classes.yaml"
     /isms/risk_classes/{public_id}:
@@ -164,15 +188,17 @@ paths:
         $ref: "./paths/isms/risk_assessments/risk-assessments-by-id.yaml"
     /isms/risk_assessments/duplicate/{duplicate_mode}/{public_ids}:
         $ref: "./paths/isms/risk_assessments/risk-assessments-duplicate.yaml"
-    # /isms/control_measure_assignments:
-    #     $ref: "./paths/isms/control_assignments/control-assignments.yaml"
-    # /isms/control_measure_assignments/{public_id}:
-    #     $ref: "./paths/isms/control_assignments/control-assignments-by-id.yaml"
+    /isms/control_measure_assignments:
+        $ref: "./paths/isms/control_assignments/control-assignments.yaml"
+    /isms/control_measure_assignments/{public_id}:
+        $ref: "./paths/isms/control_assignments/control-assignments-by-id.yaml"
 
 components:
     schemas:
         Object:
             $ref: "./components/schemas/CmdbObject.yaml"
+        ObjectGroup:
+            $ref: "./components/schemas/CmdbObjectGroup.yaml"
         Category:
             $ref: "./components/schemas/CmdbCategory.yaml"
         Type:
@@ -191,8 +217,10 @@ components:
             $ref: "./components/schemas/CmdbPerson.yaml"
         PersonGroup:
             $ref: "./components/schemas/CmdbPersonGroup.yaml"
-        CollectionParameters:
-            $ref: "./components/schemas/CollectionParameters.yaml"
+        Relation:
+            $ref: "./components/schemas/CmdbRelation.yaml"
+        ObjectRelation:
+            $ref: "./components/schemas/CmdbObjectRelation.yaml"
         ISMS-RiskClass:
             $ref: "./components/schemas/isms/IsmsRiskClass.yaml"
         ISMS-Likelihood:
@@ -217,6 +245,10 @@ components:
             $ref: "./components/schemas/isms/IsmsRiskAssessment.yaml"
         ISMS-ControlAssignment:
             $ref: "./components/schemas/isms/IsmsControlAssignment.yaml"
+        CollectionParameters:
+            $ref: "./components/schemas/CollectionParameters.yaml"
+        ExtendableOption:
+            $ref: "./components/schemas/CmdbExtendableOption.yaml"
     securitySchemes:
         $ref: "./components/security.yaml"
 
