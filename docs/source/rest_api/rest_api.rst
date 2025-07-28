@@ -2,4 +2,4 @@ redoc REST API
 ======================
 
 .. redoc::
-   :spec: rest_api/test.yaml
+   :spec: source/rest_api/test.yaml
