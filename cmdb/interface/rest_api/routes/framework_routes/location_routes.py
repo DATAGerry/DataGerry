@@ -64,7 +64,7 @@ location_blueprint = APIBlueprint('locations', __name__)
 
 @location_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 @location_blueprint.parse_request_parameters()
 # @location_blueprint.validate(CmdbLocation.SCHEMA)
@@ -141,7 +141,7 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
 
 @location_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
 @location_blueprint.parse_collection_parameters()
 def get_cmdb_locations(params: CollectionParameters, request_user: CmdbUser):
@@ -178,6 +178,7 @@ def get_cmdb_locations(params: CollectionParameters, request_user: CmdbUser):
         abort(500, "Internal server error!")
 
 
+#TODO: DOCUMENT-API-FIX
 @location_blueprint.route('/tree', methods=['GET', 'HEAD'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -240,7 +241,7 @@ def get_cmdb_locations_tree(params: CollectionParameters, request_user: CmdbUser
 
 @location_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @location_blueprint.protect(auth=True, right='base.framework.object.view')
 def get_cmdb_location(public_id: int, request_user: CmdbUser):
     """
@@ -272,6 +273,7 @@ def get_cmdb_location(public_id: int, request_user: CmdbUser):
         abort(500, "Internal server error!")
 
 
+#TODO: DOCUMENT-API-FIX
 @location_blueprint.route('/<int:object_id>/object', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -303,6 +305,7 @@ def get_cmdb_location_for_object(object_id: int, request_user: CmdbUser):
         abort(500, "Internal server error!")
 
 
+#TODO: DOCUMENT-API-FIX
 @location_blueprint.route('/<int:object_id>/parent', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -338,6 +341,7 @@ def get_cmdb_location_parent(object_id: int, request_user: CmdbUser):
         abort(500, "Internal server error!")
 
 
+#TODO: DOCUMENT-API-FIX
 @location_blueprint.route('/<int:object_id>/children', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
@@ -376,7 +380,7 @@ def get_cmdb_children(object_id: int, request_user: CmdbUser):
 
 @location_blueprint.route('/update_location', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @location_blueprint.protect(auth=True, right='base.framework.object.edit')
 @location_blueprint.parse_request_parameters()
 def update_cmdb_location_for_object(params: dict, request_user: CmdbUser):
