@@ -52,7 +52,7 @@ report_categories_blueprint = APIBlueprint('report_categories', __name__)
 @report_categories_blueprint.route('/', methods=['POST'])
 @report_categories_blueprint.parse_request_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def create_cmdb_report_category(params: dict, request_user: CmdbUser):
     """
     HTTP `POST` route to insert a CmdbReportCategory into the database

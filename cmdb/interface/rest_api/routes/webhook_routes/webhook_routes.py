@@ -19,6 +19,7 @@ Implementation of all API routes for CmdbWebhooks
 import logging
 from ast import literal_eval
 from flask import abort, request
+from werkzeug.exceptions import HTTPException
 
 from cmdb.manager.query_builder import BuilderParameters
 from cmdb.manager.manager_provider_model import ManagerProvider, ManagerType
@@ -52,7 +53,7 @@ webhook_blueprint = APIBlueprint('webhooks', __name__)
 @webhook_blueprint.route('/', methods=['POST'])
 @webhook_blueprint.parse_request_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def create_webhook(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbWebhook in the database
@@ -62,30 +63,29 @@ def create_webhook(params: dict, request_user: CmdbUser):
     Returns:
         int: public_id of the created CmdbWebhook
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
-
     try:
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
+
         params['public_id'] = webhooks_manager.get_next_public_id()
         params['event_types'] = literal_eval(params['event_types'])
         params['active'] = params['active'] in ["True", "true"]
 
         new_webhook_id = webhooks_manager.insert_webhook(params)
+
+        return DefaultResponse(new_webhook_id).make_response()
     except BaseManagerInsertError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[create_webhook] %s", err)
-        abort(400, "Could not create the Webhook!")
+        LOGGER.debug("[create_webhook] %s", err, exc_info=True)
+        abort(400, "Failed to create the Webhook in the database!")
     except Exception as err:
-        LOGGER.debug("[create_webhook] Exception: %s, Type: %s", err, type(err))
-
-    api_response = DefaultResponse(new_webhook_id)
-
-    return api_response.make_response()
+        LOGGER.debug("[create_webhook] Exception: %s, Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal error occured while creating the Webhook!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
 @webhook_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def get_webhook(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbWebhook with the given public_id
@@ -94,24 +94,25 @@ def get_webhook(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbWebhook which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbWebhook
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
-
     try:
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
+
         requested_webhook = webhooks_manager.get_webhook(public_id)
+
+        return DefaultResponse(requested_webhook).make_response()
     except BaseManagerGetError as err:
         #TODO: ERROR-FIX
-        LOGGER.debug("[get_webhook] %s", err)
+        LOGGER.debug("[get_webhook] %s", err, exc_info=True)
         abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
-
-    api_response = DefaultResponse(requested_webhook)
-
-    return api_response.make_response()
+    except Exception as err:
+        LOGGER.debug("[get_webhook] Exception: %s, Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal error occured while retrieving the Webhook with ID:{public_id}!")
 
 
 @webhook_blueprint.route('/', methods=['GET', 'HEAD'])
 @webhook_blueprint.parse_collection_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbWebhooks based on the params
@@ -121,9 +122,9 @@ def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
     Returns:
         (GetMultiResponse): All CmdbWebhooks considering the params
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
-
     try:
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
+
         builder_params = BuilderParameters(**CollectionParameters.get_builder_params(params))
 
         iteration_result: IterationResult[CmdbWebhook] = webhooks_manager.iterate(builder_params)
@@ -134,19 +135,21 @@ def get_webhooks(params: CollectionParameters, request_user: CmdbUser):
                                         params,
                                         request.url,
                                         request.method == 'HEAD')
-    except BaseManagerIterationError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[get_webhooks] %s", err)
-        abort(400, "Could not retrieve CmdbWebhooks!")
 
-    return api_response.make_response()
+        return api_response.make_response()
+    except BaseManagerIterationError as err:
+        LOGGER.debug("[get_webhooks] %s", err, exc_info=True)
+        abort(400, "Failed to iterate Webhooks!")
+    except Exception as err:
+        LOGGER.debug("[get_webhooks] Exception: %s, Type: %s", err, type(err), exc_info=True)
+        abort(500, "An internal error occured while iterating the Webhooks!")
 
 # --------------------------------------------------- CRUD - UPDATE -------------------------------------------------- #
 
 @webhook_blueprint.route('/<int:public_id>', methods=['PUT','PATCH'])
 @webhook_blueprint.parse_request_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def update_webhook(params: dict, request_user: CmdbUser):
     """
     Updates a CmdbWebhook
@@ -156,10 +159,14 @@ def update_webhook(params: dict, request_user: CmdbUser):
     Returns:
         UpdateSingleResponse: Response with UpdateResult
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
-
     try:
-        params['public_id'] = int(params['public_id'])
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
+
+        params['public_id'] = int(params.get('public_id'))
+
+        if not params['public_id']:
+            abort(400,"No public_id provided for the Webhook!")
+
         params['event_types'] = literal_eval(params['event_types'])
         params['active'] = params['active'] in ["True", "true"]
 
@@ -172,29 +179,26 @@ def update_webhook(params: dict, request_user: CmdbUser):
         else:
             raise NoDocumentFoundError(webhooks_manager.collection)
 
+        return UpdateSingleResponse(current_webhook.__dict__).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except BaseManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[update_webhook] %s", err)
+        LOGGER.debug("[update_webhook] %s", err, exc_info=True)
         abort(400, f"Could not retrieve CmdbWebhook with ID: {params['public_id']}!")
     except BaseManagerUpdateError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[update_webhook] %s", err)
+        LOGGER.debug("[update_webhook] %s", err, exc_info=True)
         abort(400, f"Could not update CmdbWebhook with ID: {params['public_id']}!")
     except NoDocumentFoundError:
-        abort(404, "Webhook not found!")
+        abort(404, f"Webhook with ID: {params['public_id']} not found!")
     except Exception as err:
-        LOGGER.debug("[update_webhook] Exception: %s, Type: %s", err, type(err))
-        abort(400, "Something went wrong during updating the Webhook!")
-
-    api_response = UpdateSingleResponse(current_webhook.__dict__)
-
-    return api_response.make_response()
+        LOGGER.debug("[update_webhook] Exception: %s, Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal error occured while updating the Webhook with ID: {params['public_id']}!")
 
 # --------------------------------------------------- CRUD - DELETE -------------------------------------------------- #
 
 @webhook_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def delete_webhook(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbWebhook with the given public_id
@@ -203,25 +207,26 @@ def delete_webhook(public_id: int, request_user: CmdbUser):
         public_id (int): public_id of CmdbWebhook which should be retrieved
         request_user (CmdbUser): User which is requesting the CmdbWebhook
     """
-    webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
-
     try:
+        webhooks_manager: WebhooksManager = ManagerProvider.get_manager(ManagerType.WEBHOOKS, request_user)
+
         webhook_instance: CmdbWebhook = webhooks_manager.get_webhook(public_id)
 
         if not webhook_instance:
-            abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
+            abort(404, f"Webhook with ID: {public_id} not found!")
 
         #TODO: REFACTOR-FIX
         ack: bool = webhooks_manager.delete({'public_id':public_id})
+
+        return DefaultResponse(ack).make_response()
+    except HTTPException as http_err:
+        raise http_err
     except BaseManagerGetError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_webhook] %s", err)
-        abort(400, f"Could not retrieve Webhook with ID: {public_id}!")
+        LOGGER.debug("[delete_webhook] %s", err, exc_info=True)
+        abort(400, f"Failed to retrieve Webhook with ID: {public_id}!")
     except BaseManagerDeleteError as err:
-        #TODO: ERROR-FIX
-        LOGGER.debug("[delete_webhook] %s", err)
-        abort(400, f"Could not delete Webhook with ID: {public_id}!")
-
-    api_response = DefaultResponse(ack)
-
-    return api_response.make_response()
+        LOGGER.debug("[delete_webhook] %s", err, exc_info=True)
+        abort(400, f"Failed to delete Webhook with ID: {public_id}!")
+    except Exception as err:
+        LOGGER.debug("[delete_webhook] Exception: %s, Type: %s", err, type(err), exc_info=True)
+        abort(500, f"An internal error occured while deleting the Webhook with ID: {public_id}!")
