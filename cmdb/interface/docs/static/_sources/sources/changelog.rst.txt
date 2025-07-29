@@ -80,9 +80,9 @@ Release of the ISMS (Information Security Management System) module
     - :ref:`Controls and measures <isms-controls-anchor>`
 
   - Added support for modeling and assessing :ref:`Risks <isms-risk-anchor>`
-  - :ref:`Risk Assessments <isms-risk-assessments-anchor>` can be assigned to specific :ref:`Objects <objects-anchor>`
-    or :ref:`ObjectGroups <object-groups-anchor>` and include lifecycle data such as implementation status and
-    treatment options
+  - :ref:`Risk Assessments <isms-risk-assessments-anchor>` can be assigned to specific :ref:`Risks <isms-risk-anchor>`,
+    :ref:`Objects <objects-anchor>` or :ref:`ObjectGroups <object-groups-anchor>` and include lifecycle data such as
+    implementation status and treatment options
   - Allows linking of controls to risks and tracking of implementation progress
   - Statement of Applicability (SOA) functionality for managing control applicability and implementation
   - Includes built-in reporting features for overviews like risk matrices, treatment plans, SOA, and detailed assessments

@@ -88,7 +88,7 @@ def create_cmdb_report_category(params: dict, request_user: CmdbUser):
 
 @report_categories_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def get_cmdb_report_category(public_id: int, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route to retrieve a single CmdbReportCategory
@@ -124,7 +124,7 @@ def get_cmdb_report_category(public_id: int, request_user: CmdbUser):
 @report_categories_blueprint.route('/', methods=['GET', 'HEAD'])
 @report_categories_blueprint.parse_collection_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def get_cmdb_report_categories(params: CollectionParameters, request_user: CmdbUser):
     """
     HTTP `GET`/`HEAD` route for getting multiple CmdbReportCategories
@@ -166,7 +166,7 @@ def get_cmdb_report_categories(params: CollectionParameters, request_user: CmdbU
 @report_categories_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @report_categories_blueprint.parse_request_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def update_cmdb_report_category(public_id: int, params: dict, request_user: CmdbUser):
     """
     HTTP `PUT`/`PATCH` route to update a single CmdbReportCategory
@@ -210,7 +210,7 @@ def update_cmdb_report_category(public_id: int, params: dict, request_user: Cmdb
 
 @report_categories_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def delete_cmdb_report_category(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbReportCategory with the given public_id

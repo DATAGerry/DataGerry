@@ -50,7 +50,7 @@ LOGGER = logging.getLogger(__name__)
 
 @links_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @links_blueprint.protect(auth=True, right='base.framework.object.add')
 def create_cmdb_object_link(request_user: CmdbUser):
     """
@@ -110,7 +110,7 @@ def create_cmdb_object_link(request_user: CmdbUser):
 
 @links_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @links_blueprint.protect(auth=True, right='base.framework.object.view')
 @links_blueprint.parse_collection_parameters()
 def get_cmdb_object_links(params: CollectionParameters, request_user: CmdbUser):
@@ -151,7 +151,7 @@ def get_cmdb_object_links(params: CollectionParameters, request_user: CmdbUser):
 
 @links_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @links_blueprint.protect(auth=True, right='base.framework.object.delete')
 def delete_cmdb_object_link(public_id: int, request_user: CmdbUser):
     """
