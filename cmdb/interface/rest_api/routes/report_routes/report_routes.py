@@ -63,7 +63,7 @@ DATETIME_PATTERN = r"datetime\.datetime\((.*?)\)"
 @reports_blueprint.route('/', methods=['POST'])
 @reports_blueprint.parse_request_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def create_cmdb_report(params: dict, request_user: CmdbUser):
     """
     Creates a CmdbReport in the database
@@ -103,7 +103,7 @@ def create_cmdb_report(params: dict, request_user: CmdbUser):
 
 @reports_blueprint.route('/<int:public_id>', methods=['GET'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def get_cmdb_report(public_id: int, request_user: CmdbUser):
     """
     Retrieves the CmdbReport with the given public_id
@@ -134,7 +134,7 @@ def get_cmdb_report(public_id: int, request_user: CmdbUser):
 @reports_blueprint.route('/', methods=['GET', 'HEAD'])
 @reports_blueprint.parse_collection_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def get_cmdb_reports(params: CollectionParameters, request_user: CmdbUser):
     """
     Returns all CmdbReports based on the params
@@ -169,6 +169,7 @@ def get_cmdb_reports(params: CollectionParameters, request_user: CmdbUser):
         abort(500, "An internal server error occured while retrieving Reports!")
 
 
+#TODO: DOCUMENT-API-FIX
 @reports_blueprint.route('/<int:public_id>/count_reports_of_type', methods=['GET'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.ADMIN)
@@ -201,7 +202,7 @@ def count_cmdb_reports_of_type(public_id: int, request_user: CmdbUser):
 
 @reports_blueprint.route('/run/<int:public_id>', methods=['GET'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def run_cmdb_report_query(public_id: int, request_user: CmdbUser):
     """
     Returns the result of the query of the CmdbReport
@@ -255,7 +256,7 @@ def run_cmdb_report_query(public_id: int, request_user: CmdbUser):
 @reports_blueprint.route('/<int:public_id>', methods=['PUT','PATCH'])
 @reports_blueprint.parse_request_parameters()
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def update_cmdb_report(public_id: int, params: dict, request_user: CmdbUser):
     """
     Updates a CmdbReport
@@ -312,7 +313,7 @@ def update_cmdb_report(public_id: int, params: dict, request_user: CmdbUser):
 
 @reports_blueprint.route('/<int:public_id>/', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 def delete_cmdb_report(public_id: int, request_user: CmdbUser):
     """
     Deletes the CmdbReport with the given public_id

@@ -206,18 +206,20 @@ class CmdbReport(CmdbDAO):
         Returns:
             CmdbReport: An instance of CmdbReport initialized with the provided data
         """
-        return cls(
-            public_id = data.get('public_id'),
-            report_category_id = data.get('report_category_id'),
-            name = data.get('name'),
-            type_id = data.get('type_id'),
-            selected_fields = data.get('selected_fields'),
-            conditions = data.get('conditions'),
-            report_query = data.get('report_query'),
-            mds_mode = data.get('mds_mode'),
-            predefined = data.get('predefined'),
-        )
-
+        try:
+            return cls(
+                public_id = data.get('public_id'),
+                report_category_id = data.get('report_category_id'),
+                name = data.get('name'),
+                type_id = data.get('type_id'),
+                selected_fields = data.get('selected_fields'),
+                conditions = data.get('conditions'),
+                report_query = data.get('report_query'),
+                mds_mode = data.get('mds_mode'),
+                predefined = data.get('predefined'),
+            )
+        except Exception as err:
+            raise CmdbReportInitFromDataError(err) from err
 
     @classmethod
     def to_json(cls, instance: "CmdbReport") -> dict:
@@ -230,14 +232,17 @@ class CmdbReport(CmdbDAO):
         Returns:
             dict: A dictionary representation of the CmdbReport instance
         """
-        return {
-            'public_id': instance.get_public_id(),
-            'report_category_id': instance.report_category_id,
-            'name': instance.name,
-            'type_id': instance.type_id,
-            'selected_fields': instance.selected_fields,
-            'conditions': instance.conditions,
-            'report_query': instance.report_query,
-            'predefined': instance.predefined,
-            'mds_mode': instance.mds_mode,
-        }
+        try:
+            return {
+                'public_id': instance.get_public_id(),
+                'report_category_id': instance.report_category_id,
+                'name': instance.name,
+                'type_id': instance.type_id,
+                'selected_fields': instance.selected_fields,
+                'conditions': instance.conditions,
+                'report_query': instance.report_query,
+                'predefined': instance.predefined,
+                'mds_mode': instance.mds_mode,
+            }
+        except Exception as err:
+            raise CmdbReportToJsonError(err) from err

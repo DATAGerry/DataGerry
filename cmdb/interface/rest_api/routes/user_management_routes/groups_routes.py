@@ -69,7 +69,7 @@ groups_blueprint = APIBlueprint('groups', __name__)
 
 @groups_blueprint.route('/', methods=['POST'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.add')
 @groups_blueprint.validate(CmdbUserGroup.SCHEMA)
 def insert_cmdb_user_group(data: dict, request_user: CmdbUser):
@@ -111,7 +111,7 @@ def insert_cmdb_user_group(data: dict, request_user: CmdbUser):
 
 @groups_blueprint.route('/', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
 @groups_blueprint.parse_collection_parameters()
 def get_cmdb_user_groups(params: CollectionParameters, request_user: CmdbUser):
@@ -149,7 +149,7 @@ def get_cmdb_user_groups(params: CollectionParameters, request_user: CmdbUser):
 
 @groups_blueprint.route('/<int:public_id>', methods=['GET', 'HEAD'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.view')
 def get_cmdb_user_group(public_id: int, request_user: CmdbUser):
     """
@@ -186,7 +186,7 @@ def get_cmdb_user_group(public_id: int, request_user: CmdbUser):
 
 @groups_blueprint.route('/<int:public_id>', methods=['PUT', 'PATCH'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.edit')
 @groups_blueprint.validate(CmdbUserGroup.SCHEMA)
 def update_cmdb_user_group(public_id: int, data: dict, request_user: CmdbUser):
@@ -233,7 +233,7 @@ def update_cmdb_user_group(public_id: int, data: dict, request_user: CmdbUser):
 
 @groups_blueprint.route('/<int:public_id>', methods=['DELETE'])
 @insert_request_user
-@verify_api_access(required_api_level=ApiLevel.LOCKED)
+@verify_api_access(required_api_level=ApiLevel.ADMIN)
 @groups_blueprint.protect(auth=True, right='base.user-management.group.delete')
 @groups_blueprint.parse_parameters(GroupDeletionParameters)
 def delete_cmdb_user_group(public_id: int, params: GroupDeletionParameters, request_user: CmdbUser):
