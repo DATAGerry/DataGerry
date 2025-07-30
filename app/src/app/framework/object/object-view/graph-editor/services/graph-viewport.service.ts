@@ -31,16 +31,32 @@ export class GraphViewportService {
     getZoom(): number { return this.zoom; }
     getTargetZoom(): number { return this.targetZoom; }
 
+    /**
+     * Sets the viewport position based on the provided x and y coordinates.
+     * @param x The x-coordinate for the viewport.
+     * @param y The y-coordinate for the viewport.
+     */
     setViewport(x: number, y: number): void {
         this.viewportX = x;
         this.viewportY = y;
     }
 
+
+    /**
+     * Sets the zoom level of the viewport.
+     * @param zoom The new zoom level to set.
+     */
     setZoom(zoom: number): void {
         this.zoom = zoom;
         this.targetZoom = zoom;
     }
 
+
+    /**
+     * Centers the viewport on the graph container and adjusts the zoom level based on the nodes.
+     * @param graphContainer The container element for the graph, used to get its dimensions.
+     * @param nodes The list of GraphNode objects to center the viewport on.
+     */
     centerViewport(graphContainer: ElementRef | undefined, nodes: GraphNode[]): void {
         if (!graphContainer) return;
         const container = graphContainer?.nativeElement;
@@ -55,6 +71,13 @@ export class GraphViewportService {
         }
     }
 
+
+    /**
+     * Calculates the bounds of the nodes in the graph, optionally considering only selected nodes.
+     * @param nodes The list of GraphNode objects to calculate bounds for.
+     * @param selectedNodes A Set of node IDs that are currently selected, if any.
+     * @returns An object containing minX, maxX, minY, and maxY representing the bounds of the nodes.
+     */
     getNodeBounds(nodes: GraphNode[], selectedNodes: Set<number>): { minX: number; maxX: number; minY: number; maxY: number } {
         if (nodes?.length === 0) {
             return { minX: 0, maxX: 800, minY: 0, maxY: 600 };
@@ -85,16 +108,30 @@ export class GraphViewportService {
         return { minX, maxX, minY, maxY };
     }
 
+
+    /**
+     * Zooms in the viewport by increasing the zoom level.
+     */
     zoomIn(): void {
         this.targetZoom = Math.min(this.zoom * 1.2, 3);
         this.animateZoom();
     }
 
+
+    /**
+     * Zooms out the viewport by reducing the zoom level.
+     */
     zoomOut(): void {
         this.targetZoom = Math.max(this.zoom / 1.2, 0.3);
         this.animateZoom();
     }
 
+
+    /**
+     *  Resets the zoom level to a default value and centers the viewport on the graph.
+     * @param graphContainer  The container element for the graph, used to get its dimensions.
+     * @param nodes     The list of graph nodes to center the viewport on.
+     */
     resetZoom(graphContainer?: ElementRef, nodes?: GraphNode[]): void {
         this.targetZoom = 0.75;
         this.animateZoom();
@@ -103,11 +140,20 @@ export class GraphViewportService {
         }
     }
 
+
+    /**
+     *  Sets the zoom level based on a delta value.
+     * @param delta The zoom delta factor, where values greater than 1 zoom in and values less than 1 zoom out.
+     */
     setZoomWithDelta(delta: number): void {
         this.targetZoom = Math.max(0.3, Math.min(3, this.zoom * delta));
         this.animateZoom();
     }
 
+
+    /**
+     * Animates the zoom transition to the target zoom level.
+     */
     private animateZoom(): void {
         const duration = 200;
         const startZoom = this.zoom;
@@ -126,6 +172,13 @@ export class GraphViewportService {
         requestAnimationFrame(animate);
     }
 
+
+    /**
+     * Centers the viewport on a specific node.
+     * @param node The GraphNode to center the viewport on.
+     * @param graphContainer The container element for the graph, used to get its dimensions.
+     * @returns  void
+     */
     centerOnNode(node: GraphNode, graphContainer: ElementRef): void {
         if (!graphContainer) return;
         const container = graphContainer?.nativeElement;
@@ -136,6 +189,14 @@ export class GraphViewportService {
         this.viewportY = rect?.height / 2 - nodeY * this.zoom;
     }
 
+
+    /**
+     * Determines whether a node should be shown based on its position and the current viewport.
+     * @param node  The GraphNode to check visibility for.
+     * @param nodeCount  The total number of nodes in the graph.
+     * @param graphContainer  The container element for the graph, used to get its dimensions.
+     * @returns  A boolean indicating whether the node should be shown.
+     */
     shouldShowNode(node: GraphNode, nodeCount: number, graphContainer?: ElementRef): boolean {
         if (nodeCount <= 500) return true;
 
@@ -155,7 +216,12 @@ export class GraphViewportService {
             nodeScreenY < rect?.height + padding;
     }
 
-    // Minimap helpers
+
+    /**
+     *  Calculates the viewBox for the minimap based on the bounds of the nodes.
+     * @param nodes The list of graph nodes to calculate the bounds from.
+     * @returns A string representing the viewBox in the format "minX minY width height".
+     */
     getMinimapViewBox(nodes: GraphNode[]): string {
         if (nodes.length === 0) {
             return "0 0 800 600";
@@ -169,6 +235,12 @@ export class GraphViewportService {
         return `${minX - padding} ${minY - padding} ${maxX - minX + 2 * padding} ${maxY - minY + 2 * padding}`;
     }
 
+
+    /**
+     *  Calculates the viewport rectangle for the minimap based on the current viewport position and zoom level.
+     * @param graphContainer  The container element for the graph, used to get its dimensions.
+     * @returns  An object representing the viewport rectangle with x, y, width, and height properties.
+     */
     getMinimapViewportRect(graphContainer?: ElementRef): any {
         if (!graphContainer) return null;
         const container = graphContainer?.nativeElement;
@@ -181,6 +253,13 @@ export class GraphViewportService {
         };
     }
 
+
+    /**
+     * Handles click events on the minimap to center the viewport on the clicked position.
+     * @param event The click event from the minimap.
+     * @param nodes The list of graph nodes.
+     * @param graphContainer The container element for the graph.
+     */
     onMinimapClick(event: MouseEvent, nodes: GraphNode[], graphContainer: ElementRef): void {
         const minimap = event?.currentTarget as SVGElement;
         const rect = minimap?.getBoundingClientRect();
