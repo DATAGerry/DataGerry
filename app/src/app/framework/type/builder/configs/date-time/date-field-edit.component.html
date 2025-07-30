@@ -99,6 +99,7 @@
             [formControl]="valueControl"
             type="date"
             class="form-control"
+            max="9999-12-31"
             [placeholder]="datePlaceholder"
             (ngModelChange)="onInputChange($event, 'value')"
             (dblclick)="onDblClick($event)"
