@@ -30,7 +30,7 @@ export class NgbStringAdapter extends NgbDateAdapter<Date> {
 
   fromModel(date: any): NgbDateStruct {
     if (typeof date === 'string') {
-      const newDate =  new Date(date);
+      const newDate = new Date(date);
       return newDate ? {
         day: newDate.getDate(),
         month: newDate.getMonth() + 1,
@@ -55,7 +55,7 @@ export class NgbStringAdapter extends NgbDateAdapter<Date> {
     if (date != null) {
       const d = new Date(date.year, date.month - 1, date.day);
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-      return {$date: d.getTime()};
+      return { $date: d.getTime() };
     }
     return null;
   }
@@ -67,6 +67,9 @@ export class NgbStringAdapter extends NgbDateAdapter<Date> {
  */
 @Injectable()
 export class CustomDateParserFormatter extends NgbDateParserFormatter {
+
+  private readonly defaultTimezone = 'UTC';
+  private readonly defaultDateFormat = 'YYYY-MM-DD';
 
   constructor(private dateSettingsService: DateSettingsService) {
     super();
@@ -84,8 +87,25 @@ export class CustomDateParserFormatter extends NgbDateParserFormatter {
    * @param date
    */
   format(date: NgbDateStruct | null): string {
-    const { timezone, date_format } = this.dateSettingsService.currentDateSettings;
-    return date ? moment.tz(moment(new Date(Date.UTC(date.year, date.month - 1, date.day))), timezone)
-      .format(date_format) : null;
+    if (!date) {
+      return '';
+    }
+
+    // Safe destructuring with fallback values
+    const currentSettings = this.dateSettingsService.currentDateSettings;
+    const timezone = currentSettings?.timezone ?? this.defaultTimezone;
+    const dateFormat = currentSettings?.date_format ?? this.defaultDateFormat;
+
+    try {
+      // Create UTC date from NgbDateStruct
+      const utcDate = new Date(Date.UTC(date.year, date.month - 1, date.day));
+
+      // Format with timezone and date format
+      return moment.tz(moment(utcDate), timezone).format(dateFormat);
+    } catch (error) {
+      // Fallback to basic formatting
+      return `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
+    }
   }
 }
+ 

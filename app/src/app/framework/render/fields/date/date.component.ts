@@ -16,7 +16,7 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { RenderFieldComponent } from '../components.fields';
 import { formatDate } from '@angular/common';
 import { NgbDateAdapter, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
@@ -24,8 +24,7 @@ import { NgbStringAdapter, CustomDateParserFormatter } from '../../../../setting
 import { takeUntil } from 'rxjs/operators';
 import { DateSettingsService } from '../../../../settings/services/date-settings.service';
 import { ReplaySubject } from 'rxjs';
-import { FormGroup, FormControl } from '@angular/forms'; // Import FormGroup and FormControl
-
+import { CmdbMode } from 'src/app/framework/modes.enum';
 
 @Component({
   selector: 'cmdb-date',
@@ -33,36 +32,100 @@ import { FormGroup, FormControl } from '@angular/forms'; // Import FormGroup and
   styleUrls: ['./date.component.scss'],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbStringAdapter },
-    // { provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }
+    { provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }
   ]
 })
 export class DateComponent extends RenderFieldComponent implements OnInit {
 
-  /**
-   * Un-subscriber for `DateSettingsComponent`.
-   * @private
-   */
   private subscriber: ReplaySubject<void> = new ReplaySubject<void>();
   public datePlaceholder = 'YYYY-MM-DD';
 
-  public constructor(private dateSettingsService: DateSettingsService) {
+  public constructor(private dateSettingsService: DateSettingsService, private cdr: ChangeDetectorRef) {
     super();
   }
 
   ngOnInit(): void {
-    if (this.parentFormGroup.get(this.data.name).value === '') {
-      this.parentFormGroup.get(this.data.name).setValue(null, { onlySelf: true });
+    
+    const control = this.parentFormGroup.get(this.data.name);
+    const initialValue = control?.value;
+    
+  
+    // Handle empty string values
+    if (initialValue === '') {
+      control.setValue(null, { onlySelf: true });
     }
+    
+    // FIX: Convert backend date format to HTML date input format
+    if (initialValue && this.mode === CmdbMode.Edit && control) {
+      this.convertAndSetDateValue(control, initialValue);
+    }
+  
+    // Subscribe to date settings
     this.dateSettingsService.getDateSettings().pipe(takeUntil(this.subscriber)).subscribe((dateSettings: any) => {
-      this.datePlaceholder = dateSettings.date_format;
+      this.datePlaceholder = dateSettings?.date_format || 'YYYY-MM-DD';
     });
+  
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Convert various date formats to YYYY-MM-DD format for HTML date input
+   */
+  private convertAndSetDateValue(control: any, value: any): void {
+    
+    try {
+      let date: Date;
+      
+      // Handle MongoDB date format
+      if (value && value.$date) {
+        date = new Date(value.$date);
+      }
+      // Handle ISO string
+      else if (typeof value === 'string') {
+        date = new Date(value);
+      }
+      // Handle Date object
+      else if (value instanceof Date) {
+        date = value;
+      }
+      else {
+        return;
+      }
+
+      // Validate date
+      if (isNaN(date.getTime())) {
+        return;
+      }
+
+      // Convert to YYYY-MM-DD format
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+
+      
+      // Update form control
+      control.setValue(formattedDate, { emitEvent: false });
+      
+      // Force change detection
+      this.cdr.detectChanges();
+      
+      
+    } catch (error) {
+    }
   }
 
   public get currentDate() {
     const currentDate = this.parentFormGroup.get(this.data.name).value;
+    
     if (currentDate && currentDate.$date) {
       return new Date(currentDate.$date);
     }
+    
+    if (typeof currentDate === 'string') {
+      return new Date(currentDate);
+    }
+    
     return currentDate;
   }
 
@@ -74,35 +137,33 @@ export class DateComponent extends RenderFieldComponent implements OnInit {
   }
 
   public copyToClipboard() {
+    const currentDate = this.currentDate;
+    
+    if (!currentDate) {
+      return;
+    }
+    
     const selBox = document.createElement('textarea');
-    selBox.value = formatDate(this.currentDate, 'dd/MM/yyyy', 'en-US');
+    selBox.value = formatDate(currentDate, 'dd/MM/yyyy', 'en-US');
     this.generateDataForClipboard(selBox);
   }
 
-  /**
-   * Toggles the input type between 'date' and 'text' on double click.
-   */
-
   onDblClick(event: MouseEvent) {
     const inputElement = event.target as HTMLInputElement;
+    
     if (inputElement.type === 'date') {
       inputElement.type = 'text';
-
       setTimeout(() => {
         inputElement.select();
       });
     }
   }
 
-  /**
-   * Changes the input type back to 'date' when the input element loses focus,
-   * if the current type is 'text'.
-   */
   onFocusOut(event: FocusEvent) {
     const inputElement = event.target as HTMLInputElement;
+    
     if (inputElement.type === 'text') {
       inputElement.type = 'date';
     }
   }
-
 }
