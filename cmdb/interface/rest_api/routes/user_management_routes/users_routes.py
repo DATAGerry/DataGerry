@@ -241,12 +241,20 @@ def update_cmdb_user(public_id: int, data: dict, request_user: CmdbUser):
         users_manager: UsersManager = ManagerProvider.get_manager(ManagerType.USERS, request_user)
 
         to_update_user = users_manager.get_user(public_id)
+        rt = data.get('registration_time')
+        if isinstance(rt, dict) and '$date' in rt:
+            date_val = rt['$date']
+            if isinstance(date_val, str):
+                data['registration_time'] = datetime.fromisoformat(date_val.replace('Z', '+00:00'))
+            elif isinstance(date_val, int):  # assuming milliseconds since epoch
+                data['registration_time'] = datetime.fromtimestamp(date_val / 1000, tz=timezone.utc)
+        elif isinstance(rt, str):
+            data['registration_time'] = datetime.fromisoformat(rt.replace('Z', '+00:00'))
 
         if not to_update_user:
             abort(404, f"The User with ID:{public_id} was not found!")
 
         user = CmdbUser.from_data(data=data)
-
         users_manager.update_user(public_id, user)
 
         return UpdateSingleResponse(CmdbUser.to_json(user)).make_response()
