@@ -19,7 +19,7 @@ Represents a Cmdbuser in DataGerry
 import logging
 
 from datetime import datetime, timezone
-from dateutil import parser
+from dateutil.parser import parse
 
 from cmdb.class_schema.cmdb_user_schema import get_cmdb_user_schema
 from cmdb.models.cmdb_dao import CmdbDAO
@@ -155,26 +155,26 @@ class CmdbUser(CmdbDAO):
             CmdbUser: CmdbUser with the given data
         """
         try:
-            reg_date = data.get('registration_time', None)
+            reg_date = data.get('registration_time')
 
             if reg_date and isinstance(reg_date, str):
-                reg_date = parser.parse(reg_date)
+                reg_date = parse(reg_date, fuzzy=True)
 
             return cls(
                 public_id = data.get('public_id'),
                 user_name = data.get('user_name'),
                 active = data.get('active'),
-                database = data.get('database', None),
+                database = data.get('database'),
                 api_level = data.get('api_level', 0),
                 config_items_limit = data.get('config_items_limit', 1000),
-                group_id = data.get('group_id', None),
+                group_id = data.get('group_id'),
                 registration_time = reg_date,
-                authenticator = data.get('authenticator', None),
-                email = data.get('email', None),
-                password = data.get('password', None),
-                image = data.get('image', None),
-                first_name = data.get('first_name', None),
-                last_name = data.get('last_name', None)
+                authenticator = data.get('authenticator'),
+                email = data.get('email'),
+                password = data.get('password'),
+                image = data.get('image'),
+                first_name = data.get('first_name'),
+                last_name = data.get('last_name')
             )
         except Exception as err:
             raise CmdbUserInitFromDataError(err) from err
