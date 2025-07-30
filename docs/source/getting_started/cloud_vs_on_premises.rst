@@ -1,5 +1,5 @@
 *******************
-Cloud vs On Premise
+Cloud vs. On-Premises
 *******************
 
 - **Cloud (SaaS) Version**
@@ -11,11 +11,13 @@ Cloud vs On Premise
         - Automatic updates: Always use the latest features and security patches.
         - Regular backups: Your data is automatically backed up to ensure reliability and recovery.
         - Multi-tenancy support: Manage multiple projects or clients under one subscription.
-        - Scalability: Easily scale your usage as your business grows without managing servers.
+        - Scalability: Easily scale your usage as your business grows without managing servers
+        - High availability: Built on a resilient cloud infrastructure to minimize downtime and ensure reliable access.
+        - Uptime SLA: Guaranteed system availability through a defined uptime SLA (typically 99.9% or higher).
 
 |
 
-- **On Premise Version**
+- **On-Premises Version**
     The open-source version is available as a repository that you can install and host on your own infrastructure,
     giving you full control over your environment.
 
@@ -23,4 +25,5 @@ Cloud vs On Premise
         - Complete data ownership: Keep all data and configurations on-premises.
         - Full customization: Modify the code or environment to suit your specific requirements.
         - Flexibility: Choose your own deployment architecture, security policies, and backup strategies.
-        - Offline support: Operate in air-gapped or isolated environments with no external dependencies.
+        - Offline support: Operate in air-gapped or isolated environments with no external dependencies. Ideal for restricted networks, e.g. government or industrial environments.
+        - Requires self-managed updates and backups
