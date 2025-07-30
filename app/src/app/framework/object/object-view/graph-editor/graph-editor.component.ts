@@ -1764,4 +1764,40 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     navigateDown(): void { this.navigateNodes('down'); }
     navigateLeft(): void { this.navigateNodes('left'); }
     navigateRight(): void { this.navigateNodes('right'); }
+
+/**
+ * Calculates arrow position at the end of connection
+ */
+getArrowPosition(conn: Connection): { x: number; y: number } {
+  const fromNode = this.getNodeByUid(conn.fromUid!);
+  const toNode = this.getNodeByUid(conn.toUid!);
+  
+  if (!fromNode || !toNode) {
+    return { x: 0, y: 0 };
+  }
+
+  const nodeWidth = this.LAYOUT_CONFIG.nodeWidth;
+  const nodeHeight = this.LAYOUT_CONFIG.nodeHeight;
+  
+  const fromCenterX = fromNode.x + nodeWidth / 2;
+  const fromCenterY = fromNode.y + nodeHeight / 2;
+  const toCenterX = toNode.x + nodeWidth / 2;
+  const toCenterY = toNode.y + nodeHeight / 2;
+  
+  const dx = toCenterX - fromCenterX;
+  const dy = toCenterY - fromCenterY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  if (distance === 0) return { x: toCenterX, y: toCenterY };
+  
+  const normalX = dx / distance;
+  const normalY = dy / distance;
+  // Position at the edge of target node where arrow should be
+  const offsetDistance = 60; // Approximate distance from node center to arrow
+  
+  return {
+    x: toCenterX - normalX * offsetDistance,
+    y: toCenterY - normalY * offsetDistance
+  };
+}
 }
