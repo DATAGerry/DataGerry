@@ -41,7 +41,6 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 import { CmdbObject } from '../../models/cmdb-object';
 import { ExtendedRelation, RelationGroup, ExtendedObjectRelationInstance, ObjectRelationInstance } from '../../models/object.model';
 import { LoaderService } from 'src/app/core/services/loader.service';
-import { environment } from 'src/environments/environment';
 
 
 
@@ -105,8 +104,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public isLoading$ = this.loaderService.isLoading$;
 
-  public isFeaurePreviewModeEnabled = false;
-
   /* --------------------------------------------------- LIFECYCLE METHODS -------------------------------------------------- */
 
   constructor(
@@ -127,7 +124,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.isFeaurePreviewModeEnabled = environment.featurePreviewMode
     this.objectViewSubject.pipe(takeUntil(this.unsubscribe)).subscribe({
       next: (result) => {
         this.renderResult = result;
@@ -193,7 +189,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
  */
   public createNewRelationForGroup(group: RelationGroup): void {
     // Try to get the definition from the first instance in the group.
-    let definition = group?.instances.length > 0 ? group?.instances[0]?.definition : null;
+    // let definition = group?.instances.length > 0 ? group?.instances[0]?.definition : null;
+   // TODO: undo it because of inactive relations
+    let definition = group.instances[0]?.definition ?? (group as any).definition;
+
     // If not found, look for the definition in extendedRelations.
     if (!definition) {
       definition = this.extendedRelations.find(rel => rel?.public_id === group?.relationId);
@@ -529,7 +528,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     tabColor: definition?.relation_color_parent,
                     tabIcon: definition?.relation_icon_parent,
                     instances: parentInstances,
-                    total: parentInstances?.length
+                    total: parentInstances?.length,
+                    // TODO: remove definition from here because it's hiding the inactive relations
+                    definition 
                   });
                 }
 
@@ -541,7 +542,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     tabColor: definition?.relation_color_child,
                     tabIcon: definition?.relation_icon_child,
                     instances: childInstances,
-                    total: childInstances.length
+                    total: childInstances.length,
+                    // TODO: remove definition from here because it's hiding the inactive relations
+                    definition
                   });
                 }
               }
@@ -739,6 +742,20 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             }
           });
+
+          // TODO: remove: Filter relation groups to only include instances with valid counterparts (those who are inactive don't show them)
+          this.relationGroups = this.relationGroups
+            .map(group => {
+              const filtered = group.instances.filter(inst =>
+                !!this.relatedObjectsMap[inst.counterpart_id]
+              );
+              return {
+                ...group,
+                instances: filtered,
+                total: filtered.length
+              };
+            })
+
 
           // Manually trigger CD if needed
           this.changesRef.markForCheck();
