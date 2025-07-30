@@ -1107,6 +1107,7 @@ $gray-900: #212121;
 // }
 
 .connection-path {
+  transition: all 0.1s ease;
   fill: none;
   stroke-width: 2;
   pointer-events: stroke;
@@ -1114,11 +1115,24 @@ $gray-900: #212121;
   transition: all 0.2s ease;
   stroke-linecap: round;
   stroke-linejoin: round;
+
+  &.hovered {
+    stroke-width: 4px !important;
+    opacity: 1 !important;
+    
+    &.valid {
+      stroke: #2196F3 !important;
+    }
+    
+    &.invalid {
+      stroke: #ef4444 !important;
+    }
+  }
   
   // Add invisible wider stroke for easier clicking
   &::before {
     content: '';
-    stroke-width: 12px; // Much wider invisible area
+    stroke-width: 20px; // Much wider invisible area
     stroke: transparent;
     pointer-events: stroke;
   }
@@ -1130,7 +1144,7 @@ $gray-900: #212121;
     
     &:hover {
       stroke: #2196F3; // Blue on hover
-      stroke-width: 3px;
+      stroke-width: 5px;
       opacity: 1;
     }
 
@@ -1164,10 +1178,12 @@ $gray-900: #212121;
 }
 
 .connections-group {
+  cursor: pointer;
+  stroke-width: 32px;
   .connection-click-area {
     fill: none;
     stroke: transparent;
-    stroke-width: 15px; // Wide invisible stroke for easier clicking
+    stroke-width: 30px; // Wide invisible stroke for easier clicking
     pointer-events: stroke;
     cursor: pointer;
   }
@@ -2409,3 +2425,6 @@ defs {
     }
   }
 }
+
+.connection-hit   { stroke: #F44336 !important; fill: none; }
+.arrow-hitbox     { cursor: pointer !important; }

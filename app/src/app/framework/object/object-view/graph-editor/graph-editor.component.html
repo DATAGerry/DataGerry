@@ -32,7 +32,7 @@
   </div>
 
   <!--  Filter Bar (Collapsible) -->
-  <div class="filter-bar-container" [class.visible]="showFilterBar" (click)="$event.stopPropagation()">
+  <div class="filter-bar-container" [class.visible]="showFilterBar">
     <div class="enhanced-filter-bar">
 
       <div class="filter-mode-toggle">
@@ -230,10 +230,31 @@
             (click)="selectConnection(conn)" (mouseenter)="hoveredConnection = conn"
             (mouseleave)="hoveredConnection = null" />
         </g> -->
-
-
         <!-- Connection Paths -->
         <g class="connections-group">
+          <!-- Invisible wider paths for easier hovering -->
+          <path *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey" [attr.d]="calculatePath(conn)"
+            stroke="transparent" stroke-width="20" fill="none" pointer-events="stroke"
+            (click)="onConnectionClick(conn, $event)" (mouseenter)="hoveredConnection = conn"
+            (mouseleave)="hoveredConnection = null" />
+
+          <!-- Visible connection paths with original arrows -->
+          <path *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey" [attr.d]="calculatePath(conn)"
+            class="connection-path" [class.valid]="conn.isValid" [class.invalid]="!conn.isValid"
+            [class.highlighted]="isConnectionHighlighted(conn)" [class.hovered]="hoveredConnection === conn"
+            [attr.stroke]="conn.isValid ? 'url(#valid-gradient)' : 'url(#invalid-gradient)'"
+            [attr.stroke-width]="getConnectionStrokeWidth(conn)"
+            [attr.marker-end]="conn.isValid ? (conn.dataFlow && showDataFlow ? 'url(#arrow-data-flow)' : 'url(#arrow-valid)') : 'url(#arrow-invalid)'"
+            fill="none" (click)="onConnectionClick(conn, $event)" pointer-events="none" />
+
+          <!-- Invisible clickable circles at arrow positions -->
+          <circle *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey"
+            [attr.cx]="getArrowPosition(conn).x" [attr.cy]="getArrowPosition(conn).y" r="15" fill="transparent"
+            stroke="transparent" (click)="onConnectionClick(conn, $event)" style="cursor: pointer;" />
+        </g>
+
+        <!-- Connection Paths -->
+        <!-- <g class="connections-group">
           <path *ngFor="let conn of getVisibleConnections(); trackBy: trackByConnKey" [attr.d]="calculatePath(conn)"
             class="connection-path clickable-connection" [class.valid]="conn.isValid" [class.invalid]="!conn.isValid"
             [class.data-flow]="conn.dataFlow && showDataFlow"
@@ -244,7 +265,7 @@
             [attr.marker-end]="conn.isValid ? (conn.dataFlow && showDataFlow ? 'url(#arrow-data-flow)' : 'url(#arrow-valid)') : 'url(#arrow-invalid)'"
             (click)="onConnectionClick(conn, $event)" (mouseenter)="hoveredConnection = conn"
             (mouseleave)="hoveredConnection = null" style="cursor: pointer;" />
-        </g>
+        </g> -->
 
 
         <!-- Connection Labels -->
