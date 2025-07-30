@@ -1,5 +1,5 @@
 ***********************
-On Premise Installation
+On-Premises Installation
 ***********************
 
 This page provides a detailed overview of how to install DataGerry on various operating systems and platforms.
