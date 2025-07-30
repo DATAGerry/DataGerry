@@ -76,9 +76,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                     this.toastService.error("The connection to the backend has been refused!");
                 }
                 else if (statusCode === this.INTERNAL_SERVER_ERROR) {
-                    if(!environment.cloudMode){
-                        this.router.navigate(['/connect']);
-                    }
+                    // if(!environment.cloudMode){
+                    //     this.router.navigate(['/connect']);
+                    // }
                     this.toastService.error("An internal server error occured!"); 
                 }
                 else if (statusCode === this.UNAUTHORIZED) {
