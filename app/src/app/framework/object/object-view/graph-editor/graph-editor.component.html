@@ -32,7 +32,7 @@
   </div>
 
   <!--  Filter Bar (Collapsible) -->
-  <div class="filter-bar-container" [class.visible]="showFilterBar">
+  <div class="filter-bar-container" [class.visible]="showFilterBar" (click)="$event.stopPropagation()">
     <div class="enhanced-filter-bar">
 
       <div class="filter-mode-toggle">

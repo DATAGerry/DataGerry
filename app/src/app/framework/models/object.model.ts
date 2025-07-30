@@ -33,5 +33,6 @@ export interface RelationGroup {
   total: number;    // total number of items for this group
   page?: number;     // current page for this group
   pageSize?: number; // items per page for this group
+  definition: CmdbRelation;
 }
 
