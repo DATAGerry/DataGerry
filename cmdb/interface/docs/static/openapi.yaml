@@ -38,6 +38,8 @@ tags:
       description: API Routes related to **Objects**
     - name: ObjectGroups
       description: API Routes related to **ObjectGroups**
+    - name: ObjectLinks
+      description: API Routes related to **ObjectLinks**
     - name: Types
       description: API Routes related to **Types**
     - name: Categories
@@ -46,6 +48,8 @@ tags:
       description: API Routes related to **Section Templates**
     - name: Users
       description: API Routes related to **Users**
+    - name: UserGroups
+      description: API Routes related to **UserGroups**
     - name: Persons
       description: API Routes related to **Persons**
     - name: PersonGroups
@@ -54,6 +58,14 @@ tags:
       description: API Routes related to **Relations**
     - name: ObjectRelations
       description: API Routes related to **ObjectRelations**
+    - name: Webhooks
+      description: API Routes related to **Webhooks**
+    - name: Reports
+      description: API Routes related to **Reports**
+    - name: ReportCategories
+      description: API Routes related to **ReportCategories**
+    - name: Locations
+      description: API Routes related to **Locations**
     - name: ISMS-RiskClasses
       description: API Routes related to ISMS **RiskClasses**
     - name: ISMS-Likelihoods
@@ -100,6 +112,10 @@ paths:
         $ref: "./paths/object_groups/object-groups.yaml"
     /object_groups/{public_id}:
         $ref: "./paths/object_groups/object-groups-by-id.yaml"
+    /objects/links:
+        $ref: "./paths/object_links/object-links.yaml"
+    /objects/links/{public_id}:
+        $ref: "./paths/object_links/object-links-by-id.yaml"
     /types:
         $ref: "./paths/types/types.yaml"
     /types/{public_id}:
@@ -120,6 +136,10 @@ paths:
         $ref: "./paths/users/users-by-id.yaml"
     /users/{public_id}/password:
         $ref: "./paths/users/users-password.yaml"
+    /groups:
+        $ref: "./paths/user_groups/user-groups.yaml"
+    /groups/{public_id}:
+        $ref: "./paths/user_groups/user-groups-by-id.yaml"
     /persons:
         $ref: "./paths/persons/persons.yaml"
     /persons/{public_id}:
@@ -136,6 +156,26 @@ paths:
         $ref: "./paths/object_relations/object-relations.yaml"
     /object_relations/{public_id}:
         $ref: "./paths/object_relations/object-relations-by-id.yaml"
+    /webhooks:
+        $ref: "./paths/webhooks/webhooks.yaml"
+    /webhooks/{public_id}:
+        $ref: "./paths/webhooks/webhooks-by-id.yaml"
+    /reports:
+        $ref: "./paths/reports/reports.yaml"
+    /reports/{public_id}:
+        $ref: "./paths/reports/reports-by-id.yaml"
+    /reports/run/{public_id}:
+        $ref: "./paths/reports/reports-run-by-id.yaml"
+    /report_categories:
+        $ref: "./paths/report_categories/report-categories.yaml"
+    /report_categories/{public_id}:
+        $ref: "./paths/report_categories/report-categories-by-id.yaml"
+    /locations:
+        $ref: "./paths/locations/locations.yaml"
+    /locations/{public_id}:
+        $ref: "./paths/locations/locations-by-id.yaml"
+    /locations/{public_id}/object:
+        $ref: "./paths/locations/locations-by-id-object.yaml"
     /extendable_options:
         $ref: "./paths/extendable_options/extendable-options.yaml"
     /extendable_options/{public_id}:
@@ -199,6 +239,8 @@ components:
             $ref: "./components/schemas/CmdbObject.yaml"
         ObjectGroup:
             $ref: "./components/schemas/CmdbObjectGroup.yaml"
+        ObjectLink:
+            $ref: "./components/schemas/CmdbObjectLink.yaml"
         Category:
             $ref: "./components/schemas/CmdbCategory.yaml"
         Type:
@@ -213,6 +255,8 @@ components:
             $ref: "./components/schemas/MultiDataSection.yaml"
         User:
             $ref: "./components/schemas/CmdbUser.yaml"
+        UserGroup:
+            $ref: "./components/schemas/CmdbUserGroup.yaml"
         Person:
             $ref: "./components/schemas/CmdbPerson.yaml"
         PersonGroup:
@@ -221,6 +265,14 @@ components:
             $ref: "./components/schemas/CmdbRelation.yaml"
         ObjectRelation:
             $ref: "./components/schemas/CmdbObjectRelation.yaml"
+        Webhook:
+            $ref: "./components/schemas/CmdbWebhook.yaml"
+        Report:
+            $ref: "./components/schemas/CmdbReport.yaml"
+        ReportCategory:
+            $ref: "./components/schemas/CmdbReportCategory.yaml"
+        Location:
+            $ref: "./components/schemas/CmdbLocation.yaml"
         ISMS-RiskClass:
             $ref: "./components/schemas/isms/IsmsRiskClass.yaml"
         ISMS-Likelihood:
