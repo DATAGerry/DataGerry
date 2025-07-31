@@ -53,7 +53,10 @@
 <li class="toctree-l1"><a class="reference internal" href="dg_installation.html">On-Premises Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Updating DataGerry</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#cloud-updates">Cloud Updates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#on-premise-updates">On Premise Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#on-premise-updates">On Premise Updates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#updating-zip-package-from-2-2-0-to-3-0-0">Updating zip Package from 2.2.0 to 3.0.0</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="administration.html">Administration</a></li>
@@ -197,6 +200,23 @@ Docker: <a class="reference external" href="https://hub.docker.com/r/becongmbh/d
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<section id="updating-zip-package-from-2-2-0-to-3-0-0">
+<h3>Updating zip Package from 2.2.0 to 3.0.0<a class="headerlink" href="#updating-zip-package-from-2-2-0-to-3-0-0" title="Link to this heading"></a></h3>
+<p>To update the zip package to the version 3.0.0 from 2.2.0 follow these steps:</p>
+<ul class="simple">
+<li><p>systemctl stop datagerry</p></li>
+<li><p>systemctl stop rabbitmq-server</p></li>
+<li><p>systemctl disable rabbitmq-server</p></li>
+<li><p>unzip datgerry-3.0.0.zip (in the directory of the old installation)</p></li>
+<li><p>cd datagerry</p></li>
+<li><p>./setup.sh</p></li>
+<li><p>systemctl daemon-reload</p></li>
+<li><p>systemctl start datagerry</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 </section>
 </section>
 

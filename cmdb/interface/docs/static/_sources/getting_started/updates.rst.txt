@@ -60,3 +60,19 @@ Important notes:
 By following this process, your on-premise deployment remains secure, current, and compatible with the latest features.
 
 | 
+
+Updating zip Package from 2.2.0 to 3.0.0
+----------------------------------------
+
+To update the zip package to the version 3.0.0 from 2.2.0 follow these steps:
+
+-  systemctl stop datagerry
+-  systemctl stop rabbitmq-server
+-  systemctl disable rabbitmq-server
+-  unzip datgerry-3.0.0.zip (in the directory of the old installation)
+-  cd datagerry
+-  ./setup.sh
+-  systemctl daemon-reload
+-  systemctl start datagerry
+
+| 
