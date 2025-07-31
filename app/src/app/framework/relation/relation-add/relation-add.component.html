@@ -1,2 +1,2 @@
-<cmdb-content-header title="Add new Relation"/>
-<cmdb-relation-builder [stepIndex]="0" [relationInstance]="relationInstance"/>
+<cmdb-content-header *permissionLink="['base.framework.objectRelation.add']" title="Add new Relation"/>
+<cmdb-relation-builder *permissionLink="['base.framework.objectRelation.add']"  [stepIndex]="0" [relationInstance]="relationInstance"/>

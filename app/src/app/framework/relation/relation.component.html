@@ -3,7 +3,7 @@
 </div>
 <hr />
 
-<cmdb-table [items]="relations" [columns]="columns" [page]="page" [sort]="sort" [id]="id" 
+<cmdb-table *permissionLink="['base.framework.objectRelation.view', 'base.framework.objectRelation.edit']" [items]="relations" [columns]="columns" [page]="page" [sort]="sort" [id]="id" 
   [emptyMessage]="'No relations were found!'" [customButtons]="[addTemplate]" [totalItems]="totalRelations"
   [selectEnabled]="selectEnabled" [loading]="loading" [pageSize]="limit" (pageChange)="onPageChange($event)"
   (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onSortChange($event)"
