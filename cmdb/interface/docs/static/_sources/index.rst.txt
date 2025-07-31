@@ -17,7 +17,7 @@ and manage any type of asset or configuration data.
     :maxdepth: 2
 
     getting_started/welcome
-    getting_started/cloud_vs_on_premise
+    getting_started/cloud_vs_on_premises
     getting_started/service_portal
     getting_started/dg_installation
     getting_started/updates
