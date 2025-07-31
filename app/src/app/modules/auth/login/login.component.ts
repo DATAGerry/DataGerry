@@ -62,6 +62,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     public isLoading$ = this.loaderService?.isLoading$;
 
+    public  isCloudMode = environment.cloudMode;
+
     /* -------------------------------------------------- GETTER/SETTER ------------------------------------------------- */
     get controls() {
         return this.loginForm?.controls;
@@ -91,13 +93,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.render?.addClass(document?.body, 'embedded');
-        const isCloudMode = environment.cloudMode;
+        // const isCloudMode = environment.cloudMode;
 
 
         this.loginForm = new UntypedFormGroup({
             username: new UntypedFormControl(
                 '',
-                isCloudMode
+                this.isCloudMode
                     ? [Validators.required, strictEmailValidator]
                     : [Validators.required]
             ),
