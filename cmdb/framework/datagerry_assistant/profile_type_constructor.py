@@ -17,6 +17,7 @@
 This module contains the implementation of ProfileTypeConstructor
 """
 import logging
+import random
 from datetime import datetime, timezone
 
 from cmdb.manager.query_builder import BuilderParameters
@@ -92,6 +93,8 @@ class ProfileTypeConstructor:
             "version": "1.0.0",
             "description": None,
             "render_meta": self.__create_render_meta(icon),
+            "ci_explorer_label": None,
+            "ci_explorer_color": f'#{random.randint(0, 0xFFFFFF):06X}',
             "fields": [
             ],
             "acl": {

@@ -32,14 +32,14 @@
               </cmdb-object-type-label>
             </div>
           </div>
-          <div class="col-xl-1 col-md-6 col-6 border-left pt-1 last-widget" *ngIf="isFeaurePreviewModeEnabled">
+          <div class="col-xl-1 col-md-6 col-6 border-left pt-1 last-widget">
             <div class="d-flex justify-content-center" style="width: 87px !important;">
               <div class="btn-group" role="group">
                 <button type="button" class="btn btn-sm" [class.btn-primary]="!isGraphView"
                   [class.btn-outline-primary]="isGraphView" (click)="toggleView(false)" title="Table View">
                   <i class="fas fa-table"></i>
                 </button>
-                <button type="button" class="btn btn-sm" [class.btn-primary]="isGraphView"
+                <button *permissionLink="['base.framework.ciExplorer.view', 'base.framework.ciExplorer.edit']" type="button" class="btn btn-sm" [class.btn-primary]="isGraphView"
                   [class.btn-outline-primary]="!isGraphView" (click)="toggleView(true)" title="Graph View">
                   <i class="fas fa-project-diagram"></i>
                 </button>

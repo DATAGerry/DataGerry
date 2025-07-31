@@ -40,20 +40,20 @@ export class ChartsComponent implements AfterViewInit, AfterViewChecked {
   private labels = new BehaviorSubject<any[]>([]);
 
   @Input() set dataLabels(value: string[]) {
-    this.labels.next(value);
+    this.labels?.next(value);
   }
 
     get dataLabels() {
-        return this.labels.getValue();
+        return this.labels?.getValue();
     }
 
     private items = new BehaviorSubject<any[]>([]);
     @Input() set dataItems(value: any[]) {
-        this.items.next(value);
+        this.items?.next(value);
     }
 
     get dataItems() {
-        return this.items.getValue();
+        return this.items?.getValue();
     }
 /* --------------------------------------------------- LIFE CYCLE --------------------------------------------------- */
 
@@ -98,6 +98,6 @@ export class ChartsComponent implements AfterViewInit, AfterViewChecked {
     }
 
     ngAfterViewChecked() {
-        this.chart.update(true);
+        this.chart?.update(true);
     }
 }

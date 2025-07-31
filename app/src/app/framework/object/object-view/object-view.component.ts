@@ -41,7 +41,6 @@ import { CoreDeleteConfirmationModalComponent } from 'src/app/core/components/di
 import { CmdbObject } from '../../models/cmdb-object';
 import { ExtendedRelation, RelationGroup, ExtendedObjectRelationInstance, ObjectRelationInstance } from '../../models/object.model';
 import { LoaderService } from 'src/app/core/services/loader.service';
-import { environment } from 'src/environments/environment';
 
 
 
@@ -86,6 +85,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public activeRelationTabIndex = 0;
   public activeNestedRelationTabIndex = 0; // Tracks the active tab within Object Relations
 
+  private currentActiveRelationTabIndex: number = 0;
+  private shouldPreserveTabState: boolean = false;
+
   // Action properties
   public dialogMode: CmdbMode = CmdbMode.Create;
   public selectedRelationInstance: ExtendedObjectRelationInstance | null = null;
@@ -104,8 +106,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   public relationOrder: number = 1;
 
   public isLoading$ = this.loaderService.isLoading$;
-
-  public isFeaurePreviewModeEnabled = false;
 
   /* --------------------------------------------------- LIFECYCLE METHODS -------------------------------------------------- */
 
@@ -127,7 +127,6 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.isFeaurePreviewModeEnabled = environment.featurePreviewMode
     this.objectViewSubject.pipe(takeUntil(this.unsubscribe)).subscribe({
       next: (result) => {
         this.renderResult = result;
@@ -193,7 +192,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
  */
   public createNewRelationForGroup(group: RelationGroup): void {
     // Try to get the definition from the first instance in the group.
-    let definition = group?.instances.length > 0 ? group?.instances[0]?.definition : null;
+    // let definition = group?.instances.length > 0 ? group?.instances[0]?.definition : null;
+    // TODO: undo it because of inactive relations
+    let definition = group.instances[0]?.definition ?? (group as any).definition;
+
     // If not found, look for the definition in extendedRelations.
     if (!definition) {
       definition = this.extendedRelations.find(rel => rel?.public_id === group?.relationId);
@@ -224,6 +226,10 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.toastService.warning('No parent types defined for this relation.');
       return;
     }
+
+    // Preserve the current tab state
+    this.currentActiveRelationTabIndex = this.activeRelationTabIndex;
+    this.shouldPreserveTabState = true;
 
     this.showRelationRoleDialog = true;
     this.dialogMode = CmdbMode.Create; // Set mode to Create
@@ -365,6 +371,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.roleParentTypeIDs = this.chosenRole === 'parent' ? [] : this.chosenRelation?.parent_type_ids;
     this.roleChildTypeIDs = this.chosenRole === 'child' ? [] : this.chosenRelation?.child_type_ids;
 
+    this.currentActiveRelationTabIndex = this.activeRelationTabIndex;
+    this.shouldPreserveTabState = true;
+
     this.showRelationRoleDialog = true;
     this.dialogMode = CmdbMode.Create; // Ensure Create mode for new relations
     this.selectedRelationInstance = null; // Clear any selected instance
@@ -377,6 +386,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showRelationRoleDialog = false;
     this.selectedRelationInstance = null;
     this.dialogMode = CmdbMode.Create; // Reset to default mode
+
+    this.currentActiveRelationTabIndex = this.activeRelationTabIndex;
+    this.shouldPreserveTabState = true;
     if (this.currentObjectID) {
       this.loadObjectRelationInstances(this.currentObjectID);
     }
@@ -529,7 +541,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     tabColor: definition?.relation_color_parent,
                     tabIcon: definition?.relation_icon_parent,
                     instances: parentInstances,
-                    total: parentInstances?.length
+                    total: parentInstances?.length,
+                    // TODO: remove definition from here because it's hiding the inactive relations
+                    definition
                   });
                 }
 
@@ -541,7 +555,9 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
                     tabColor: definition?.relation_color_child,
                     tabIcon: definition?.relation_icon_child,
                     instances: childInstances,
-                    total: childInstances.length
+                    total: childInstances.length,
+                    // TODO: remove definition from here because it's hiding the inactive relations
+                    definition
                   });
                 }
               }
@@ -559,13 +575,28 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
               this.loadCounterpartObjects(allIDs);
 
-              if (this.activeRelationTabIndex === 1 && this.activeNestedRelationTabIndex > this.relationGroups.length) {
-                this.activeNestedRelationTabIndex = 0;
-              } else if (oldTabIndex > 1) {
-                this.activeRelationTabIndex = 1; // Move to Object Relations if previously on a relation tab
-                this.activeNestedRelationTabIndex = oldTabIndex - 1; // Adjust for new structure
+              // if (this.activeRelationTabIndex === 1 && this.activeNestedRelationTabIndex > this.relationGroups.length) {
+              //   this.activeNestedRelationTabIndex = 0;
+              // } else if (oldTabIndex > 1) {
+              //   this.activeRelationTabIndex = 1; // Move to Object Relations if previously on a relation tab
+              //   this.activeNestedRelationTabIndex = oldTabIndex - 1; // Adjust for new structure
+              // } else {
+              //   this.activeRelationTabIndex = oldTabIndex;
+              // }
+
+              // Preserve tab state if needed, otherwise use existing logic
+              if (this.shouldPreserveTabState) {
+                this.activeRelationTabIndex = this.currentActiveRelationTabIndex;
+                this.shouldPreserveTabState = false; // Reset the flag
               } else {
-                this.activeRelationTabIndex = oldTabIndex;
+                if (this.activeRelationTabIndex === 1 && this.activeNestedRelationTabIndex > this.relationGroups.length) {
+                  this.activeNestedRelationTabIndex = 0;
+                } else if (oldTabIndex > 1) {
+                  this.activeRelationTabIndex = 1;
+                  this.activeNestedRelationTabIndex = oldTabIndex - 1;
+                } else {
+                  this.activeRelationTabIndex = oldTabIndex;
+                }
               }
 
               this.loadingRelations = false;
@@ -592,7 +623,7 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
       ? { $and: [{ relation_id: relationId }, { relation_parent_id: this.currentObjectID }] }
       : { $and: [{ relation_id: relationId }, { relation_child_id: this.currentObjectID }] };
 
-      finalize(() => this.loaderService.show())
+    finalize(() => this.loaderService.show())
 
     const params = {
       filter,
@@ -739,6 +770,20 @@ export class ObjectViewComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             }
           });
+
+          // TODO: remove: Filter relation groups to only include instances with valid counterparts (those who are inactive don't show them)
+          this.relationGroups = this.relationGroups
+            .map(group => {
+              const filtered = group.instances.filter(inst =>
+                !!this.relatedObjectsMap[inst.counterpart_id]
+              );
+              return {
+                ...group,
+                instances: filtered,
+                total: filtered.length
+              };
+            })
+
 
           // Manually trigger CD if needed
           this.changesRef.markForCheck();

@@ -1,2 +1,2 @@
-<cmdb-content-header title="Edit relation {{relationInstance.relation_name}}"></cmdb-content-header>
-<cmdb-relation-builder [stepIndex]="stepIndex" [relationInstance]="relationInstance" [mode]="mode"></cmdb-relation-builder>
+<cmdb-content-header *permissionLink="['base.framework.objectRelation.edit']" title="Edit relation {{relationInstance.relation_name}}"></cmdb-content-header>
+<cmdb-relation-builder *permissionLink="['base.framework.objectRelation.edit']" [stepIndex]="stepIndex" [relationInstance]="relationInstance" [mode]="mode"></cmdb-relation-builder>

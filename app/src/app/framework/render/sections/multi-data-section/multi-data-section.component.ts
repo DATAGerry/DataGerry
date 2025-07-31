@@ -583,15 +583,48 @@ export class MultiDataSectionComponent extends BaseSectionComponent implements O
         let fieldType = this.getTypeOfField(fieldID);
 
         switch (fieldType) {
+            // case "date": {
+            //     console.log("Formatting date for field:", fieldID);
+            //     if(newValues[fieldID]) {
+            //         const newDate = new Date(newValues[fieldID]["$date"]);
+
+            //         const year = newDate.getFullYear();
+            //         const month = (newDate.getMonth() + 1).toString().padStart(2, '0');
+            //         const day = newDate.getDate().toString().padStart(2, '0');
+
+            //         return `${year}-${month}-${day}`;
+            //     }
+            //     break;
+            // }
+
             case "date": {
-                if(newValues[fieldID]) {
-                    const newDate = new Date(newValues[fieldID]["$date"]);
-
-                    const year = newDate.getFullYear();
-                    const month = (newDate.getMonth() + 1).toString().padStart(2, '0');
-                    const day = newDate.getDate().toString().padStart(2, '0');
-
-                    return `${year}-${month}-${day}`;
+                console.log("Formatting date for field:", fieldID);
+                if (newValues[fieldID]) {
+                    let date: Date;
+                    
+                    // Handle MongoDB date format
+                    if (newValues[fieldID].$date) {
+                        date = new Date(newValues[fieldID].$date);
+                    }
+                    // Handle string dates
+                    else if (typeof newValues[fieldID] === 'string') {
+                        date = new Date(newValues[fieldID]);
+                    }
+                    // Handle Date objects
+                    else if (newValues[fieldID] instanceof Date) {
+                        date = newValues[fieldID];
+                    }
+                    else {
+                        return newValues[fieldID];
+                    }
+    
+                    // Validate date and format
+                    if (!isNaN(date.getTime())) {
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
                 }
                 break;
             }

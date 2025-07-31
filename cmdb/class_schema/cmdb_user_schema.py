@@ -51,7 +51,7 @@ def get_cmdb_user_schema() -> dict:
             'required': True
         },
         'registration_time': {
-            'type': 'string',
+            'type': 'dict',
             'nullable': True,
             'empty': True,
             'required': False
