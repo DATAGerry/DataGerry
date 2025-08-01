@@ -30,7 +30,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { Observable, ReplaySubject, Subscription, merge, takeUntil } from 'rxjs';
 
@@ -229,7 +229,8 @@ export class TableComponent<T> implements OnInit, OnDestroy {
     /*                                                     LIFE CYCLE                                                     */
     /* ------------------------------------------------------------------------------------------------------------------ */
 
-    public constructor(private tableService: TableService, private router: Router, private toastService: ToastService) {
+    public constructor(private tableService: TableService, 
+        private router: Router, private toastService: ToastService,) {
         this.resetSelectedItems()
     }
 
@@ -278,6 +279,10 @@ export class TableComponent<T> implements OnInit, OnDestroy {
                 console.log(`[TableEvent] Sort changed to: ${sort}`);
             });
         }
+
+        this.columnSearchForm = new UntypedFormGroup(
+            Object.fromEntries(this.columns.map(c => [c.name, new UntypedFormControl('')]))
+          );
     }
 
 
