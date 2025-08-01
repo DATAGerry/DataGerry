@@ -201,7 +201,6 @@ export class TypeDeleteComponent implements OnInit {
             }
         },
             (reason) => {
-                console.log(reason);
             });
     }
     /**

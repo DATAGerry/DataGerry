@@ -166,8 +166,7 @@ export class BuilderComponent implements OnDestroy, AfterViewChecked {
         event.event.preventDefault();
         let sectionData = event.data;
 
-        console.log("Before dropping - sections array:", this.sections);
-        console.log("Section data to be added:", sectionData);
+
 
         if (!this.sections || !Array.isArray(this.sections)) {
             console.error("Sections array is undefined or not an array, initializing...");
