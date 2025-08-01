@@ -1,20 +1,20 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AiAssistantService } from 'src/app/ai-assistant/services/ai-assistant.service';
+import { AiAssistantMessage } from '../../models/ai-suggestion.model';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'cmdb-ai-prompt-modal',
-  templateUrl: './ai-prompt-modal.component.html',
-  styleUrls: ['./ai-prompt-modal.component.scss']
+  selector: 'cmdb-ai-prompt-page',
+  templateUrl: './ai-prompt-page.component.html'
 })
-export class AiPromptModalComponent implements OnInit {
+export class AiPromptPageComponent implements OnInit {
   public promptForm!: FormGroup;
 
   constructor(
-    public modal: NgbActiveModal,
-    private aiAssistantService: AiAssistantService
-  ) { }
+    private aiAssistantService: AiAssistantService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.promptForm = new FormGroup({
@@ -24,11 +24,10 @@ export class AiPromptModalComponent implements OnInit {
 
   public submit(): void {
     if (this.promptForm.valid) {
-      const message = this.promptForm.get('prompt')?.value;
+      const message: AiAssistantMessage = { message: this.promptForm.get('prompt')?.value };
       this.aiAssistantService.postMessage(message).subscribe({
         next: (response) => {
-          // Pass API response on modal close
-          this.modal.close(response);
+          console.log('AI response:', response);
         },
         error: (error) => {
           console.error('Error posting AI message:', error);
@@ -38,6 +37,6 @@ export class AiPromptModalComponent implements OnInit {
   }
 
   public cancel(): void {
-    this.modal.dismiss('cancel');
+    this.router.navigate(['/']);
   }
 }

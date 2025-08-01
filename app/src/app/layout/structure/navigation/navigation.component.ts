@@ -28,9 +28,8 @@ import { Group } from '../../../management/models/group';
 import { ObjectService } from 'src/app/framework/services/object.service';
 import { Subscription, switchMap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ToastService } from '../../toast/toast.service';
-import { AiPromptModalComponent } from 'src/app/ai-assistant/components/ai-prompt-modal/ai-prompt-modal.component';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { Router } from '@angular/router';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 declare global {
@@ -64,7 +63,7 @@ export class NavigationComponent implements OnInit {
         private userService: UserService,
         private groupService: GroupService,
         private objectService: ObjectService,
-        private modalService: NgbModal
+        private router: Router,
     ) {
         this.user = this.userService.getCurrentUser();
     }
@@ -191,15 +190,9 @@ export class NavigationComponent implements OnInit {
         return this.percentage > 85 ? '#fff' : '#000'; // Use white text on high usage (red background)
     }
 
-    public openAiPromptModal(): void {
-        const modalRef = this.modalService.open(AiPromptModalComponent, { size: 'lg', backdrop: 'static' });
-        modalRef.result.then(
-          (result) => {
-            console.log('AI Assistant modal result:', result);
-          },
-          (reason) => {
-            console.warn('AI Assistant modal dismissed:', reason);
-          }
-        );
+
+    public goToAiPromptPage(): void {
+        this.router.navigate(['/ai-assistant']);
       }
+      
 }
