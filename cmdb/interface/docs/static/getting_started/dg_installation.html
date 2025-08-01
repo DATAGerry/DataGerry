@@ -396,15 +396,6 @@ be installed using an RPM package.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>rpm<span class="w"> </span>-ivh<span class="w"> </span>DATAGERRY-&lt;version&gt;.x86_64.rpm
 </pre></div>
 </div>
-<p>Configure MongoDB connection settings in:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/etc/datagerry/cmdb.conf</span>
-</pre></div>
-</div>
-<p>Enable and start the DataGerry service:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>datagerry.service
-<span class="gp">$ </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>datagerry.service
-</pre></div>
-</div>
 <p>You can now access the frontend:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">http://&lt;host&gt;:4000</span>
 <span class="go">user: admin</span>

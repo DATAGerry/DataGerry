@@ -188,18 +188,6 @@ Once MongoDB is installed, install the RPM package:
 
     $ sudo rpm -ivh DATAGERRY-<version>.x86_64.rpm
 
-Configure MongoDB connection settings in:
-
-.. code-block:: console
-
-    /etc/datagerry/cmdb.conf
-
-Enable and start the DataGerry service:
-
-.. code-block:: console
-
-    $ sudo systemctl enable datagerry.service
-    $ sudo systemctl start datagerry.service
 
 You can now access the frontend:
 
