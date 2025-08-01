@@ -598,7 +598,6 @@ export class MultiDataSectionComponent extends BaseSectionComponent implements O
             // }
 
             case "date": {
-                console.log("Formatting date for field:", fieldID);
                 if (newValues[fieldID]) {
                     let date: Date;
                     

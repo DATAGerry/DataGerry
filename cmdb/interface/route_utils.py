@@ -232,8 +232,8 @@ def verify_api_access(*, required_api_level: ApiLevel = None):
                     if not __check_api_level(user_instance, required_api_level):
                         abort(403, "No permission for this action!")
             except Exception as err:
-                LOGGER.warning("[verify_api_access] Exception: %s", err)
-                abort(400, "Invalid request!")
+                LOGGER.error("[verify_api_access] Exception: %s. Type: %s", err, type(err), exc_info=True)
+                abort(400, "Failed to verify API access!")
 
             return func(*args, **kwargs)
         return wrapper

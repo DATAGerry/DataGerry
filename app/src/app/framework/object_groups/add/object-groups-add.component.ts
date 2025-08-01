@@ -106,7 +106,6 @@ export class ObjectGroupsAddComponent implements OnInit {
   /* --------------------------- Editing a single group --------------------------- */
 
   private loadGroupToEdit(id: number): void {
-    console.log('Loading group to edit', id);
     this.loaderService.show();
     this.objectGroupService.getObjectGroupById(id)
       .pipe(finalize(() => this.loaderService.hide()))

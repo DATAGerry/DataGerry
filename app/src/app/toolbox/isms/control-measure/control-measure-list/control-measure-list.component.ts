@@ -202,7 +202,6 @@ export class ControlmeasuresListComponent implements OnInit {
             .subscribe({
                 next: (res) => {
                     this.sourceOptions = res.results;
-                    console.log('sourceOptions', this.sourceOptions);
                 },
                 error: (err) => this.toast.error(err?.error?.message)
             });
@@ -308,7 +307,6 @@ export class ControlmeasuresListComponent implements OnInit {
     */
     getSourceNames(sourceIds: number): string {
         const option = this.sourceOptions.find(opt => opt.public_id === sourceIds);
-        console.log('option', option?.value);
         return option?.value;
     }
 

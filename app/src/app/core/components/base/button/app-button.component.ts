@@ -47,6 +47,5 @@ export class ButtonComponent implements OnInit {
 
   ngOnInit(): void {
     // Ensure the button has the 'btn' class by default
-    console.log('padding', this.padding);
   }
 }

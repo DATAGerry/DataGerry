@@ -135,7 +135,7 @@ def insert_cmdb_location(params: dict, request_user: CmdbUser):
         abort(400, "Failed to insert the new Location in the database!")
     except Exception as err:
         LOGGER.error("[insert_cmdb_location] Exception: %s. Type: %s", err, type(err), exc_info=True)
-        abort(500, "Internal server error!")
+        abort(500, "An internal server error occured while creating the new Location!")
 
 # ---------------------------------------------------- CRUD - READ --------------------------------------------------- #
 
