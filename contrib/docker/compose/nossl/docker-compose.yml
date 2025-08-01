@@ -16,12 +16,14 @@ services:
     hostname: datagerry
     depends_on:
     - db
+    ports:
+    - 4000:4000
     environment:
       DATAGERRY_Database_host: "db"
     restart: unless-stopped
 
   db:
-    image: mongo:4.4.29
+    image: mongo:6.0.25
     hostname: db
     restart: unless-stopped
     volumes:

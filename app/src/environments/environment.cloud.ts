@@ -1,9 +1,9 @@
 export const environment = {
     production: false,
     cloudMode: true,
-    preCloudMode: true,
-    featurePreviewMode: true,
+    preCloudMode: false,
+    featurePreviewMode: false,
     protocol: 'http',
-    apiUrl: '127.0.1.1', // API URL
+    apiUrl: '', // API URL
     apiPort: 4000 // Typically HTTPS
 };

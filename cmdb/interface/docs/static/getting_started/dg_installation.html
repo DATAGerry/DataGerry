@@ -260,12 +260,14 @@ following containers:</p>
     <span class="n">hostname</span><span class="p">:</span> <span class="n">datagerry</span>
     <span class="n">depends_on</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">db</span>
+    <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="mi">4000</span><span class="p">:</span><span class="mi">4000</span>
     <span class="n">environment</span><span class="p">:</span>
       <span class="n">DATAGERRY_Database_host</span><span class="p">:</span> <span class="s2">&quot;db&quot;</span>
     <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
 
   <span class="n">db</span><span class="p">:</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">mongo</span><span class="p">:</span><span class="mf">4.4.29</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">mongo</span><span class="p">:</span><span class="mf">6.0.25</span>
     <span class="n">hostname</span><span class="p">:</span> <span class="n">db</span>
     <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
     <span class="n">volumes</span><span class="p">:</span>
@@ -302,12 +304,14 @@ following containers:</p>
     <span class="n">hostname</span><span class="p">:</span> <span class="n">datagerry</span>
     <span class="n">depends_on</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">db</span>
+    <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="mi">4000</span><span class="p">:</span><span class="mi">4000</span>
     <span class="n">environment</span><span class="p">:</span>
       <span class="n">DATAGERRY_Database_host</span><span class="p">:</span> <span class="s2">&quot;db&quot;</span>
     <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
 
   <span class="n">db</span><span class="p">:</span>
-    <span class="n">image</span><span class="p">:</span> <span class="n">mongo</span><span class="p">:</span><span class="mf">4.4.29</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">mongo</span><span class="p">:</span><span class="mf">6.0.25</span>
     <span class="n">hostname</span><span class="p">:</span> <span class="n">db</span>
     <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
     <span class="n">volumes</span><span class="p">:</span>
