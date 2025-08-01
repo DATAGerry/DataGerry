@@ -17,7 +17,7 @@
 Definition of all routes for the Type Assistant
 """
 import logging
-from flask import abort
+from flask import abort, request
 
 from werkzeug.exceptions import HTTPException
 
@@ -38,7 +38,7 @@ type_assistant_blueprint = APIBlueprint('type_assistant', __name__)
 @type_assistant_blueprint.route('/message', methods=['POST'])
 @insert_request_user
 @verify_api_access(required_api_level=ApiLevel.LOCKED)
-def send_message_ai(data: dict, request_user: CmdbUser):
+def send_message_ai(request_user: CmdbUser):
     """
     HTTP `POST` route to interact with Gemini AI
 
@@ -50,7 +50,10 @@ def send_message_ai(data: dict, request_user: CmdbUser):
         DefaultResponse: The response from the AI
     """
     try:
-        user_message = data.get('message')
+        user_message: dict = request.get_json()
+        user_message = user_message.get('message')
+
+        # LOGGER.debug(f"user_message: {user_message}")
 
         if not user_message:
             abort(400, "No message provided!")
@@ -58,7 +61,6 @@ def send_message_ai(data: dict, request_user: CmdbUser):
         response = gemini_model.generate_content(user_message)
 
         # LOGGER.debug(f"response text: {response.text}")
-
         return DefaultResponse(response.text).make_response()
     except HTTPException as http_err:
         raise http_err
