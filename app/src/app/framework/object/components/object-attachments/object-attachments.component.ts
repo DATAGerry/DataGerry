@@ -62,7 +62,6 @@ export class ObjectAttachmentsComponent implements OnInit, OnDestroy {
 
 
   public showAttachments(): void {
-    console.log('showAttachments called');
     this.modalRef = this.modalService.open(AttachmentsListModalComponent);
     this.modalRef.componentInstance.metadata = this.metadata;
   

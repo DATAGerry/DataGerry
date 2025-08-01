@@ -213,7 +213,6 @@ export class ControlMeasureAssignmentListComponent
       .subscribe({
         next: resp => {
           
-          console.log('Assignments response:', resp.results);
           this.assignments = (resp.results ?? []).map(a => ({
             ...a,
             cmLabel       : `${this.cmMap.get(a.control_measure_id) ?? 'CM'} (#${a.control_measure_id})`,
