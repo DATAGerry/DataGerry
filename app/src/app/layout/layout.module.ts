@@ -89,9 +89,8 @@ import { AttachmentsListModalComponent } from './helpers/modals/attachments-list
 import { QrCodeComponent } from './helpers/qrcode/qr-code.component';
 import { BlockComponent } from './components/block/block.component';
 import { TypeSelectComponent } from './components/type-select/type-select.component';
-import { LoadingPopupComponent } from '../core/components/loading-popup/loading-popup.component';
 import { CoreModule } from '../core/core.module';
-import { AiPromptModalModule } from '../ai-assistant/ai-assistant.module';
+import { AiAssistantModule } from '../ai-assistant/ai-assistant.module';
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 @NgModule({
@@ -189,7 +188,8 @@ import { AiPromptModalModule } from '../ai-assistant/ai-assistant.module';
         MatButtonModule,
         MatIconModule,
         CoreModule,
-        AiPromptModalModule
+        AiAssistantModule
+        
 
         ],
     providers: [

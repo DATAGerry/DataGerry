@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AiPromptModalComponent } from './components/ai-prompt-modal/ai-prompt-modal.component';
+import { AiPromptPageComponent } from './components/ai-prompt-page/ai-prompt-page.component';
 
 const routes: Routes = [
-  { path: 'ai-assistant', component: AiPromptModalComponent }
+  { path: 'ai-assistant', component: AiPromptPageComponent }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class AiPromptModalRoutingModule { }
+export class AiAssistantRoutingModule { }
